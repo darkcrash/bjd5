@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Windows.Forms;
 using Bjd.util;
 
 namespace Bjd.option {
     public sealed partial class OptionDlg:Form {
+
+        private Panel panelBottom;
+        private Button buttonCancel;
+        private Button buttonOk;
+        private Panel panelMain;
+
+
+
         readonly OneOption _oneOption;
         public OptionDlg(Kernel kernel, OneOption oneOption) {
-            InitializeComponent();
+            //InitializeComponent();
 
 
             //メニューの項目名をダイアログのタイトルにする
@@ -52,6 +59,12 @@ namespace Bjd.option {
         private void OptionDlgFormClosed(object sender,FormClosedEventArgs e) {
             _oneOption.CloseDlg();
         }
+
+
+
+
+
+
 
     }
 }

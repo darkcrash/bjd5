@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
 using Bjd.util;
 
 namespace Bjd.log {
@@ -96,7 +94,7 @@ namespace Bjd.log {
             //Java fix
             if (font != null && _listView!=null){
                 if (_listView.InvokeRequired){
-                    _listView.BeginInvoke(new MethodInvoker(() => SetFont(font)));
+                    _listView.BeginInvoke(new Action(() => SetFont(font)));
                 } else{
                     _listView.Font = font;
                 }

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Windows.Forms;
 using System.IO;
 using Bjd.menu;
 using Bjd.util;

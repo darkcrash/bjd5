@@ -1,9 +1,27 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.ServiceProcess;
 
 namespace Bjd.service {
     internal partial class SetupServiceDlg : Form {
+
+        private GroupBox groupBoxInstall;
+        private TextBox textBoxInstall;
+        private Button buttonUninstall;
+        private Button buttonInstall;
+        private GroupBox groupBoxStatus;
+        private TextBox textBoxStatus;
+        private Button buttonStop;
+        private Button buttonStart;
+        private GroupBox groupBoxStartupType;
+        private TextBox textBoxStartupType;
+        private Button buttonManual;
+        private Button buttonAutomatic;
+        private Button buttonDisable;
+        private Button buttonOk;
+        private Button buttonRestart;
+
+
+
         readonly SetupService _setupService;
         readonly Kernel _kernel;
         public SetupServiceDlg(Kernel kernel) {

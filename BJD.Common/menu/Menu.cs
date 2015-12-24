@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Bjd.menu{
 
@@ -60,7 +59,7 @@ namespace Bjd.menu{
                 return;
             
             if (_menuStrip.InvokeRequired) {
-                _menuStrip.BeginInvoke(new MethodInvoker(()=>InitializeRemote(isJp)));
+                _menuStrip.BeginInvoke(new Action(()=>InitializeRemote(isJp)));
             } else {
                 //Java fix
                 _isJp = isJp;
@@ -88,7 +87,7 @@ namespace Bjd.menu{
             }
 
             if (_menuStrip.InvokeRequired){
-                _menuStrip.Invoke(new MethodInvoker(()=>Initialize(isJp)));
+                _menuStrip.Invoke(new Action(()=>Initialize(isJp)));
             }else{
                 //全削除
                 _menuStrip.Items.Clear();

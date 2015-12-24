@@ -3,15 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-//using System.Drawing;
-//using System.Collections;
-//using System.Windows.Forms;
-//using System.Data;
-//�ǉ��������O���
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Management;
 using Bjd.util;
 
 

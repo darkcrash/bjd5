@@ -1,14 +1,25 @@
 ﻿using System;
 using System.Text;
-using System.Windows.Forms;
 using System.Diagnostics;
 using Microsoft.Win32;
 
 
 namespace Bjd {
     public partial class VersionDlg : Form {
+
+        private Button buttonOk;
+        private Panel panel1;
+        private PictureBox pictureBox;
+        private PictureBox pictureBoxIcon;
+        private Label labelApplicationName;
+        private Label labelVersion;
+        private Label labelCopyright;
+        private Label labelDotnetInstall;
+        private Label labelDotnetRunning;
+        private TextBox textBoxDotnetInstall;
+
         public VersionDlg(Kernel kernel) {
-            InitializeComponent();
+            //InitializeComponent();
 
             Text = kernel.IsJp() ? "バージョン情報" : "Version";
             labelApplicationName.Text = Define.ApplicationName();

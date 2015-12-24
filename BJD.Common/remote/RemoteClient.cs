@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.IO;
 using Bjd.browse;
 using Bjd.ctrl;

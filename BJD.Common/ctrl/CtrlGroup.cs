@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-using Bjd.option;
+﻿using Bjd.option;
 using Bjd.util;
 
 namespace Bjd.ctrl {

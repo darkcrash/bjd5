@@ -1,7 +1,6 @@
 ﻿using System;
 using Bjd.menu;
 using Bjd.plugin;
-using System.Windows.Forms;
 using Bjd.util;
 
 namespace Bjd.option{

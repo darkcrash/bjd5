@@ -1,12 +1,20 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace Bjd {
     public partial class PasswordDlg : Form {
+
+        private Button buttonOk;
+        private Label label1;
+        private TextBox textBoxPassword;
+        private Button buttonCancel;
+
+
+
+
         Kernel _kernel;
         public string PasswordStr = ""; 
         public PasswordDlg(Kernel kernel) {
-            InitializeComponent();
+            //InitializeComponent();
             _kernel = kernel;
 
             label1.Text = (kernel.IsJp()) ? "�p�X���[�h����͂��Ă�������" : "Login password";

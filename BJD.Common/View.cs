@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Windows.Forms;
-using System.Drawing;
 
 namespace Bjd{
     public class View : IDisposable{
@@ -80,7 +78,7 @@ namespace Bjd{
             if (ListView == null)
                 return;
             if (ListView.InvokeRequired){
-                ListView.BeginInvoke(new MethodInvoker(SetColor));
+                ListView.BeginInvoke(new Action(SetColor));
             }
             else{
                 var color = SystemColors.Window;
@@ -118,7 +116,7 @@ namespace Bjd{
             }
 
             if (ListView.InvokeRequired){
-                ListView.Invoke(new MethodInvoker(SetColumnText));
+                ListView.Invoke(new Action(SetColumnText));
             }
             else{
                 //リストビューのカラム初期化（言語）

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Threading;
-using System.Windows.Forms;
 using Bjd.net;
 using Bjd.remote;
 using Bjd.server;
@@ -10,12 +8,18 @@ using Bjd.sock;
 
 namespace Bjd {
     public abstract partial class ToolDlg : Form {
+
+        private MenuStrip menuStrip;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel StatusLabel;
+
+
         protected Kernel Kernel;
         readonly string _caption;
         protected string NameTag;
         protected Control MainControl;//メインコントロール
 
-        new abstract public void Closed();//ダイアログが閉じる際に呼び出される
+        abstract public void Closed();//ダイアログが閉じる際に呼び出される
         abstract public void Clear();//メインコントロールのクリア
         abstract public void AddItem(string line);//メインコントロールへのデータ追加
         abstract public void Recv(string cmdStr, string buffer);//コマンドへの応答
@@ -29,7 +33,7 @@ namespace Bjd {
         ContextMenuStrip _popupMenu;
 
         protected ToolDlg(Kernel kernel,string nameTag,Object obj,string caption) {
-            InitializeComponent();
+            //InitializeComponent();
 
             Kernel = kernel;
             NameTag = nameTag;
@@ -145,7 +149,7 @@ namespace Bjd {
 
         protected void Cmd(string cmdStr) {
             if (MainControl.InvokeRequired) {
-                MainControl.Invoke(new MethodInvoker(()=>Cmd(cmdStr)));
+                MainControl.Invoke(new Action(()=>Cmd(cmdStr)));
             } else { // メインスレッドから呼び出された場合(コントロールへの描画)
                 if (cmdStr.IndexOf("Refresh") == 0) {
                     //メインコントロールのクリア
@@ -176,7 +180,7 @@ namespace Bjd {
 
         public void CmdRecv(string cmdStr,string buffer) {
             if (MainControl.InvokeRequired) {
-                MainControl.Invoke(new MethodInvoker(()=>CmdRecv(cmdStr,buffer)));
+                MainControl.Invoke(new Action(()=>CmdRecv(cmdStr,buffer)));
             } else { // メインスレッドから呼び出された場合(コントロールへの描画)
                 if (cmdStr.IndexOf("Refresh-")==0) {
                     string[] lines = buffer.Split(new char[] { '\b' }, StringSplitOptions.RemoveEmptyEntries);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using Bjd.log;
@@ -12,6 +10,25 @@ namespace Bjd.trace
 {
     public partial class TraceDlg : Form
     {
+
+        private StatusStrip statusStrip;
+        private MenuStrip menuStrip;
+        private ToolStripMenuItem MainMenuFile;
+        private ToolStripMenuItem MainMenuClose;
+        private ToolStripMenuItem MainMenuEdit;
+        private ToolStripMenuItem MainMenuCopy;
+        private ToolStripMenuItem MainMenuClear;
+        private ContextMenuStrip contextMenuStrip;
+        private ToolStripMenuItem PopupMenuCopy;
+        private ToolStripMenuItem PopupMenuClear;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem PopupMenuClose;
+        private ListView listViewTrace;
+        private ToolStripMenuItem PopupMenuSave;
+        private ToolStripMenuItem MainMenuSave;
+
+
+
         readonly Kernel _kernel;
         readonly Timer _timer;
         readonly List<OneTrace> _ar = new List<OneTrace>();
@@ -184,7 +201,7 @@ namespace Bjd.trace
                 return;
             try {
                 if (listViewTrace.InvokeRequired) {
-                    listViewTrace.Invoke(new MethodInvoker(() => Disp2(list)));
+                    listViewTrace.Invoke(new Action(() => Disp2(list)));
                 } else {
                     foreach (OneTrace oneTrace in list) {
 

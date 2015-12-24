@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-
+﻿
 namespace Bjd.ctrl {
     public class CtrlLabel : OneCtrl {
         private Label _label;

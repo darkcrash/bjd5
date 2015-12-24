@@ -2,10 +2,14 @@
 using System.Configuration.Install;
 
 namespace Bjd {
-    [RunInstaller(true)]
-    public partial class ProjectInstaller : Installer {
+    //[RunInstaller(true)]
+    public  class ProjectInstaller : Installer {
+
+        private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
+        private System.ServiceProcess.ServiceInstaller serviceInstaller;
+
         public ProjectInstaller() {
-            InitializeComponent();
+            //InitializeComponent();
         }
     }
 }

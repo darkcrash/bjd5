@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Diagnostics;
-using System.Management;
 using System.Reflection;
 using System.IO;
 using Bjd.util;

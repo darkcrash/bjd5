@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Windows.Forms;
 using Bjd.ctrl;
 
 namespace Bjd.browse {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using Bjd.util;
 
 
@@ -7,9 +6,40 @@ namespace Bjd {
 
 
     public partial class MainForm : Form {
+
+
+        private MenuStrip menuStrip = new MenuStrip();
+        private StatusStrip statusStrip = new StatusStrip();
+        private FontDialog fontDialog1 = new FontDialog();
+        private ListView listViewMainLog = new ListView();
+        private ColumnHeader date = new ColumnHeader();
+        private ColumnHeader server = new ColumnHeader();
+        private ColumnHeader messageNo = new ColumnHeader();
+        private ColumnHeader message = new ColumnHeader();
+        private ColumnHeader threadId = new ColumnHeader();
+        private ColumnHeader detailInfomation = new ColumnHeader();
+        private ColumnHeader kind = new ColumnHeader();
+        private ContextMenuStrip contextMenuStrip = new ContextMenuStrip();
+        private ToolStripMenuItem PopupMenuOpen = new ToolStripMenuItem();
+        private ToolStripMenuItem PopupMenuExit = new ToolStripMenuItem();
+        private NotifyIcon notifyIcon = new NotifyIcon();
+        private ColumnHeader address = new ColumnHeader();
+        private BackgroundWorker backgroundWorker1 = new BackgroundWorker();
+
+
+
+
+
+
+
+
+
+
+
+
         readonly Kernel _kernel;
         public MainForm() {
-            InitializeComponent();
+            //InitializeComponent();
             //kernel = new Kernel(this, listViewMainLog, menuStrip, contextMenuStrip,notifyIcon);
             _kernel = new Kernel(this, listViewMainLog, menuStrip, notifyIcon);
 

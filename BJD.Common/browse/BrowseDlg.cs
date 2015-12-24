@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Forms;
 using System.Threading;
 using Bjd.ctrl;
 using Bjd.remote;
@@ -9,6 +8,21 @@ using Bjd.sock;
 namespace Bjd.browse
 {
     public partial class BrowseDlg:Form {
+
+        private StatusStrip statusStrip;
+        private ToolStrip toolStrip;
+        private ToolStripTextBox textBox;
+        private Panel panel1;
+        private Button buttonCancel;
+        private Button buttonOk;
+        private SplitContainer splitContainer1;
+        private TreeView treeView;
+        private ListView listView;
+        private ImageList imageList;
+        private ToolStripLabel toolStripLabel1;
+
+
+
         readonly Kernel _kernel;
 
         readonly CtrlType _ctrlType;
@@ -16,7 +30,7 @@ namespace Bjd.browse
         readonly BrowseData _browseData;
 
         public BrowseDlg(Kernel kernel,SockTcp sockTcp,CtrlType ctrlType) {
-            InitializeComponent();
+            //InitializeComponent();
 
             _kernel = kernel;
             _sockTcp = sockTcp;

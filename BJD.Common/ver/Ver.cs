@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.IO;
-using System.Windows.Forms;
 using Bjd.util;
 
 namespace Bjd {

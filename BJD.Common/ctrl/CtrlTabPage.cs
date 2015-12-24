@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Drawing;
 using Bjd.option;
 using Bjd.util;
 

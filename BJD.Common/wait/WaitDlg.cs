@@ -1,12 +1,18 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace Bjd.wait {
     internal partial class WaitDlg : Form {
+
+        private Label labelMeg;
+        private Button buttonCancel;
+        private ProgressBar progressBar;
+
+
+
         readonly Wait _owner;//このダイアログを使用している親クラス
 
         public WaitDlg(Wait owner) {
-            InitializeComponent();
+            //InitializeComponent();
 
             _owner = owner;
         }
@@ -15,7 +21,7 @@ namespace Bjd.wait {
         //プログレスバーの値を更新する
         public void Renew() {
             if (progressBar.InvokeRequired) {// 別スレッドから呼び出された場合
-                progressBar.Invoke(new MethodInvoker(Renew));
+                progressBar.Invoke(new Action(Renew));
             } else {
                 //メッセージを更新
                 labelMeg.Text = _owner.Msg;
@@ -27,14 +33,14 @@ namespace Bjd.wait {
 
         new public void Close() {
             if (progressBar.InvokeRequired) {
-                progressBar.Invoke(new MethodInvoker(Close));
+                progressBar.Invoke(new Action(Close));
             } else {
                 base.Close();
             }
         }
         public void Open() {
             if (progressBar.InvokeRequired) {
-                progressBar.Invoke(new MethodInvoker(Open));
+                progressBar.Invoke(new Action(Open));
             }else{
                 ShowDialog();
             }

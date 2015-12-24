@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace Bjd.menu {
     public class OneMenu : IDisposable{
