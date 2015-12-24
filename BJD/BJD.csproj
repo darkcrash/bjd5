@@ -367,6 +367,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BJD.Lang.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="BlackJumboDog.ico" />
     <None Include="app.config" />
     <None Include="img\icon.bmp" />

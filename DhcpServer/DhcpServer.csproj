@@ -77,9 +77,6 @@
   <ItemGroup>
     <Compile Include="DhcpDbStatus.cs" />
     <Compile Include="DhcpType.cs" />
-    <Compile Include="Dlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Lease.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="OneLease.cs" />

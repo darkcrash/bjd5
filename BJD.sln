@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BJD", "BJD\BJD.csproj", "{A219B3D7-33D9-4C73-814D-1909D067372B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer", "WebServer\WebServer.csproj", "{C5D38963-2182-47AB-A34D-2F604B70A701}"
@@ -119,6 +121,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4E14581-EEDC-4FE1-BBF9-ABF8ED910C43}"
 	ProjectSection(SolutionItems) = preProject
 		BJD1.vsmdi = BJD1.vsmdi
+		BJD.Common\global.json = BJD.Common\global.json
 	EndProjectSection
 EndProject
 Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Setup", "Setup\Setup.isproj", "{749C7348-179C-4782-A29E-72BC3E0B47E3}"
@@ -147,10 +150,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServer", "WebApiServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServerTest", "WebApiServerTest\WebApiServerTest.csproj", "{2FB252CF-D3DF-427F-B5B3-E3D5A65D721F}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.Common", "BJD.Common\BJD.Common.xproj", "{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.CoreCLR", "BJD.CoreCLR\BJD.CoreCLR.xproj", "{2AD95029-FF06-4C7A-B516-F4EAE85C601C}"
+EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = BJD1.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
 		CD_ROM|Mixed Platforms = CD_ROM|Mixed Platforms
@@ -1082,8 +1086,83 @@ Global
 		{2FB252CF-D3DF-427F-B5B3-E3D5A65D721F}.Tmp|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2FB252CF-D3DF-427F-B5B3-E3D5A65D721F}.Tmp|Mixed Platforms.Build.0 = Release|Any CPU
 		{2FB252CF-D3DF-427F-B5B3-E3D5A65D721F}.Tmp|x86.ActiveCfg = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|Any CPU.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|x86.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.CD_ROM|x86.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Debug|x86.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.DVD-5|x86.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|x86.ActiveCfg = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Release|x86.Build.0 = Release|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|Any CPU.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|x86.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.SingleImage|x86.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|Any CPU.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|Any CPU.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|x86.ActiveCfg = Debug|Any CPU
+		{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}.Tmp|x86.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|Any CPU.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|x86.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.CD_ROM|x86.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Debug|x86.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.DVD-5|x86.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|x86.ActiveCfg = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Release|x86.Build.0 = Release|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|Any CPU.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|x86.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.SingleImage|x86.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|Any CPU.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|x86.ActiveCfg = Debug|Any CPU
+		{2AD95029-FF06-4C7A-B516-F4EAE85C601C}.Tmp|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = BJD1.vsmdi
 	EndGlobalSection
 EndGlobal
