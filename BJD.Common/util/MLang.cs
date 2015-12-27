@@ -14,7 +14,7 @@ namespace Bjd.util {
 
                 var bs = new byte[fs.Length];
                 fs.Read(bs, 0, bs.Length);
-                fs.Close();
+                //fs.Close();
                 return bs.Length == 0 ? Encoding.ASCII : GetEncoding(bs);
             }
         }

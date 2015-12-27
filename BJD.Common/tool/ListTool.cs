@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.IO;
-using Bjd.menu;
 using Bjd.util;
 
 namespace Bjd.tool {
@@ -21,26 +20,13 @@ namespace Bjd.tool {
             Ar.Add(o);
             return true;
         }
-        //メニュー取得
-        public ListMenu Menu() {
-
-            var menu = new ListMenu();
-
-            foreach (var a in Ar) {
-                var nameTag = string.Format("Tool_{0}", a.NameTag);
-                menu.Add(new OneMenu(nameTag, a.JpMenu, a.EnMenu,a.Mnemonic,Keys.None));
-
-            }
-            return menu;
-        }
-
 
         //ツールリストの初期化
         public void Initialize(Kernel kernel) {
             Ar.Clear();
 
             //「ステータス表示」の追加
-            var nameTag = Path.GetFileNameWithoutExtension(Application.ExecutablePath);
+            var nameTag = Path.GetFileNameWithoutExtension(Define.ExecutablePath);
             //Add((OneTool)Util.CreateInstance(kernel,Application.ExecutablePath, "Tool", new object[] { kernel, nameTag }));
             Add(new Tool(kernel,nameTag));
 
@@ -55,20 +41,6 @@ namespace Bjd.tool {
                 }
             }
         }
-
-        //メニュー取得
-        public ListMenu GetListMenu(){
-
-            var mainMenu = new ListMenu();
-
-            foreach (var a in Ar) {
-                var nameTag = string.Format("Tool_{0}", a.NameTag);
-                mainMenu.Add(new OneMenu(nameTag, a.JpMenu, a.EnMenu, a.Mnemonic, Keys.None));
-
-            }
-            return mainMenu;
-        }
-
 
     }
 }

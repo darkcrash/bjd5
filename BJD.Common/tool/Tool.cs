@@ -9,9 +9,6 @@ namespace Bjd.tool {
         public override string EnMenu { get { return "Status"; } }
         public override char Mnemonic { get { return 'U'; } }
 
-        override public ToolDlg CreateDlg(Object obj) {
-            return new Dlg(Kernel, NameTag, obj, (Kernel.IsJp()) ? "ステータス表示" : "Status");
-        }
     }
 }
 

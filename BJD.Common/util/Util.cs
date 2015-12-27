@@ -3,31 +3,35 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using Bjd.log;
 
 //using System.Collections;
 
-namespace Bjd.util{
+namespace Bjd.util
+{
 
-
-
-    public static class Util{
+    public static class Util
+    {
 
         //private Util(){}//�f�t�H���g�R���X�g���N�^�̉B��
 
         //***********************************************
         // htons()
         //***********************************************
-        public static ushort htons(ushort i){
-            return (ushort) ((i << 8) + (i >> 8));
+        public static ushort htons(ushort i)
+        {
+            return (ushort)((i << 8) + (i >> 8));
         }
 
-        public static uint htonl(uint i){
+        public static uint htonl(uint i)
+        {
             return
-                (uint) ((i & 0xff000000) >> 24 | (i & 0x00ff0000) >> 8 | (i & 0x0000ff00) << 8 | (i & 0x000000ff) << 24);
+                (uint)((i & 0xff000000) >> 24 | (i & 0x00ff0000) >> 8 | (i & 0x0000ff00) << 8 | (i & 0x000000ff) << 24);
         }
 
-        public static UInt64 htonl(UInt64 i){
+        public static UInt64 htonl(UInt64 i)
+        {
             return
                 (UInt64)
                 ((i & 0xff00000000000000) >> 56 | (i & 0x00ff000000000000) >> 40 | (i & 0x0000ff0000000000) >> 24 |
@@ -37,16 +41,19 @@ namespace Bjd.util{
         }
 
         //string str�̒��̕��� before �𕶎� after�ɒu��������
-        public static string SwapChar(char before, char after, string str){
-            while (true){
+        public static string SwapChar(char before, char after, string str)
+        {
+            while (true)
+            {
                 int index = str.IndexOf(before);
                 if (index < 0)
                     break;
                 //\b���w�肳�ꂽ�ꍇ�A�u�����N�ɂ���
-                if (after == '\b'){
+                if (after == '\b')
+                {
                     str = str.Substring(0, index) + str.Substring(index + 1);
                 }
-                else{
+                else {
                     str = str.Substring(0, index) + after + str.Substring(index + 1);
                 }
             }
@@ -54,9 +61,11 @@ namespace Bjd.util{
         }
 
         //string str�̒��̕��� beforeStr �� afterStr�ɒu��������
-        public static string SwapStr(string beforeStr, string afterStr, string str){
+        public static string SwapStr(string beforeStr, string afterStr, string str)
+        {
             var offset = 0; //�����ςݕ����ʒu
-            while (true){
+            while (true)
+            {
                 var index = str.Substring(offset).IndexOf(beforeStr);
                 if (index < 0)
                     break;
@@ -68,11 +77,13 @@ namespace Bjd.util{
         }
 
         //string str�̒��̕��� c�������A�����Ă���ꍇ1�ɂ��� 
-        public static string MargeChar(char c, string str){
-            var buf = new char[]{c, c};
+        public static string MargeChar(char c, string str)
+        {
+            var buf = new char[] { c, c };
             var tmpStr = new string(buf);
 
-            while (true){
+            while (true)
+            {
                 var index = str.IndexOf(tmpStr);
                 if (index < 0)
                     break;
@@ -81,12 +92,14 @@ namespace Bjd.util{
             return str;
         }
 
-        public static string DateStr(DateTime dt){
+        public static string DateStr(DateTime dt)
+        {
             string[] monthName = {
                                      "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                                  };
 
-            if (DateTime.Now.Year == dt.Year){
+            if (DateTime.Now.Year == dt.Year)
+            {
                 return string.Format("{0} {1:D2} {2:D2}:{3:D2}",
                                      monthName[dt.Month],
                                      dt.Day,
@@ -100,22 +113,28 @@ namespace Bjd.util{
         }
 
         //�w��t�@�C���̒��ōŏ���tag�����񂪏o������ʒu��Ԃ�
-        public static int IndexOf(string fileName, string tag){
+        public static int IndexOf(string fileName, string tag)
+        {
             int len = 0; //�J�E���^
-            if (File.Exists(fileName)){
-                using (var sr = new StreamReader(fileName, Encoding.GetEncoding("Shift_JIS"))){
-                    while (true){
+            if (File.Exists(fileName))
+            {
+                using (var bs = new FileStream(fileName, FileMode.Open))
+                using (var sr = new StreamReader(bs, Encoding.GetEncoding("Shift_JIS")))
+                {
+                    while (true)
+                    {
                         var str = sr.ReadLine();
                         if (str == null)
                             break;
                         var index = str.IndexOf(tag);
-                        if (0 <= index){
-                            sr.Close();
+                        if (0 <= index)
+                        {
+                            //sr.Close();
                             return len + index;
                         }
                         len += str.Length + 2; //�P�s���̕������ŃJ�E���^��A�b�v����
                     }
-                    sr.Close();
+                    //sr.Close();
                 }
             }
             return -1;
@@ -123,12 +142,13 @@ namespace Bjd.util{
 
 
         //Thu, 27 Nov 2008 20:45:50 GMT
-        public static string UtcTime2Str(DateTime dt){
-            string[] monthList = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-            string[] weekList = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        public static string UtcTime2Str(DateTime dt)
+        {
+            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+            string[] weekList = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
             var str = string.Format("{0}, {1:D2} {2} {3:D4} {4:D2}:{5:D2}:{6:D2} GMT"
-                                    , weekList[(int) dt.DayOfWeek]
+                                    , weekList[(int)dt.DayOfWeek]
                                     , dt.Day
                                     , monthList[dt.Month - 1]
                                     , dt.Year
@@ -140,18 +160,22 @@ namespace Bjd.util{
         }
 
         //Sun, 1 Feb 2009 09:28:20 +0900
-        public static string LocalTime2Str(DateTime dt){
-            string[] monthList = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-            string[] weekList = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        public static string LocalTime2Str(DateTime dt)
+        {
+            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+            string[] weekList = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
-            var span = TimeZone.CurrentTimeZone.GetUtcOffset(dt);
+
+            //var span = TimeZone.CurrentTimeZone.GetUtcOffset(dt);
+            var span = DateTimeOffset.Now.Offset;
             var hour = span.Hours;
             var zoneStr = string.Format("+{0:D2}00", hour);
-            if (hour < 0){
-                zoneStr = string.Format("-{0:D2}00", hour*(-1));
+            if (hour < 0)
+            {
+                zoneStr = string.Format("-{0:D2}00", hour * (-1));
             }
             var str = string.Format("{0}, {1:D2} {2} {3:D4} {4:D2}:{5:D2}:{6:D2} {7}"
-                                    , weekList[(int) dt.DayOfWeek]
+                                    , weekList[(int)dt.DayOfWeek]
                                     , dt.Day
                                     , monthList[dt.Month - 1]
                                     , dt.Year
@@ -163,16 +187,19 @@ namespace Bjd.util{
 
         }
 
-        public static DateTime Str2Time(string str){
-            string[] monthList = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        public static DateTime Str2Time(string str)
+        {
+            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
-            try{
+            try
+            {
                 var tmp = str.Split(' ');
                 var time = tmp[4].Split(':');
 
                 var year = Convert.ToInt32(tmp[3]);
                 int month;
-                for (var m = 0; m < monthList.Length; m++){
+                for (var m = 0; m < monthList.Length; m++)
+                {
                     if (monthList[m] != tmp[2])
                         continue;
                     month = m + 1;
@@ -188,26 +215,38 @@ namespace Bjd.util{
 
                 return dt;
             }
-            catch{
+            catch
+            {
                 return new DateTime(0);
             }
 
         }
 
-        public static Object CreateInstance(Kernel kernel, string path, string className, Object[] param){
-            if (File.Exists(path)){
+        public static Object CreateInstance(Kernel kernel, string path, string className, Object[] param)
+        {
+            if (File.Exists(path))
+            {
                 var dllName = Path.GetFileNameWithoutExtension(path);
-                try{
-                    var asm = Assembly.LoadFile(path);
-                    if (asm != null){
-                        return asm.CreateInstance(dllName + "." + className, true, BindingFlags.Default, null, param,
-                                                  null, null);
+                try
+                {
+                    //var asm = Assembly.LoadFile(path);
+                    var asmName = new AssemblyName(dllName);
+                    var asm = Assembly.Load(asmName);
+                    if (asm != null)
+                    {
+                        //return asm.CreateInstance(dllName + "." + className, true, BindingFlags.Default, null, param,
+                        //                          null, null);
+                        var t = asm.GetType(className);
+                        var c = t.GetConstructor(param.Select(_ => _.GetType()).ToArray());
+                        return c.Invoke(param);
                     }
                 }
-                catch (Exception ex){
-                    
+                catch (Exception ex)
+                {
+
                     //Ver6.1.7
-                    if (ex.InnerException != null) {
+                    if (ex.InnerException != null)
+                    {
                         throw new Exception(ex.InnerException.Message);
                     }
 
@@ -222,13 +261,16 @@ namespace Bjd.util{
         }
 
         //��O�𔭐������v���O�������~����i�݌v��̖��j
-        public static void RuntimeException(string msg){
-            Msg.Show(MsgKind.Error, msg);
+        public static void RuntimeException(string msg)
+        {
+            //Msg.Show(MsgKind.Error, msg);
+            Console.WriteLine(msg);
             throw new Exception("RuntimeException" + msg);
         }
 
         //�e���|�����f�B���N�g���̍쐬
-        public static string CreateTempDirectory(){
+        public static string CreateTempDirectory()
+        {
             var path = Path.GetTempFileName();
             File.Delete(path);
             var info = Directory.CreateDirectory(path);
@@ -239,12 +281,16 @@ namespace Bjd.util{
         //�t�@�C���Ⴕ���̓f�B���N�g�������݂��邩�ǂ���
         //path==null �̏ꍇ�AExistsKind.None�ƂȂ�
         //path �����Ώۂ̃p�X
-        public static ExistsKind Exists(string path) {
-            if (path != null){
-                if (Directory.Exists(path)){
+        public static ExistsKind Exists(string path)
+        {
+            if (path != null)
+            {
+                if (Directory.Exists(path))
+                {
                     return ExistsKind.Dir;
                 }
-                if (File.Exists(path)){
+                if (File.Exists(path))
+                {
                     return ExistsKind.File;
                 }
             }
@@ -252,34 +298,46 @@ namespace Bjd.util{
         }
 
         //Ver5.7.x�ȑO��ini�t�@�C����Ver5.8�p�ɏC������
-        public static String ConvValStr(String src){
+        public static String ConvValStr(String src)
+        {
 
-            String[] t = src.Split(new char[]{'\b'},StringSplitOptions.RemoveEmptyEntries);
-            if (t.Length < 1){
+            String[] t = src.Split(new char[] { '\b' }, StringSplitOptions.RemoveEmptyEntries);
+            if (t.Length < 1)
+            {
                 return src;
             }
-            try{
+            try
+            {
                 //���t�@�C�����ǂ����̔��f
-                if (t[0][0] == '\t'){
+                if (t[0][0] == '\t')
+                {
                     return src; //�V�t�@�C��
                 }
-                if (t[0][0] == '#' && t[0][1] == '\t'){
+                if (t[0][0] == '#' && t[0][1] == '\t')
+                {
                     return src; //�V�t�@�C��
                 }
-            }catch (Exception){
+            }
+            catch (Exception)
+            {
             }
 
             var ar = new List<String>();
-            foreach (var l in t) {
-                if (l[0] == '#'){
+            foreach (var l in t)
+            {
+                if (l[0] == '#')
+                {
                     ar.Add("#\t" + l.Substring(1));
-                }else{
+                }
+                else {
                     ar.Add("\t" + l.Substring(0));
                 }
             }
             var sb = new StringBuilder();
-            foreach (var a in ar){
-                if(sb.Length!=0){
+            foreach (var a in ar)
+            {
+                if (sb.Length != 0)
+                {
                     sb.Append("\b");
                 }
                 sb.Append(a);
@@ -288,18 +346,21 @@ namespace Bjd.util{
         }
 
         //�f�B���N�g���̃R�s�[
-        public static bool CopyDirectory(string srcPath, string dstPath) {
+        public static bool CopyDirectory(string srcPath, string dstPath)
+        {
             Directory.CreateDirectory(dstPath);
             File.SetAttributes(dstPath, File.GetAttributes(srcPath));
 
-            foreach (var dir in Directory.GetDirectories(srcPath)) {
+            foreach (var dir in Directory.GetDirectories(srcPath))
+            {
                 var name = dir.Substring(srcPath.Length);
                 var nextSrcPath = srcPath + name + "\\";
                 var nextDstPath = dstPath + name + "\\";
                 if (!CopyDirectory(nextSrcPath, nextDstPath))
                     return false;
             }
-            foreach (var file in Directory.GetFiles(srcPath)) {
+            foreach (var file in Directory.GetFiles(srcPath))
+            {
                 var name = file.Substring(srcPath.Length);
                 var nextSrcPath = srcPath + name;
                 var nextDstPath = dstPath + name;

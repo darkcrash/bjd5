@@ -4,14 +4,17 @@ using System.Text;
 using Bjd.net;
 using Bjd.util;
 
-namespace Bjd.mail {
+namespace Bjd.mail
+{
     //**********************************************************************************
     //メール情報を表現（保持）するクラス
     //**********************************************************************************
-    public class MailInfo {
+    public class MailInfo
+    {
         DateTime _dt;//最終処理時刻
 
-        public MailInfo(string uid, long size, string host, Ip addr, MailAddress from, MailAddress to) {
+        public MailInfo(string uid, long size, string host, Ip addr, MailAddress from, MailAddress to)
+        {
             Clear();//初期値
 
             Uid = uid;
@@ -27,12 +30,16 @@ namespace Bjd.mail {
             To = to;
         }
 
-        public MailInfo(string fileName) {
+        public MailInfo(string fileName)
+        {
             Clear();//初期値
             if (!File.Exists(fileName))
                 return;
-            try {
-                using (var sr = new StreamReader(fileName, Encoding.GetEncoding("ascii"))) {
+            try
+            {
+                using (var bs = new FileStream(fileName, FileMode.Open))
+                using (var sr = new StreamReader(bs, Encoding.GetEncoding("ascii")))
+                {
                     Uid = sr.ReadLine();
                     Size = Convert.ToInt64(sr.ReadLine());
                     Host = sr.ReadLine();
@@ -44,13 +51,15 @@ namespace Bjd.mail {
                     From = new MailAddress(sr.ReadLine());
                     To = new MailAddress(sr.ReadLine());
 
-                    sr.Close();
+                    //sr.Close();
                 }
 
                 int index = fileName.LastIndexOf("DF_");
                 if (index != -1)
                     FileName = fileName.Substring(index + 3);
-            } catch {
+            }
+            catch
+            {
                 Clear();//初期値
             }
         }
@@ -69,7 +78,8 @@ namespace Bjd.mail {
         public int RetryCounter { get; private set; }
 
         //初期値セット
-        void Clear() {
+        void Clear()
+        {
             Uid = "";
             Size = 0;
             Host = "";
@@ -84,11 +94,14 @@ namespace Bjd.mail {
 
         //処理対象かどうかの確認
         //最終処理時刻から必要な経過時間が過ぎているかどうかを確認し、処理対象である場合は、カウンタのインクリメントと処理時刻の更新を行う
-        public bool IsProcess(double sec, string fileName) {
-            if (sec != 0){
+        public bool IsProcess(double sec, string fileName)
+        {
+            if (sec != 0)
+            {
                 //最小処理時間を経過しないメールは、対象外にする
                 var span = DateTime.Now - _dt;
-                if (sec > span.TotalSeconds){
+                if (sec > span.TotalSeconds)
+                {
                     return false;
                 }
             }
@@ -98,8 +111,11 @@ namespace Bjd.mail {
             return true;
         }
 
-        public bool Save(string fileName) {
-            using (var sw = new StreamWriter(fileName, false, Encoding.GetEncoding("ascii"))) {
+        public bool Save(string fileName)
+        {
+            using (var bs = new FileStream(fileName, FileMode.Create))
+            using (var sw = new StreamWriter(bs, Encoding.GetEncoding("ascii")))
+            {
                 sw.WriteLine(Uid);
                 sw.WriteLine(Size.ToString());
                 sw.WriteLine(Host);
@@ -111,18 +127,20 @@ namespace Bjd.mail {
                 sw.WriteLine(To.ToString());
 
                 sw.Flush();
-                sw.Close();
+                //sw.Close();
             }
 
             var index = fileName.LastIndexOf("DF_");
-            if (index != -1){
+            if (index != -1)
+            {
                 FileName = fileName.Substring(index + 3);
             }
 
             return true;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("from:{0} to:{1} size:{2} uid:{3}", From, To, Size, Uid);
         }
     }

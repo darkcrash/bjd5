@@ -217,7 +217,7 @@ namespace Bjd.mail {
                     _body.ForEach(bw.Write);
 
                     bw.Flush();
-                    bw.Close();
+                    //bw.Close();
                 }
                 return true;
             } catch (Exception ex) {
@@ -248,7 +248,7 @@ namespace Bjd.mail {
                         var tmp = br.ReadBytes((int)len);
                         tmpBuf = Bytes.Create(tmpBuf, tmp);
                     }
-                    br.Close();
+                    //br.Close();
 
                     var lines = Inet.GetLines(tmpBuf);
                     var head = true;

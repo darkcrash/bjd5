@@ -3,8 +3,6 @@
 namespace Bjd.tool {
     public abstract class OneTool:IDisposable {
 
-        abstract public ToolDlg CreateDlg(Object obj);//ダイアログボックスの生成
-
         protected Kernel Kernel;
 
         public string NameTag { get; private set; }

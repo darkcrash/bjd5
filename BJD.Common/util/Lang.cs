@@ -30,7 +30,7 @@ namespace Bjd.util {
                 _category = _category.Substring(0, index);
             }
 
-            var path = string.Format("{0}\\{1}",Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),FileName);
+            var path = string.Format("{0}\\{1}", Define.ExecutableDirectory, FileName);
 
             //Ver6.1.8
             _fileExsists = File.Exists(path);
@@ -38,7 +38,7 @@ namespace Bjd.util {
                 return;
             }
             
-            var lines = File.ReadAllLines(path, Encoding.GetEncoding("Shift-JIS"));
+            var lines = File.ReadAllLines(path, System.Text.Encoding.UTF8);
             foreach (var line in lines) {
                 if (line.Length > 0 && line[0] == '#') {
                     continue;//コメント

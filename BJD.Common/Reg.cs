@@ -19,7 +19,7 @@ namespace Bjd{
             _path = path;
             if (!File.Exists(_path)){
                 //ファイルが存在しない場合は、新規に作成する
-                File.Create(path).Close();
+                File.Create(path).Dispose();
                 //File.Create(path);
             }
             foreach (var s in File.ReadAllLines(path, Encoding.GetEncoding(932))){
@@ -39,12 +39,15 @@ namespace Bjd{
 
         public void Save(){
 
-            using (var sw = new StreamWriter(_path, false, Encoding.GetEncoding(932))) {
-                foreach (var s in _ar.Select(a => string.Format("{0}={1}", a.Key, a.Value))) {
+            using (var bs = new FileStream(_path, FileMode.OpenOrCreate))
+            using (var sw = new StreamWriter(bs,  Encoding.GetEncoding(932)))
+            {
+                foreach (var s in _ar.Select(a => string.Format("{0}={1}", a.Key, a.Value)))
+                {
                     sw.WriteLine(s);
                 }
                 sw.Flush();
-                sw.Close();
+                //sw.Close();
             }
         }
 

@@ -15,42 +15,35 @@ namespace Bjd.option {
             var key = "Basic";
             pageList.Add(Page1(key, Lang.Value(key), kernel));
 
-            
-            Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
+
+            Add(new OneVal("tab", null, Crlf.Nextline));
 
             Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel) {
+        private OnePage Page1(string name, string title, Kernel kernel)
+        {
 
             var onePage = new OnePage(name, title);
 
             var key = "useExitDlg";
-            onePage.Add(new OneVal(key, false, Crlf.Nextline,new CtrlCheckBox(Lang.Value(key))));
+            onePage.Add(new OneVal(key, false, Crlf.Nextline));
             key = "useLastSize";
-            onePage.Add(new OneVal(key, true, Crlf.Nextline,new CtrlCheckBox(Lang.Value(key))));
+            onePage.Add(new OneVal(key, true, Crlf.Nextline));
             key = "isWindowOpen";
-            onePage.Add(new OneVal(key, true, Crlf.Nextline,new CtrlCheckBox(Lang.Value(key))));
+            onePage.Add(new OneVal(key, true, Crlf.Nextline));
             key = "useAdminPassword";
-            onePage.Add(new OneVal(key, false, Crlf.Nextline,new CtrlCheckBox(Lang.Value(key))));
+            onePage.Add(new OneVal(key, false, Crlf.Nextline));
             key = "password";
-            onePage.Add(new OneVal("password", "", Crlf.Nextline, new CtrlHidden(Lang.Value(key), 20)));
+            onePage.Add(new OneVal("password", "", Crlf.Nextline));
             key = "serverName";
-            onePage.Add(new OneVal("serverName", "", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 20)));
+            onePage.Add(new OneVal("serverName", "", Crlf.Nextline));
             key = "editBrowse";
-            onePage.Add(new OneVal("editBrowse", false, Crlf.Nextline,new CtrlCheckBox(Lang.Value(key))));
+            onePage.Add(new OneVal("editBrowse", false, Crlf.Nextline));
             key = "lang";
-            onePage.Add(new OneVal("lang", 2, Crlf.Nextline,new CtrlComboBox(Lang.Value(key), new[] { "Japanese", "English", "Auto" }, 80)));
+            onePage.Add(new OneVal("lang", 2, Crlf.Nextline));
             return onePage;
         }
-
-
-        //コントロールの変化
-        public override void OnChange() {
-            var b = (bool) GetCtrl("useAdminPassword").Read();
-            GetCtrl("password").SetEnable(b);
-        }
-
     }
 }
 

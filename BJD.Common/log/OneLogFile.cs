@@ -17,10 +17,8 @@ namespace Bjd.log{
 
         public void Dispose(){
             _sw.Flush();
-            _sw.Close();
             _sw.Dispose();
             _sw = null;
-            _fs.Close();
             _fs.Dispose();
             _fs = null;
         }
@@ -31,9 +29,6 @@ namespace Bjd.log{
             _sw.Flush();
         }
 
-        //public String GetPath(){
-        //    return _fileName;
-        //}
     }
 }
 

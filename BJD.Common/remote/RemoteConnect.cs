@@ -3,21 +3,27 @@ using Bjd.net;
 using Bjd.sock;
 using Bjd.trace;
 
-namespace Bjd.remote {
+namespace Bjd.remote
+{
     //リモートサーバ側で動作しているときにクライアントへのアクセスするためのオブジェクト
-    public class RemoteConnect {
+    public class RemoteConnect
+    {
         readonly SockTcp _sockTcp;
         public bool OpenTraceDlg { private get; set; }
 
-        [DllImport("kernel32.dll")]
-        static extern int GetCurrentThreadId();
+        static int GetCurrentThreadId()
+        {
+            return System.Threading.Thread.CurrentThread.ManagedThreadId;
+        }
 
-        public RemoteConnect(SockTcp sockTcp) {
+        public RemoteConnect(SockTcp sockTcp)
+        {
             _sockTcp = sockTcp;
         }
 
         //クライアント側への送信
-        public void AddTrace(TraceKind traceKind, string str, Ip ip) {
+        public void AddTrace(TraceKind traceKind, string str, Ip ip)
+        {
             if (!OpenTraceDlg)
                 return;
             var threadId = GetCurrentThreadId();

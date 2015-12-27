@@ -14,7 +14,6 @@ namespace Bjd.log{
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
         private readonly LogFile _logFile;
-        private readonly LogView _logView;
         private readonly bool _isJp;
         private readonly String _nameTag;
         private readonly bool _useDetailsLog;
@@ -26,12 +25,11 @@ namespace Bjd.log{
 
         //コンストラクタ
         //kernelの中でCreateLogger()を定義して使用する
-        public Logger(Kernel kernel, LogLimit logLimit, LogFile logFile, LogView logView, bool isJp, String nameTag,
+        public Logger(Kernel kernel, LogLimit logLimit, LogFile logFile, bool isJp, String nameTag,
                       bool useDetailsLog, bool useLimitString, ILogger logger){
             _kernel = kernel;
             _logLimit = logLimit;
             _logFile = logFile;
-            _logView = logView;
             _isJp = isJp;
             _nameTag = nameTag;
             _useDetailsLog = useDetailsLog;
@@ -43,7 +41,6 @@ namespace Bjd.log{
         public Logger(){
             _logLimit = null;
             _logFile = null;
-            _logView = null;
             _isJp = true;
             _nameTag = "";
             _useDetailsLog = false;
@@ -55,7 +52,7 @@ namespace Bjd.log{
         //Override可能（テストで使用）
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation){
             //デバッグ等でkernelが初期化されていない場合、処理なし
-            if (_logFile == null && _logView == null){
+            if (_logFile == null){
                 return;
             }
             //詳細ログが対象外の場合、処理なし
@@ -293,10 +290,6 @@ namespace Bjd.log{
                 if (_logLimit != null){
                     isDisplay = _logLimit.IsDisplay(oneLog.ToString());
                 }
-            }
-            if (_logView != null && isDisplay){
-                //isDisplayの結果に従う
-                _logView.Append(oneLog);
             }
 
             //Ver5.8.8

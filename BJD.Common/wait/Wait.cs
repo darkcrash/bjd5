@@ -3,7 +3,7 @@
 namespace Bjd.wait {
     public class Wait {
 
-        readonly WaitDlg _dlg;
+        //readonly WaitDlg _dlg;
         int _max;//プログレスバーの最大値
         int _val;//プログレスバーの値
         string _msg;//ダイアログで表示するメッセージ
@@ -11,7 +11,7 @@ namespace Bjd.wait {
         bool _busy;
 
         public Wait() {
-            _dlg = new WaitDlg(this);
+            //_dlg = new WaitDlg(this);
         }
 
         public bool Life { get; set; }//WailMsgDlgからセットされる（クローズ、若しくは「キャンセル」）
@@ -19,7 +19,6 @@ namespace Bjd.wait {
             get{ return _msg;}
             set {
                 _msg = value;
-                _dlg.Renew();
             }
         }
         public int Max {
@@ -27,14 +26,12 @@ namespace Bjd.wait {
             set {
                 _val = 0;
                 _max = value;
-                _dlg.Renew();
             }
         }
         public int Val {
             get{ return _val;}
             set {
                 _val = value;
-                _dlg.Renew();
             }
         }
 
@@ -42,7 +39,6 @@ namespace Bjd.wait {
         //別スレッドで、ダイログを表示する
         void ShowDlg() {
             _busy = true;
-            _dlg.Open();
             _busy = false;
         }
         public void Start(string msg) {
@@ -63,7 +59,6 @@ namespace Bjd.wait {
             while(!_busy) {
                 Thread.Sleep(100);
             }
-            _dlg.Close();
         }
     }
 

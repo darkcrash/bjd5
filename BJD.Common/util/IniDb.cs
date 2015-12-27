@@ -6,28 +6,35 @@ using System.Threading;
 using Bjd.ctrl;
 using Bjd.option;
 
-namespace Bjd.util{
+namespace Bjd.util
+{
     //ファイルを使用した設定情報の保存<br>
     //1つのデフォルト値ファイルを使用して2つのファイルを出力する<br>
-    public class IniDb{
+    public class IniDb
+    {
         private readonly String _fileIni;
         private readonly String _fileDef;
         private readonly String _fileTxt;
 
-        public IniDb(String progDir, String fileName){
+        public IniDb(String progDir, String fileName)
+        {
             _fileIni = progDir + "\\" + fileName + ".ini";
             _fileDef = progDir + "\\" + fileName + ".def";
             _fileTxt = progDir + "\\" + fileName + ".txt";
         }
 
-        public string Path{
-            get{
+        public string Path
+        {
+            get
+            {
                 return _fileIni;
             }
         }
 
-        private string CtrlType2Str(CtrlType ctrlType){
-            switch (ctrlType){
+        private string CtrlType2Str(CtrlType ctrlType)
+        {
+            switch (ctrlType)
+            {
                 case CtrlType.CheckBox:
                     return "BOOL";
                 case CtrlType.TextBox:
@@ -66,12 +73,14 @@ namespace Bjd.util{
 
 
         //１行を読み込むためのオブジェクト
-        private class LineObject{
+        private class LineObject
+        {
             public string NameTag { get; private set; }
             public string Name { get; private set; }
             public string ValStr { get; private set; }
             // public LineObject(CtrlType ctrlType, String nameTag, String name,String valStr) {
-            public LineObject(String nameTag, String name, String valStr){
+            public LineObject(String nameTag, String name, String valStr)
+            {
                 // this.ctrlType = ctrlType;
                 NameTag = nameTag;
                 Name = name;
@@ -80,20 +89,24 @@ namespace Bjd.util{
         }
 
         //解釈に失敗した場合はnullを返す
-        private static LineObject ReadLine(String str){
+        private static LineObject ReadLine(String str)
+        {
             var index = str.IndexOf('=');
-            if (index == -1){
+            if (index == -1)
+            {
                 return null;
             }
             //		CtrlType ctrlType = str2CtrlType(str.substring(0, index));
             str = str.Substring(index + 1);
             index = str.IndexOf('=');
-            if (index == -1){
+            if (index == -1)
+            {
                 return null;
             }
             var buf = str.Substring(0, index);
             var tmp = buf.Split('\b');
-            if (tmp.Length != 2){
+            if (tmp.Length != 2)
+            {
                 return null;
             }
             var nameTag = tmp[0];
@@ -103,68 +116,86 @@ namespace Bjd.util{
             return new LineObject(nameTag, name, valStr);
         }
 
-        private bool Read(String fileName, String nameTag, ListVal listVal){
-            
+        private bool Read(String fileName, String nameTag, ListVal listVal)
+        {
+            if (!File.Exists(fileName))
+                return false;
             var isRead = false;
-            if (File.Exists(fileName)){
-                var lines = File.ReadAllLines(fileName, Encoding.GetEncoding(932));
-              
-                foreach (var s in lines){
-                    var o = ReadLine(s);
-                    if (o != null){
-                        if (o.NameTag == nameTag || o.NameTag == nameTag+"Server"){
-                            var oneVal = listVal.Search(o.Name);
 
-                            //Ver5.9.2 過去バージョンのOption.ini読み込みへの対応
-                            //ProxyPop3 拡張設定
-                            if (o.NameTag == "ProxyPop3Server" && o.Name == "specialUser") {
-                                oneVal = listVal.Search("specialUserList");
-                            }
+            var lines = File.ReadAllLines(fileName, Encoding.ASCII);
 
-                            //Ver5.8.8 過去バージョンのOption.ini読み込みへの対応
-                            if (oneVal == null){
-                                if (o.Name == "nomalFileName"){
-                                    oneVal = listVal.Search("normalLogKind");
-                                } else if (o.Name == "secureFileName"){
-                                    oneVal = listVal.Search("secureLogKind");
-                                    //Ver5.9.2
-                                } else if (o.Name == "LimitString"){
-                                    oneVal = listVal.Search("limitString");
-                                } else if (o.Name == "UseLimitString"){
-                                    oneVal = listVal.Search("useLimitString");
-                                } else if (o.Name == "EnableLimitString"){
-                                    oneVal = listVal.Search("isDisplay");
-                                } else if (o.Name == "useLog"){
-                                    oneVal = listVal.Search("useLogFile");
-                                }
-                            }
+            foreach (var s in lines)
+            {
+                var o = ReadLine(s);
 
-                            //Ver6.1.0 過去バージョンのOption.ini読み込みへの対応
-                            //DnsDomain
-                            if (o.NameTag == "DnsDomain"){
-                                var col = o.ValStr.Split(new[]{'\t'}, StringSplitOptions.RemoveEmptyEntries);
-                                if (col.Length == 1){ 
-                                    //Ver6.0.9以前は、カラムが１つであるので、( \tgoogle.com )
-                                    //追加された２カラム目のデフォルト値を追加して読み直す (\tgoogle.com\True )
-                                    o = ReadLine(s + "\tTrue");
-                                }
-                            }
+                if (o == null)
+                    continue;
 
-                            
-                            
-                            if (oneVal != null){
-                                if (!oneVal.FromReg(o.ValStr)){
-                                    if (o.ValStr != ""){
-                                        //Ver5.8.4コンバートしてみる
-                                        if (oneVal.FromRegConv(o.ValStr)) {
+                if (!(o.NameTag == nameTag || o.NameTag == nameTag + "Server"))
+                    continue;
 
-                                        }
-                                    }
-                                }
-                                isRead = true; // 1件でもデータを読み込んだ場合にtrue
-                            }
+                var oneVal = listVal.Search(o.Name);
+
+                //Ver5.9.2 過去バージョンのOption.ini読み込みへの対応
+                //ProxyPop3 拡張設定
+                if (o.NameTag == "ProxyPop3Server" && o.Name == "specialUser")
+                {
+                    oneVal = listVal.Search("specialUserList");
+                }
+
+                //Ver5.8.8 過去バージョンのOption.ini読み込みへの対応
+                if (oneVal == null)
+                {
+                    if (o.Name == "nomalFileName")
+                    {
+                        oneVal = listVal.Search("normalLogKind");
+                    }
+                    else if (o.Name == "secureFileName")
+                    {
+                        oneVal = listVal.Search("secureLogKind");
+                        //Ver5.9.2
+                    }
+                    else if (o.Name == "LimitString")
+                    {
+                        oneVal = listVal.Search("limitString");
+                    }
+                    else if (o.Name == "UseLimitString")
+                    {
+                        oneVal = listVal.Search("useLimitString");
+                    }
+                    else if (o.Name == "EnableLimitString")
+                    {
+                        oneVal = listVal.Search("isDisplay");
+                    }
+                    else if (o.Name == "useLog")
+                    {
+                        oneVal = listVal.Search("useLogFile");
+                    }
+                }
+
+                //Ver6.1.0 過去バージョンのOption.ini読み込みへの対応
+                //DnsDomain
+                if (o.NameTag == "DnsDomain")
+                {
+                    var col = o.ValStr.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (col.Length == 1)
+                    {
+                        //Ver6.0.9以前は、カラムが１つであるので、( \tgoogle.com )
+                        //追加された２カラム目のデフォルト値を追加して読み直す (\tgoogle.com\True )
+                        o = ReadLine(s + "\tTrue");
+                    }
+                }
+
+                if (oneVal != null)
+                {
+                    if (!oneVal.FromReg(o.ValStr))
+                    {
+                        if (o.ValStr != "")
+                        {
+
                         }
                     }
+                    isRead = true; // 1件でもデータを読み込んだ場合にtrue
                 }
             }
 
@@ -172,11 +203,14 @@ namespace Bjd.util{
         }
 
         //ファイルの削除
-        public void Delete() {
-            if (File.Exists(_fileTxt)) {
+        public void Delete()
+        {
+            if (File.Exists(_fileTxt))
+            {
                 File.Delete(_fileTxt);
             }
-            if (File.Exists(_fileIni)){
+            if (File.Exists(_fileIni))
+            {
                 File.Delete(_fileIni);
             }
         }
@@ -184,9 +218,11 @@ namespace Bjd.util{
 
 
         // 読込み
-        public void Read(string nameTag, ListVal listVal){
+        public void Read(string nameTag, ListVal listVal)
+        {
             var isRead = Read(_fileIni, nameTag, listVal);
-            if (!isRead){
+            if (!isRead)
+            {
                 //１件も読み込まなかった場合
                 //defファイルには、Web-local:80のうちのWeb (-の前の部分)がtagとなっている
                 var n = nameTag.Split('-')[0];
@@ -196,50 +232,50 @@ namespace Bjd.util{
 
 
         // 保存
-        public void Save(String nameTag, ListVal listVal){
+        public void Save(String nameTag, ListVal listVal)
+        {
             // Ver5.0.1 デバッグファイルに対象のValListを書き込む
-            for (var i = 0; i < 2; i++){
+            for (var i = 0; i < 2; i++)
+            {
                 var target = (i == 0) ? _fileIni : _fileTxt;
                 var isSecret = i != 0;
 
                 // 対象外のネームスペース行を読み込む
                 var lines = new List<string>();
-                if (File.Exists(target)){
-                    foreach (var s in File.ReadAllLines(target, Encoding.GetEncoding(932))){
+                if (File.Exists(target))
+                {
+                    foreach (var s in File.ReadAllLines(target, Encoding.GetEncoding(932)))
+                    {
                         LineObject o;
-                        try{
+                        try
+                        {
                             o = ReadLine(s);
                             // nameTagが違う場合、listに追加
-                            if (o.NameTag != nameTag) {
+                            if (o.NameTag != nameTag)
+                            {
                                 //Ver5.8.4 Ver5.7.xの設定を排除する
                                 var index = o.NameTag.IndexOf("Server");
-                                if (index != -1 && index == o.NameTag.Length - 6){
+                                if (index != -1 && index == o.NameTag.Length - 6)
+                                {
                                     // ～～Serverの設定を削除
-                                } else{
+                                }
+                                else {
                                     lines.Add(s);
                                 }
-                                
+
                             }
-                        }catch{
+                        }
+                        catch
+                        {
                             //TODO エラー処理未処理
                         }
                     }
                 }
                 // 対象のValListを書き込む
-                //foreach (var o in listVal.GetList(null)){
-                foreach (var o in listVal.GetSaveList(null)){
-                    // nullで初期化され、実行中に一度も設定されていない値は、保存の対象外となる
-                    //if (o.Value == null){
-                    //    continue;
-                    //}
-
-                    // データ保存の必要のない型は省略する（下位互換のため）
-                    var ctrlType = o.OneCtrl.GetCtrlType();
-                    if (ctrlType == CtrlType.TabPage || ctrlType == CtrlType.Group || ctrlType == CtrlType.Label){
-                        continue;
-                    }
-
-                    var ctrlStr = CtrlType2Str(ctrlType);
+                foreach (var o in listVal.GetSaveList(null))
+                {
+                    //var ctrlStr = CtrlType2Str(ctrlType);
+                    var ctrlStr = string.Empty;
                     lines.Add(string.Format("{0}={1}\b{2}={3}", ctrlStr, nameTag, o.Name, o.ToReg(isSecret)));
                 }
                 File.WriteAllLines(target, lines.ToArray(), Encoding.GetEncoding(932));
@@ -247,17 +283,18 @@ namespace Bjd.util{
         }
 
         // 設定ファイルから"lang"の値を読み出す
-        public bool IsJp(){
+        public bool IsJp()
+        {
             var listVal = new ListVal{
-                new OneVal("lang", 2, Crlf.Nextline,
-                           new CtrlComboBox("Language", new[]{"Japanese", "English", "Auto"}, 80))
+                new OneVal("lang", 2, Crlf.Nextline)
             };
             Read("Basic", listVal);
             var oneVal = listVal.Search("lang");
             var bjdLangId = (int)oneVal.Value;
             if (bjdLangId == 2/*Auto*/)
             {
-                return (Thread.CurrentThread.CurrentUICulture.Name == "ja-JP");
+
+                return (System.Globalization.CultureInfo.CurrentUICulture.Name == "ja-JP");
             }
             else
             {

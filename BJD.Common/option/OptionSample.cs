@@ -22,7 +22,7 @@ namespace Bjd.option
             var key = "Basic";
             pageList.Add(Page1(key,Lang.Value(key)));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
+            Add(new OneVal("tab", null, Crlf.Nextline));
 
             Read(kernel.IniDb); //　レジストリからの読み込み
 

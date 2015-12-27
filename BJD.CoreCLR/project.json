@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
   "description": "BJD.CoreCLR Console Application",
-  "authors": [ "yasuaki.matsuda" ],
+  "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",

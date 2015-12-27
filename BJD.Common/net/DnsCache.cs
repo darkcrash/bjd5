@@ -36,8 +36,9 @@ namespace Bjd.net{
                 //String hostName = ipaddress.ToString();//.getHostName();
                 var hostName = "";
                 try{
-                    var hostInfo = Dns.GetHostByAddress(ipaddress.ToString());
-                    hostName = hostInfo.HostName;
+                    var hostInfo = Dns.GetHostEntryAsync(ipaddress.ToString());
+                    hostInfo.Wait();
+                    hostName = hostInfo.Result.HostName;
                 }
                 catch{
                     hostName = ipaddress.ToString();
@@ -94,7 +95,9 @@ namespace Bjd.net{
                 //DNSに問い合わせる
                 IPHostEntry list = null;
                 try{
-                    list = Dns.GetHostEntry(hostName);
+                    var listWait = Dns.GetHostEntryAsync(hostName);
+                    listWait.Wait();
+                    list = listWait.Result;
                     if (list.AddressList.Length == 0){
                         return new Ip[0]; //名前が見つからない場合
                     }

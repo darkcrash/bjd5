@@ -1,32 +1,37 @@
 ﻿
-namespace Bjd.service {
-    class Service : System.ServiceProcess.ServiceBase{
-
+namespace Bjd.service
+{
+    public class Service
+    {
         Kernel _kernel;
+        static Service instance = new Service();
 
-        public Service() {
-            ServiceName = "BlackJumboDog";
-            CanStop = true;
-            CanPauseAndContinue = true;
-            AutoLog = true;
+
+        public static void ServiceMain()
+        {
+            Service.instance.OnStart();
         }
-        public static void ServiceMain() {
-            Run(new Service());
+        protected void OnStart()
+        {
+            _kernel = new Kernel();
+            _kernel.Start();
+            //_kernel.MenuOnClick("StartStop_Start");
         }
-        protected override void OnStart(string[] args) {
-            _kernel = new Kernel(null, null, null,null);
-            _kernel.Menu.EnqueueMenu("StartStop_Start", true/*synchro*/);
+        protected void OnPause()
+        {
+            //_kernel.MenuOnClick("StartStop_Stop");
+            _kernel.Stop();
         }
-        protected override void OnPause() {
-            _kernel.Menu.EnqueueMenu("StartStop_Stop", true/*synchro*/);
-        }
-        protected override void OnContinue() {
-            _kernel.Menu.EnqueueMenu("StartStop_Start", true/*synchro*/);
+        protected void OnContinue()
+        {
+            //_kernel.MenuOnClick("StartStop_Start");
+            _kernel.Start();
         }
 
-        protected override void OnStop() {
-            _kernel.Menu.EnqueueMenu("StartStop_Stop", true/*synchro*/);
-
+        protected void OnStop()
+        {
+            //_kernel.MenuOnClick("StartStop_Stop");
+            _kernel.Stop();
             _kernel.Dispose();
             _kernel = null;
         }

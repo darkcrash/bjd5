@@ -8,12 +8,11 @@ using Bjd.util;
 namespace Bjd {
     //バージョン管理クラス
     public class Ver {
-        //Kernel kernel;
+
         readonly List<string> _ar = new List<string>();
         public Ver() {
-            //this.kernel = kernel;
 
-            string[] files = Directory.GetFiles(Path.GetDirectoryName(Application.ExecutablePath), "*.dll");
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(Define.ExecutablePath), "*.dll");
             foreach (string file in files) {
                 _ar.Add(Path.GetFileNameWithoutExtension(file));
             }
@@ -21,11 +20,11 @@ namespace Bjd {
 
         }
         public string Version() {
-            return Application.ProductVersion;
+            return Define.ProductVersion;
         }
 
         string FullPath(string name) {
-            return string.Format("{0}\\{1}.dll", Path.GetDirectoryName(Application.ExecutablePath), name);
+            return string.Format("{0}\\{1}.dll", Path.GetDirectoryName(Define.ExecutablePath), name);
         }
         
 
@@ -48,7 +47,7 @@ namespace Bjd {
             var sb = new StringBuilder();
 
             sb.Append(Version() + "\t");//バージョン文字列
-            sb.Append(FileDate(Application.ExecutablePath) + "\t");//BJD.EXEのファイル日付
+            sb.Append(FileDate(Define.ExecutablePath) + "\t");//BJD.EXEのファイル日付
             foreach (var name in _ar) {
                 sb.Append(name+"\t");//DLL名
                 sb.Append(FileDate(FullPath(name)) + "\t");//DLLのファイル日付
@@ -72,11 +71,6 @@ namespace Bjd {
 
             //BJD.EXEのファイル日付
             var ticks = tmp[c++];
-            //Ver5.7.0 解凍する際のアーカイバによってファイル日付が変化する可能性があるため、この確認は実施しない
-            //if (!CheckDate(ticks, Application.ExecutablePath)) {
-            //    sb.Append(string.Format("\r\n[BJD.EXE]  Timestamp is different"));
-            //    match = false;
-            //}
 
             for (; c < tmp.Length;c+=2) {
                 var name = tmp[c];
@@ -84,17 +78,12 @@ namespace Bjd {
                 if (_ar.IndexOf(name) == -1) {//DLL名（存在確認）
                     sb.Append(string.Format("\r\n[{0}.dll] not found", name));
                     match = false;
-                } else {//DLLのファイル日付確認
-                    //Ver5.7.0 解凍する際のアーカイバによってファイル日付が変化する可能性があるため、この確認は実施しない
-                    //if (!CheckDate(ticks, FullPath(name))) {
-                    //    sb.Append(string.Format("\r\n[{0}.dll] Timestamp is different", name));
-                    //    match = false;
-                    //}
                 }
             }
 
             if (!match) {
-                Msg.Show(MsgKind.Error,"リモートクライアントを使用することはできません。\r\n" + sb);
+                //Msg.Show(MsgKind.Error,"リモートクライアントを使用することはできません。\r\n" + sb);
+                Console.WriteLine("リモートクライアントを使用することはできません。\r\n" + sb);
             }
             return match;
 

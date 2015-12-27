@@ -40,7 +40,8 @@ namespace Bjd.util {
                         len += 1;
                         break;
                     default:
-                        Msg.Show(MsgKind.Error, "ERROR Bytes.Create() " + o.GetType().Name);
+                        //Msg.Show(MsgKind.Error, "ERROR Bytes.Create() " + o.GetType().Name);
+                        Console.WriteLine("ERROR Bytes.Create() " + o.GetType().Name);
                         return new byte[0];
                 }
             }

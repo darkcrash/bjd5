@@ -31,7 +31,8 @@ namespace Bjd.util {
             try {
                 var src = Encoding.Unicode.GetBytes(str);
 
-                var aes = new RijndaelManaged();
+                //var aes = new RijndaelManaged();
+                var aes = System.Security.Cryptography.Aes.Create();
                 var ms = new MemoryStream();
                 var cs = new CryptoStream(ms, aes.CreateEncryptor(_key,_iv), CryptoStreamMode.Write);
                 cs.Write(src, 0, src.Length);
@@ -51,7 +52,8 @@ namespace Bjd.util {
             try {
                 var src = Convert.FromBase64String(str);
 
-                var aes = new RijndaelManaged();
+                //var aes = new RijndaelManaged();
+                var aes = System.Security.Cryptography.Aes.Create();
                 var ms = new MemoryStream();
                 var cs = new CryptoStream(ms, aes.CreateDecryptor(_key, _iv), CryptoStreamMode.Write);
                 cs.Write(src, 0, src.Length);

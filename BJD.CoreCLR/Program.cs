@@ -7,25 +7,26 @@ namespace Bjd {
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
         [STAThread]
-        static void Main(string args)
+        static void Main(string[] args)
         {
-
-            //起動ユーザがSYSTEMの場合、サービス起動であると判断する
-            if (args.ToLower().Contains("-s"))
+            try
             {
-                Service.ServiceMain();
-                return;
+
+                //起動ユーザがSYSTEMの場合、サービス起動であると判断する
+                if (args != null && args.Length > 0 && args[0].ToLower().Contains("-s"))
+                {
+                    Service.ServiceMain();
+                    return;
+                }
+
+                Console.WriteLine("option -s service");
+                Console.ReadLine();
             }
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //try
-            //{
-            //    Application.Run(new MainForm());
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message + ex.StackTrace, "BlackJumboDog", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
         }
     }
 }

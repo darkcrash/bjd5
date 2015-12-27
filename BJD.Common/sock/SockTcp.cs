@@ -6,9 +6,12 @@ using System.Threading;
 using Bjd.net;
 using Bjd.trace;
 using Bjd.util;
+using Bjd.Extensions;
 
-namespace Bjd.sock{
-    public class SockTcp : SockObj{
+namespace Bjd.sock
+{
+    public class SockTcp : SockObj
+    {
 
         //private Selector selector = null;
         //private SocketChannel channel = null; //ACCEPTの場合は、コンストラクタでコピーされる
@@ -25,24 +28,30 @@ namespace Bjd.sock{
         //Traceしない場合は削除することができる
         //***************************************************************************
 
-        protected SockTcp(Kernel kernel) : base(kernel){
+        protected SockTcp(Kernel kernel) : base(kernel)
+        {
             //隠蔽
         }
 
         //CLIENT
-        public SockTcp(Kernel kernel, Ip ip, int port, int timeout, Ssl ssl) : base(kernel){
+        public SockTcp(Kernel kernel, Ip ip, int port, int timeout, Ssl ssl) : base(kernel)
+        {
             //SSL通信を使用する場合は、このオブジェクトがセットされる 通常の場合は、null
             _ssl = ssl;
 
             _socket = new Socket((ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-            try{
+            try
+            {
                 //socket.Connect(ip.IPAddress, port);
                 _socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
-            } catch{
+            }
+            catch
+            {
                 SetError("BeginConnect() faild");
             }
             //[C#] 接続が完了するまで待機する
-            while (SockState == SockState.Idle){
+            while (SockState == SockState.Idle)
+            {
                 Thread.Sleep(10);
 
             }
@@ -53,20 +62,25 @@ namespace Bjd.sock{
 
 
         //通常のサーバでは、このファンクションを外部で作成する
-        private void CallbackConnect(IAsyncResult ar){
-            if (_socket.Connected){
+        private void CallbackConnect(IAsyncResult ar)
+        {
+            if (_socket.Connected)
+            {
                 _socket.EndConnect(ar);
                 //ここまでくると接続が完了している
-                if (_ssl != null){
+                if (_ssl != null)
+                {
                     //SSL通信の場合は、SSLのネゴシエーションが行われる
                     _oneSsl = _ssl.CreateClientStream(_socket);
-                    if (_oneSsl == null){
+                    if (_oneSsl == null)
+                    {
                         SetError("_ssl.CreateClientStream() faild");
                         return;
                     }
                 }
                 BeginReceive(); //接続完了処理（受信待機開始）
-            } else{
+            }
+            else {
                 SetError("CallbackConnect() faild");
             }
         }
@@ -75,7 +89,8 @@ namespace Bjd.sock{
         //ACCEPT
         //Ver5.9.2 Java fix
         //public SockTcp(Kernel kernel, Socket s) : base(kernel){
-        public SockTcp(Kernel kernel, Ssl ssl, Socket s) : base(kernel){
+        public SockTcp(Kernel kernel, Ssl ssl, Socket s) : base(kernel)
+        {
 
             //************************************************
             //selector/channel生成
@@ -84,10 +99,12 @@ namespace Bjd.sock{
             _ssl = ssl;
 
             //既に接続を完了している
-            if (_ssl != null){
+            if (_ssl != null)
+            {
                 //SSL通信の場合は、SSLのネゴシエーションが行われる
                 _oneSsl = _ssl.CreateServerStream(_socket);
-                if (_oneSsl == null) {
+                if (_oneSsl == null)
+                {
                     SetError("_ssl.CreateServerStream() faild");
                     return;
                 }
@@ -104,25 +121,30 @@ namespace Bjd.sock{
             BeginReceive(); //接続完了処理（受信待機開始）
         }
 
-        public int Length(){
+        public int Length()
+        {
             Thread.Sleep(1); //次の動作が実行されるようにsleepを置く
             return _sockQueue.Length;
         }
 
         //接続完了処理（受信待機開始）
-        private void BeginReceive(){
+        private void BeginReceive()
+        {
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
             _recvBuf = new byte[_sockQueue.Space]; //キューが空なので、Spaceはバッファの最大サイズになっている
 
             // Using the LocalEndPoint property.
-            string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint) _socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint) _socket.LocalEndPoint).Port.ToString());
+            string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
 
 
-            try{
-//Ver5.6.0
-                Set(SockState.Connect, (IPEndPoint) _socket.LocalEndPoint, (IPEndPoint) _socket.RemoteEndPoint);
-            } catch{
+            try
+            {
+                //Ver5.6.0
+                Set(SockState.Connect, (IPEndPoint)_socket.LocalEndPoint, (IPEndPoint)_socket.RemoteEndPoint);
+            }
+            catch
+            {
                 SetError("set IPENdPoint faild.");
                 return;
             }
@@ -131,46 +153,63 @@ namespace Bjd.sock{
             //socket.BeginReceive(tcpBuffer, 0, (oneSsl != null) ? 0 : tcpQueue.Space, SocketFlags.None, new AsyncCallback(EndReceive), this);
 
 
-            try{
-                if (_ssl != null){
+            try
+            {
+                if (_ssl != null)
+                {
                     //Ver5.9.2 Java fix
                     _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
-                } else{
+                }
+                else {
                     _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                 }
-            } catch{
+            }
+            catch
+            {
                 SetError("BeginRecvive() faild.");
             }
         }
 
         //受信処理・受信待機
-        public void EndReceive(IAsyncResult ar){
-            if (ar == null){
+        public void EndReceive(IAsyncResult ar)
+        {
+            if (ar == null)
+            {
                 //受信待機
-                while ((_sockQueue.Space) == 0){
+                while ((_sockQueue.Space) == 0)
+                {
                     Thread.Sleep(10); //他のスレッドに制御を譲る  
                     if (SockState != SockState.Connect)
                         goto err;
                 }
-            } else{
+            }
+            else {
                 //受信完了
-                lock (this){
+                lock (this)
+                {
                     //ポインタを移動する場合は、排他制御が必要
-                    try{
+                    try
+                    {
                         //Ver5.9.2 Java fix
                         int bytesRead = _oneSsl != null ? _oneSsl.EndRead(ar) : _socket.EndReceive(ar);
                         //int bytesRead = _socket.EndReceive(ar);
-                        if (bytesRead == 0){
+                        if (bytesRead == 0)
+                        {
                             //  切断されている場合は、0が返される?
                             if (_ssl == null)
                                 goto err; //エラー発生
                             Thread.Sleep(10); //Ver5.0.0-a19
-                        } else if (bytesRead < 0){
+                        }
+                        else if (bytesRead < 0)
+                        {
                             goto err; //エラー発生
-                        } else{
+                        }
+                        else {
                             _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
                         }
-                    } catch{
+                    }
+                    catch
+                    {
                         //受信待機のままソケットがクローズされた場合は、ここにくる
                         goto err; //エラー発生
                     }
@@ -182,19 +221,23 @@ namespace Bjd.sock{
                 EndReceive(null);
             else
                 //受信待機の開始
-                try{
+                try
+                {
                     //Ver5.9.2 Java fix
-                    if (_oneSsl != null) {
+                    if (_oneSsl != null)
+                    {
                         _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
-                    } else {
+                    }
+                    else {
                         _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                     }
-                } catch{
+                }
+                catch
+                {
                     goto err; //切断されている
                 }
             return;
             err: //エラー発生
-
             //【2009.01.12 追加】相手が存在しなくなっている
             SetError("disconnect");
             //state = SocketObjState.Disconnect;
@@ -205,20 +248,26 @@ namespace Bjd.sock{
 
         //受信<br>
         //切断・タイムアウトでnullが返される
-        public byte[] Recv(int len, int sec, ILife iLife){
+        public byte[] Recv(int len, int sec, ILife iLife)
+        {
 
             var tout = new util.Timeout(sec);
 
             var buffer = new byte[0];
-            try{
-                if (len <= _sockQueue.Length){
+            try
+            {
+                if (len <= _sockQueue.Length)
+                {
                     // キューから取得する
                     buffer = _sockQueue.Dequeue(len);
 
-                } else{
-                    while (iLife.IsLife()){
+                }
+                else {
+                    while (iLife.IsLife())
+                    {
                         Thread.Sleep(0);
-                        if (0 < _sockQueue.Length){
+                        if (0 < _sockQueue.Length)
+                        {
                             //Java fix 
                             tout.Update(); //少しでも受信があった場合は、タイムアウトを更新する
 
@@ -226,29 +275,36 @@ namespace Bjd.sock{
                             int size = len - buffer.Length;
 
                             //受信に必要なバイト数がバッファにない場合
-                            if (size > _sockQueue.Length){
+                            if (size > _sockQueue.Length)
+                            {
                                 size = _sockQueue.Length; //とりあえずバッファサイズ分だけ受信する
                             }
                             byte[] tmp = _sockQueue.Dequeue(size);
                             buffer = Bytes.Create(buffer, tmp);
 
                             //Java fix Ver5.8.2
-                            if (buffer.Length != 0){
+                            if (buffer.Length != 0)
+                            {
                                 break;
                             }
-                        } else{
-                            if (SockState != SockState.Connect){
+                        }
+                        else {
+                            if (SockState != SockState.Connect)
+                            {
                                 return null;
                             }
                             Thread.Sleep(10);
                         }
-                        if (tout.IsFinish()){
+                        if (tout.IsFinish())
+                        {
                             buffer = _sockQueue.Dequeue(len); //タイムアウト
                             break;
                         }
                     }
                 }
-            } catch (Exception){
+            }
+            catch (Exception)
+            {
                 //ex.printStackTrace();
                 return null;
             }
@@ -259,26 +315,32 @@ namespace Bjd.sock{
 
         //1行受信
         //切断・タイムアウトでnullが返される
-        public byte[] LineRecv(int sec, ILife iLife){
+        public byte[] LineRecv(int sec, ILife iLife)
+        {
             var tout = new util.Timeout(sec);
 
-            while (iLife.IsLife()){
+            while (iLife.IsLife())
+            {
                 //Ver5.1.6
-                if (_sockQueue.Length == 0){
+                if (_sockQueue.Length == 0)
+                {
                     Thread.Sleep(100);
                 }
                 byte[] buf = _sockQueue.DequeueLine();
                 //noEncode = false;//テキストである事が分かっている
                 Trace(TraceKind.Recv, buf, false);
-                if (buf.Length != 0){
+                if (buf.Length != 0)
+                {
                     //Ver5.8.6 Java fix
                     tout.Update(); //タイムアウトの更新
                     return buf;
                 }
-                if (SockState != SockState.Connect){
+                if (SockState != SockState.Connect)
+                {
                     return null;
                 }
-                if (tout.IsFinish()){
+                if (tout.IsFinish())
+                {
                     return null; //タイムアウト
                 }
                 Thread.Sleep(1);
@@ -287,57 +349,73 @@ namespace Bjd.sock{
         }
 
         //１行のString受信
-        public String StringRecv(String charsetName, int sec, ILife iLife){
-            try{
+        public String StringRecv(String charsetName, int sec, ILife iLife)
+        {
+            try
+            {
                 byte[] bytes = LineRecv(sec, iLife);
 
                 //[C#]
-                if (bytes == null){
+                if (bytes == null)
+                {
                     return null;
                 }
 
                 return Encoding.GetEncoding(charsetName).GetString(bytes);
-            } catch (Exception e){
+            }
+            catch (Exception e)
+            {
                 Util.RuntimeException(e.Message);
             }
             return null;
         }
 
         //１行受信(ASCII)
-        public String StringRecv(int sec, ILife iLife){
+        public String StringRecv(int sec, ILife iLife)
+        {
             return StringRecv("ASCII", sec, iLife);
         }
 
 
 
-        public int Send(byte[] buf, int length){
-            try{
-                if (buf.Length != length){
+        public int Send(byte[] buf, int length)
+        {
+            try
+            {
+                if (buf.Length != length)
+                {
                     var b = new byte[length];
                     Buffer.BlockCopy(buf, 0, b, 0, length);
                     Trace(TraceKind.Send, b, false);
-                } else{
+                }
+                else {
                     Trace(TraceKind.Send, buf, false);
                 }
                 //Ver5.9.2 Java fix
-                if (_oneSsl != null){
+                if (_oneSsl != null)
+                {
                     return _oneSsl.Write(buf, buf.Length);
-                } else{
-                    return _socket.Send(buf, length, SocketFlags.None);
                 }
-            } catch (Exception e){
+                else {
+                    return _socket.Send(buf, 0, length, SocketFlags.None);
+                }
+            }
+            catch (Exception e)
+            {
                 SetException(e);
                 return -1;
             }
         }
 
-        public int Send(byte[] buf){
+        public int Send(byte[] buf)
+        {
             return Send(buf, buf.Length);
         }
 
         //1行送信
         //内部でCRLFの２バイトが付かされる
-        public int LineSend(byte[] buf){
+        public int LineSend(byte[] buf)
+        {
             var b = new byte[buf.Length + 2];
             Buffer.BlockCopy(buf, 0, b, 0, buf.Length);
             b[buf.Length] = 0x0d;
@@ -346,50 +424,49 @@ namespace Bjd.sock{
         }
 
         //１行のString送信(ASCII)  (\r\nが付加される)
-        public bool StringSend(String str){
+        public bool StringSend(String str)
+        {
             return StringSend(str, "ASCII");
         }
 
         //１行のString送信 (\r\nが付加される)
-        public bool StringSend(String str, String charsetName){
-            try{
+        public bool StringSend(String str, String charsetName)
+        {
+            try
+            {
 
                 var buf = Encoding.GetEncoding(charsetName).GetBytes(str);
                 //byte[] buf = str.getBytes(charsetName);
                 LineSend(buf);
                 return true;
-            } catch (Exception e){
+            }
+            catch (Exception e)
+            {
                 Util.RuntimeException(e.Message);
             }
             return false;
         }
 
         //１行送信(ASCII)  (\r\nが付加される)
-        public bool SstringSend(String str){
+        public bool SstringSend(String str)
+        {
             return StringSend(str, "ASCII");
         }
 
-        public override void Close(){
-            //ACCEPT・CLIENT
-            //            if (channel != null && channel.isOpen()){
-            //                try{
-            //                    selector.wakeup();
-            //                    channel.close();
-            //                } catch (IOException ex){
-            //                    //ex.printStackTrace(); //エラーは無視する
-            //                }
-            //            }
-            //            if (_oneSsl != null) {
-            //                _oneSsl.Close();
-            //            }
-
-            try{
+        public override void Close()
+        {
+            try
+            {
                 this._socket.Shutdown(SocketShutdown.Both);
-            } catch{
+            }
+            catch
+            {
                 //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
             }
-            _socket.Close();
-            if (_oneSsl != null){
+            //_socket.Close();
+            _socket.Dispose();
+            if (_oneSsl != null)
+            {
                 _oneSsl.Close();
             }
 
@@ -399,14 +476,19 @@ namespace Bjd.sock{
         //【送信】(トレースなし)
         //リモートサーバがトレース内容を送信するときに更にトレースするとオーバーフローするため
         //RemoteObj.Send()では、こちらを使用する
-        public int SendNoTrace(byte[] buffer){
-            try{
-                if (_oneSsl != null){
+        public int SendNoTrace(byte[] buffer)
+        {
+            try
+            {
+                if (_oneSsl != null)
+                {
                     return _oneSsl.Write(buffer, buffer.Length);
                 }
                 if (_socket.Connected)
                     return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
-            } catch (Exception ex){
+            }
+            catch (Exception ex)
+            {
                 SetError(string.Format("Length={0} {1}", buffer.Length, ex.Message));
                 //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
             }
@@ -415,7 +497,8 @@ namespace Bjd.sock{
 
 
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
-        public int SendUseEncode(byte[] buf){
+        public int SendUseEncode(byte[] buf)
+        {
             //テキストである可能性があるのでエンコード処理は省略できない
             Trace(TraceKind.Send, buf, false); //noEncode = false テキストである可能性があるのでエンコード処理は省略できない
             //実際の送信処理にテキストとバイナリの区別はない
@@ -428,8 +511,10 @@ namespace Bjd.sock{
         /*******************************************************************/
         private String _lastLineSend = "";
 
-        public string LastLineSend{
-            get{
+        public string LastLineSend
+        {
+            get
+            {
                 return _lastLineSend;
             }
         }
@@ -438,7 +523,8 @@ namespace Bjd.sock{
         //内部でASCIIコードとしてエンコードする１行送信  (\r\nが付加される)
         //LineSend()のオーバーライドバージョン
         //public int AsciiSend(string str, OperateCrlf operateCrlf) {
-        public int AsciiSend(string str){
+        public int AsciiSend(string str)
+        {
             _lastLineSend = str;
             var buf = Encoding.ASCII.GetBytes(str);
             //return LineSend(buf, operateCrlf);
@@ -448,7 +534,8 @@ namespace Bjd.sock{
 
         //AsciiSendを使用したいが、文字コードがASCII以外の可能性がある場合、こちらを使用する  (\r\nが付加される)
         //public int SjisSend(string str, OperateCrlf operateCrlf) {
-        public int SjisSend(string str){
+        public int SjisSend(string str)
+        {
             _lastLineSend = str;
             var buf = Encoding.GetEncoding("shift-jis").GetBytes(str);
             //return LineSend(buf, operateCrlf);
@@ -459,13 +546,15 @@ namespace Bjd.sock{
         // 【１行受信】
         //切断されている場合、nullが返される
         //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
-        public string AsciiRecv(int timeout, ILife iLife){
+        public string AsciiRecv(int timeout, ILife iLife)
+        {
             var buf = LineRecv(timeout, iLife);
             return buf == null ? null : Encoding.ASCII.GetString(buf);
         }
 
         //【送信】バイナリ
-        public int SendNoEncode(byte[] buf){
+        public int SendNoEncode(byte[] buf)
+        {
             //バイナリであるのでエンコード処理は省略される
             Trace(TraceKind.Send, buf, true); //noEncode = true バイナリであるのでエンコード処理は省略される
             //実際の送信処理にテキストとバイナリの区別はない

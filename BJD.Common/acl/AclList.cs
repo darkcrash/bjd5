@@ -203,7 +203,9 @@ namespace Bjd.acl{
 
             //Ver6.0.2 最初にFQDNでのヒットを確認する
             if (_arFqdnAcls.Count != 0){
-                var hostInfo = Dns.GetHostEntry(ip.IPAddress);
+                var hostInfoAwait = Dns.GetHostEntryAsync(ip.IPAddress);
+                hostInfoAwait.Wait();
+                var hostInfo = hostInfoAwait.Result;
                 hostName = hostInfo.HostName;
 
                 foreach (FqdnAcl p in _arFqdnAcls) {

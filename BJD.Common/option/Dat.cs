@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
-using Bjd.ctrl;
 using Bjd.util;
+using Bjd.ctrl;
 
 namespace Bjd.option{
     public class Dat : ListBase<OneDat>{
