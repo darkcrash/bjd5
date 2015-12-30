@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Bjd.net;
-using Bjd.Extensions;
 
 namespace Bjd.sock
 {

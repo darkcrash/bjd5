@@ -2,24 +2,30 @@
 using System.IO;
 using System.Linq;
 using Bjd.util;
+using System.Diagnostics;
 
 namespace Bjd.plugin{
     //プラグインフォルダ内のjarファイルを列挙するクラス
     public class ListPlugin : ListBase<OnePlugin>{
         //dir 検索対象となるpluginsフォルダ
         public ListPlugin(String dir){
+            Trace.WriteLine("ListPlugin..ctor Start");
+
             //フォルダが存在しない場合、初期化終了
-            if(!Directory.Exists(dir)){
+            if (!Directory.Exists(dir)){
                 return;
             }
 
     		//DLLを検索し、各オプションを生成する
 	    	//Ver5.2.4 関係ない*Server.dll以外は、対象外とする
-    		var list = Directory.GetFiles(dir, "*Server.dll").ToList();
+    		//var list = Directory.GetFiles(dir, "*Server.dll").ToList();
+    		var list = Directory.GetFiles(dir, "*Server.CoreCLR.dll").ToList();
 		    list.Sort();
             foreach (var path in list){
                     Ar.Add(new OnePlugin(path));
+                Trace.WriteLine($"ListPlugin..ctor {path}");
             }
+            Trace.WriteLine("ListPlugin..ctor End");
         }
 
         //名前によるプラグイン情報オブジェクト（OnePlugin）の検索

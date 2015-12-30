@@ -37,43 +37,52 @@ namespace Bjd.sock
         //TCP用
         public bool Bind(Ip bindIp, int port, int listenMax)
         {
-            if (ProtocolKind != ProtocolKind.Tcp)
-                Util.RuntimeException("use udp version bind()");
+            System.Diagnostics.Trace.WriteLine("SockServer.Bind Start " + bindIp.ToString() + port.ToString() + listenMax.ToString());
             try
             {
-                _socket = new Socket((bindIp.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-            }
-            catch (Exception e)
-            {
-                SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                return false;
-            }
+                if (ProtocolKind != ProtocolKind.Tcp)
+                    Util.RuntimeException("use udp version bind()");
+                try
+                {
+                    _socket = new Socket((bindIp.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                }
+                catch (Exception e)
+                {
+                    SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
+                    return false;
+                }
 
-            try
-            {
-                _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
-            }
-            catch (Exception e)
-            {
-                SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                return false;
-            }
-            try
-            {
-                _socket.Listen(listenMax);
-            }
-            catch (Exception e)
-            {
-                SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                return false;
-            }
+                try
+                {
+                    _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
+                }
+                catch (Exception e)
+                {
+                    SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
+                    return false;
+                }
+                try
+                {
+                    _socket.Listen(listenMax);
+                }
+                catch (Exception e)
+                {
+                    SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
+                    return false;
+                }
 
-            Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
+                Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
 
-            //受信開始
-            BeginReceive();
+                //受信開始
+                BeginReceive();
 
-            return true;
+                return true;
+
+            }
+            finally
+            {
+                System.Diagnostics.Trace.WriteLine("SockServer.Bind End");
+            }
         }
 
 

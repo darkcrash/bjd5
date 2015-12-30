@@ -192,7 +192,6 @@ namespace Bjd.util
                     {
                         if (o.ValStr != "")
                         {
-
                         }
                     }
                     isRead = true; // 1件でもデータを読み込んだ場合にtrue
@@ -244,7 +243,7 @@ namespace Bjd.util
                 var lines = new List<string>();
                 if (File.Exists(target))
                 {
-                    foreach (var s in File.ReadAllLines(target, Encoding.GetEncoding(932)))
+                    foreach (var s in File.ReadAllLines(target, Encoding.ASCII))
                     {
                         LineObject o;
                         try

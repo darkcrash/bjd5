@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading;
-using Bjd.browse;
 using Bjd.log;
 using Bjd.mail;
 using Bjd.net;
@@ -26,7 +25,6 @@ namespace Bjd
 
         //プロセス起動時に初期化される変数 
         public RunMode RunMode { get; set; } //通常起動;
-        public bool EditBrowse { get; private set; } //�u�Q�Ɓv�̃e�L�X�g�{�b�N�X�̕ҏW
         public Wait Wait { get; private set; }
         public RemoteConnect RemoteConnect { get; set; } //�����[�g����Őڑ�����Ă��鎞���������������
         public DnsCache DnsCache { get; private set; }
@@ -71,14 +69,15 @@ namespace Bjd
         //�e�X�g�p�R���X�g���N�^
         public Kernel()
         {
-            _isTest = true;
+            Trace.WriteLine("Kernel..ctor Start");
             DefaultInitialize();
+            Trace.WriteLine("Kernel..ctor End");
         }
 
         //�e�X�g�p�R���X�g���N�^(MailBox�̂ݏ�����)
         public Kernel(String option)
         {
-            _isTest = true;
+            Trace.WriteLine("Kernel..ctor Start");
             DefaultInitialize();
 
             if (option.IndexOf("MailBox") != -1)
@@ -89,12 +88,14 @@ namespace Bjd
                 var datUser = (Dat)conf.Get("user");
                 MailBox = new MailBox(null, datUser, dir);
             }
+            Trace.WriteLine("Kernel..ctor End");
         }
 
 
         //�N�����ɁA�R���X�g���N�^����Ăяo����鏉����
         private void DefaultInitialize()
         {
+            Trace.WriteLine("Kernel.DefaultInitialize Start");
 
             RunMode = RunMode.Normal;
             RemoteConnect = null;//�����[�g����Őڑ�����Ă��鎞���������������
@@ -115,19 +116,12 @@ namespace Bjd
 
             ListInitialize(); //�T�[�o�ċN���ŁA�ēx���s����鏉���� 
 
-
-            if (_isTest)
-            {
-                return;
-            }
-
             //�E�C���h�T�C�Y�̕���
             var path = string.Format("{0}\\BJD.ini", ProgDir());
 
             switch (RunMode)
             {
                 case RunMode.Normal:
-                    break;
                 case RunMode.NormalRegist:
                 case RunMode.Service:
                     break;
@@ -136,11 +130,13 @@ namespace Bjd
                     break;
             }
 
+            Trace.WriteLine("Kernel.DefaultInitialize End");
         }
 
         //�T�[�o�ċN���ŁA�ēx���s����鏉����
         public void ListInitialize()
         {
+            Trace.WriteLine("Kernel.ListInitialize Start");
             //Logger���g�p�ł��Ȃ��Ԃ̃��O�́A������ɕۑ����āA���Logger�ɑ���
             var tmpLogger = new TmpLogger();
 
@@ -187,15 +183,8 @@ namespace Bjd
 
             ListOption = new ListOption(this, listPlugin);
 
-            if (!_isTest)
-            {
-                ListOption.Save(IniDb);
-            }
-
-
             //OptionBasic
             var confBasic = new Conf(ListOption.Get("Basic"));
-            EditBrowse = (bool)confBasic.Get("editBrowse");
 
             //OptionLog
             var confOption = new Conf(ListOption.Get("Log"));
@@ -262,76 +251,101 @@ namespace Bjd
 
             WebApi = new WebApi();
 
+            Trace.WriteLine("Kernel.ListInitialize End");
         }
 
         //Conf�̐���
         //���O��ListOption������������Ă���K�v������
         public Conf CreateConf(String nameTag)
         {
-            if (ListOption == null)
+            Trace.WriteLine("Kernel.CreateConf Start");
+            try
             {
-                Util.RuntimeException("createConf() ListOption==null");
+                if (ListOption == null)
+                {
+                    Util.RuntimeException("createConf() ListOption==null");
+                    return null;
+                }
+                var oneOption = ListOption.Get(nameTag);
+                if (oneOption != null)
+                {
+                    return new Conf(oneOption);
+                }
                 return null;
             }
-            var oneOption = ListOption.Get(nameTag);
-            if (oneOption != null)
+            finally
             {
-                return new Conf(oneOption);
+                Trace.WriteLine("Kernel.CreateConf End");
             }
-            return null;
         }
 
         //Logger�̐���
         //���O��ListOption������������Ă���K�v������
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
         {
-            if (ListOption == null)
+            Trace.WriteLine("Kernel.CreateLogger Start");
+            try
             {
-                Util.RuntimeException("CreateLogger() ListOption==null || LogFile==null");
-            }
-            var conf = CreateConf("Log");
-            if (conf == null)
-            {
-                //CreateLogger��g�p����ۂɁAOptionLog�������ł��Ȃ��̂́A�݌v��̖�肪����
-                Util.RuntimeException("CreateLogger() conf==null");
-                return null;
-            }
-            var dat = (Dat)conf.Get("limitString");
-            var isDisplay = ((int)conf.Get("isDisplay")) == 0;
-            var logLimit = new LogLimit(dat, isDisplay);
+                if (ListOption == null)
+                {
+                    Util.RuntimeException("CreateLogger() ListOption==null || LogFile==null");
+                }
+                var conf = CreateConf("Log");
+                if (conf == null)
+                {
+                    //CreateLogger��g�p����ۂɁAOptionLog�������ł��Ȃ��̂́A�݌v��̖�肪����
+                    Util.RuntimeException("CreateLogger() conf==null");
+                    return null;
+                }
+                var dat = (Dat)conf.Get("limitString");
+                var isDisplay = ((int)conf.Get("isDisplay")) == 0;
+                var logLimit = new LogLimit(dat, isDisplay);
 
-            var useLimitString = (bool)conf.Get("useLimitString");
-            return new Logger(this, logLimit, LogFile, _isJp, nameTag, useDetailsLog, useLimitString, logger);
+                var useLimitString = (bool)conf.Get("useLimitString");
+                return new Logger(this, logLimit, LogFile, _isJp, nameTag, useDetailsLog, useLimitString, logger);
+            }
+            finally
+            {
+                Trace.WriteLine("Kernel.CreateLogger End");
+            }
         }
 
         //�I������
         public void Dispose()
         {
-
-            //Ver5.8.6 Java fix 
-            if (RunMode == RunMode.Normal)
+            Trace.WriteLine("Kernel.Dispose Start");
+            try
             {
-                var iniTmp = new IniDb(ProgDir(), "$tmp");//�o�b�N�A�b�v��쐬����ini�t�@�C����폜����
-                //��U�A�ʃt�@�C���Ɍ��ݗL���Ȃ�̂���������߂�
-                ListOption.Save(iniTmp);
-                //�㏑������
-                File.Copy(iniTmp.Path, IniDb.Path, true);
-                iniTmp.Delete();
+
+                //Ver5.8.6 Java fix 
+                if (RunMode == RunMode.Normal)
+                {
+                    var iniTmp = new IniDb(ProgDir(), "$tmp");//�o�b�N�A�b�v��쐬����ini�t�@�C����폜����
+                                                              //��U�A�ʃt�@�C���Ɍ��ݗL���Ȃ�̂���������߂�
+                    ListOption.Save(iniTmp);
+                    //�㏑������
+                    File.Copy(iniTmp.Path, IniDb.Path, true);
+                    iniTmp.Delete();
+                }
+                else if (RunMode == RunMode.Remote)
+                {
+                    IniDb.Delete(); //$Remote.ini�̍폜
+                }
+
+                //**********************************************
+                // �j��
+                //**********************************************
+                ListServer.Dispose(); //�e�T�[�o�͒�~�����
+                ListOption.Dispose();
+                ListTool.Dispose();
+                MailBox = null;
+
+                View.Dispose();
             }
-            else if (RunMode == RunMode.Remote)
+            finally
             {
-                IniDb.Delete(); //$Remote.ini�̍폜
+                Trace.WriteLine("Kernel.Dispose End");
             }
-
-            //**********************************************
-            // �j��
-            //**********************************************
-            ListServer.Dispose(); //�e�T�[�o�͒�~�����
-            ListOption.Dispose();
-            ListTool.Dispose();
-            MailBox = null;
-
-            View.Dispose();
         }
 
         public string ProgDir()
@@ -516,42 +530,6 @@ namespace Bjd
                 ar = DnsCache.GetAddress(hostName).ToList();
             }
             return ar;
-        }
-
-        //�f�B���N�g�����擾�i�����[�g�N���C�A���g�p�j
-        public string GetBrowseInfo(string path)
-        {
-            var sb = new StringBuilder();
-            try
-            {
-                string[] dirs = Directory.GetDirectories(path);
-                Array.Sort(dirs);
-                foreach (string s in dirs)
-                {
-                    var name = s.Substring(path.Length);
-                    var info = new DirectoryInfo(s);
-                    const long size = 0;
-                    var dt = info.LastWriteTime;
-                    var p = new OneBrowse(BrowseKind.Dir, name, size, dt); //�P�f�[�^����
-                    sb.Append(p + "\t"); //���M�����񐶐�
-                }
-                var files = Directory.GetFiles(path);
-                Array.Sort(files);
-                foreach (var s in files)
-                {
-                    var name = s.Substring(path.Length);
-                    var info = new FileInfo(s);
-                    var size = info.Length;
-                    var dt = info.LastWriteTime;
-                    var p = new OneBrowse(BrowseKind.File, name, size, dt); //�P�f�[�^����
-                    sb.Append(p + "\t"); //���M�����񐶐�
-                }
-            }
-            catch
-            {
-                sb.Length = 0;
-            }
-            return sb.ToString();
         }
 
     }

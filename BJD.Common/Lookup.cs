@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using Bjd.util;
-using Bjd.Extensions;
 
 namespace Bjd
 {

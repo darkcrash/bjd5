@@ -17,11 +17,15 @@ namespace Bjd.option
         public Object Value { get; private set; }
         public Crlf Crlf { get; private set; }
 
+        public Type ValueType { get; private set; }
+
         public OneVal(String name, Object value, Crlf crlf)
         {
             Name = name;
             Value = value;
             Crlf = crlf;
+            if (value != null)
+                this.ValueType = value.GetType();
 
 
             //*************************************************************
@@ -96,9 +100,18 @@ namespace Bjd.option
                 Value = null;
                 return false;
             }
-            Value = null;
+            if (this.ValueType == typeof(Dat))
+            {
+                ((Dat)this.Value).FromReg(str);
+            }
+            else
+            {
+                Value = Convert.ChangeType(str, this.ValueType);
+            }
+
             return true;
         }
+
 
     }
 

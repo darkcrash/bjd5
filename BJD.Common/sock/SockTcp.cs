@@ -6,7 +6,6 @@ using System.Threading;
 using Bjd.net;
 using Bjd.trace;
 using Bjd.util;
-using Bjd.Extensions;
 
 namespace Bjd.sock
 {

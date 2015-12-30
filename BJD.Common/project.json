@@ -1,22 +1,27 @@
-﻿{
+{
   "version": "1.0.0-*",
   "description": "BJD.Common Class Library",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "projectUrl": "https://github.com/darkcrash/bjd5/tree/CoreCLR",
+  "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks Edit by yasuaki.matsuda",
   "licenseUrl": "",
   "frameworks": {
     "dotnet5.4": {
       "dependencies": {
+        "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+        "Newtonsoft.Json": "8.0.1",
         "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.AppContext": "4.0.1-beta-23516",
         "System.Console": "4.0.0-beta-23516",
         "System.Collections": "4.0.11-beta-23516",
         "System.ComponentModel.Primitives": "4.0.0",
         "System.Globalization": "4.0.11-beta-23516",
         "System.Globalization.Calendars": "4.0.1-beta-23516",
         "System.Globalization.Extensions": "4.0.1-beta-23516",
-        "System.Diagnostics.Process": "4.1.0-beta-23409",
+        "System.Diagnostics.Process": "4.1.0-beta-23516",
         "System.Diagnostics.Tools": "4.0.1-beta-23516",
+        "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
         "System.Text.Encoding": "4.0.11-beta-23516",
         "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
         "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
@@ -24,6 +29,8 @@
         "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
         "System.Reflection.Primitives": "4.0.1-beta-23516",
         "System.Reflection.Extensions": "4.0.1-beta-23516",
+        "System.Reflection.Context": "4.0.1-beta-23516",
+        "System.Reflection.DispatchProxy": "4.0.1-beta-23516",
         "System.Linq": "4.0.1-beta-23516",
         "System.IO": "4.0.11-beta-23516",
         "System.IO.FileSystem": "4.0.1-beta-23516",

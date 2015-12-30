@@ -1,13 +1,19 @@
 ﻿using System;
 using Bjd.service;
+using System.Diagnostics;
 
 namespace Bjd {
-    static class Program {
+    public class Program {
+
+        private readonly IServiceProvider _serviceProvider;
+        public Program(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
-        [STAThread]
-        static void Main(string[] args)
+        public void Main(string[] args)
         {
             try
             {
@@ -15,18 +21,23 @@ namespace Bjd {
                 //起動ユーザがSYSTEMの場合、サービス起動であると判断する
                 if (args != null && args.Length > 0 && args[0].ToLower().Contains("-s"))
                 {
-                    Service.ServiceMain();
-                    return;
+                    Service.ServiceMain(_serviceProvider);
+                }
+                else
+                {
+                    Console.WriteLine("option -s service");
+#if DEBUG
+                    Console.ReadLine();
+#endif
                 }
 
-                Console.WriteLine("option -s service");
-                Console.ReadLine();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
             }
         }
     }
+
 }

@@ -4,39 +4,102 @@ using System.Net.NetworkInformation;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Diagnostics;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Bjd
 {
     public class Define
     {
 
-        private Define() { }//�f�t�H���g�R���X�g���N�^�̉B��
+        private Define() { }
+        static Define Instance = new Define();
+        string _executablePath;
+        string _executableDirectory;
+        string _productVersion;
+        string _Copyright;
 
-        static string _executablePath;
-        static string _executableDirectory;
-        static string _productVersion;
-
-        static Define()
+        public static void Initialize(IServiceProvider sb)
         {
-            //_executablePath = Application.ExecutablePath;
-            var prc = System.Diagnostics.Process.GetCurrentProcess();
-            //_executablePath = prc.StartInfo.FileName;
+            Trace.WriteLine("Define.Initialize Start");
+
+            // get service
+            var runtimeServices = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeServices>(sb);
+            var libraryManager = GetService<ILibraryManager>(sb);
+            var applicationEnvironment = GetService<IApplicationEnvironment>(sb);
+            var compilerOptions = GetService<ICompilerOptions>(sb);
+            var runtimeEnvironment = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeEnvironment>(sb);
+
+            if (runtimeServices != null)
+            {
+                Trace.WriteLine($"RuntimeServices");
+                Trace.Indent();
+                foreach(var sv in runtimeServices.Services)
+                {
+                    Trace.WriteLine($"{(sv.FullName)}");
+                }
+                Trace.Unindent();
+            }
+
+            if (compilerOptions != null)
+            {
+                Trace.WriteLine($"CompilerOptions");
+                Trace.Indent();
+                if (compilerOptions.AllowUnsafe.HasValue)
+                    Trace.WriteLine($"AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
+                if (compilerOptions.DelaySign.HasValue)
+                    Trace.WriteLine($"DelaySign:{compilerOptions.DelaySign}");
+                if (compilerOptions.EmitEntryPoint.HasValue)
+                    Trace.WriteLine($"EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
+                if (compilerOptions.KeyFile != null)
+                    Trace.WriteLine($"KeyFile:{compilerOptions.KeyFile}");
+                Trace.WriteLine($"LanguageVersion:{compilerOptions.LanguageVersion}");
+                if (compilerOptions.Optimize.HasValue)
+                    Trace.WriteLine($"Optimize:{compilerOptions.Optimize}");
+                if (compilerOptions.Platform != null)
+                    Trace.WriteLine($"Platform:{compilerOptions.Platform}");
+                if (compilerOptions.UseOssSigning.HasValue)
+                    Trace.WriteLine($"UseOssSigning:{compilerOptions.UseOssSigning}");
+                if (compilerOptions.WarningsAsErrors.HasValue)
+                    Trace.WriteLine($"WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
+                Trace.Unindent();
+            }
+
+
+            if (runtimeEnvironment != null)
+            {
+                Trace.WriteLine($"RuntimeEnvironment");
+                Trace.Indent();
+                Trace.WriteLine($"OperatingSystem:{(runtimeEnvironment.OperatingSystem)}");
+                Trace.WriteLine($"OperatingSystemVersion:{(runtimeEnvironment.OperatingSystemVersion)}");
+                Trace.WriteLine($"RuntimeArchitecture:{(runtimeEnvironment.RuntimeArchitecture)}");
+                Trace.WriteLine($"RuntimePath:{(runtimeEnvironment.RuntimePath)}");
+                Trace.WriteLine($"RuntimeType:{(runtimeEnvironment.RuntimeType)}");
+                Trace.WriteLine($"RuntimeVersion:{(runtimeEnvironment.RuntimeVersion)}");
+                Trace.Unindent();
+            }
+
+
+            // current directory
             var dir = System.IO.Directory.GetCurrentDirectory();
-            _executableDirectory = dir;
-            _executablePath = System.IO.Path.Combine(dir, "BJD.CoreCLR");
+            var asm = typeof(Define).GetTypeInfo().Assembly;
+            var asmName = asm.GetName();
+            Trace.WriteLine($"CurrentDirectory:{dir}");
+            Trace.WriteLine($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
+            Trace.WriteLine($"Assembly.Location:{asm.Location}");
 
-            //_productVersion = Application.ProductVersion;
-            var asm = typeof(Define).GetTypeInfo().Assembly.GetName();
-            _productVersion = asm.Version.ToString();
 
+            // set define
+            Instance._executableDirectory = AppContext.BaseDirectory;
+            Instance._executablePath = System.IO.Path.Combine(AppContext.BaseDirectory, "BJD.CoreCLR");
+            Instance._productVersion = asmName.Version.ToString();
 
+            Trace.WriteLine("Define.Initialize End");
         }
 
-        //Test�p
-        public static void SetEnv(string path, string ver)
+        private static T GetService<T>(IServiceProvider serviceProvider)
         {
-            _executablePath = path;
-            _productVersion = ver;
+            return (T)serviceProvider.GetService(typeof(T));
         }
 
         public static string Copyright()
@@ -56,21 +119,21 @@ namespace Bjd
         {
             get
             {
-                return _executablePath;
+                return Instance._executablePath;
             }
         }
         public static string ExecutableDirectory
         {
             get
             {
-                return _executableDirectory;
+                return Instance._executableDirectory;
             }
         }
         public static string ProductVersion
         {
             get
             {
-                return _productVersion;
+                return Instance._productVersion;
             }
         }
 

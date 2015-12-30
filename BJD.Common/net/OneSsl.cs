@@ -3,7 +3,6 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
-using Bjd.Extensions;
 using System.Threading;
 
 namespace Bjd.net

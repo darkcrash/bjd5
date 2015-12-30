@@ -12,7 +12,7 @@ namespace Bjd.log{
         public OneLogFile(String fileName){
             _fileName = fileName;
             _fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            _sw = new StreamWriter(_fs, Encoding.GetEncoding(932));
+            _sw = new StreamWriter(_fs, Encoding.UTF8);
         }
 
         public void Dispose(){
