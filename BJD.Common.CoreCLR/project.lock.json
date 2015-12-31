@@ -3,72 +3,6 @@
   "version": 2,
   "targets": {
     "DNXCore,Version=v5.0": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -777,27 +711,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XPath/4.0.1-beta-23516": {
@@ -842,72 +755,6 @@
       }
     },
     ".NETPlatform,Version=v5.4": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -1513,27 +1360,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XPath/4.0.1-beta-23516": {
@@ -1578,72 +1404,6 @@
       }
     },
     "DNXCore,Version=v5.0/win7-x86": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -2781,27 +2541,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XPath/4.0.1-beta-23516": {
@@ -2846,72 +2585,6 @@
       }
     },
     "DNXCore,Version=v5.0/win7-x64": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": "DNXCore,Version=v5.0",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -4051,27 +3724,6 @@
           "lib/dotnet/System.Xml.XDocument.dll": {}
         }
       },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
-        }
-      },
       "System.Xml.XPath/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -4114,72 +3766,6 @@
       }
     },
     ".NETPlatform,Version=v5.4/win7-x86": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -5033,27 +4619,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XPath/4.0.1-beta-23516": {
@@ -5098,72 +4663,6 @@
       }
     },
     ".NETPlatform,Version=v5.4/win7-x64": {
-      "BJD.Common.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.AppContext": "4.0.1-beta-23516",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Console": "4.0.0-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Diagnostics.TraceSource": "4.0.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.Globalization.Extensions": "4.0.1-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Net.NameResolution": "4.0.0-beta-23516",
-          "System.Net.NetworkInformation": "4.1.0-beta-23516",
-          "System.Net.Primitives": "4.0.11-beta-23516",
-          "System.Net.Security": "4.0.0-beta-23516",
-          "System.Net.Sockets": "4.1.0-beta-23409",
-          "System.Reflection": "4.1.0-beta-23516",
-          "System.Reflection.Extensions": "4.0.1-beta-23516",
-          "System.Reflection.Primitives": "4.0.1-beta-23516",
-          "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Runtime.Extensions": "4.0.11-beta-23516",
-          "System.Runtime.Loader": "4.0.0-beta-23516",
-          "System.Security.Claims": "4.0.1-beta-23516",
-          "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Csp": "4.0.0-beta-23516",
-          "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Text.Encoding.CodePages": "4.0.1-beta-23516",
-          "System.Text.Encoding.Extensions": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Threading.Timer": "4.0.1-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XPath": "4.0.1-beta-23516",
-          "System.Xml.XPath.XDocument": "4.0.1-beta-23516"
-        }
-      },
-      "BJD.WebServer.CoreCLR/1.0.0": {
-        "type": "project",
-        "framework": ".NETPlatform,Version=v5.4",
-        "dependencies": {
-          "BJD.Common.CoreCLR": "1.0.0",
-          "Microsoft.CSharp": "4.0.1-beta-23516",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-          "System.Collections": "4.0.11-beta-23516",
-          "System.Diagnostics.Process": "4.1.0-beta-23516",
-          "System.Globalization": "4.0.11-beta-23516",
-          "System.IO": "4.0.11-beta-23516",
-          "System.Linq": "4.0.1-beta-23516",
-          "System.Runtime": "4.0.21-beta-23516",
-          "System.Text.Encoding": "4.0.11-beta-23516",
-          "System.Threading": "4.0.11-beta-23516",
-          "System.Threading.Tasks": "4.0.11-beta-23516",
-          "System.Threading.Thread": "4.0.0-beta-23516",
-          "System.Threading.ThreadPool": "4.0.10-beta-23516",
-          "System.Xml.ReaderWriter": "4.0.11-beta-23516",
-          "System.Xml.XmlDocument": "4.0.1-beta-23516"
-        }
-      },
       "Microsoft.CSharp/4.0.1-beta-23516": {
         "type": "package",
         "dependencies": {
@@ -6017,27 +5516,6 @@
         },
         "runtime": {
           "lib/dotnet/System.Xml.XDocument.dll": {}
-        }
-      },
-      "System.Xml.XmlDocument/4.0.1-beta-23516": {
-        "type": "package",
-        "dependencies": {
-          "System.Collections": "4.0.10",
-          "System.Diagnostics.Debug": "4.0.10",
-          "System.Globalization": "4.0.10",
-          "System.IO": "4.0.10",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10",
-          "System.Threading": "4.0.10",
-          "System.Xml.ReaderWriter": "4.0.10"
-        },
-        "compile": {
-          "ref/dotnet5.1/System.Xml.XmlDocument.dll": {}
-        },
-        "runtime": {
-          "lib/dotnet5.4/System.Xml.XmlDocument.dll": {}
         }
       },
       "System.Xml.XPath/4.0.1-beta-23516": {
@@ -6083,14 +5561,6 @@
     }
   },
   "libraries": {
-    "BJD.Common.CoreCLR/1.0.0": {
-      "type": "project",
-      "path": "../BJD.Common.CoreCLR/project.json"
-    },
-    "BJD.WebServer.CoreCLR/1.0.0": {
-      "type": "project",
-      "path": "../BJD.WebServer.CoreCLR/project.json"
-    },
     "Microsoft.CSharp/4.0.1-beta-23516": {
       "type": "package",
       "serviceable": true,
@@ -8771,38 +8241,6 @@
         "System.Xml.XDocument.nuspec"
       ]
     },
-    "System.Xml.XmlDocument/4.0.1-beta-23516": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "Al+MOyRvCL9SlJYzInF9cH9Sxlf4eBLtD1AadyZVaRqhmcTYDst/AEf6GerqQ4hHfrGmeCflfxWPc2BYBJ2nug==",
-      "files": [
-        "lib/dotnet5.4/System.Xml.XmlDocument.dll",
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/net46/System.Xml.XmlDocument.dll",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "ref/dotnet5.1/de/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/es/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/fr/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/it/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ja/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ko/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/ru/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/System.Xml.XmlDocument.dll",
-        "ref/dotnet5.1/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/zh-hans/System.Xml.XmlDocument.xml",
-        "ref/dotnet5.1/zh-hant/System.Xml.XmlDocument.xml",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/net46/System.Xml.XmlDocument.dll",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._",
-        "System.Xml.XmlDocument.4.0.1-beta-23516.nupkg",
-        "System.Xml.XmlDocument.4.0.1-beta-23516.nupkg.sha512",
-        "System.Xml.XmlDocument.nuspec"
-      ]
-    },
     "System.Xml.XPath/4.0.1-beta-23516": {
       "type": "package",
       "serviceable": true,
@@ -8870,23 +8308,85 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "Microsoft.Extensions.PlatformAbstractions >= 1.0.0-rc1-final",
-      "BJD.Common.CoreCLR >= 1.0.0-*",
-      "BJD.WebServer.CoreCLR >= 1.0.0-*"
+      "Microsoft.Extensions.PlatformAbstractions >= 1.0.0-rc1-final"
     ],
     "DNXCore,Version=v5.0": [
       "Microsoft.CSharp >= 4.0.1-beta-23516",
-      "System.Collections >= 4.0.11-beta-23516",
+      "System.AppContext >= 4.0.1-beta-23516",
       "System.Console >= 4.0.0-beta-23516",
+      "System.Collections >= 4.0.11-beta-23516",
+      "System.Globalization >= 4.0.11-beta-23516",
+      "System.Globalization.Extensions >= 4.0.1-beta-23516",
+      "System.Diagnostics.Process >= 4.1.0-beta-23516",
+      "System.Diagnostics.TraceSource >= 4.0.0-beta-23516",
+      "System.Text.Encoding >= 4.0.11-beta-23516",
+      "System.Text.Encoding.CodePages >= 4.0.1-beta-23516",
+      "System.Text.Encoding.Extensions >= 4.0.11-beta-23516",
+      "System.Reflection >= 4.1.0-beta-23516",
+      "System.Reflection.TypeExtensions >= 4.1.0-beta-23516",
+      "System.Reflection.Primitives >= 4.0.1-beta-23516",
+      "System.Reflection.Extensions >= 4.0.1-beta-23516",
       "System.Linq >= 4.0.1-beta-23516",
-      "System.Threading >= 4.0.11-beta-23516"
+      "System.IO >= 4.0.11-beta-23516",
+      "System.Net.Primitives >= 4.0.11-beta-23516",
+      "System.Net.NetworkInformation >= 4.1.0-beta-23516",
+      "System.Net.Security >= 4.0.0-beta-23516",
+      "System.Net.Sockets >= 4.1.0-beta-23409",
+      "System.Net.NameResolution >= 4.0.0-beta-23516",
+      "System.Runtime >= 4.0.21-beta-23516",
+      "System.Runtime.Loader >= 4.0.0-beta-23516",
+      "System.Runtime.Extensions >= 4.0.11-beta-23516",
+      "System.Security.Claims >= 4.0.1-beta-23516",
+      "System.Security.Cryptography.Algorithms >= 4.0.0-beta-23516",
+      "System.Security.Cryptography.Primitives >= 4.0.0-beta-23516",
+      "System.Security.Cryptography.Csp >= 4.0.0-beta-23516",
+      "System.Threading >= 4.0.11-beta-23516",
+      "System.Threading.Thread >= 4.0.0-beta-23516",
+      "System.Threading.Timer >= 4.0.1-beta-23516",
+      "System.Threading.ThreadPool >= 4.0.10-beta-23516",
+      "System.Threading.Tasks >= 4.0.11-beta-23516",
+      "System.Xml.XPath.XDocument >= 4.0.1-beta-23516",
+      "System.Xml.ReaderWriter >= 4.0.11-beta-23516",
+      "System.Xml.XPath >= 4.0.1-beta-23516"
     ],
     ".NETPlatform,Version=v5.4": [
       "Microsoft.CSharp >= 4.0.1-beta-23516",
-      "System.Collections >= 4.0.11-beta-23516",
+      "System.AppContext >= 4.0.1-beta-23516",
       "System.Console >= 4.0.0-beta-23516",
+      "System.Collections >= 4.0.11-beta-23516",
+      "System.Globalization >= 4.0.11-beta-23516",
+      "System.Globalization.Extensions >= 4.0.1-beta-23516",
+      "System.Diagnostics.Process >= 4.1.0-beta-23516",
+      "System.Diagnostics.TraceSource >= 4.0.0-beta-23516",
+      "System.Text.Encoding >= 4.0.11-beta-23516",
+      "System.Text.Encoding.CodePages >= 4.0.1-beta-23516",
+      "System.Text.Encoding.Extensions >= 4.0.11-beta-23516",
+      "System.Reflection >= 4.1.0-beta-23516",
+      "System.Reflection.TypeExtensions >= 4.1.0-beta-23516",
+      "System.Reflection.Primitives >= 4.0.1-beta-23516",
+      "System.Reflection.Extensions >= 4.0.1-beta-23516",
       "System.Linq >= 4.0.1-beta-23516",
-      "System.Threading >= 4.0.11-beta-23516"
+      "System.IO >= 4.0.11-beta-23516",
+      "System.Net.Primitives >= 4.0.11-beta-23516",
+      "System.Net.NetworkInformation >= 4.1.0-beta-23516",
+      "System.Net.Security >= 4.0.0-beta-23516",
+      "System.Net.Sockets >= 4.1.0-beta-23409",
+      "System.Net.NameResolution >= 4.0.0-beta-23516",
+      "System.Runtime >= 4.0.21-beta-23516",
+      "System.Runtime.Loader >= 4.0.0-beta-23516",
+      "System.Runtime.Extensions >= 4.0.11-beta-23516",
+      "System.Security.Claims >= 4.0.1-beta-23516",
+      "System.Security.Cryptography.Algorithms >= 4.0.0-beta-23516",
+      "System.Security.Cryptography.Primitives >= 4.0.0-beta-23516",
+      "System.Security.Cryptography.Csp >= 4.0.0-beta-23516",
+      "System.Threading >= 4.0.11-beta-23516",
+      "System.Threading.Thread >= 4.0.0-beta-23516",
+      "System.Threading.Timer >= 4.0.1-beta-23516",
+      "System.Threading.ThreadPool >= 4.0.10-beta-23516",
+      "System.Threading.Tasks >= 4.0.11-beta-23516",
+      "System.Xml.XPath.XDocument >= 4.0.1-beta-23516",
+      "System.Xml.ReaderWriter >= 4.0.11-beta-23516",
+      "System.Xml.XPath >= 4.0.1-beta-23516"
     ]
   }
 }

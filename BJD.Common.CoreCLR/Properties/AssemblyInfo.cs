@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BJD.CoreCLR")]
+[assembly: AssemblyTitle("BJD.Common.CoreCLR")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BJD.CoreCLR")]
+[assembly: AssemblyProduct("BJD.Common.CoreCLR")]
 [assembly: AssemblyCopyright("Copyright(c) 1998/05.. by SIN/SapporoWorks")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,4 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2ad95029-ff06-4c7a-b516-f4eae85c601c")]
+[assembly: Guid("e12b4dac-a11d-4f8f-8d38-6b4cae9f156e")]
