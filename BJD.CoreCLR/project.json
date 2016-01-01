@@ -18,7 +18,8 @@
   "dependencies": {
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
     "BJD.Common.CoreCLR": "1.0.0-*",
-    "BJD.WebServer.CoreCLR": "1.0.0-*"
+    "BJD.WebServer.CoreCLR": "1.0.0-*",
+    "BJD.FtpServer.CoreCLR": "1.0.0-*"
   },
 
   "commands": {

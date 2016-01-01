@@ -19,6 +19,7 @@ namespace Bjd
         string _executableDirectory;
         string _productVersion;
         string _Copyright;
+        string _OperatingSystem;
         Library[] _libraries;
 
         public static void Initialize(IServiceProvider sb)
@@ -128,6 +129,7 @@ namespace Bjd
             Instance._executableDirectory = AppContext.BaseDirectory;
             Instance._executablePath = System.IO.Path.Combine(AppContext.BaseDirectory, "BJD.CoreCLR");
             Instance._productVersion = asmName.Version.ToString();
+            Instance._OperatingSystem = $"{runtimeEnvironment.OperatingSystem} {runtimeEnvironment.OperatingSystemVersion}";
 
             Trace.WriteLine("Define.Initialize End");
         }
@@ -175,6 +177,14 @@ namespace Bjd
             get
             {
                 return Instance._productVersion;
+            }
+        }
+
+        public static string OperatingSystem
+        {
+            get
+            {
+                return Instance._OperatingSystem;
             }
         }
 

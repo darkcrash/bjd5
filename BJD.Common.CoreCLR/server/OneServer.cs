@@ -385,7 +385,8 @@ namespace Bjd.server{
             recvbuf = Inet.TrimCrlf(recvbuf);
 
             //String str = new String(recvbuf, Charset.forName("Shift-JIS"));
-            var str = Encoding.GetEncoding("Shift-JIS").GetString(recvbuf);
+            //var str = Encoding.GetEncoding("Shift-JIS").GetString(recvbuf);
+            var str = Encoding.GetEncoding("utf-8").GetString(recvbuf);
             if (str == "") {
                 return new Cmd("", "", "");
             }
