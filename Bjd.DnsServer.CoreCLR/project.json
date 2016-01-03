@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "BJD.DnsServer.CoreCLR Class Library",
+  "description": "Bjd.DnsServer.CoreCLR Class Library",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
@@ -12,7 +12,7 @@
   "licenseUrl": "",
   "dependencies": {
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-    "BJD.Common.CoreCLR": "1.0.0-*"
+    "Bjd.Common.CoreCLR": "1.0.0-*"
   },
   "frameworks": {
     "dnxcore50": {

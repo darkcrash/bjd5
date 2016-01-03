@@ -31,7 +31,7 @@ namespace Bjd.plugin
 
         private string GetName(string str)
         {
-            if (str.StartsWith("BJD."))
+            if (str.StartsWith("Bjd."))
             {
                 str = str.Remove(0, 4);
             }

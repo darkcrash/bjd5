@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "BJD.CoreCLR Console Application",
+  "description": "Bjd.CoreCLR Console Application",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
@@ -17,20 +17,20 @@
 
   "dependencies": {
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
-    "BJD.Common.CoreCLR": "1.0.0-*",
-    "BJD.WebServer.CoreCLR": "1.0.0-*",
-    "BJD.FtpServer.CoreCLR": "1.0.0-*",
-    "BJD.DnsServer.CoreCLR": "1.0.0-*",
-    "BJD.TunnelServer.CoreCLR": "1.0.0-*",
-    "BJD.TftpServer.CoreCLR": "1.0.0-*",
-    "BJD.WebApiServer.CoreCLR": "1.0.0-*",
-    "BJD.SmtpServer.CoreCLR": "1.0.0-*",
-    "BJD.Pop3Server.CoreCLR": "1.0.0-*",
-    "BJD.RemoteServer.CoreCLR": "1.0.0-*"
+    "Bjd.Common.CoreCLR": "1.0.0-*",
+    "Bjd.WebServer.CoreCLR": "1.0.0-*",
+    "Bjd.FtpServer.CoreCLR": "1.0.0-*",
+    "Bjd.DnsServer.CoreCLR": "1.0.0-*",
+    "Bjd.TunnelServer.CoreCLR": "1.0.0-*",
+    "Bjd.TftpServer.CoreCLR": "1.0.0-*",
+    "Bjd.WebApiServer.CoreCLR": "1.0.0-*",
+    "Bjd.SmtpServer.CoreCLR": "1.0.0-*",
+    "Bjd.Pop3Server.CoreCLR": "1.0.0-*",
+    "Bjd.RemoteServer.CoreCLR": "1.0.0-*"
   },
 
   "commands": {
-    "BJD.CoreCLR": "BJD.Common.CoreCLR"
+    "Bjd.CoreCLR": "Bjd.Common.CoreCLR"
   },
 
   "frameworks": {

@@ -6,8 +6,8 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>fe47ee07-a4f0-45d7-a20f-3cc4c59ed09e</ProjectGuid>
-    <RootNamespace>Bjd.SmtpServer</RootNamespace>
+    <ProjectGuid>e011131b-9b1c-4a8d-b049-802447d96ee6</ProjectGuid>
+    <RootNamespace>Bjd.SipServer</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>

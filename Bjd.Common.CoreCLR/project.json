@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "BJD.Common.CoreCLR Class Library",
+  "description": "Bjd.Common.CoreCLR Class Library",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
