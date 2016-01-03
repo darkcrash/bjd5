@@ -1,5 +1,5 @@
 ﻿
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
     partial class Server {
 

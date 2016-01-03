@@ -1,4 +1,4 @@
-﻿namespace BJD.WebServer
+﻿namespace Bjd.WebServer
 {
     class OneWebDavDb {
         public string Uri { get; private set; }

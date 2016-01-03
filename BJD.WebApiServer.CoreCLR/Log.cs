@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BJD.WebApiServer {
+namespace Bjd.WebApiServer {
     public partial class Server {
         //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()

@@ -8,7 +8,7 @@ using Bjd.net;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class SmtpClient : LastError, IDisposable {
         

@@ -17,7 +17,7 @@ using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
 
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
 
     partial class Server : OneServer{

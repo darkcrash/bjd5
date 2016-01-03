@@ -1,5 +1,5 @@
 ﻿
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
     partial class Server {
 

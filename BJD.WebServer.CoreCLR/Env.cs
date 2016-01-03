@@ -7,7 +7,7 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.sock;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class Env {
         //Ver5.6.2

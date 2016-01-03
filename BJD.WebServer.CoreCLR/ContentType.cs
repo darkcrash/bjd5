@@ -3,7 +3,7 @@ using System.Linq;
 using Bjd;
 using Bjd.option;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     public class ContentType {
         //readonly OneOption _oneOption;

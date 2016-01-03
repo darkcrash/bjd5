@@ -1,4 +1,4 @@
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     enum SmtpClientResult {
         Success = 0,//成功

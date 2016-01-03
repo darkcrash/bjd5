@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class CheckParam {
         public String Message { get; private set; }

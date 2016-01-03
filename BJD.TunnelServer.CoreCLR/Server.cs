@@ -8,7 +8,7 @@ using Bjd.server;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.TunnelServer
+namespace Bjd.TunnelServer
 {
     partial class Server : OneServer
     {

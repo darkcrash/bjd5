@@ -1,4 +1,4 @@
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     enum WebDavKind { //Ve5.1.x
         Non = 0,

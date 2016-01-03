@@ -1,5 +1,5 @@
 ﻿
-namespace BJD.TunnelServer {
+namespace Bjd.TunnelServer {
     partial class Server {
         //BJD.Lang.txt�ɕK�v�Ȓ�`�������Ă��邩�ǂ����̊m�F
         protected override void CheckLang()

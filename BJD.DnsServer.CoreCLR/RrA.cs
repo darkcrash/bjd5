@@ -1,7 +1,7 @@
 ﻿using Bjd.net;
 using Bjd.packet;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
 
     public class RrA : OneRr{

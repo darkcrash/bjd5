@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.ctrl;
 using Bjd.option;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
     public class OptionDnsResource : OneOption
     {

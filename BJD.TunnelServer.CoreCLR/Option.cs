@@ -6,7 +6,7 @@ using Bjd.net;
 using Bjd.option;
 using System.Collections.Generic;
 
-namespace BJD.TunnelServer
+namespace Bjd.TunnelServer
 {
     class Option : OneOption
     {

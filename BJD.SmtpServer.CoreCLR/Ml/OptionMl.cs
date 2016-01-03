@@ -4,7 +4,7 @@ using Bjd.ctrl;
 using Bjd.option;
 
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class OptionMl : OneOption {
         

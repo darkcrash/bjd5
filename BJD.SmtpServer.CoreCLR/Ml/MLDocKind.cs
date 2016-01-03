@@ -1,4 +1,4 @@
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //投稿者への定型メール
     enum MlDocKind {

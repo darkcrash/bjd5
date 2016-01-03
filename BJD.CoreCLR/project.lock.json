@@ -92,6 +92,19 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.SmtpServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
@@ -1047,6 +1060,19 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.SmtpServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -1891,6 +1917,19 @@
           "System.Linq": "4.0.1-beta-23516",
           "System.Runtime": "4.0.21-beta-23516",
           "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
           "System.Threading": "4.0.11-beta-23516"
         }
       },
@@ -3270,6 +3309,19 @@
           "System.Linq": "4.0.1-beta-23516",
           "System.Runtime": "4.0.21-beta-23516",
           "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
           "System.Threading": "4.0.11-beta-23516"
         }
       },
@@ -4657,6 +4709,19 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.SmtpServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -5757,6 +5822,19 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.RemoteServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.SmtpServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -6779,6 +6857,10 @@
     "BJD.Pop3Server.CoreCLR/1.0.0": {
       "type": "project",
       "path": "../BJD.Pop3Server.CoreCLR/project.json"
+    },
+    "BJD.RemoteServer.CoreCLR/1.0.0": {
+      "type": "project",
+      "path": "../BJD.RemoteServer.CoreCLR/project.json"
     },
     "BJD.SmtpServer.CoreCLR/1.0.0": {
       "type": "project",
@@ -9610,7 +9692,8 @@
       "BJD.TftpServer.CoreCLR >= 1.0.0-*",
       "BJD.WebApiServer.CoreCLR >= 1.0.0-*",
       "BJD.SmtpServer.CoreCLR >= 1.0.0-*",
-      "BJD.Pop3Server.CoreCLR >= 1.0.0-*"
+      "BJD.Pop3Server.CoreCLR >= 1.0.0-*",
+      "BJD.RemoteServer.CoreCLR >= 1.0.0-*"
     ],
     "DNXCore,Version=v5.0": [
       "Microsoft.CSharp >= 4.0.1-beta-23516",

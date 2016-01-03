@@ -2,7 +2,7 @@
 using Bjd.log;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //メールをファイルに追加する
     class LocalBox{

@@ -3,7 +3,7 @@ using System.Linq;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
 

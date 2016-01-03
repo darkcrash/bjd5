@@ -5,7 +5,7 @@ using Bjd.mail;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //***************************************************************
     //ＭＬのユーザ一覧(参加者及び管理者)

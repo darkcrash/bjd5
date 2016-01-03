@@ -1,4 +1,4 @@
-﻿namespace BJD.WebServer
+﻿namespace Bjd.WebServer
 {
     public enum HttpMethod {
         Get,

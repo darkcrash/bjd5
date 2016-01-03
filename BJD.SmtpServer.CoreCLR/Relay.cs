@@ -3,7 +3,7 @@ using Bjd.log;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class Relay {
         readonly RelayList _allowList;

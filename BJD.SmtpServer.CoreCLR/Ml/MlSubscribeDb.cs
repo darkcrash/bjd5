@@ -4,7 +4,7 @@ using System.IO;
 using Bjd;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlSubscribeDb : IDisposable {
         readonly string _fileName;

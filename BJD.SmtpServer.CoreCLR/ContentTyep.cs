@@ -1,4 +1,4 @@
-﻿namespace BJD.SmtpServer
+﻿namespace Bjd.SmtpServer
 {
     enum ContentTyep {
         Ascii = 0,

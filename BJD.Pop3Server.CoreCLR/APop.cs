@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BJD.Pop3Server {
+namespace Bjd.Pop3Server {
     class APop {
         
         //認証

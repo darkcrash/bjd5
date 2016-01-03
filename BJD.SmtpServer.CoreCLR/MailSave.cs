@@ -6,7 +6,7 @@ using Bjd.mail;
 using Bjd.net;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MailSave{
         readonly MailBox _mailBox;

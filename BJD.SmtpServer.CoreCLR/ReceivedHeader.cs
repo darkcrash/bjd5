@@ -4,7 +4,7 @@ using Bjd.mail;
 using Bjd.net;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class ReceivedHeader{
         private readonly Kernel _kernel;

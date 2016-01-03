@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     internal class SmtpAuth{
         public bool IsFinish { get; private set; } //認証が完了しているかどうか

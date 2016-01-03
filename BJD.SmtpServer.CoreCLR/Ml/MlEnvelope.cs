@@ -2,7 +2,7 @@
 using Bjd.mail;
 using Bjd.net;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlEnvelope {
         public MailAddress From { get;private set; }

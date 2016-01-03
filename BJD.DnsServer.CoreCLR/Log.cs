@@ -3,7 +3,7 @@ using Bjd.option;
 using Bjd.server;
 using Bjd.util;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
     partial class Server
     {

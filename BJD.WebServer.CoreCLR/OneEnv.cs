@@ -1,4 +1,4 @@
-﻿namespace BJD.WebServer
+﻿namespace Bjd.WebServer
 {
     class OneEnv {
         public string Key { get; private set; }

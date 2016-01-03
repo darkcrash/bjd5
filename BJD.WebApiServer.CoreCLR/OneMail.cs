@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Bjd.mail;
 
-namespace BJD.WebApiServer
+namespace Bjd.WebApiServer
 {
     class OneMail{
 

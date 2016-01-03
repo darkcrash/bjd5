@@ -5,7 +5,7 @@ using Bjd.ctrl;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
     public class Option : OneOption
     {

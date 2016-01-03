@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
     public class OneMount : IDisposable

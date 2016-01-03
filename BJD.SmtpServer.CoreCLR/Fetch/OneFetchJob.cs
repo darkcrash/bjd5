@@ -6,7 +6,7 @@ using Bjd.log;
 using Bjd.mail;
 using Debug = System.Diagnostics.Debug;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
 
     class OneFetchJob:LastError,IDisposable{

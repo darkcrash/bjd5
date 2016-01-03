@@ -1,4 +1,4 @@
-﻿namespace BJD.DnsServer
+﻿namespace Bjd.DnsServer
 {
     public enum DnsType{
         A,

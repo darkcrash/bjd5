@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.log;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class Agent : ThreadBase {
         readonly Conf _conf;

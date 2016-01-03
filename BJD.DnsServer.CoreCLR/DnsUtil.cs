@@ -2,7 +2,7 @@
 using System.Text;
 using Bjd.util;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
 
     // 文字列とDNS形式の名前(.の所に文字数が入る）の変換

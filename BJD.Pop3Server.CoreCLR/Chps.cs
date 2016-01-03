@@ -2,7 +2,7 @@
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
     internal class Chps{
         //パスワード変更

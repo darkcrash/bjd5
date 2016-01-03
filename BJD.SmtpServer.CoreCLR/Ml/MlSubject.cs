@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlSubject {
         readonly int _kind;

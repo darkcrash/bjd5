@@ -5,7 +5,7 @@ using Bjd.option;
 using Bjd.ctrl;
 using Bjd;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlOption {
         public int MaxSummary { get; private set; }

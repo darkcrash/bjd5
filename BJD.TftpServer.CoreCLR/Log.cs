@@ -1,5 +1,5 @@
 ﻿
-namespace BJD.TftpServer {
+namespace Bjd.TftpServer {
     partial class Server {
         //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()

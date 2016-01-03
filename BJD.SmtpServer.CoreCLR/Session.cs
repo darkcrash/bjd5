@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
 
     //セッションごとの情報

@@ -6,7 +6,7 @@ using Bjd.log;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     /*******************************************************/
     //�Ώہi�t�@�C���j�Ɋւ���e��̏���܂Ƃ߂Ĉ����N���X

@@ -6,7 +6,7 @@ using Bjd.net;
 using Bjd.acl;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //アドレスリスト allowList denyList
     internal class RelayList {

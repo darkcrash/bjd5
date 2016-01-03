@@ -4,7 +4,7 @@ using Bjd.mail;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class SmtpAuthUserList {
         //認証情報（どちらかが有効になる）

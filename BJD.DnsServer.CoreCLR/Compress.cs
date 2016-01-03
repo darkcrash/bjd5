@@ -2,7 +2,7 @@
 using Bjd.packet;
 using Bjd.util;
 
-namespace BJD.DnsServer{
+namespace Bjd.DnsServer{
     // DNS形式名前(byte[])を圧縮する
     // byte [] bufferは、現在、パケットの先頭からのバイト列
     // 結果は、GetData()で取得する

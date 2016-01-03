@@ -4,7 +4,7 @@ using System.Text;
 using Bjd.log;
 using Bjd.mail;
 
-namespace BJD.SmtpServer{
+namespace Bjd.SmtpServer{
     public class Alias{
 
         private readonly Dictionary<String, String> _ar = new Dictionary<string, string>();

@@ -10,7 +10,7 @@ using Bjd.server;
 using Bjd.sock;
 using Newtonsoft.Json;
 
-namespace BJD.WebApiServer
+namespace Bjd.WebApiServer
 {
     partial class Server : OneServer {
 

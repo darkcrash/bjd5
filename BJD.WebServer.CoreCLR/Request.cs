@@ -6,7 +6,7 @@ using Bjd.net;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     //********************************************************
     //���N�G�X�g/���X�|���X�����N���X

@@ -5,7 +5,7 @@ using System.Text;
 using Bjd;
 using Bjd.net;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //自動受信オプション
     public class OneFetch{

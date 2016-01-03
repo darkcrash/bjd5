@@ -2,7 +2,7 @@
 using Bjd.mail;
 using Bjd.net;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class PopBeforeSmtp{
         private readonly bool _usePopBeforeSmtp;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd.server;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     public enum SmtpCmdKind {
         Quit,

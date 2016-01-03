@@ -4,7 +4,7 @@ using Bjd.ctrl;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.TftpServer
+namespace Bjd.TftpServer
 {
     class Option : OneOption
     {

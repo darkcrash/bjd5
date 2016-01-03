@@ -1,4 +1,4 @@
-﻿namespace BJD.FtpServer
+﻿namespace Bjd.FtpServer
 {
     //FTPユーザの権限の種類
     public enum FtpAcl{

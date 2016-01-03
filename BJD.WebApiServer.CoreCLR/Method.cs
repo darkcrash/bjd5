@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BJD.WebApiServer
+namespace Bjd.WebApiServer
 {
     enum Method {
         Get,

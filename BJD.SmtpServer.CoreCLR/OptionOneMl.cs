@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.ctrl;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class OptionOneMl : OneOption {
         public override string MenuStr

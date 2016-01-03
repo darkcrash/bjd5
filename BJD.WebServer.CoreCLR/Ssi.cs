@@ -8,7 +8,7 @@ using Bjd.option;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class Ssi {
         readonly Kernel _kernel;

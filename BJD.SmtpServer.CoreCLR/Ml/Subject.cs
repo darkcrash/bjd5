@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //subject 特別処理
     class Subject

@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.mail;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlCreator
     {

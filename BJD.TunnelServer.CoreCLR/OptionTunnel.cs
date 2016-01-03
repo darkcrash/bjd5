@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.ctrl;
 using Bjd.option;
 
-namespace BJD.TunnelServer
+namespace Bjd.TunnelServer
 {
     internal class OptionTunnel : OneOption
     {

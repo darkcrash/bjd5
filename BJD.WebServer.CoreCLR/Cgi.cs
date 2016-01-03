@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class Cgi {
         public bool Exec(Target target, string param, Env env, WebStream inputStream, out WebStream outputStream, int cgiTimeout) {

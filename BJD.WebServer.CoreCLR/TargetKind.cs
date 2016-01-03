@@ -1,4 +1,4 @@
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     enum TargetKind {
         Non = 0,

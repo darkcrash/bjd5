@@ -1,7 +1,7 @@
 ﻿using Bjd.sock;
 using System;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
     //セッションごとの情報

@@ -4,7 +4,7 @@ using Bjd.ctrl;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.WebApiServer
+namespace Bjd.WebApiServer
 {
     public class Option : OneOption
     {

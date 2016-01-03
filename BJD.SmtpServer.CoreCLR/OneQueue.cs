@@ -1,7 +1,7 @@
 ﻿using Bjd;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class OneQueue {
         readonly string _fname;

@@ -1,7 +1,7 @@
 ﻿using Bjd.packet;
 using Bjd.util;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
 
 

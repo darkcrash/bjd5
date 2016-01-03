@@ -6,7 +6,7 @@ using Bjd.log;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class Authorization {
         //readonly OneOption _oneOption;

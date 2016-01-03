@@ -1,4 +1,4 @@
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     public enum MlAddrKind {
         None = 0,//無効

@@ -1,7 +1,7 @@
 using Bjd;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //１人の参加者
     public class MlOneUser {

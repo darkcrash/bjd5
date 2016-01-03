@@ -15,7 +15,7 @@ using Bjd.server;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     partial class Server : OneServer
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Bjd.util;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
 
     //１つのリソースレコードを表現するクラス

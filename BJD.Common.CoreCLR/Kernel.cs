@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading;
+using Bjd.Browse;
 using Bjd.log;
 using Bjd.mail;
 using Bjd.net;
@@ -13,7 +14,6 @@ using Bjd.plugin;
 using Bjd.remote;
 using Bjd.server;
 using Bjd.sock;
-using Bjd.tool;
 using Bjd.trace;
 using Bjd.util;
 
@@ -33,7 +33,6 @@ namespace Bjd
         //�T�[�o�N�����ɍŏ����������ϐ�
         public ListOption ListOption { get; private set; }
         public ListServer ListServer { get; private set; }
-        public ListTool ListTool { get; private set; } //�c�[���Ǘ�
         public LogFile LogFile { get; private set; }
         private bool _isJp = true;
         private Logger _logger;
@@ -117,7 +116,6 @@ namespace Bjd
             switch (RunMode)
             {
                 case RunMode.Normal:
-                case RunMode.NormalRegist:
                 case RunMode.Service:
                     break;
                 default:
@@ -142,12 +140,6 @@ namespace Bjd
             {
                 ListOption.Dispose();
                 ListOption = null;
-            }
-            //Java fix
-            if (ListTool != null)
-            {
-                ListTool.Dispose();
-                ListTool = null;
             }
             if (ListServer != null)
             {
@@ -299,7 +291,7 @@ namespace Bjd
                 var useLimitString = (bool)conf.Get("useLimitString");
                 return new Logger(this, logLimit, LogFile, _isJp, nameTag, useDetailsLog, useLimitString, logger);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -320,7 +312,7 @@ namespace Bjd
                 if (RunMode == RunMode.Normal)
                 {
                     var iniTmp = new IniDb(Define.ExecutableDirectory, "$tmp");//�o�b�N�A�b�v��쐬����ini�t�@�C����폜����
-                                                              //��U�A�ʃt�@�C���Ɍ��ݗL���Ȃ�̂���������߂�
+                                                                               //��U�A�ʃt�@�C���Ɍ��ݗL���Ȃ�̂���������߂�
                     ListOption.Save(iniTmp);
                     //�㏑������
                     File.Copy(iniTmp.Path, IniDb.Path, true);
@@ -336,7 +328,6 @@ namespace Bjd
                 //**********************************************
                 ListServer.Dispose(); //�e�T�[�o�͒�~�����
                 ListOption.Dispose();
-                ListTool.Dispose();
                 MailBox = null;
 
             }
@@ -358,32 +349,18 @@ namespace Bjd
 
         internal void Start()
         {
-
-            //�T�[�r�X�o�^����Ă���ꍇ�̏���
-            if (RunMode == RunMode.NormalRegist)
+            if (ListServer.Count == 0)
             {
+                _logger.Set(LogKind.Error, null, 9000030, "");
             }
             else {
-                if (ListServer.Count == 0)
-                {
-                    _logger.Set(LogKind.Error, null, 9000030, "");
-                }
-                else {
-                    ListServer.Start();
-                }
+                ListServer.Start();
             }
         }
 
         internal void Stop()
         {
-
-            //�T�[�r�X�o�^����Ă���ꍇ�̏���
-            if (RunMode == RunMode.NormalRegist)
-            {
-            }
-            else {
-                ListServer.Stop();
-            }
+            ListServer.Stop();
         }
 
         //�����[�g����(�f�[�^�̎擾)
@@ -476,6 +453,48 @@ namespace Bjd
                 ar = DnsCache.GetAddress(hostName).ToList();
             }
             return ar;
+        }
+
+        public string GetBrowseInfo(string path)
+        {
+            var sb = new StringBuilder();
+            try
+            {
+                if (path == "")
+                {
+                    path = "\\";
+                }
+
+                {
+                    string[] dirs = Directory.GetDirectories(path);
+                    Array.Sort(dirs);
+                    foreach (string s in dirs)
+                    {
+                        var name = s.Substring(path.Length);
+                        var info = new DirectoryInfo(s);
+                        const long size = 0;
+                        var dt = info.LastWriteTime;
+                        var p = new OneBrowse(BrowseKind.Dir, name, size, dt); //�P�f�[�^����
+                        sb.Append(p + "\t"); //���M�����񐶐�
+                    }
+                    var files = Directory.GetFiles(path);
+                    Array.Sort(files);
+                    foreach (var s in files)
+                    {
+                        var name = s.Substring(path.Length);
+                        var info = new FileInfo(s);
+                        var size = info.Length;
+                        var dt = info.LastWriteTime;
+                        var p = new OneBrowse(BrowseKind.File, name, size, dt); //�P�f�[�^����
+                        sb.Append(p + "\t"); //���M�����񐶐�
+                    }
+                }
+            }
+            catch
+            {
+                sb.Length = 0;
+            }
+            return sb.ToString();
         }
 
     }

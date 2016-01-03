@@ -1,4 +1,4 @@
-﻿namespace BJD.FtpServer
+﻿namespace Bjd.FtpServer
 {
 
     //FTPの転送モード

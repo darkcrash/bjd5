@@ -7,7 +7,7 @@ using Bjd;
 using Bjd.log;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MailQueue {
         readonly object _lockObj = new Object();

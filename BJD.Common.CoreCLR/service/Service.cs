@@ -28,6 +28,14 @@ namespace Bjd.service
             Trace.WriteLine("Service.ServiceMain End");
         }
 
+        public static void Restart()
+        {
+            Trace.WriteLine("Service.Restart Start");
+            instance.OnStop();
+            instance.OnStart();
+            Trace.WriteLine("Service.Restart End");
+        }
+
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             Trace.WriteLine("Service.ConsoleCancel Start");

@@ -8,7 +8,7 @@ using Bjd.log;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class SmtpAuthRange{
 

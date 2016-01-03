@@ -1,4 +1,4 @@
-﻿namespace BJD.SmtpServer
+﻿namespace Bjd.SmtpServer
 {
     class OneMlCmd {
         public MlCmdKind CmdKind { get; private set; }

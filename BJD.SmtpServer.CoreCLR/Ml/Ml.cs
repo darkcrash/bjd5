@@ -8,7 +8,7 @@ using Bjd.mail;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class Ml : IDisposable {
         public bool Status { get; private set; }//ステータス（管理領域の初期化に失敗した場合falseとなる）

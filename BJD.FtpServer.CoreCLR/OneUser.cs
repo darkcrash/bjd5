@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
     //Datオブジェクトの各プロパティをObject形式ではない本来の型で強制するため、これを表現するクラスを定義する

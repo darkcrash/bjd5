@@ -1,7 +1,7 @@
 using Bjd;
 using Bjd.net;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //接続先サーバの情報を表現するクラス
     class OneSmtpServer {

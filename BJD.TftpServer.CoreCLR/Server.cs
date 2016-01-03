@@ -12,7 +12,7 @@ using Bjd.sock;
 using Bjd.util;
 
 
-namespace BJD.TftpServer
+namespace Bjd.TftpServer
 {
     partial class Server :OneServer {
 

@@ -7,7 +7,7 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class Fetch : ThreadBase {
         readonly ListFetchJob _listFetchJob;

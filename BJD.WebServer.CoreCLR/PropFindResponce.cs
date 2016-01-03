@@ -5,7 +5,7 @@ using System.Xml;
 using Bjd;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     //PROPFINDにおいて検索した結果を保存してレスポンスを生成するクラス
     class PropFindResponce

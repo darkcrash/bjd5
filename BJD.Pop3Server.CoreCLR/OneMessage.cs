@@ -2,7 +2,7 @@ using System.IO;
 using Bjd.mail;
 using Bjd.sock;
 
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
     //***********************************************************************
     //メールボックスのメールをやり取りする情報を表現する

@@ -5,7 +5,7 @@ using Bjd.log;
 using Bjd.mail;
 using Bjd.sock;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //テストのためだけに公開されている
     internal enum RecvStatus {

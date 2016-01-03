@@ -1,7 +1,7 @@
 ﻿using Bjd.log;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlSender {
         readonly MailSave _mailSave;

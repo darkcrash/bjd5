@@ -1,5 +1,5 @@
 ﻿
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     partial class Server {
         //BJD.Lang.txt�ɕK�v�Ȓ�`�������Ă��邩�ǂ����̊m�F

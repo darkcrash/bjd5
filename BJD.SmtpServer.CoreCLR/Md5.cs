@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class Md5 {
         //MD5によるハッシュ作成

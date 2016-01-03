@@ -5,7 +5,7 @@ using System.Xml;
 using Bjd.log;
 using Bjd.util;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     //**********************************************************************************
     //WebDAV class 1 (ロック機能なし)に準拠

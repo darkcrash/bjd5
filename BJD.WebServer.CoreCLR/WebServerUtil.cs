@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class WebServerUtil {
         //ETagを生成する サイズ+更新日時（秒単位）

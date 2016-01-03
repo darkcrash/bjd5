@@ -3,7 +3,7 @@
 using Bjd;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class SmtpAuthClient {
         enum AuthType {

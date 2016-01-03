@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Bjd.util;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
     //カレントディレクトリ

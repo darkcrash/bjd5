@@ -3,7 +3,7 @@ using System.IO;
 using Bjd.log;
 using Bjd.mail;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //**************************************************************
     // １ML分の蓄積メール及びカウンタを処理するクラス

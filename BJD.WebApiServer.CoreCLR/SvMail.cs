@@ -7,7 +7,7 @@ using Bjd;
 using Bjd.mail;
 using Newtonsoft.Json;
 
-namespace BJD.WebApiServer
+namespace Bjd.WebApiServer
 {
     class SvMail{
         private readonly MailBox _mailBox;

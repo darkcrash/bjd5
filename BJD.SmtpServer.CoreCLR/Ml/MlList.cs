@@ -6,7 +6,7 @@ using Bjd.log;
 using Bjd.mail;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlList:IDisposable {
         readonly List<Ml> _ar = new List<Ml>();

@@ -2,7 +2,7 @@ using System;
 using Bjd.packet;
 using Bjd.util;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
 
     // 開始位置 buffer[offSet]から、ホスト名(string)を取り出す

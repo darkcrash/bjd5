@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.mail;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class OneSubscribe {
         public string Name { get; private set; }//ユーザ名

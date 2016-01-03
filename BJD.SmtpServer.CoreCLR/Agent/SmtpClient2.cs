@@ -9,7 +9,7 @@ using Bjd.mail;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
 
 

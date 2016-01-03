@@ -25,7 +25,8 @@
     "BJD.TftpServer.CoreCLR": "1.0.0-*",
     "BJD.WebApiServer.CoreCLR": "1.0.0-*",
     "BJD.SmtpServer.CoreCLR": "1.0.0-*",
-    "BJD.Pop3Server.CoreCLR": "1.0.0-*"
+    "BJD.Pop3Server.CoreCLR": "1.0.0-*",
+    "BJD.RemoteServer.CoreCLR": "1.0.0-*"
   },
 
   "commands": {

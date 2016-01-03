@@ -1,7 +1,7 @@
 ﻿using Bjd;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlSwapStr {
         static public string ConvertAddr(string str,MlAddr mlAddr){

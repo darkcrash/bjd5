@@ -10,7 +10,7 @@ using Bjd.server;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
 
 

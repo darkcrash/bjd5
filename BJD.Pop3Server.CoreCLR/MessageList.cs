@@ -5,7 +5,7 @@ using System.Linq;
 using Bjd;
 using Bjd.mail;
 
-namespace BJD.Pop3Server
+namespace Bjd.Pop3Server
 {
     class MessageList {
         readonly List<OneMessage> _ar = new List<OneMessage>();

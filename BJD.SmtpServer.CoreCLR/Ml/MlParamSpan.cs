@@ -1,6 +1,6 @@
 using System;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     //Startが-1のとき、データは無効となる
     class MlParamSpan {

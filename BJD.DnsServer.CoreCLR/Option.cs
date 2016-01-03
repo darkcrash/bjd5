@@ -5,7 +5,7 @@ using Bjd.ctrl;
 using Bjd.net;
 using Bjd.option;
 
-namespace BJD.DnsServer
+namespace Bjd.DnsServer
 {
     class Option : OneOption
     {

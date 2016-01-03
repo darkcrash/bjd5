@@ -9,7 +9,7 @@ using Bjd.option;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class OneAgent : ThreadBase {
         readonly Conf _conf;

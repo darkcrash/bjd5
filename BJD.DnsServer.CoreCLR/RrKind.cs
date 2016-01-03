@@ -1,4 +1,4 @@
-﻿namespace BJD.DnsServer
+﻿namespace Bjd.DnsServer
 {
 
 

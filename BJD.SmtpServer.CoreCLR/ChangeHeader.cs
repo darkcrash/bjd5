@@ -5,7 +5,7 @@ using Bjd.log;
 using Bjd.mail;
 using Bjd.option;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class ChangeHeader {
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class WebStream : IDisposable {
         WebStreamDisk _disk;

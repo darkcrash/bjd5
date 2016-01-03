@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.mail;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     class MlAddr {
         public List<string> DomainList { get; private set; }

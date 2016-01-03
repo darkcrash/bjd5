@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading;
 
-namespace BJD.WebServer
+namespace Bjd.WebServer
 {
     class ExecProcess {
         readonly ProcessStartInfo _info;

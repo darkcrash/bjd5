@@ -1,4 +1,4 @@
-﻿namespace BJD.Pop3Server
+﻿namespace Bjd.Pop3Server
 {
     enum Pop3Cmd{
         Quit,

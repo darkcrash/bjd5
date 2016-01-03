@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Bjd.option;
 using Bjd.util;
 
-namespace BJD.FtpServer
+namespace Bjd.FtpServer
 {
     class ListUser : ListBase<OneUser>
     {

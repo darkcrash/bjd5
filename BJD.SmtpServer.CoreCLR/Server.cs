@@ -13,7 +13,7 @@ using Bjd.server;
 using Bjd.sock;
 using Bjd.util;
 
-namespace BJD.SmtpServer
+namespace Bjd.SmtpServer
 {
     public partial class Server : OneServer {
 
