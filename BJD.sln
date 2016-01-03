@@ -151,27 +151,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServer", "WebApiServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServerTest", "WebApiServerTest\WebApiServerTest.csproj", "{2FB252CF-D3DF-427F-B5B3-E3D5A65D721F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.CoreCLR", "BJD.CoreCLR\BJD.CoreCLR.xproj", "{2AD95029-FF06-4C7A-B516-F4EAE85C601C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.CoreCLR", "Bjd.CoreCLR\Bjd.CoreCLR.xproj", "{2AD95029-FF06-4C7A-B516-F4EAE85C601C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.WebServer.CoreCLR", "BJD.WebServer.CoreCLR\BJD.WebServer.CoreCLR.xproj", "{98424797-EAEF-4717-B8D9-BDF587AA370B}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebServer.CoreCLR", "Bjd.WebServer.CoreCLR\Bjd.WebServer.CoreCLR.xproj", "{98424797-EAEF-4717-B8D9-BDF587AA370B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.Common.CoreCLR", "BJD.Common.CoreCLR\BJD.Common.CoreCLR.xproj", "{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Common.CoreCLR", "Bjd.Common.CoreCLR\Bjd.Common.CoreCLR.xproj", "{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.FtpServer.CoreCLR", "BJD.FtpServer.CoreCLR\BJD.FtpServer.CoreCLR.xproj", "{0BCCDB32-14E6-4705-A2B2-BD608C770280}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.FtpServer.CoreCLR", "Bjd.FtpServer.CoreCLR\Bjd.FtpServer.CoreCLR.xproj", "{0BCCDB32-14E6-4705-A2B2-BD608C770280}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.DnsServer.CoreCLR", "BJD.DnsServer.CoreCLR\BJD.DnsServer.CoreCLR.xproj", "{2E294B64-0F25-4342-8181-E082F3309B5C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DnsServer.CoreCLR", "Bjd.DnsServer.CoreCLR\Bjd.DnsServer.CoreCLR.xproj", "{2E294B64-0F25-4342-8181-E082F3309B5C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.TunnelServer.CoreCLR", "BJD.TunnelServer.CoreCLR\BJD.TunnelServer.CoreCLR.xproj", "{408A5086-D802-4F25-8E9B-82F0E3830721}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.TunnelServer.CoreCLR", "Bjd.TunnelServer.CoreCLR\Bjd.TunnelServer.CoreCLR.xproj", "{408A5086-D802-4F25-8E9B-82F0E3830721}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.TftpServer.CoreCLR", "BJD.TftpServer.CoreCLR\BJD.TftpServer.CoreCLR.xproj", "{A269B873-2D8F-4C83-B1A5-03FF35FF48ED}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.TftpServer.CoreCLR", "Bjd.TftpServer.CoreCLR\Bjd.TftpServer.CoreCLR.xproj", "{A269B873-2D8F-4C83-B1A5-03FF35FF48ED}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.WebApiServer.CoreCLR", "BJD.WebApiServer.CoreCLR\BJD.WebApiServer.CoreCLR.xproj", "{EC34B552-06A6-4510-86DD-D18B137A2F47}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebApiServer.CoreCLR", "Bjd.WebApiServer.CoreCLR\Bjd.WebApiServer.CoreCLR.xproj", "{EC34B552-06A6-4510-86DD-D18B137A2F47}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.SmtpServer.CoreCLR", "BJD.SmtpServer.CoreCLR\BJD.SmtpServer.CoreCLR.xproj", "{FE47EE07-A4F0-45D7-A20F-3CC4C59ED09E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.SmtpServer.CoreCLR", "Bjd.SmtpServer.CoreCLR\Bjd.SmtpServer.CoreCLR.xproj", "{FE47EE07-A4F0-45D7-A20F-3CC4C59ED09E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.Pop3Server.CoreCLR", "BJD.Pop3Server.CoreCLR\BJD.Pop3Server.CoreCLR.xproj", "{699DAAD6-AF4B-4BEC-9A8D-476DA30DA3D4}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Pop3Server.CoreCLR", "Bjd.Pop3Server.CoreCLR\Bjd.Pop3Server.CoreCLR.xproj", "{699DAAD6-AF4B-4BEC-9A8D-476DA30DA3D4}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BJD.RemoteServer.CoreCLR", "BJD.RemoteServer.CoreCLR\BJD.RemoteServer.CoreCLR.xproj", "{2220A470-171E-4067-9088-8274BC6817E8}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.RemoteServer.CoreCLR", "Bjd.RemoteServer.CoreCLR\Bjd.RemoteServer.CoreCLR.xproj", "{2220A470-171E-4067-9088-8274BC6817E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
