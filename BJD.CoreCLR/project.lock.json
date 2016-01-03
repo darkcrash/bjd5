@@ -78,6 +78,19 @@
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
         }
       },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
@@ -953,6 +966,19 @@
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
         }
       },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -1718,6 +1744,19 @@
           "System.Threading.ThreadPool": "4.0.10-beta-23516",
           "System.Xml.ReaderWriter": "4.0.11-beta-23516",
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
+        }
+      },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
         }
       },
       "BJD.WebServer.CoreCLR/1.0.0": {
@@ -3017,6 +3056,19 @@
           "System.Threading.ThreadPool": "4.0.10-beta-23516",
           "System.Xml.ReaderWriter": "4.0.11-beta-23516",
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
+        }
+      },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
         }
       },
       "BJD.WebServer.CoreCLR/1.0.0": {
@@ -4323,6 +4375,19 @@
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
         }
       },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -5343,6 +5408,19 @@
           "System.Xml.XmlDocument": "4.0.1-beta-23516"
         }
       },
+      "BJD.TunnelServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -6295,6 +6373,10 @@
     "BJD.FtpServer.CoreCLR/1.0.0": {
       "type": "project",
       "path": "../BJD.FtpServer.CoreCLR/project.json"
+    },
+    "BJD.TunnelServer.CoreCLR/1.0.0": {
+      "type": "project",
+      "path": "../BJD.TunnelServer.CoreCLR/project.json"
     },
     "BJD.WebServer.CoreCLR/1.0.0": {
       "type": "project",
@@ -9083,7 +9165,8 @@
       "BJD.Common.CoreCLR >= 1.0.0-*",
       "BJD.WebServer.CoreCLR >= 1.0.0-*",
       "BJD.FtpServer.CoreCLR >= 1.0.0-*",
-      "BJD.DnsServer.CoreCLR >= 1.0.0-*"
+      "BJD.DnsServer.CoreCLR >= 1.0.0-*",
+      "BJD.TunnelServer.CoreCLR >= 1.0.0-*"
     ],
     "DNXCore,Version=v5.0": [
       "Microsoft.CSharp >= 4.0.1-beta-23516",
