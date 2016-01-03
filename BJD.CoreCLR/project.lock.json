@@ -105,6 +105,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
@@ -171,6 +185,15 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.PlatformAbstractions.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "System.AppContext/4.0.1-beta-23516": {
@@ -1007,6 +1030,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -1073,6 +1110,15 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.PlatformAbstractions.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "System.AppContext/4.0.1-beta-23516": {
@@ -1801,6 +1847,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
@@ -1898,6 +1958,15 @@
         },
         "runtime": {
           "lib/DNXCore50/Microsoft.Win32.Registry.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.win.System.Text.Encoding.CodePages/4.0.1-beta-23516": {
@@ -3127,6 +3196,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": "DNXCore,Version=v5.0",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": "DNXCore,Version=v5.0",
@@ -3224,6 +3307,15 @@
         },
         "runtime": {
           "lib/DNXCore50/Microsoft.Win32.Registry.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.win.System.Text.Encoding.CodePages/4.0.1-beta-23516": {
@@ -4458,6 +4550,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -4524,6 +4630,15 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.PlatformAbstractions.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.win.System.Text.Encoding.CodePages/4.0.1-beta-23516": {
@@ -5505,6 +5620,20 @@
           "System.Threading": "4.0.11-beta-23516"
         }
       },
+      "BJD.WebApiServer.CoreCLR/1.0.0": {
+        "type": "project",
+        "framework": ".NETPlatform,Version=v5.4",
+        "dependencies": {
+          "BJD.Common.CoreCLR": "1.0.0",
+          "Microsoft.CSharp": "4.0.1-beta-23516",
+          "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+          "Newtonsoft.Json": "8.0.1",
+          "System.Collections": "4.0.11-beta-23516",
+          "System.Linq": "4.0.1-beta-23516",
+          "System.Runtime": "4.0.21-beta-23516",
+          "System.Threading": "4.0.11-beta-23516"
+        }
+      },
       "BJD.WebServer.CoreCLR/1.0.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.4",
@@ -5571,6 +5700,15 @@
         },
         "runtime": {
           "lib/dotnet5.4/Microsoft.Extensions.PlatformAbstractions.dll": {}
+        }
+      },
+      "Newtonsoft.Json/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.win.System.Text.Encoding.CodePages/4.0.1-beta-23516": {
@@ -6466,6 +6604,10 @@
       "type": "project",
       "path": "../BJD.TunnelServer.CoreCLR/project.json"
     },
+    "BJD.WebApiServer.CoreCLR/1.0.0": {
+      "type": "project",
+      "path": "../BJD.WebApiServer.CoreCLR/project.json"
+    },
     "BJD.WebServer.CoreCLR/1.0.0": {
       "type": "project",
       "path": "../BJD.WebServer.CoreCLR/project.json"
@@ -6588,6 +6730,28 @@
         "ref/dotnet5.2/zh-hans/Microsoft.Win32.Registry.xml",
         "ref/dotnet5.2/zh-hant/Microsoft.Win32.Registry.xml",
         "ref/net46/Microsoft.Win32.Registry.dll"
+      ]
+    },
+    "Newtonsoft.Json/8.0.1": {
+      "type": "package",
+      "sha512": "qFzqzune1D7hDz8kNavFwrJ0fv8qkwANGyUOPjP0I67DmNH04nmSCRB0g0LCIqogMKrBXjsiP43Z0E1huBvxOg==",
+      "files": [
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
+        "Newtonsoft.Json.8.0.1.nupkg",
+        "Newtonsoft.Json.8.0.1.nupkg.sha512",
+        "Newtonsoft.Json.nuspec",
+        "tools/install.ps1"
       ]
     },
     "runtime.win.System.Text.Encoding.CodePages/4.0.1-beta-23516": {
@@ -9255,7 +9419,8 @@
       "BJD.FtpServer.CoreCLR >= 1.0.0-*",
       "BJD.DnsServer.CoreCLR >= 1.0.0-*",
       "BJD.TunnelServer.CoreCLR >= 1.0.0-*",
-      "BJD.TftpServer.CoreCLR >= 1.0.0-*"
+      "BJD.TftpServer.CoreCLR >= 1.0.0-*",
+      "BJD.WebApiServer.CoreCLR >= 1.0.0-*"
     ],
     "DNXCore,Version=v5.0": [
       "Microsoft.CSharp >= 4.0.1-beta-23516",
