@@ -15,6 +15,7 @@ namespace Bjd.sock
         private Socket _socket;
         byte[] _udpBuf;
         private Ip _bindIp;
+        private int _bindPort;
 
         private readonly Ssl _ssl;
 
@@ -91,6 +92,7 @@ namespace Bjd.sock
         public bool Bind(Ip bindIp, int port)
         {
             _bindIp = bindIp;
+            _bindPort = port;
             if (ProtocolKind != ProtocolKind.Udp)
                 Util.RuntimeException("use tcp version bind()");
 
@@ -134,7 +136,7 @@ namespace Bjd.sock
                     // UDP
                     var retry = 10;
                     again:
-                    var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, 0);
+                    var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
                     try
                     {
                         _socket.BeginReceiveFrom(_udpBuf, 0, _udpBuf.Length, SocketFlags.None, ref ep, AcceptFunc, this);

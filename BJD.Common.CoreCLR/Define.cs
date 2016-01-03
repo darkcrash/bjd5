@@ -20,6 +20,7 @@ namespace Bjd
         string _productVersion;
         string _Copyright;
         string _OperatingSystem;
+        bool isWindows = false;
         Library[] _libraries;
 
         public static void Initialize(IServiceProvider sb)
@@ -115,7 +116,6 @@ namespace Bjd
                 Trace.Unindent();
             }
 
-
             // current directory
             var dir = System.IO.Directory.GetCurrentDirectory();
             var asm = typeof(Define).GetTypeInfo().Assembly;
@@ -130,8 +130,18 @@ namespace Bjd
             Instance._executablePath = System.IO.Path.Combine(AppContext.BaseDirectory, "BJD.CoreCLR");
             Instance._productVersion = asmName.Version.ToString();
             Instance._OperatingSystem = $"{runtimeEnvironment.OperatingSystem} {runtimeEnvironment.OperatingSystemVersion}";
+            Instance.isWindows = (runtimeEnvironment.OperatingSystem == "Windows");
+            OnChangeOperationSystem();
+
 
             Trace.WriteLine("Define.Initialize End");
+        }
+
+        public static event EventHandler ChangeOperationSystem;
+        protected static void OnChangeOperationSystem()
+        {
+            if (ChangeOperationSystem != null)
+                ChangeOperationSystem(Instance, EventArgs.Empty);
         }
 
         private static T GetService<T>(IServiceProvider serviceProvider)
@@ -187,6 +197,14 @@ namespace Bjd
                 return Instance._OperatingSystem;
             }
         }
+        public static bool IsWindows
+        {
+            get
+            {
+                return Instance.isWindows;
+            }
+        }
+
 
         public static string Date()
         {

@@ -13,6 +13,24 @@ namespace Bjd.trace
             this.IndentSize = 2;
             if (Console.WindowWidth < 200)
                 Console.WindowWidth = 200;
+
+            Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
+
+
+            Define.ChangeOperationSystem += Define_ChangeOperationSystem;
+
+        }
+
+        private void Define_ChangeOperationSystem(object sender, EventArgs e)
+        {
+            if (Define.IsWindows)
+            {
+                var enc = System.Text.CodePagesEncodingProvider.Instance;
+                var sjis = enc.GetEncoding(932);
+                var writer = new System.IO.StreamWriter(Console.OpenStandardOutput(), sjis);
+                writer.AutoFlush = true;
+                Console.SetOut(writer);
+            }
         }
 
         public override void Write(string message)
