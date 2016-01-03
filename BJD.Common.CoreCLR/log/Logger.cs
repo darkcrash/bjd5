@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 using Bjd.sock;
 using Bjd.util;
 
-namespace Bjd.log{
+namespace Bjd.log
+{
     public delegate string GetMsgDelegate(int no);
 
     //ログ出力用のクラス<br>
     //ファイルとディスプレイの両方を統括する
     //テスト用に、Logger.create()でログ出力を処理を一切行わないインスタンスが作成される
-    public class Logger{
+    public class Logger
+    {
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
         private readonly LogFile _logFile;
@@ -20,13 +22,16 @@ namespace Bjd.log{
         private readonly bool _useLimitString;
         private readonly ILogger _logger;
 
-        [DllImport("kernel32.dll")]
-        static extern int GetCurrentThreadId();
+        static int GetCurrentThreadId()
+        {
+            return System.Threading.Thread.CurrentThread.ManagedThreadId;
+        }
 
         //コンストラクタ
         //kernelの中でCreateLogger()を定義して使用する
         public Logger(Kernel kernel, LogLimit logLimit, LogFile logFile, bool isJp, String nameTag,
-                      bool useDetailsLog, bool useLimitString, ILogger logger){
+                      bool useDetailsLog, bool useLimitString, ILogger logger)
+        {
             _kernel = kernel;
             _logLimit = logLimit;
             _logFile = logFile;
@@ -38,7 +43,8 @@ namespace Bjd.log{
         }
 
         //テスト用
-        public Logger(){
+        public Logger()
+        {
             _logLimit = null;
             _logFile = null;
             _isJp = true;
@@ -50,28 +56,35 @@ namespace Bjd.log{
 
         //ログ出力
         //Override可能（テストで使用）
-        public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation){
+        public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation)
+        {
             //デバッグ等でkernelが初期化されていない場合、処理なし
-            if (_logFile == null){
+            if (_logFile == null)
+            {
                 return;
             }
             //詳細ログが対象外の場合、処理なし
-            if (logKind == LogKind.Detail){
-                if (!_useDetailsLog){
+            if (logKind == LogKind.Detail)
+            {
+                if (!_useDetailsLog)
+                {
                     return;
                 }
             }
             int threadId = GetCurrentThreadId();
             //long threadId = Thread.currentThread().getId(); 
             var message = _isJp ? "定義されていません" : "Message is not defined";
-            if (messageNo < 9000000){
-                if (_logger != null){
+            if (messageNo < 9000000)
+            {
+                if (_logger != null)
+                {
                     message = _logger.GetMsg(messageNo); //デリゲートを使用した継承によるメッセージ取得
                 }
             }
-            else{
+            else {
                 //(9000000以上)共通番号の場合の処理
-                switch (messageNo){
+                switch (messageNo)
+                {
                     case 9000000:
                         message = _isJp ? "サーバ開始" : "Server started it";
                         break;
@@ -120,12 +133,12 @@ namespace Bjd.log{
                     case 9000013:
                         message = "tcpQueue().Dequeue()";
                         break;
-                        //			case 9000014:
-                        //				message = "SendBinaryFile(string fileName) socket.Send()";
-                        //				break;
-                        //			case 9000015:
-                        //				message = "SendBinaryFile(string fileName,long rangeFrom,long rangeTo) socket.Send()";
-                        //				break;
+                    //			case 9000014:
+                    //				message = "SendBinaryFile(string fileName) socket.Send()";
+                    //				break;
+                    //			case 9000015:
+                    //				message = "SendBinaryFile(string fileName,long rangeFrom,long rangeTo) socket.Send()";
+                    //				break;
                     case 9000016:
                         message = _isJp
                                       ? "このアドレスからの接続は許可されていません(ACL)"
@@ -159,11 +172,11 @@ namespace Bjd.log{
                     case 9000024:
                         message = _isJp ? "SSLの初期化に失敗しているためサーバは起動できません" : "A server cannot start in order to fail in initialization of SSL";
                         break;
-                        //case 9000025: message = isJp ? "ファイル（秘密鍵）が見つかりません" : "Private key is not found"; break;
+                    //case 9000025: message = isJp ? "ファイル（秘密鍵）が見つかりません" : "Private key is not found"; break;
                     case 9000026:
                         message = _isJp ? "ファイル（証明書）が見つかりません" : "A certificate is not found";
                         break;
-                        //case 9000027: message = isJp ? "OpenSSLのライブラリ(ssleay32.dll,libeay32.dll)が見つかりません" : "OpenSSL library (ssleay32.dll,libeay32.dll) is not found"; break;
+                    //case 9000027: message = isJp ? "OpenSSLのライブラリ(ssleay32.dll,libeay32.dll)が見つかりません" : "OpenSSL library (ssleay32.dll,libeay32.dll) is not found"; break;
                     case 9000028:
                         message = _isJp ? "SSLの初期化に失敗しています" : "Initialization of SSL made a blunder";
                         break;
@@ -274,7 +287,7 @@ namespace Bjd.log{
                     case 9000061:
                         message = _isJp ? "【例外】" : "[Exception]";
                         break;
-                    //case 9000061:
+                        //case 9000061:
                         //	message = isJp ? "ファイルの作成に失敗しました" : "Failed in making of a file";
                         //	break;
                 }
@@ -287,9 +300,11 @@ namespace Bjd.log{
 
             // 表示制限にヒットするかどうかの確認
             var isDisplay = true;
-            if (!oneLog.IsSecure()){
+            if (!oneLog.IsSecure())
+            {
                 //セキュリティログは表示制限の対象外
-                if (_logLimit != null){
+                if (_logLimit != null)
+                {
                     isDisplay = _logLimit.IsDisplay(oneLog.ToString());
                 }
             }
@@ -298,7 +313,8 @@ namespace Bjd.log{
             //LogViewの中で実行していたリモートクライアントへの送信をこちらに移動する
             //サービス起動の際に、ListViewがnullで、処理されないから
             //リモートクライアントへのログ送信
-            if (_kernel != null && _kernel.RemoteConnect != null && _kernel.ListServer != null) {
+            if (_kernel != null && _kernel.RemoteConnect != null && _kernel.ListServer != null)
+            {
                 //クライアントから接続されている場合
                 var sv = _kernel.ListServer.Get("Remote");
                 if (sv != null)
@@ -306,15 +322,18 @@ namespace Bjd.log{
             }
 
 
-            if (_logFile != null){
-                if (_useLimitString){
+            if (_logFile != null)
+            {
+                if (_useLimitString)
+                {
                     //表示制限が有効な場合
-                    if (isDisplay){
+                    if (isDisplay)
+                    {
                         //isDisplayの結果に従う
                         _logFile.Append(oneLog);
                     }
                 }
-                else{
+                else {
                     //表示制限が無効な場合は、すべて保存される
                     _logFile.Append(oneLog);
                 }
@@ -323,24 +342,31 @@ namespace Bjd.log{
 
 
         //Ver5.3.2
-        public void Exception(Exception ex, SockObj sockObj, int messageNo) {
+        public void Exception(Exception ex, SockObj sockObj, int messageNo)
+        {
             Set(LogKind.Error, sockObj, messageNo, ex.Message);
             string[] tmp = ex.StackTrace.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string s in tmp) {
+            foreach (string s in tmp)
+            {
                 var lines = new List<string>();
                 var l = Util.SwapStr("\r\n", "", s);
-                while (true) {
-                    if (l.Length < 80) {
+                while (true)
+                {
+                    if (l.Length < 80)
+                    {
                         lines.Add(l);
                         break;
                     }
                     lines.Add(l.Substring(0, 80));
                     l = l.Substring(80);
                 }
-                for (int i = 0; i < lines.Count; i++) {
-                    if (i == 0) {
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    if (i == 0)
+                    {
                         Set(LogKind.Error, sockObj, messageNo, lines[i]);
-                    } else {
+                    }
+                    else {
                         Set(LogKind.Error, sockObj, messageNo, "   -" + lines[i]);
                     }
                 }
