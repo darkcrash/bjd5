@@ -183,6 +183,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyPop3Server.CoreCLR
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyHttpServer.CoreCLR", "Bjd.ProxyHttpServer.CoreCLR\Bjd.ProxyHttpServer.CoreCLR.xproj", "{0FD8CF7A-CB45-48A2-9175-53D869694935}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyFtpServer.CoreCLR", "Bjd.ProxyFtpServer.CoreCLR\Bjd.ProxyFtpServer.CoreCLR.xproj", "{5AC27898-65C7-45CC-842B-09997E481701}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -1691,6 +1693,42 @@ Global
 		{0FD8CF7A-CB45-48A2-9175-53D869694935}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
 		{0FD8CF7A-CB45-48A2-9175-53D869694935}.Tmp|x86.ActiveCfg = Debug|Any CPU
 		{0FD8CF7A-CB45-48A2-9175-53D869694935}.Tmp|x86.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|Any CPU.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|x86.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.CD_ROM|x86.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Debug|x86.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.DVD-5|x86.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|x86.ActiveCfg = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Release|x86.Build.0 = Release|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|Any CPU.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|x86.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.SingleImage|x86.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|Any CPU.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|x86.ActiveCfg = Debug|Any CPU
+		{5AC27898-65C7-45CC-842B-09997E481701}.Tmp|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
