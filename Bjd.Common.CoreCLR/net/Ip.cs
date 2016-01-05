@@ -406,5 +406,11 @@ namespace Bjd.net {
         protected override void Init(){
             Init(InetKind.V4);
         }
+
+        protected internal override void FromString(string text)
+        {
+            this.Init(text);
+        }
+
     }
 }

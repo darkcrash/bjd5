@@ -32,7 +32,8 @@
     "Bjd.SipServer.CoreCLR": "1.0.0-*",
     "Bjd.ProxyPop3Server.CoreCLR": "1.0.0-*",
     "Bjd.ProxyHttpServer.CoreCLR": "1.0.0-*",
-    "Bjd.ProxyFtpServer.CoreCLR": "1.0.0-*"
+    "Bjd.ProxyFtpServer.CoreCLR": "1.0.0-*",
+    "Bjd.DhcpServer.CoreCLR": "1.0.0-*"
   },
 
   "commands": {
