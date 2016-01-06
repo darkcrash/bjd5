@@ -10,7 +10,6 @@ namespace Bjd.service
         Kernel _kernel;
         static Service instance = new Service();
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
-        static IServiceProvider serviceProvider;
 
         public static void ServiceMain(IServiceProvider sb)
         {

@@ -27,7 +27,6 @@ namespace Bjd
         public RemoteConnect RemoteConnect { get; set; } //�����[�g����Őڑ�����Ă��鎞���������������
         public DnsCache DnsCache { get; private set; }
         public Ver Ver { get; private set; }
-        private readonly bool _isTest; //TEST�p��Kernel�𐶐�����ꍇ�Atrue�ɐݒ肳���
         public MailBox MailBox { get; private set; }
 
         //�T�[�o�N�����ɍŏ����������ϐ�
@@ -291,7 +290,7 @@ namespace Bjd
                 var useLimitString = (bool)conf.Get("useLimitString");
                 return new Logger(this, logLimit, LogFile, _isJp, nameTag, useDetailsLog, useLimitString, logger);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

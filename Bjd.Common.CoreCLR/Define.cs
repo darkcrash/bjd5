@@ -18,7 +18,6 @@ namespace Bjd
         string _executablePath;
         string _executableDirectory;
         string _productVersion;
-        string _Copyright;
         string _OperatingSystem;
         bool isWindows = false;
         Library[] _libraries;

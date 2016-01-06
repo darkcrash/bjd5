@@ -128,7 +128,7 @@ namespace Bjd.option
                     Value = Convert.ChangeType(str, this.ValueType);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

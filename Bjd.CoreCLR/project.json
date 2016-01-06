@@ -37,7 +37,7 @@
   },
 
   "commands": {
-    "Bjd.CoreCLR": "Bjd.Common.CoreCLR"
+    "Bjd.CoreCLR": "Bjd.CoreCLR"
   },
 
   "frameworks": {
