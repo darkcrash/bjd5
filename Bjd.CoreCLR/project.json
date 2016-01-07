@@ -16,7 +16,6 @@
   },
 
   "dependencies": {
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
     "Bjd.Common.CoreCLR": "1.0.0-*",
     "Bjd.WebServer.CoreCLR": "1.0.0-*",
     "Bjd.FtpServer.CoreCLR": "1.0.0-*",
@@ -37,11 +36,10 @@
   },
 
   "commands": {
-    "bjd": "Bjd.Common"
+    "bjd": "Bjd.Common.CoreCLR"
   },
 
   "frameworks": {
-    "dnxcore50": { },
-    "dotnet5.4": { }
+    "dnxcore50": { }
   }
 }
