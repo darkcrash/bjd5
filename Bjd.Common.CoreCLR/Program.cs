@@ -2,10 +2,12 @@
 using Bjd.service;
 using System.Diagnostics;
 
-namespace Bjd {
-    public class Program {
+namespace Bjd.Common
+{
+    public class Program
+    {
 
-        private readonly IServiceProvider _serviceProvider;
+        private static IServiceProvider _serviceProvider;
         public Program(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
@@ -13,7 +15,7 @@ namespace Bjd {
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
-        public void Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {

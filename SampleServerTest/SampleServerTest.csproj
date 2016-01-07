@@ -57,14 +57,6 @@
     <Compile Include="ServerTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BJDTest\BJDTest.csproj">
-      <Project>{F9DEF84B-37EC-48DA-A302-BF4AB960185A}</Project>
-      <Name>BJDTest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BJD\BJD.csproj">
-      <Project>{A219B3D7-33D9-4C73-814D-1909D067372B}</Project>
-      <Name>BJD</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SampleServer\SampleServer.csproj">
       <Project>{A8C669B1-2E1C-4F80-9951-7FFED066A447}</Project>
       <Name>SampleServer</Name>
