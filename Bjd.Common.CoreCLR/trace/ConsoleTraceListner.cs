@@ -11,19 +11,37 @@ namespace Bjd.trace
         {
             this.TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime | System.Diagnostics.TraceOptions.ThreadId;
             this.IndentSize = 2;
-            if (Console.WindowWidth < 200)
-                Console.WindowWidth = 200;
+            try
+            {
+                if (Console.WindowWidth < 200)
+                    Console.WindowWidth = 200;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error Change WindowWidth.");
+            }
 
-            Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
+            try
+            {
 
+                Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
 
-            Define.ChangeOperationSystem += Define_ChangeOperationSystem;
+                Define.ChangeOperationSystem += Define_ChangeOperationSystem;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error .ctor ConsoleTraceListner");
+            }
 
         }
 
         private void Define_ChangeOperationSystem(object sender, EventArgs e)
         {
-            if (Define.IsWindows)
+            // fix Windows ja-jp to codepage 932
+            var lang = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            var lang2 = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+            if (Define.IsWindows && lang == "ja")
             {
                 var enc = System.Text.CodePagesEncodingProvider.Instance;
                 var sjis = enc.GetEncoding(932);

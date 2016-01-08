@@ -1,6 +1,25 @@
 ﻿{
   "sdk": {
     "version": "1.0.0-rc1-update1"
-  }
-  ,"projects": ["Bjd.CoreCLR", "Bjd.Common.CoreCLR" ]
+  },
+  "projects": [
+    "Bjd.CoreCLR",
+    "Bjd.Common.CoreCLR",
+    "Bjd.DhcpServer.CoreCLR",
+    "Bjd.DnsServer.CoreCLR",
+    "Bjd.FtpServer.CoreCLR",
+    "Bjd.Pop3Server.CoreCLR",
+    "Bjd.ProxyFtpServer.CoreCLR",
+    "Bjd.ProxyHttpServer.CoreCLR",
+    "Bjd.ProxyPop3Server.CoreCLR",
+    "Bjd.ProxySmtpServer.CoreCLR",
+    "Bjd.ProxyTelnetServer.CoreCLR",
+    "Bjd.RemoteServer.CoreCLR",
+    "Bjd.SipServer.CoreCLR",
+    "Bjd.SmtpServer.CoreCLR",
+    "Bjd.TftpServer.CoreCLR",
+    "Bjd.TunnelServer.CoreCLR",
+    "Bjd.WebApiServer.CoreCLR",
+    "Bjd.WebServer.CoreCLR"
+  ]
 }
