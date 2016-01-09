@@ -155,7 +155,8 @@ namespace Bjd
                 LogFile = null;
             }
 
-            var listPlugin = new ListPlugin(Define.ExecutableDirectory);
+            //var listPlugin = new ListPlugin(Define.ExecutableDirectory);
+            var listPlugin = new ListPlugin();
             foreach (var o in listPlugin)
             {
                 //�����[�g�N���C�A���g�̏ꍇ�A���̃��O�́A��₱�����̂ŕ\�����Ȃ�

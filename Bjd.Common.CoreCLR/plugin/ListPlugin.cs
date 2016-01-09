@@ -10,15 +10,15 @@ namespace Bjd.plugin
     public class ListPlugin : ListBase<OnePlugin>
     {
         //dir 検索対象となるpluginsフォルダ
-        public ListPlugin(String dir)
+        public ListPlugin()
         {
             Trace.WriteLine("ListPlugin..ctor Start");
 
-            //フォルダが存在しない場合、初期化終了
-            if (!Directory.Exists(dir))
-            {
-                return;
-            }
+            ////フォルダが存在しない場合、初期化終了
+            //if (!Directory.Exists(dir))
+            //{
+            //    return;
+            //}
 
             //DLLを検索し、各オプションを生成する
             //Ver5.2.4 関係ない*Server.dll以外は、対象外とする

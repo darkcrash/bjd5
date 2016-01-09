@@ -11,9 +11,21 @@ namespace Bjd.server{
         private Kernel kernel;
 
         public ListServer(Kernel kernel, ListPlugin listPlugin){
-            this.kernel = kernel;
-
-            Initialize(listPlugin);
+            System.Diagnostics.Trace.WriteLine($"ListServer..ctor {this.GetType().Name} Start");
+            try
+            {
+                this.kernel = kernel;
+                Initialize(listPlugin);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine(ex.Message);
+                System.Diagnostics.Trace.WriteLine(ex.StackTrace);
+            }
+            finally
+            {
+                System.Diagnostics.Trace.WriteLine($"ListServer..ctor {this.GetType().Name} End");
+            }
         }
 
         //名前によるサーバオブジェクト(OneServer)の検索
