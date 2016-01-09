@@ -1,1 +1,2 @@
-dnx -p Bjd.CoreCLR/project.json "Bjd.CoreCLR" --appbase Bjd.CoreCLR
+cd Bjd.CoreCLR
+dnx bjd

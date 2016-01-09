@@ -245,7 +245,7 @@ namespace Bjd
         //���O��ListOption������������Ă���K�v������
         public Conf CreateConf(String nameTag)
         {
-            Trace.WriteLine("Kernel.CreateConf Start");
+            Trace.WriteLine($"Kernel.CreateConf {nameTag}");
             try
             {
                 if (ListOption == null)
@@ -262,7 +262,7 @@ namespace Bjd
             }
             finally
             {
-                Trace.WriteLine("Kernel.CreateConf End");
+                //Trace.WriteLine($"Kernel.CreateConf {nameTag} End");
             }
         }
 
@@ -270,7 +270,7 @@ namespace Bjd
         //���O��ListOption������������Ă���K�v������
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
         {
-            Trace.WriteLine("Kernel.CreateLogger Start");
+            Trace.WriteLine($"Kernel.CreateLogger {nameTag}");
             try
             {
                 if (ListOption == null)
@@ -294,10 +294,6 @@ namespace Bjd
             catch (Exception)
             {
                 throw;
-            }
-            finally
-            {
-                Trace.WriteLine("Kernel.CreateLogger End");
             }
         }
 

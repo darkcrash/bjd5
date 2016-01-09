@@ -18,9 +18,13 @@ namespace Bjd.util
 
         public IniDb(String progDir, String fileName)
         {
-            _fileIni = progDir + "\\" + fileName + ".ini";
-            _fileDef = progDir + "\\" + fileName + ".def";
-            _fileTxt = progDir + "\\" + fileName + ".txt";
+            //_fileIni = progDir + "\\" + fileName + ".ini";
+            //_fileDef = progDir + "\\" + fileName + ".def";
+            //_fileTxt = progDir + "\\" + fileName + ".txt";
+            _fileIni = System.IO.Path.Combine(progDir, fileName + ".ini");
+            _fileDef = System.IO.Path.Combine(progDir, fileName + ".def");
+            _fileTxt = System.IO.Path.Combine(progDir, fileName + ".txt");
+
         }
 
         public string Path

@@ -18,19 +18,19 @@ namespace Bjd.trace
             }
             catch (Exception)
             {
-                Console.WriteLine("Error Change WindowWidth.");
+                Console.WriteLine("Not allowed change Console.WindowWidth");
             }
 
             try
             {
-
                 Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
-
                 Define.ChangeOperationSystem += Define_ChangeOperationSystem;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Error .ctor ConsoleTraceListner");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
 
         }

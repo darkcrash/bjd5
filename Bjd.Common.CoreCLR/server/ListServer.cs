@@ -11,7 +11,7 @@ namespace Bjd.server{
         private Kernel kernel;
 
         public ListServer(Kernel kernel, ListPlugin listPlugin){
-            System.Diagnostics.Trace.WriteLine($"ListServer..ctor {this.GetType().Name} Start");
+            System.Diagnostics.Trace.WriteLine($"ListServer..ctor {listPlugin.GetType().Name} Start");
             try
             {
                 this.kernel = kernel;
@@ -24,7 +24,7 @@ namespace Bjd.server{
             }
             finally
             {
-                System.Diagnostics.Trace.WriteLine($"ListServer..ctor {this.GetType().Name} End");
+                System.Diagnostics.Trace.WriteLine($"ListServer..ctor {listPlugin.GetType().Name} End");
             }
         }
 
