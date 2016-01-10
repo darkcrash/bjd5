@@ -99,18 +99,19 @@ namespace Bjd.log
             switch (_normalLogKind)
             {
                 case 0: // bjd.yyyy.mm.dd.log
-                    fileName = string.Format("{0}\\bjd.{1:D4}.{2:D2}.{3:D2}.log", _saveDirectory, _dt.Year, _dt.Month, _dt.Day);
+                    fileName = string.Format("bjd.{0:D4}.{1:D2}.{2:D2}.log", _dt.Year, _dt.Month, _dt.Day);
                     break;
                 case 1: // bjd.yyyy.mm.log
-                    fileName = string.Format("{0}\\bjd.{1:D4}.{2:D2}.log", _saveDirectory, _dt.Year, _dt.Month);
+                    fileName = string.Format("bjd.{0:D4}.{1:D2}.log", _dt.Year, _dt.Month);
                     break;
                 case 2: // BlackJumboDog.Log
-                    fileName = string.Format("{0}\\BlackJumboDog.Log", _saveDirectory);
+                    fileName = "BlackJumboDog.Log";
                     break;
                 default:
                     Util.RuntimeException(string.Format("nomalLogKind={0}", _normalLogKind));
                     break;
             }
+            fileName = System.IO.Path.Combine(_saveDirectory, fileName);
             try
             {
                 //Ver6.0.7
@@ -131,18 +132,19 @@ namespace Bjd.log
             switch (_secureLogKind)
             {
                 case 0: // secure.yyyy.mm.dd.log
-                    fileName = string.Format("{0}\\secure.{1:D4}.{2:D2}.{3:D2}.log", _saveDirectory, _dt.Year, _dt.Month, _dt.Day);
+                    fileName = string.Format("secure.{0:D4}.{1:D2}.{2:D2}.log",  _dt.Year, _dt.Month, _dt.Day);
                     break;
                 case 1: // secure.yyyy.mm.log
-                    fileName = string.Format("{0}\\secure.{1:D4}.{2:D2}.log", _saveDirectory, _dt.Year, _dt.Month);
+                    fileName = string.Format("secure.{0:D4}.{1:D2}.log",  _dt.Year, _dt.Month);
                     break;
                 case 2: // secure.Log
-                    fileName = string.Format("{0}\\secure.Log", _saveDirectory);
+                    fileName = "secure.Log";
                     break;
                 default:
                     Util.RuntimeException(string.Format("secureLogKind={0}", _secureLogKind));
                     break;
             }
+            fileName = System.IO.Path.Combine(_saveDirectory, fileName);
             try
             {
                 //Ver6.0.7

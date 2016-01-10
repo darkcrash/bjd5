@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Bjd.net;
 using Bjd.util;
 
@@ -14,6 +15,7 @@ namespace Bjd.sock
         public ProtocolKind ProtocolKind { get; private set; }
         private Socket _socket;
         byte[] _udpBuf;
+        ArraySegment<byte> _udpBufSegment;
         private Ip _bindIp;
         private int _bindPort;
 
@@ -119,6 +121,7 @@ namespace Bjd.sock
             Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
 
             _udpBuf = new byte[1600]; //１パケットの最大サイズで受信待ちにする
+            _udpBufSegment = new ArraySegment<byte>(_udpBuf);
 
             //受信開始
             BeginReceive();
@@ -139,7 +142,10 @@ namespace Bjd.sock
                     var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
                     try
                     {
-                        _socket.BeginReceiveFrom(_udpBuf, 0, _udpBuf.Length, SocketFlags.None, ref ep, AcceptFunc, this);
+                        //_socket.BeginReceiveFrom(_udpBuf, 0, _udpBuf.Length, SocketFlags.None, ref ep, AcceptFunc, this);
+                        var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
+                        tUdp.ContinueWith(_ => this.Receive(_));
+
                     }
                     catch (Exception)
                     {
@@ -155,18 +161,53 @@ namespace Bjd.sock
                     break;
                 case ProtocolKind.Tcp:
                     // TCP
-                    _socket.BeginAccept(AcceptFunc, this);
+                    //_socket.BeginAccept(AcceptFunc, this);
+                    var tTcp = _socket.AcceptAsync();
+                    tTcp.ContinueWith(_ => this.Accept(_));
 
                     break;
             }
         }
 
-        Queue<IAsyncResult> sockQueue = new Queue<IAsyncResult>();
-        void AcceptFunc(IAsyncResult ar)
+        void Receive(Task<SocketReceiveFromResult> taskResult)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.AcceptFunc");
-            sockQueue.Enqueue(ar);
+            if (taskResult.IsCompleted)
+            {
+                try
+                {
+                    SocketReceiveFromResult srfr = taskResult.Result;
+                    //int len = _socket.EndReceiveFrom(ar, ref ep);
+                    SockUdp sockUdp = new SockUdp(Kernel, _socket, _udpBuf, srfr.ReceivedBytes, (IPEndPoint)srfr.RemoteEndPoint); //ACCEPT
+                    sockQueue.Enqueue(sockUdp);
+                }
+                catch (Exception) { }
+            }
+            //受信開始
+            BeginReceive();
         }
+
+        void Accept(Task<Socket> taskResult)
+        {
+            if (taskResult.IsCompleted)
+            {
+                try
+                {
+                    sockQueue.Enqueue(new SockTcp(Kernel, _ssl, taskResult.Result));
+                }
+                catch (Exception) { }
+            }
+            //受信開始
+            BeginReceive();
+        }
+
+
+
+        Queue<sock.SockObj> sockQueue = new Queue<sock.SockObj>();
+        //void AcceptFunc(IAsyncResult ar)
+        //{
+        //    System.Diagnostics.Trace.WriteLine($"SockServer.AcceptFunc");
+        //    sockQueue.Enqueue(ar);
+        //}
 
         public SockObj Select(ILife iLife)
         {
@@ -176,39 +217,40 @@ namespace Bjd.sock
             {
                 if (sockQueue.Count > 0)
                 {
+                    return sockQueue.Dequeue();
 
-                    IAsyncResult ar = sockQueue.Dequeue();
+                    //IAsyncResult ar = sockQueue.Dequeue();
 
-                    if (ProtocolKind == ProtocolKind.Udp)
-                    {
+                    //if (ProtocolKind == ProtocolKind.Udp)
+                    //{
 
-                        SockUdp sockUdp = null;
-                        var ep = (EndPoint)new IPEndPoint(IPAddress.Any, 0);
-                        try
-                        {
-                            int len = _socket.EndReceiveFrom(ar, ref ep);
-                            sockUdp = new SockUdp(Kernel, _socket, _udpBuf, len, (IPEndPoint)ep); //ACCEPT
+                    //    SockUdp sockUdp = null;
+                    //    var ep = (EndPoint)new IPEndPoint(IPAddress.Any, 0);
+                    //    try
+                    //    {
+                    //        int len = _socket.EndReceiveFrom(ar, ref ep);
+                    //        sockUdp = new SockUdp(Kernel, _socket, _udpBuf, len, (IPEndPoint)ep); //ACCEPT
 
-                        }
-                        catch (Exception)
-                        {
-                            sockUdp = null;
-                        }
-                        //受信開始
-                        BeginReceive();
-                        return sockUdp;
-                    }
-                    else {
-                        //自分自身を複製するため、いったん別のSocketで受け取る必要がある
-                        var newSocket = _socket.EndAccept(ar); //ACCEPT
+                    //    }
+                    //    catch (Exception)
+                    //    {
+                    //        sockUdp = null;
+                    //    }
+                    //    //受信開始
+                    //    BeginReceive();
+                    //    return sockUdp;
+                    //}
+                    //else {
+                    //    //自分自身を複製するため、いったん別のSocketで受け取る必要がある
+                    //    var newSocket = _socket.EndAccept(ar); //ACCEPT
 
-                        //受信開始
-                        BeginReceive();
+                    //    //受信開始
+                    //    BeginReceive();
 
-                        //Ver5.9.2 Java fix
-                        //return new SockTcp(Kernel, newSocket);
-                        return new SockTcp(Kernel, _ssl, newSocket);
-                    }
+                    //    //Ver5.9.2 Java fix
+                    //    //return new SockTcp(Kernel, newSocket);
+                    //    return new SockTcp(Kernel, _ssl, newSocket);
+                    //}
                 }
                 //Ver5.8.1
                 //Thread.Sleep(0);

@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Bjd.net;
 using Bjd.trace;
 using Bjd.util;
@@ -21,6 +22,7 @@ namespace Bjd.sock
         private SockQueue _sockQueue = new SockQueue();
         //ByteBuffer recvBuf = ByteBuffer.allocate(sockQueue.Max);
         private byte[] _recvBuf; //１行処理のためのテンポラリバッファ
+        private ArraySegment<byte> _recvBufSegment;
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -42,7 +44,9 @@ namespace Bjd.sock
             try
             {
                 //socket.Connect(ip.IPAddress, port);
-                _socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
+                //_socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
+                var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
+                tConnect.ContinueWith(_ => CallbackConnect());
             }
             catch
             {
@@ -59,13 +63,10 @@ namespace Bjd.sock
             //************************************************
         }
 
-
-        //通常のサーバでは、このファンクションを外部で作成する
-        private void CallbackConnect(IAsyncResult ar)
+        private void CallbackConnect()
         {
             if (_socket.Connected)
             {
-                _socket.EndConnect(ar);
                 //ここまでくると接続が完了している
                 if (_ssl != null)
                 {
@@ -83,6 +84,31 @@ namespace Bjd.sock
                 SetError("CallbackConnect() faild");
             }
         }
+
+
+        //通常のサーバでは、このファンクションを外部で作成する
+        //private void CallbackConnect(IAsyncResult ar)
+        //{
+        //    if (_socket.Connected)
+        //    {
+        //        _socket.EndConnect(ar);
+        //        //ここまでくると接続が完了している
+        //        if (_ssl != null)
+        //        {
+        //            //SSL通信の場合は、SSLのネゴシエーションが行われる
+        //            _oneSsl = _ssl.CreateClientStream(_socket);
+        //            if (_oneSsl == null)
+        //            {
+        //                SetError("_ssl.CreateClientStream() faild");
+        //                return;
+        //            }
+        //        }
+        //        BeginReceive(); //接続完了処理（受信待機開始）
+        //    }
+        //    else {
+        //        SetError("CallbackConnect() faild");
+        //    }
+        //}
 
 
         //ACCEPT
@@ -133,6 +159,7 @@ namespace Bjd.sock
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
             _recvBuf = new byte[_sockQueue.Space]; //キューが空なので、Spaceはバッファの最大サイズになっている
+            _recvBufSegment = new ArraySegment<byte>(_recvBuf);
 
             // Using the LocalEndPoint property.
             string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -161,13 +188,88 @@ namespace Bjd.sock
                     _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
                 }
                 else {
-                    _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
+                    //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
+                    var tReceive = _socket.ReceiveAsync(_recvBufSegment, SocketFlags.None);
+                    tReceive.ContinueWith(_ => this.EndReceive(_));
                 }
             }
             catch
             {
                 SetError("BeginRecvive() faild.");
             }
+        }
+
+        public void EndReceive(Task<int> result)
+        {
+            System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
+            if (!result.IsCompleted)
+            {
+                //受信待機
+                while ((_sockQueue.Space) == 0)
+                {
+                    Thread.Sleep(10); //他のスレッドに制御を譲る  
+                    if (SockState != SockState.Connect)
+                        goto err;
+                }
+            }
+            else {
+                //受信完了
+                lock (this)
+                {
+                    //ポインタを移動する場合は、排他制御が必要
+                    try
+                    {
+                        //Ver5.9.2 Java fix
+                        int bytesRead = result.Result;
+                        if (bytesRead == 0)
+                        {
+                            //  切断されている場合は、0が返される?
+                            if (_ssl == null)
+                                goto err; //エラー発生
+                            Thread.Sleep(10); //Ver5.0.0-a19
+                        }
+                        else if (bytesRead < 0)
+                        {
+                            goto err; //エラー発生
+                        }
+                        else {
+                            _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                        //受信待機のままソケットがクローズされた場合は、ここにくる
+                        goto err; //エラー発生
+                    }
+                }
+            }
+
+            if (_sockQueue.Space == 0)
+                //バッファがいっぱい 空の受信待機をかける
+                EndReceive(null);
+            else
+                //受信待機の開始
+                try
+                {
+                    //Ver5.9.2 Java fix
+                    //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
+                    var tReceive = _socket.ReceiveAsync(new ArraySegment<byte>(_recvBuf, 0, _sockQueue.Space), SocketFlags.None);
+                    tReceive.ContinueWith(_ => this.EndReceive(_));
+
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                    goto err; //切断されている
+                }
+            return;
+            err: //エラー発生
+            //【2009.01.12 追加】相手が存在しなくなっている
+            SetError("disconnect");
+            //state = SocketObjState.Disconnect;
+
+            //Close();クローズは外部から明示的に行う
         }
 
         //受信処理・受信待機
@@ -192,7 +294,8 @@ namespace Bjd.sock
                     try
                     {
                         //Ver5.9.2 Java fix
-                        int bytesRead = _oneSsl != null ? _oneSsl.EndRead(ar) : _socket.EndReceive(ar);
+                        //int bytesRead = _oneSsl != null ? _oneSsl.EndRead(ar) : _socket.EndReceive(ar);
+                        int bytesRead = _oneSsl.EndRead(ar);
                         //int bytesRead = _socket.EndReceive(ar);
                         if (bytesRead == 0)
                         {
@@ -209,7 +312,7 @@ namespace Bjd.sock
                             _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
                         //受信待機のままソケットがクローズされた場合は、ここにくる
@@ -226,13 +329,14 @@ namespace Bjd.sock
                 try
                 {
                     //Ver5.9.2 Java fix
-                    if (_oneSsl != null)
-                    {
-                        _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
-                    }
-                    else {
-                        _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    }
+                    //if (_oneSsl != null)
+                    //{
+                    //    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
+                    //}
+                    //else {
+                    //    _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
+                    //}
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
                 }
                 catch (Exception ex)
                 {

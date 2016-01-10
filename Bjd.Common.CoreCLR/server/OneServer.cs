@@ -160,7 +160,7 @@ namespace Bjd.server{
         protected abstract void OnStopServer(); //�X���b�h��~����
 
         protected override void OnStopThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnStopThread ");
+            System.Diagnostics.Trace.WriteLine($"OneServer.OnStopThread {this.GetType().FullName} ");
             OnStopServer(); //�q�N���X�̃X���b�h��~����
             if (ssl != null){
                 ssl.Dispose();
@@ -172,12 +172,12 @@ namespace Bjd.server{
         protected abstract bool OnStartServer(); //�X���b�h�J�n����
 
         protected override bool OnStartThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnStartThread ");
+            System.Diagnostics.Trace.WriteLine($"OneServer.OnStartThread {this.GetType().FullName}");
             return OnStartServer(); //�q�N���X�̃X���b�h�J�n����
         }
 
         protected override void OnRunThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnRunThread ");
+            System.Diagnostics.Trace.WriteLine($"OneServer.OnRunThread {this.GetType().FullName}");
 
             var port = (int) Conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
@@ -213,7 +213,7 @@ namespace Bjd.server{
         }
 
         private void RunTcpServer(int port){
-            System.Diagnostics.Trace.WriteLine($"OneServer.RunTcpServer ");
+            System.Diagnostics.Trace.WriteLine($"OneServer.RunTcpServer {this.GetType().FullName}");
 
             const int listenMax = 5;
 

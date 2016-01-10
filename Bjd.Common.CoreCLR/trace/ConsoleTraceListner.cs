@@ -7,8 +7,10 @@ namespace Bjd.trace
 {
     public class ConsoleTraceListner : System.Diagnostics.TraceListener
     {
+        static TaskScheduler ts;
         public ConsoleTraceListner()
         {
+
             this.TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime | System.Diagnostics.TraceOptions.ThreadId;
             this.IndentSize = 2;
             try
@@ -53,22 +55,49 @@ namespace Bjd.trace
 
         public override void Write(string message)
         {
+            //var t = new Task(
+            //    () =>
+            //    {
+            //        if (this.NeedIndent)
+            //            this.WriteIndent();
+            //        Console.Write(message);
+            //    }, TaskCreationOptions.PreferFairness);
+            //t.Start();
             if (this.NeedIndent)
                 this.WriteIndent();
             Console.Write(message);
+
+
         }
         protected override void WriteIndent()
         {
+            //var t = new Task(
+            //    () =>
+            //    {
+            //        Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+            //    },  TaskCreationOptions.PreferFairness);
+            //t.Start();
             Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+
+
         }
 
         public override void WriteLine(string message)
         {
+            //var t = new Task(
+            //    () =>
+            //    {
+            //        if (this.NeedIndent)
+            //            this.WriteIndent();
+            //        Console.WriteLine(message);
+            //    }, TaskCreationOptions.PreferFairness);
+            //t.Start();
             if (this.NeedIndent)
                 this.WriteIndent();
             Console.WriteLine(message);
+
+
         }
+
     }
-
-
 }

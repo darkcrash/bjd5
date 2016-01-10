@@ -121,13 +121,11 @@ namespace Bjd.WebServer
         //スレッド開始処理
         override protected bool OnStartServer()
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.OnStartServer ");
             return true;
         }
         //スレッド停止処理
         override protected void OnStopServer()
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.OnStopServer ");
 
         }
 
@@ -135,8 +133,6 @@ namespace Bjd.WebServer
         //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.OnSubThread ");
-
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = new CultureInfo("en-US");
 
