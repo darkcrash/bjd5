@@ -13,7 +13,7 @@ namespace Bjd.option
 
         public ListOption(Kernel kernel, ListPlugin listPlugin)
         {
-            System.Diagnostics.Trace.WriteLine($"ListOption..ctor {listPlugin.GetType().Name} Start");
+            System.Diagnostics.Trace.TraceInformation($"ListOption..ctor {listPlugin.GetType().Name} Start");
             try
             {
                 _kernel = kernel;
@@ -21,12 +21,12 @@ namespace Bjd.option
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine(ex.Message);
-                System.Diagnostics.Trace.WriteLine(ex.StackTrace);
+                System.Diagnostics.Trace.TraceError(ex.Message);
+                System.Diagnostics.Trace.TraceError(ex.StackTrace);
             }
             finally
             {
-                System.Diagnostics.Trace.WriteLine($"ListOption..ctor {listPlugin.GetType().Name} End");
+                System.Diagnostics.Trace.TraceInformation($"ListOption..ctor {listPlugin.GetType().Name} End");
             }
         }
 

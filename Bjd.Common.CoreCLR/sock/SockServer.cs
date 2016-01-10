@@ -21,9 +21,18 @@ namespace Bjd.sock
 
         private readonly Ssl _ssl;
 
+        private AddressFamily Family
+        {
+            get
+            {
+                return (_bindIp.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6;
+            }
+        }
+
+
         public SockServer(Kernel kernel, ProtocolKind protocolKind, Ssl ssl) : base(kernel)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer..ctor{protocolKind.ToString()}");
+            System.Diagnostics.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
         }
@@ -41,32 +50,17 @@ namespace Bjd.sock
         //TCP用
         public bool Bind(Ip bindIp, int port, int listenMax)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.Bind Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
+            System.Diagnostics.Trace.TraceInformation($"SockServer.Bind TCP Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
+            _bindIp = bindIp;
+            _bindPort = port;
             try
             {
                 if (ProtocolKind != ProtocolKind.Tcp)
                     Util.RuntimeException("use udp version bind()");
                 try
                 {
-                    _socket = new Socket((bindIp.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-                }
-                catch (Exception e)
-                {
-                    SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                    return false;
-                }
-
-                try
-                {
+                    _socket = new Socket(this.Family, SocketType.Stream, ProtocolType.Tcp);
                     _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
-                }
-                catch (Exception e)
-                {
-                    SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                    return false;
-                }
-                try
-                {
                     _socket.Listen(listenMax);
                 }
                 catch (Exception e)
@@ -85,7 +79,7 @@ namespace Bjd.sock
             }
             finally
             {
-                System.Diagnostics.Trace.WriteLine("SockServer.Bind End");
+                System.Diagnostics.Trace.TraceInformation("SockServer.Bind End");
             }
         }
 
@@ -93,6 +87,7 @@ namespace Bjd.sock
         //UDP用
         public bool Bind(Ip bindIp, int port)
         {
+            System.Diagnostics.Trace.TraceInformation($"SockServer.Bind UDP Start {bindIp.ToString()} {port.ToString()} ");
             _bindIp = bindIp;
             _bindPort = port;
             if (ProtocolKind != ProtocolKind.Udp)
@@ -100,16 +95,7 @@ namespace Bjd.sock
 
             try
             {
-                _socket = new Socket((bindIp.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
-            }
-            catch (Exception e)
-            {
-                SetError(Util.SwapStr("\n", "", Util.SwapStr("\r", "", e.Message)));
-                return false;
-            }
-
-            try
-            {
+                _socket = new Socket(this.Family, SocketType.Dgram, ProtocolType.Udp);
                 _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
             }
             catch (Exception e)
@@ -132,32 +118,14 @@ namespace Bjd.sock
         //受信開始
         void BeginReceive()
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.BeginReceive");
+            System.Diagnostics.Trace.TraceInformation($"SockServer.BeginReceive");
             switch (ProtocolKind)
             {
                 case ProtocolKind.Udp:
                     // UDP
-                    var retry = 10;
-                    again:
                     var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
-                    try
-                    {
-                        //_socket.BeginReceiveFrom(_udpBuf, 0, _udpBuf.Length, SocketFlags.None, ref ep, AcceptFunc, this);
-                        var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
-                        tUdp.ContinueWith(_ => this.Receive(_), Kernel.CancelToken);
-
-                    }
-                    catch (Exception)
-                    {
-                        //Logger.Set(LogKind.Error, null, 9000008, detailInfomation);//BeginReceiveFrom()でエラーが発生しました[UDP]
-                        Thread.Sleep(100);
-                        retry--;
-                        if (0 <= retry)
-                        {
-                            goto again;
-                        }
-                        Util.RuntimeException(string.Format("retry={0}", retry));
-                    }
+                    var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
+                    tUdp.ContinueWith(_ => this.Receive(_), Kernel.CancelToken);
                     break;
                 case ProtocolKind.Tcp:
                     // TCP
@@ -209,13 +177,13 @@ namespace Bjd.sock
         Queue<sock.SockObj> sockQueue = new Queue<sock.SockObj>();
         //void AcceptFunc(IAsyncResult ar)
         //{
-        //    System.Diagnostics.Trace.WriteLine($"SockServer.AcceptFunc");
+        //    System.Diagnostics.Trace.TraceInformation($"SockServer.AcceptFunc");
         //    sockQueue.Enqueue(ar);
         //}
 
         public SockObj Select(ILife iLife)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.Select");
+            System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
 
             while (iLife.IsLife())
             {
@@ -271,7 +239,7 @@ namespace Bjd.sock
         //public static SockTcp CreateConnection(Kernel kernel,Ip ip, int port,ILife iLife){
         public static SockTcp CreateConnection(Kernel kernel, Ip ip, int port, Ssl ssl, ILife iLife)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.CreateConnection");
+            System.Diagnostics.Trace.TraceInformation($"SockServer.CreateConnection");
             //Ver5.9.2 Java fix
             //var sockServer = new SockServer(kernel,ProtocolKind.Tcp);
             var sockServer = new SockServer(kernel, ProtocolKind.Tcp, ssl);
@@ -299,7 +267,7 @@ namespace Bjd.sock
         //bindが可能かどうかの確認
         public static bool IsAvailable(Kernel kernel, Ip ip, int port)
         {
-            System.Diagnostics.Trace.WriteLine($"SockServer.IsAvailable");
+            System.Diagnostics.Trace.TraceInformation($"SockServer.IsAvailable");
             var sockServer = new SockServer(kernel, ProtocolKind.Tcp, null);
             if (sockServer.SockState != SockState.Error)
             {

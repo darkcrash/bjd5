@@ -24,7 +24,7 @@ namespace Bjd
 
         public static void Initialize(IServiceProvider sb)
         {
-            Trace.WriteLine("Define.Initialize Start");
+            Trace.TraceInformation("Define.Initialize Start");
 
             // get service
             var runtimeServices = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeServices>(sb);
@@ -33,14 +33,19 @@ namespace Bjd
             var applicationEnvironment = GetService<IApplicationEnvironment>(sb);
             var libraryManager = GetService<ILibraryManager>(sb);
 
+            Trace.TraceError($"----------------------------------------------------------------");
+            Trace.TraceError($"- {applicationEnvironment.ApplicationName} - {applicationEnvironment.ApplicationVersion}");
+            Trace.TraceError($"- {applicationEnvironment.RuntimeFramework.FullName} ");
+            Trace.TraceError($"----------------------------------------------------------------");
+
             // RuntimeServices
             if (runtimeServices != null)
             {
-                Trace.WriteLine($"RuntimeServices");
+                Trace.TraceInformation($"RuntimeServices");
                 Trace.Indent();
                 foreach (var sv in runtimeServices.Services)
                 {
-                    Trace.WriteLine($"{(sv.FullName)}");
+                    Trace.TraceInformation($"{(sv.FullName)}");
                 }
                 Trace.Unindent();
             }
@@ -48,66 +53,66 @@ namespace Bjd
             // CompilerOptions
             if (compilerOptions != null)
             {
-                Trace.WriteLine($"CompilerOptions");
+                Trace.TraceInformation($"CompilerOptions");
                 Trace.Indent();
                 if (compilerOptions.AllowUnsafe.HasValue)
-                    Trace.WriteLine($"AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
+                    Trace.TraceInformation($"AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
                 if (compilerOptions.DelaySign.HasValue)
-                    Trace.WriteLine($"DelaySign:{compilerOptions.DelaySign}");
+                    Trace.TraceInformation($"DelaySign:{compilerOptions.DelaySign}");
                 if (compilerOptions.EmitEntryPoint.HasValue)
-                    Trace.WriteLine($"EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
+                    Trace.TraceInformation($"EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
                 if (compilerOptions.KeyFile != null)
-                    Trace.WriteLine($"KeyFile:{compilerOptions.KeyFile}");
-                Trace.WriteLine($"LanguageVersion:{compilerOptions.LanguageVersion}");
+                    Trace.TraceInformation($"KeyFile:{compilerOptions.KeyFile}");
+                Trace.TraceInformation($"LanguageVersion:{compilerOptions.LanguageVersion}");
                 if (compilerOptions.Optimize.HasValue)
-                    Trace.WriteLine($"Optimize:{compilerOptions.Optimize}");
+                    Trace.TraceInformation($"Optimize:{compilerOptions.Optimize}");
                 if (compilerOptions.Platform != null)
-                    Trace.WriteLine($"Platform:{compilerOptions.Platform}");
+                    Trace.TraceInformation($"Platform:{compilerOptions.Platform}");
                 if (compilerOptions.UseOssSigning.HasValue)
-                    Trace.WriteLine($"UseOssSigning:{compilerOptions.UseOssSigning}");
+                    Trace.TraceInformation($"UseOssSigning:{compilerOptions.UseOssSigning}");
                 if (compilerOptions.WarningsAsErrors.HasValue)
-                    Trace.WriteLine($"WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
+                    Trace.TraceInformation($"WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
                 Trace.Unindent();
             }
 
             // RuntimeEnvironment
             if (runtimeEnvironment != null)
             {
-                Trace.WriteLine($"RuntimeEnvironment");
+                Trace.TraceInformation($"RuntimeEnvironment");
                 Trace.Indent();
-                Trace.WriteLine($"OperatingSystem:{(runtimeEnvironment.OperatingSystem)}");
-                Trace.WriteLine($"OperatingSystemVersion:{(runtimeEnvironment.OperatingSystemVersion)}");
-                Trace.WriteLine($"RuntimeArchitecture:{(runtimeEnvironment.RuntimeArchitecture)}");
-                Trace.WriteLine($"RuntimePath:{(runtimeEnvironment.RuntimePath)}");
-                Trace.WriteLine($"RuntimeType:{(runtimeEnvironment.RuntimeType)}");
-                Trace.WriteLine($"RuntimeVersion:{(runtimeEnvironment.RuntimeVersion)}");
+                Trace.TraceInformation($"OperatingSystem:{(runtimeEnvironment.OperatingSystem)}");
+                Trace.TraceInformation($"OperatingSystemVersion:{(runtimeEnvironment.OperatingSystemVersion)}");
+                Trace.TraceInformation($"RuntimeArchitecture:{(runtimeEnvironment.RuntimeArchitecture)}");
+                Trace.TraceInformation($"RuntimePath:{(runtimeEnvironment.RuntimePath)}");
+                Trace.TraceInformation($"RuntimeType:{(runtimeEnvironment.RuntimeType)}");
+                Trace.TraceInformation($"RuntimeVersion:{(runtimeEnvironment.RuntimeVersion)}");
                 Trace.Unindent();
             }
 
             // ApplicationEnvironment
             if (applicationEnvironment != null)
             {
-                Trace.WriteLine($"ApplicationEnvironment");
+                Trace.TraceInformation($"ApplicationEnvironment");
                 Trace.Indent();
-                Trace.WriteLine($"ApplicationBasePath:{(applicationEnvironment.ApplicationBasePath)}");
-                Trace.WriteLine($"ApplicationName:{(applicationEnvironment.ApplicationName)}");
-                Trace.WriteLine($"ApplicationVersion:{(applicationEnvironment.ApplicationVersion)}");
-                Trace.WriteLine($"Configuration:{(applicationEnvironment.Configuration)}");
-                Trace.WriteLine($"RuntimeFramework:{(applicationEnvironment.RuntimeFramework.FullName)}");
-                Trace.WriteLine($"RuntimeFrameworkIdentifier:{(applicationEnvironment.RuntimeFramework.Identifier)}");
-                Trace.WriteLine($"RuntimeFrameworkVersion:{applicationEnvironment.RuntimeFramework.Version}");
+                Trace.TraceInformation($"ApplicationBasePath:{(applicationEnvironment.ApplicationBasePath)}");
+                Trace.TraceInformation($"ApplicationName:{(applicationEnvironment.ApplicationName)}");
+                Trace.TraceInformation($"ApplicationVersion:{(applicationEnvironment.ApplicationVersion)}");
+                Trace.TraceInformation($"Configuration:{(applicationEnvironment.Configuration)}");
+                Trace.TraceInformation($"RuntimeFramework:{(applicationEnvironment.RuntimeFramework.FullName)}");
+                Trace.TraceInformation($"RuntimeFrameworkIdentifier:{(applicationEnvironment.RuntimeFramework.Identifier)}");
+                Trace.TraceInformation($"RuntimeFrameworkVersion:{applicationEnvironment.RuntimeFramework.Version}");
                 Trace.Unindent();
             }
 
             // LibraryManager
             if (libraryManager != null)
             {
-                Trace.WriteLine($"LibraryManager");
+                Trace.TraceInformation($"LibraryManager");
                 Trace.Indent();
                 Instance._libraries = libraryManager.GetLibraries().ToArray();
                 foreach (var lib in Instance._libraries)
                 {
-                    Trace.WriteLine($"({lib.Type}) {lib.Name.PadRight(61)} {lib.Version.PadRight(17)} Assemblies({lib.Assemblies.Count().ToString().PadLeft(2)}) Dependencies({ lib.Dependencies.Count().ToString().PadLeft(2)})");
+                    Trace.TraceInformation($"({lib.Type}) {lib.Name.PadRight(61)} {lib.Version.PadRight(17)} Assemblies({lib.Assemblies.Count().ToString().PadLeft(2)}) Dependencies({ lib.Dependencies.Count().ToString().PadLeft(2)})");
                     //Trace.Indent();
                     //Trace.WriteLine($"{lib.Path}");
                     //Trace.Unindent();
@@ -119,9 +124,9 @@ namespace Bjd
             var dir = System.IO.Directory.GetCurrentDirectory();
             var asm = typeof(Define).GetTypeInfo().Assembly;
             var asmName = asm.GetName();
-            Trace.WriteLine($"CurrentDirectory:{dir}");
-            Trace.WriteLine($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
-            Trace.WriteLine($"Assembly.Location:{asm.Location}");
+            Trace.TraceInformation($"CurrentDirectory:{dir}");
+            Trace.TraceInformation($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
+            Trace.TraceInformation($"Assembly.Location:{asm.Location}");
 
 
             // set define
@@ -133,7 +138,7 @@ namespace Bjd
             OnChangeOperationSystem();
 
 
-            Trace.WriteLine("Define.Initialize End");
+            Trace.TraceInformation("Define.Initialize End");
         }
 
         public static event EventHandler ChangeOperationSystem;

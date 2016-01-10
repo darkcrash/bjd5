@@ -15,7 +15,7 @@ namespace Bjd.service
         {
             // Add console trace
             System.Diagnostics.Trace.Listeners.Add(new trace.ConsoleTraceListner());
-            Trace.WriteLine("Service.ServiceMain Start");
+            Trace.TraceInformation("Service.ServiceMain Start");
 
             // Define Initialize
             Define.Initialize(sb);
@@ -24,61 +24,57 @@ namespace Bjd.service
             Service.instance.OnStart();
             Console.CancelKeyPress += Console_CancelKeyPress;
             signal.WaitOne();
-            Trace.WriteLine("Service.ServiceMain End");
+            Trace.TraceInformation("Service.ServiceMain End");
         }
 
         public static void Restart()
         {
-            Trace.WriteLine("Service.Restart Start");
+            Trace.TraceInformation("Service.Restart Start");
             instance.OnStop();
             instance.OnStart();
-            Trace.WriteLine("Service.Restart End");
+            Trace.TraceInformation("Service.Restart End");
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Trace.WriteLine("Service.ConsoleCancel Start");
+            Trace.TraceInformation("Service.ConsoleCancel Start");
             e.Cancel = true;
             Service.instance.OnStop();
             signal.Set();
-            Trace.WriteLine("Service.ConsoleCancel End");
+            Trace.TraceInformation("Service.ConsoleCancel End");
         }
 
         protected void OnStart()
         {
-            Trace.WriteLine("Service.OnStart Start");
-
-
-
-
+            Trace.TraceInformation("Service.OnStart Start");
             _kernel = new Kernel();
             _kernel.Start();
             //_kernel.MenuOnClick("StartStop_Start");
-            Trace.WriteLine("Service.OnStart End");
+            Trace.TraceInformation("Service.OnStart End");
         }
         protected void OnPause()
         {
-            Trace.WriteLine("Service.OnPause Start");
+            Trace.TraceInformation("Service.OnPause Start");
             //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
-            Trace.WriteLine("Service.OnPause End");
+            Trace.TraceInformation("Service.OnPause End");
         }
         protected void OnContinue()
         {
-            Trace.WriteLine("Service.OnContinue Start");
+            Trace.TraceInformation("Service.OnContinue Start");
             //_kernel.MenuOnClick("StartStop_Start");
             _kernel.Start();
-            Trace.WriteLine("Service.OnContinue End");
+            Trace.TraceInformation("Service.OnContinue End");
         }
 
         protected void OnStop()
         {
-            Trace.WriteLine("Service.OnStop Start");
+            Trace.TraceInformation("Service.OnStop Start");
             //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
             _kernel.Dispose();
             _kernel = null;
-            Trace.WriteLine("Service.OnStop End");
+            Trace.TraceInformation("Service.OnStop End");
         }
 
     }

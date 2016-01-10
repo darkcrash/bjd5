@@ -120,7 +120,7 @@ namespace Bjd.server{
 
 
         public new void Start(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.Start ");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.Start ");
 
             base.Start();
             //Ver5.9.8
@@ -136,7 +136,7 @@ namespace Bjd.server{
 
 
         public new void Stop(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.Stop ");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.Stop ");
             if (_sockServer == null){
                 return; //���łɏI���������I����Ă���
             }
@@ -160,7 +160,7 @@ namespace Bjd.server{
         protected abstract void OnStopServer(); //�X���b�h��~����
 
         protected override void OnStopThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnStopThread {this.GetType().FullName} ");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.OnStopThread {this.GetType().FullName} ");
             OnStopServer(); //�q�N���X�̃X���b�h��~����
             if (ssl != null){
                 ssl.Dispose();
@@ -172,12 +172,12 @@ namespace Bjd.server{
         protected abstract bool OnStartServer(); //�X���b�h�J�n����
 
         protected override bool OnStartThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnStartThread {this.GetType().FullName}");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.OnStartThread {this.GetType().FullName}");
             return OnStartServer(); //�q�N���X�̃X���b�h�J�n����
         }
 
         protected override void OnRunThread(){
-            System.Diagnostics.Trace.WriteLine($"OneServer.OnRunThread {this.GetType().FullName}");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.OnRunThread {this.GetType().FullName}");
 
             var port = (int) Conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
@@ -213,7 +213,7 @@ namespace Bjd.server{
         }
 
         private void RunTcpServer(int port){
-            System.Diagnostics.Trace.WriteLine($"OneServer.RunTcpServer {this.GetType().FullName}");
+            System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer {this.GetType().FullName}");
 
             const int listenMax = 5;
 

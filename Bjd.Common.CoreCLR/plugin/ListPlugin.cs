@@ -12,7 +12,7 @@ namespace Bjd.plugin
         //dir 検索対象となるpluginsフォルダ
         public ListPlugin()
         {
-            Trace.WriteLine("ListPlugin..ctor Start");
+            Trace.TraceInformation("ListPlugin..ctor Start");
 
             ////フォルダが存在しない場合、初期化終了
             //if (!Directory.Exists(dir))
@@ -28,7 +28,7 @@ namespace Bjd.plugin
             //foreach (var path in list)
             //{
             //    Ar.Add(new OnePlugin(path));
-            //    Trace.WriteLine($"ListPlugin..ctor {path}");
+            //    Trace.TraceInformation($"ListPlugin..ctor {path}");
             //}
 
             Trace.Indent();
@@ -37,12 +37,12 @@ namespace Bjd.plugin
                 if (!lib.Name.EndsWith("Server.CoreCLR"))
                     continue;
                 Ar.Add(new OnePlugin(lib));
-                Trace.WriteLine($"plugin {lib.Name}");
+                Trace.TraceInformation($"plugin {lib.Name}");
             }
             Trace.Unindent();
 
 
-            Trace.WriteLine("ListPlugin..ctor End");
+            Trace.TraceInformation("ListPlugin..ctor End");
         }
 
         //名前によるプラグイン情報オブジェクト（OnePlugin）の検索

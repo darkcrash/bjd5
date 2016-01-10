@@ -205,7 +205,7 @@ namespace Bjd.WebServer
                     var hostStr = recvHeader.GetVal("host");
                     urlStr = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
                 }
-                System.Diagnostics.Trace.WriteLine($"WebServer.OnSubThread {urlStr}");
+                System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {urlStr}");
 
                 //入力取得（POST及びPUTの場合）
                 var contentLengthStr = recvHeader.GetVal("Content-Length");
@@ -249,7 +249,7 @@ namespace Bjd.WebServer
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Trace.WriteLine($"WebServer.OnSubThread {ex.Message}");
+                        System.Diagnostics.Trace.TraceError($"WebServer.OnSubThread {ex.Message}");
                         Logger.Set(LogKind.Error, null, 40, ex.Message);
                     }
                 }
@@ -725,7 +725,7 @@ namespace Bjd.WebServer
         //********************************************************
         void ReplaceVirtualHost(string host, IPAddress ip, int port)
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.ReplaceVirtualHost ");
+            System.Diagnostics.Trace.TraceInformation($"WebServer.ReplaceVirtualHost ");
 
             //Ver5.0.0-b12
             if (host == null)
@@ -784,7 +784,7 @@ namespace Bjd.WebServer
         //********************************************************
         int CheckUri(SockTcp sockTcp, Request request, Header recvHeader)
         {
-            //System.Diagnostics.Trace.WriteLine($"WebServer.CheckUri ");
+            //System.Diagnostics.Trace.TraceInformation($"WebServer.CheckUri ");
             var responseCode = 200;
 
             // v2.3.1 Uri の１文字目が/で無い場合
@@ -842,7 +842,7 @@ namespace Bjd.WebServer
 
         void AutoDeny(bool success, Ip remoteIp)
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.AutoDeny ");
+            System.Diagnostics.Trace.TraceWarning($"WebServer.AutoDeny ");
             if (_attackDb == null)
                 return;
             //データベースへの登録

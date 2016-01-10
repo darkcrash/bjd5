@@ -10,7 +10,8 @@ using Bjd.util;
 
 namespace Bjd.sock{
     //SockTcp 及び SockUdp の基底クラス
-    public abstract class SockObj{
+    public abstract class SockObj
+    {
 
         //****************************************************************
         // アドレス関連
@@ -77,18 +78,16 @@ namespace Bjd.sock{
         // エラー（切断）発生時にステータスの変更とLastErrorを設定するメソッド
         //****************************************************************
         protected void SetException(Exception ex){
-            System.Diagnostics.Trace.WriteLine($"SockObj.SetException {ex.Message}");
+            System.Diagnostics.Trace.TraceError($"SockObj.SetException {ex.Message}");
             _lastError = string.Format("[{0}] {1}", ex.Source, ex.Message);
             SockState = SockState.Error;
         }
 
         protected void SetError(String msg){
-            System.Diagnostics.Trace.WriteLine($"SockObj.SetError {msg}");
+            System.Diagnostics.Trace.TraceError($"{this.GetType().Name}.SetError {msg}");
             _lastError = msg;
             SockState = SockState.Error;
         }
-
-
 
         //TODO メソッドの配置はここでよいか？
         public void Resolve(bool useResolve, Logger logger){

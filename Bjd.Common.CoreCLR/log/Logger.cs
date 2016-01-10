@@ -296,7 +296,7 @@ namespace Bjd.log
             var oneLog = new OneLog(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
                                        detailInfomation);
 
-            System.Diagnostics.Trace.WriteLine($"{oneLog.ToString()}");
+            System.Diagnostics.Trace.TraceInformation($"{oneLog.ToString()}");
 
             // 表示制限にヒットするかどうかの確認
             var isDisplay = true;

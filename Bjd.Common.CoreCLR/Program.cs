@@ -25,8 +25,8 @@ namespace Bjd.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex.Message);
-                Trace.WriteLine(ex.StackTrace);
+                Trace.TraceError(ex.Message);
+                Trace.TraceError(ex.StackTrace);
             }
         }
     }

@@ -284,13 +284,13 @@ namespace Bjd.util
             catch (Exception ex)
             {
                 var logMessage = $"DLL={lib.Name} CLASS={className} {ex.Message}";
-                System.Diagnostics.Trace.WriteLine(logMessage);
+                System.Diagnostics.Trace.TraceError(logMessage);
 
                 //Ver6.1.7
                 if (ex.InnerException != null)
                 {
-                    System.Diagnostics.Trace.WriteLine(ex.InnerException.Message);
-                    System.Diagnostics.Trace.WriteLine(ex.InnerException.StackTrace);
+                    System.Diagnostics.Trace.TraceError(ex.InnerException.Message);
+                    System.Diagnostics.Trace.TraceError(ex.InnerException.StackTrace);
                     throw new Exception(ex.InnerException.Message, ex.InnerException);
                 }
 

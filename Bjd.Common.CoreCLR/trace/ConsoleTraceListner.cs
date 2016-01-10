@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace Bjd.trace
         {
 
             this.TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime | System.Diagnostics.TraceOptions.ThreadId;
-            this.IndentSize = 2;
+            this.IndentSize = 1;
             try
             {
                 if (Console.WindowWidth < 200)
@@ -24,7 +25,7 @@ namespace Bjd.trace
 
             try
             {
-                Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
+                //Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
                 Define.ChangeOperationSystem += Define_ChangeOperationSystem;
             }
             catch (Exception ex)
@@ -78,7 +79,6 @@ namespace Bjd.trace
             //t.Start();
             Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
 
-
         }
 
         public override void WriteLine(string message)
@@ -94,7 +94,42 @@ namespace Bjd.trace
             if (this.NeedIndent)
                 this.WriteIndent();
             Console.WriteLine(message);
+        }
 
+        private System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+        {
+            sb.Clear();
+            if (this.TraceOutputOptions.HasFlag(TraceOptions.DateTime))
+            {
+                var date = eventCache.DateTime.ToLocalTime().ToString("HH\\:mm\\:ss\\.fff");
+                sb.Append($"[{date}]");
+            }
+            if (this.TraceOutputOptions.HasFlag(TraceOptions.Timestamp))
+            {
+                var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
+                sb.Append($"[{time}]");
+            }
+            if (this.TraceOutputOptions.HasFlag(TraceOptions.ProcessId))
+            {
+                sb.Append($"[PID:{eventCache.ProcessId}]");
+            }
+            if (this.TraceOutputOptions.HasFlag(TraceOptions.ThreadId))
+            {
+                sb.Append($"[{eventCache.ThreadId.PadLeft(3)}]");
+            }
+
+            var ind = this.NeedIndent;
+            this.NeedIndent = false;
+            //sb.Append($"[{eventType.ToString().Remove(4)}][{id}] ");
+            sb.Append($"[{id}] ");
+            this.Write(sb.ToString());
+            this.NeedIndent = ind;
+
+            this.WriteLine(message);
+
+            //base.TraceEvent(eventCache, source, eventType, id, message);
 
         }
 

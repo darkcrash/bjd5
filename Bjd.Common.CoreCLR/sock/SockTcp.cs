@@ -155,7 +155,7 @@ namespace Bjd.sock
         //接続完了処理（受信待機開始）
         private void BeginReceive()
         {
-            System.Diagnostics.Trace.WriteLine("SockTcp.BeginReceive");
+            System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
             _recvBuf = new byte[_sockQueue.Space]; //キューが空なので、Spaceはバッファの最大サイズになっている
@@ -199,7 +199,7 @@ namespace Bjd.sock
 
         public void EndReceive(Task<int> result)
         {
-            //System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
+            //System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
 
             if (!result.IsCompleted)
             {
@@ -227,7 +227,7 @@ namespace Bjd.sock
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                    System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
                     //受信待機のままソケットがクローズされた場合は、ここにくる
                     this.SetErrorReceive();
                     return;
@@ -256,7 +256,7 @@ namespace Bjd.sock
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceInformation($"SockTcp.EndReceive {ex.Message}");
                 this.SetErrorReceive();
                 return;
             }
@@ -275,7 +275,7 @@ namespace Bjd.sock
         //受信処理・受信待機
         public void EndReceiveSsl(IAsyncResult ar)
         {
-            System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
+            System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
             if (ar == null)
             {
                 //受信待機
@@ -319,7 +319,7 @@ namespace Bjd.sock
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                        System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
                         //受信待機のままソケットがクローズされた場合は、ここにくる
                         this.SetErrorReceive();
                         return;
@@ -342,6 +342,7 @@ namespace Bjd.sock
                 catch (Exception ex)
                 {
                     System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                    System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.StackTrace}");
                     this.SetErrorReceive();
                     return;
                 }
@@ -408,7 +409,8 @@ namespace Bjd.sock
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
                 //ex.printStackTrace();
                 return null;
             }

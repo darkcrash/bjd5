@@ -66,15 +66,15 @@ namespace Bjd
         //�e�X�g�p�R���X�g���N�^
         public Kernel()
         {
-            Trace.WriteLine("Kernel..ctor Start");
+            Trace.TraceInformation("Kernel..ctor Start");
             DefaultInitialize();
-            Trace.WriteLine("Kernel..ctor End");
+            Trace.TraceInformation("Kernel..ctor End");
         }
 
         //�e�X�g�p�R���X�g���N�^(MailBox�̂ݏ�����)
         public Kernel(String option)
         {
-            Trace.WriteLine("Kernel..ctor Start");
+            Trace.TraceInformation("Kernel..ctor Start");
             DefaultInitialize();
 
             if (option.IndexOf("MailBox") != -1)
@@ -85,14 +85,14 @@ namespace Bjd
                 var datUser = (Dat)conf.Get("user");
                 MailBox = new MailBox(null, datUser, dir);
             }
-            Trace.WriteLine("Kernel..ctor End");
+            Trace.TraceInformation("Kernel..ctor End");
         }
 
 
         //�N�����ɁA�R���X�g���N�^����Ăяo����鏉����
         private void DefaultInitialize()
         {
-            Trace.WriteLine("Kernel.DefaultInitialize Start");
+            Trace.TraceInformation("Kernel.DefaultInitialize Start");
 
             this.CancelTokenSource = new CancellationTokenSource();
             this.CancelToken = this.CancelTokenSource.Token;
@@ -128,13 +128,13 @@ namespace Bjd
                     break;
             }
 
-            Trace.WriteLine("Kernel.DefaultInitialize End");
+            Trace.TraceInformation("Kernel.DefaultInitialize End");
         }
 
         //�T�[�o�ċN���ŁA�ēx���s����鏉����
         public void ListInitialize()
         {
-            Trace.WriteLine("Kernel.ListInitialize Start");
+            Trace.TraceInformation("Kernel.ListInitialize Start");
             //Logger���g�p�ł��Ȃ��Ԃ̃��O�́A������ɕۑ����āA���Logger�ɑ���
             var tmpLogger = new TmpLogger();
 
@@ -244,14 +244,14 @@ namespace Bjd
 
             WebApi = new WebApi();
 
-            Trace.WriteLine("Kernel.ListInitialize End");
+            Trace.TraceInformation("Kernel.ListInitialize End");
         }
 
         //Conf�̐���
         //���O��ListOption������������Ă���K�v������
         public Conf CreateConf(String nameTag)
         {
-            Trace.WriteLine($"Kernel.CreateConf {nameTag}");
+            Trace.TraceInformation($"Kernel.CreateConf {nameTag}");
             try
             {
                 if (ListOption == null)
@@ -268,7 +268,7 @@ namespace Bjd
             }
             finally
             {
-                //Trace.WriteLine($"Kernel.CreateConf {nameTag} End");
+                //Trace.TraceInformation($"Kernel.CreateConf {nameTag} End");
             }
         }
 
@@ -276,7 +276,7 @@ namespace Bjd
         //���O��ListOption������������Ă���K�v������
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
         {
-            Trace.WriteLine($"Kernel.CreateLogger {nameTag}");
+            Trace.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
             try
             {
                 if (ListOption == null)
@@ -306,7 +306,7 @@ namespace Bjd
         //�I������
         public void Dispose()
         {
-            Trace.WriteLine("Kernel.Dispose Start");
+            Trace.TraceInformation("Kernel.Dispose Start");
             try
             {
 
@@ -335,7 +335,7 @@ namespace Bjd
             }
             finally
             {
-                Trace.WriteLine("Kernel.Dispose End");
+                Trace.TraceInformation("Kernel.Dispose End");
             }
         }
 

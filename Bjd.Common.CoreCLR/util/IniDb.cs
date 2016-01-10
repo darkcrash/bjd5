@@ -127,7 +127,7 @@ namespace Bjd.util
             var isRead = false;
 
             System.Diagnostics.Trace.Indent();
-            System.Diagnostics.Trace.WriteLine($"IniDbRead:{fileName} - {nameTag}");
+            System.Diagnostics.Trace.TraceInformation($"IniDbRead:{fileName} - {nameTag}");
             System.Diagnostics.Trace.Unindent();
 
             var lines = File.ReadAllLines(fileName, Encoding.UTF8);
