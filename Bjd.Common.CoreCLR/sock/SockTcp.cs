@@ -46,7 +46,7 @@ namespace Bjd.sock
                 //socket.Connect(ip.IPAddress, port);
                 //_socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
                 var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
-                tConnect.ContinueWith(_ => CallbackConnect());
+                tConnect.ContinueWith(_ => CallbackConnect(), kernel.CancelToken);
             }
             catch
             {
@@ -183,12 +183,12 @@ namespace Bjd.sock
                 if (_ssl != null)
                 {
                     //Ver5.9.2 Java fix
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this);
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, Kernel.CancelToken);
                 }
                 else {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                     var tReceive = _socket.ReceiveAsync(_recvBufSegment, SocketFlags.None);
-                    tReceive.ContinueWith(_ => this.EndReceive(_));
+                    tReceive.ContinueWith(_ => this.EndReceive(_), Kernel.CancelToken);
                 }
             }
             catch
@@ -203,6 +203,8 @@ namespace Bjd.sock
 
             if (!result.IsCompleted)
             {
+                System.Diagnostics.Trace.TraceError(result.Exception.Message);
+                System.Diagnostics.Trace.TraceError(result.Exception.StackTrace);
                 this.SetErrorReceive();
                 return;
             }
@@ -335,7 +337,7 @@ namespace Bjd.sock
                 //受信待機の開始
                 try
                 {
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this);
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, Kernel.CancelToken);
                 }
                 catch (Exception ex)
                 {

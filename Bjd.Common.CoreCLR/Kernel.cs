@@ -42,6 +42,8 @@ namespace Bjd
         //Ver5.8.6
         public IniDb IniDb { get; private set; }
 
+        private CancellationTokenSource CancelTokenSource { get; set; }
+        public CancellationToken CancelToken { get; private set; }
 
         public bool IsJp()
         {
@@ -91,6 +93,9 @@ namespace Bjd
         private void DefaultInitialize()
         {
             Trace.WriteLine("Kernel.DefaultInitialize Start");
+
+            this.CancelTokenSource = new CancellationTokenSource();
+            this.CancelToken = this.CancelTokenSource.Token;
 
             RunMode = RunMode.Normal;
             RemoteConnect = null;//�����[�g����Őڑ�����Ă��鎞���������������
@@ -357,6 +362,8 @@ namespace Bjd
 
         internal void Stop()
         {
+            this.CancelTokenSource.Cancel();
+            this.CancelToken.WaitHandle.WaitOne(5000);
             ListServer.Stop();
         }
 

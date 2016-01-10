@@ -144,7 +144,7 @@ namespace Bjd.sock
                     {
                         //_socket.BeginReceiveFrom(_udpBuf, 0, _udpBuf.Length, SocketFlags.None, ref ep, AcceptFunc, this);
                         var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
-                        tUdp.ContinueWith(_ => this.Receive(_));
+                        tUdp.ContinueWith(_ => this.Receive(_), Kernel.CancelToken);
 
                     }
                     catch (Exception)
@@ -163,7 +163,7 @@ namespace Bjd.sock
                     // TCP
                     //_socket.BeginAccept(AcceptFunc, this);
                     var tTcp = _socket.AcceptAsync();
-                    tTcp.ContinueWith(_ => this.Accept(_));
+                    tTcp.ContinueWith(_ => this.Accept(_), Kernel.CancelToken);
 
                     break;
             }
@@ -171,6 +171,8 @@ namespace Bjd.sock
 
         void Receive(Task<SocketReceiveFromResult> taskResult)
         {
+            if (taskResult.IsCanceled)
+                return;
             if (taskResult.IsCompleted)
             {
                 try
@@ -188,6 +190,8 @@ namespace Bjd.sock
 
         void Accept(Task<Socket> taskResult)
         {
+            if (taskResult.IsCanceled)
+                return;
             if (taskResult.IsCompleted)
             {
                 try
@@ -283,7 +287,7 @@ namespace Bjd.sock
                         {
                             break;
                         }
-                        sockServer.Close(); //これ大丈夫？
+                        //sockServer.Close(); //これ大丈夫？
                         return child;
                     }
                 }

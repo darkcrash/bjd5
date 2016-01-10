@@ -11,7 +11,8 @@ using Bjd.util;
 
 namespace Bjd.SmtpServer
 {
-    class OneAgent : ThreadBase {
+    class OneAgent : ThreadBase
+    {
         readonly Conf _conf;
         readonly Logger _logger;
         readonly MailQueue _mailQueue;
@@ -24,8 +25,9 @@ namespace Bjd.SmtpServer
         private readonly Server _server;
 
 
-        public OneAgent(Kernel kernel, Server server,Conf conf,Logger logger, MailQueue mailQueue, OneQueue oneQueue)
-            : base(kernel.CreateLogger("OneAgent",true,null)) {
+        public OneAgent(Kernel kernel, Server server, Conf conf, Logger logger, MailQueue mailQueue, OneQueue oneQueue)
+            : base(kernel.CreateLogger("OneAgent", true, null))
+        {
             _conf = conf;
             _logger = logger;
             _mailQueue = mailQueue;
@@ -38,14 +40,17 @@ namespace Bjd.SmtpServer
 
         }
 
-        override protected bool OnStartThread() {
+        override protected bool OnStartThread()
+        {
             return true;
         }
 
-        override protected void OnStopThread() {
+        override protected void OnStopThread()
+        {
         }
 
-        override protected void OnRunThread() {
+        override protected void OnRunThread()
+        {
             //ログ用文字列の生成
             string mailStr = string.Format("{0} retry:{1}",
                 _oneQueue.MailInfo,
@@ -69,65 +74,77 @@ namespace Bjd.SmtpServer
             var result = SmtpClientResult.Faild;
 
             //Ver5.7.3 無効データの削除
-            if(_oneQueue.MailInfo.To.Domain==""){
+            if (_oneQueue.MailInfo.To.Domain == "")
+            {
                 deleteTarget = true;
                 goto end;
             }
 
             //サーバ（アドレス）検索
             List<OneSmtpServer> smtpServerList = GetSmtpServerList(_oneQueue.MailInfo.To.Domain);
-            if (smtpServerList.Count == 0) {
+            if (smtpServerList.Count == 0)
+            {
                 //サーバ（アドレス）検索失敗（リトライ対象）
                 _logger.Set(LogKind.Error, null, 12, string.Format("domain={0}", _oneQueue.MailInfo.To.Domain));//失敗
-            } else {
+            }
+            else {
                 //送信処理
-                foreach (OneSmtpServer oneSmtpServer in smtpServerList) {
+                foreach (OneSmtpServer oneSmtpServer in smtpServerList)
+                {
                     Ssl ssl = null;
-                    if (oneSmtpServer.Ssl) {
+                    if (oneSmtpServer.Ssl)
+                    {
                         //クライアント用SSLの初期化
                         //ssl = new Ssl(server.Logger,oneSmtpServer.TargetServer);
                         ssl = new Ssl(oneSmtpServer.TargetServer);
                     }
                     var timeout = 5;
-                    var tcpObj = Inet.Connect(_kernel,oneSmtpServer.Ip, oneSmtpServer.Port, timeout,ssl);
-                    if (tcpObj == null) {
+                    var tcpObj = Inet.Connect(_kernel, oneSmtpServer.Ip, oneSmtpServer.Port, timeout, ssl);
+                    if (tcpObj == null)
+                    {
                         //serverMain.Logger.Set(LogKind.Error, xx, string.Format("to={0} address={1}", oneQueue.MailInfo.To.ToString(), ip.IpStr));
                         continue;
                     }
                     //Ver5.9.8
-                    if (tcpObj.SockState != SockState.Connect){
+                    if (tcpObj.SockState != SockState.Connect)
+                    {
                         _logger.Set(LogKind.Error, tcpObj, 56, tcpObj.GetLastEror());//失敗
                         break;
                     }
 
                     string esmtpUser = null;
                     string esmtpPass = null;
-                    if (oneSmtpServer.UseSmtp) {
+                    if (oneSmtpServer.UseSmtp)
+                    {
                         esmtpUser = oneSmtpServer.User;
                         esmtpPass = oneSmtpServer.Pass;
                     }
                     result = _smtpClient2.Send(tcpObj, _kernel.ServerName, _oneQueue.Mail(_mailQueue), _oneQueue.MailInfo.From, _oneQueue.MailInfo.To, esmtpUser, esmtpPass, this);
                     tcpObj.Close();
 
-                    if (result == SmtpClientResult.Success) {
+                    if (result == SmtpClientResult.Success)
+                    {
                         //送信成功
                         _logger.Set(LogKind.Normal, tcpObj, 11, mailStr);//成功
                         deleteTarget = true;
                         break;
                     }
-                    if (result == SmtpClientResult.ErrorCode) {
+                    if (result == SmtpClientResult.ErrorCode)
+                    {
                         //明確なエラーの発生
                         _logger.Set(LogKind.Error, tcpObj, 14, mailStr);//失敗
                         break;
                     }
                 }
-                if (result == SmtpClientResult.Faild) {
+                if (result == SmtpClientResult.Faild)
+                {
                     _logger.Set(LogKind.Error, null, 13, mailStr);//失敗
                 }
             }
 
             //エラーコードが返された場合及びリトライ回数を超えている場合、リターンメールを作成する
-            if (result == SmtpClientResult.ErrorCode || retryMax <= _oneQueue.MailInfo.RetryCounter) {
+            if (result == SmtpClientResult.ErrorCode || retryMax <= _oneQueue.MailInfo.RetryCounter)
+            {
                 var from = new MailAddress((string)_conf.Get("errorFrom"));
                 var to = _oneQueue.MailInfo.From;
 
@@ -137,9 +154,11 @@ namespace Bjd.SmtpServer
                 //List-Owner: <mailto:1ban-admin@example.com>
                 var orgMail = _oneQueue.Mail(_mailQueue);
                 var listSoftware = orgMail.GetHeader("List-Software");
-                if (listSoftware != null && listSoftware.IndexOf(Define.ApplicationName()) == 0) {
+                if (listSoftware != null && listSoftware.IndexOf(Define.ApplicationName()) == 0)
+                {
                     var listOwner = orgMail.GetHeader("List-Owner");
-                    if (listOwner != null) {
+                    if (listOwner != null)
+                    {
                         //<mailto:1ban-admin@example.com>
                         listOwner = listOwner.Trim(new char[] { '<', '>' });
                         //mailto:1ban-admin@example.com
@@ -151,22 +170,25 @@ namespace Bjd.SmtpServer
                 const string reason = "550 Host unknown";
                 var mail = MakeErrorMail(from, to, reason, _smtpClient2.LastLog);
                 _logger.Set(LogKind.Normal, null, 15, string.Format("from:{0} to:{1}", from, to));
-                if (_server.MailSave2(from, to, mail, _oneQueue.MailInfo.Host, _oneQueue.MailInfo.Addr)) {
+                if (_server.MailSave2(from, to, mail, _oneQueue.MailInfo.Host, _oneQueue.MailInfo.Addr))
+                {
                     deleteTarget = true; //メール削除
                 }
             }
-end:
+            end:
             if (deleteTarget)
                 _oneQueue.Delete(_mailQueue); //メール削除
         }
 
-        public override string GetMsg(int no){
+        public override string GetMsg(int no)
+        {
             throw new NotImplementedException();
         }
 
         //送信先ドメイン名から送信先サーバのアドレスリストを取得する
         //「ホスト設定」にヒットした場合は、その設定に従う
-        List<OneSmtpServer> GetSmtpServerList(string domainName) {
+        List<OneSmtpServer> GetSmtpServerList(string domainName)
+        {
             var smtpServerList = new List<OneSmtpServer>();
             //規定値
             var targetServer = "";
@@ -177,30 +199,37 @@ end:
             var ssl = false;//SSL接続
 
             //送り先ドメインが「ホスト設定」で定義されているかどうかの確認
-            foreach (var o in (Dat)_conf.Get("hostList")) {
-                if (o.Enable) { //有効なデータだけを対象にする
+            foreach (var o in (Dat)_conf.Get("hostList"))
+            {
+                if (o.Enable)
+                { //有効なデータだけを対象にする
                     var targetDomain = o.StrList[0];
                     var isHit = false;
-                    if (targetDomain == "*") { //すべてヒット
+                    if (targetDomain == "*")
+                    { //すべてヒット
                         isHit = true;
-                    } else {
+                    }
+                    else {
                         //*以降を削除
                         int index = targetDomain.IndexOf('*');
-                        if (0 <= index) {
+                        if (0 <= index)
+                        {
                             targetDomain = targetDomain.Substring(0, index);
                         }
-                        if (domainName.ToUpper().IndexOf(targetDomain.ToUpper()) == 0) {
+                        if (domainName.ToUpper().IndexOf(targetDomain.ToUpper()) == 0)
+                        {
                             isHit = true;
                         }
                     }
-                    if (isHit) {
+                    if (isHit)
+                    {
                         targetServer = o.StrList[1];
                         port = Convert.ToInt32(o.StrList[2]);
                         useSmtp = Convert.ToBoolean(o.StrList[3]);
                         user = o.StrList[4];
                         pass = Crypt.Decrypt(o.StrList[5]);
                         ssl = Convert.ToBoolean(o.StrList[6]);
-                        
+
                         //var ip = new Ip(targetServer);
                         //if (ip.ToString() != "0.0.0.0") {
                         //    smtpServerList.Add(new OneSmtpServer(targetServer, ip, port, useSmtp, user, pass, ssl));
@@ -210,17 +239,24 @@ end:
                         //        smtpServerList.Add(new OneSmtpServer(targetServer, new Ip(s), port, useSmtp, user, pass, ssl));
                         //    }
                         //}
-                        try{
+                        try
+                        {
                             var ip = new Ip(targetServer);
                             smtpServerList.Add(new OneSmtpServer(targetServer, ip, port, useSmtp, user, pass, ssl));
-                        } catch (ValidObjException) {
+                        }
+                        catch (ValidObjException)
+                        {
                             var tmp = Lookup.QueryA(targetServer);
-                            try{
-                                foreach (var s in tmp) {
+                            try
+                            {
+                                foreach (var s in tmp)
+                                {
                                     smtpServerList.Add(new OneSmtpServer(targetServer, new Ip(s), port, useSmtp, user, pass, ssl));
                                 }
-                            }catch(ValidObjException){
-                                
+                            }
+                            catch (ValidObjException)
+                            {
+
                             }
                         }
                         return smtpServerList;
@@ -236,24 +272,30 @@ end:
 
             var hostList = new List<string>();
             var dnsServerList = Lookup.DnsServer();
-            foreach (var dnsServer in dnsServerList) {
+            foreach (var dnsServer in dnsServerList)
+            {
                 hostList = Lookup.QueryMx(domainName, dnsServer);
                 if (hostList.Count > 0)
                     break;
             }
 
-            foreach (var host in hostList) {
+            foreach (var host in hostList)
+            {
                 var tmp = Lookup.QueryA(host);
-                foreach (string s in tmp) {
+                foreach (string s in tmp)
+                {
                     smtpServerList.Add(new OneSmtpServer(targetServer, new Ip(s), port, useSmtp, user, pass, ssl));
                 }
             }
 
-            if (smtpServerList.Count == 0) {
-                if (!(bool)_conf.Get("mxOnly")) {
+            if (smtpServerList.Count == 0)
+            {
+                if (!(bool)_conf.Get("mxOnly"))
+                {
                     var tmp = Lookup.QueryA(domainName);
-                    
-                    foreach (var s in tmp) {
+
+                    foreach (var s in tmp)
+                    {
                         smtpServerList.Add(new OneSmtpServer(targetServer, new Ip(s), port, useSmtp, user, pass, ssl));
                     }
                 }
@@ -262,7 +304,8 @@ end:
         }
 
         //エラーメールの作成
-        Mail MakeErrorMail(MailAddress from, MailAddress to, string reason, List<string> lastLog) {
+        Mail MakeErrorMail(MailAddress from, MailAddress to, string reason, List<string> lastLog)
+        {
             var mail = new Mail();
             const string boundaryStr = "BJD-Boundary";
 
@@ -281,7 +324,8 @@ end:
             mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("from {0}[{1}]\r\n", _oneQueue.MailInfo.Host, _oneQueue.MailInfo.Addr)));
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));
 
-            if (lastLog.Count >= 2) {
+            if (lastLog.Count >= 2)
+            {
                 mail.AppendLine(Encoding.ASCII.GetBytes("    ----- The following addresses had parmanent fatal errors -----\r\n"));
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("<{0}>\r\n", _oneQueue.MailInfo.To)));
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("   (reason:: {0})\r\n", lastLog[1])));
@@ -291,7 +335,8 @@ end:
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format(">>> {0}\r\n", lastLog[0])));
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("<<< {0}\r\n", lastLog[1])));
                 mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));
-            } else {
+            }
+            else {
                 mail.AppendLine(Encoding.ASCII.GetBytes("    ----- The following addresses had parmanent fatal errors -----\r\n"));
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("<{0}>\r\n", _oneQueue.MailInfo.To)));
                 mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("   (reason:: {0})\r\n", reason)));

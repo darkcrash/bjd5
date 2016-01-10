@@ -17,7 +17,7 @@ namespace Bjd.net {
         }
 
         //クライアント用コンストラクタ
-        public Ssl(string targetServer) {
+        public Ssl( string targetServer) {
             _targetServer = targetServer;
 
             Status = true;//初期化が成功しているかどうかのステータス
@@ -46,7 +46,7 @@ namespace Bjd.net {
         public OneSsl CreateClientStream(Socket socket) {
             //Ver5.9.8 例外発生に対応
             try{
-                return new OneSsl(socket, _targetServer);
+                return new OneSsl( socket, _targetServer);
             } catch (Exception){
                 return null;
             }
@@ -54,7 +54,7 @@ namespace Bjd.net {
         public OneSsl CreateServerStream(Socket socket) {
             //Ver5.9.8 例外発生に対応
             try{
-                return new OneSsl(socket, _x509Certificate2);
+                return new OneSsl( socket, _x509Certificate2);
             } catch (Exception) {
                 return null;
             }

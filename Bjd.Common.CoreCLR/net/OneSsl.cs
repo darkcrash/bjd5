@@ -12,14 +12,14 @@ namespace Bjd.net
         readonly SslStream _stream;
 
         //クライアント接続
-        public OneSsl(Socket socket, string targetServer)
+        public OneSsl( Socket socket, string targetServer)
         {
             _stream = new SslStream(new NetworkStream(socket));
             _stream.AuthenticateAsClient(targetServer);
         }
 
         //サーバ接続
-        public OneSsl(Socket socket, X509Certificate2 x509Certificate2)
+        public OneSsl( Socket socket, X509Certificate2 x509Certificate2)
         {
             _stream = new SslStream(new NetworkStream(socket));
             try
@@ -52,10 +52,10 @@ namespace Bjd.net
             return buf.Length;
         }
 
-        public void BeginRead(byte[] buf, int offset, int count, AsyncCallback ac, object o)
+        public void BeginRead(byte[] buf, int offset, int count, AsyncCallback ac, object o, CancellationToken token)
         {
             //_stream.BeginRead(buf, offset, count, ac, o);
-            BeginRead(_stream, buf, offset, count, ac, o);
+            BeginRead(_stream, buf, offset, count, ac, o, token);
         }
 
         public int EndRead(IAsyncResult ar)
@@ -71,11 +71,11 @@ namespace Bjd.net
         }
 
 
-        private static void BeginRead(SslStream t, byte[] buf, int offset, int count, AsyncCallback ac, object o)
+        private static void BeginRead(SslStream t, byte[] buf, int offset, int count, AsyncCallback ac, object o, CancellationToken token)
         {
             var result = t.ReadAsync(buf, offset, count);
             Result r = new Result(ac, o);
-            result.ContinueWith(_ => r.Complete(_.Result));
+            result.ContinueWith(_ => r.Complete(_), token);
         }
 
         private static int EndRead(SslStream t, IAsyncResult ar)
@@ -99,9 +99,9 @@ namespace Bjd.net
                 this.callback = ac;
             }
 
-            public void Complete(int result)
+            public void Complete(Task<int> result)
             {
-                this.ReadCount = result;
+                this.ReadCount = result.Result;
                 this._Completed = true;
                 this._wait.Set();
                 this.callback(this);
