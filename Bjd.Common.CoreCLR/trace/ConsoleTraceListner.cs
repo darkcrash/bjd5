@@ -123,13 +123,11 @@ namespace Bjd.trace
                 }
 
                 var ind = this.NeedIndent;
-                this.NeedIndent = false;
                 //sb.Append($"[{eventType.ToString().Remove(4)}][{id}] ");
                 sb.Append($"[{id}] ");
-                this.Write(sb.ToString());
-                this.NeedIndent = ind;
-
-                this.WriteLine(message);
+                sb.Append(new string(' ', this.IndentLevel * this.IndentSize));
+                sb.Append(message);
+                this.WriteLine(sb.ToString());
 
                 //base.TraceEvent(eventCache, source, eventType, id, message);
             };

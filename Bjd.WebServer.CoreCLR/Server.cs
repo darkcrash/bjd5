@@ -784,7 +784,7 @@ namespace Bjd.WebServer
         //********************************************************
         int CheckUri(SockTcp sockTcp, Request request, Header recvHeader)
         {
-            //System.Diagnostics.Trace.TraceInformation($"WebServer.CheckUri ");
+            System.Diagnostics.Trace.TraceInformation($"WebServer.CheckUri ");
             var responseCode = 200;
 
             // v2.3.1 Uri の１文字目が/で無い場合
