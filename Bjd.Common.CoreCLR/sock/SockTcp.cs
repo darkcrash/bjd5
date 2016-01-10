@@ -15,8 +15,8 @@ namespace Bjd.sock
 
         //private Selector selector = null;
         //private SocketChannel channel = null; //ACCEPTの場合は、コンストラクタでコピーされる
-        private readonly Socket _socket;
-        private readonly Ssl _ssl;
+        private Socket _socket;
+        private Ssl _ssl;
 
         private OneSsl _oneSsl;
         private SockQueue _sockQueue = new SockQueue();
@@ -85,6 +85,9 @@ namespace Bjd.sock
             }
         }
 
+        protected override void Cancel()
+        {
+        }
 
         //通常のサーバでは、このファンクションを外部で作成する
         //private void CallbackConnect(IAsyncResult ar)
@@ -569,11 +572,16 @@ namespace Bjd.sock
             {
                 //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
             }
-            //_socket.Close();
-            _socket.Dispose();
+            if (_socket != null)
+            {
+                //_socket.Close();
+                _socket.Dispose();
+                _socket = null;
+            }
             if (_oneSsl != null)
             {
                 _oneSsl.Close();
+                _oneSsl = null;
             }
 
             SetError("close()");
@@ -666,5 +674,26 @@ namespace Bjd.sock
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            this._lastLineSend = null;
+            this._recvBuf = null;
+            if (this._socket != null)
+            {
+                this._socket.Dispose();
+                this._socket = null;
+            }
+            if (this._oneSsl != null)
+            {
+                this._oneSsl.Close();
+                this._oneSsl = null;
+            }
+            this._sockQueue = null;
+            this._ssl = null;
+
+            base.Dispose(disposing);
+        }
+
     }
 }

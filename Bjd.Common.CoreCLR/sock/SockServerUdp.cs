@@ -112,9 +112,14 @@ namespace Bjd.sock
             BeginReceiveUdp();
         }
 
+        protected override void Cancel()
+        {
+            WaitSelect.Set();
+        }
 
         Queue<sock.SockUdp> sockQueue = new Queue<sock.SockUdp>();
         ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false);
+        bool isCancel = false;
 
         public SockUdp Select(ILife iLife)
         {
@@ -128,7 +133,7 @@ namespace Bjd.sock
                     {
                         return sockQueue.Dequeue();
                     }
-                    else
+                    else if (!isCancel)
                     {
                         WaitSelect.Reset();
                     }

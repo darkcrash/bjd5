@@ -63,6 +63,15 @@ namespace Bjd
             }
         }
 
+        internal event EventHandler Cancel;
+
+        private void OnCancel()
+        {
+            if (this.Cancel == null)
+                return;
+            this.Cancel(this, EventArgs.Empty);
+        }
+
         //�e�X�g�p�R���X�g���N�^
         public Kernel()
         {
@@ -96,6 +105,7 @@ namespace Bjd
 
             this.CancelTokenSource = new CancellationTokenSource();
             this.CancelToken = this.CancelTokenSource.Token;
+            this.CancelToken.Register(this.OnCancel);
 
             RunMode = RunMode.Service;
             RemoteConnect = null;//�����[�g����Őڑ�����Ă��鎞���������������

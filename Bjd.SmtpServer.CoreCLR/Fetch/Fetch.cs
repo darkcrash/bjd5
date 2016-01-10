@@ -16,7 +16,7 @@ namespace Bjd.SmtpServer
         private Kernel _kernel;
 
           public Fetch(Kernel kernel, MailSave mailSave, String domainName,IEnumerable<OneDat> fetchList, int timeout,int sizeLimit)
-            : base(kernel.CreateLogger("FetchThread", true, null)){
+            : base( kernel.CreateLogger("FetchThread", true, null)){
              _kernel = kernel;
             //_server = server;
             _logger = kernel.CreateLogger("Fetch", true, this);

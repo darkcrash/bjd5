@@ -33,7 +33,7 @@ namespace Bjd.ProxyHttpServer {
         bool _cacheRefresh;//�L���b�V�����|
 
         public Cache(Kernel kernel, Logger logger, Conf conf)
-            : base(logger) {
+            : base( logger) {
             this.logger = logger;
             //_oneOption = oneOption;
             _conf = conf;

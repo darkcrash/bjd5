@@ -125,6 +125,10 @@ namespace Bjd.sock
             return _socket.SendTo(buf, SocketFlags.None, RemoteAddress);
         }
 
+        protected override void Cancel()
+        {
+        }
+
         public override void Close()
         {
             //ACCEPT

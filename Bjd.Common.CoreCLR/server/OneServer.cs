@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Bjd.acl;
 using Bjd.ctrl;
 using Bjd.log;
@@ -33,8 +34,8 @@ namespace Bjd.server
         protected AclList AclList = null;
 
         //�q�X���b�h�Ǘ�
-        private static readonly object SyncObj = new object(); //�r������I�u�W�F�N�g
-        readonly List<Thread> _childThreads = new List<Thread>();
+        readonly object SyncObj = new object(); //�r������I�u�W�F�N�g
+        readonly List<Task> _childThreads = new List<Task>();
         readonly int _multiple; //�����ڑ���
 
         //�X�e�[�^�X�\���p
@@ -52,24 +53,7 @@ namespace Bjd.server
 
         public int Count()
         {
-            //Java fix try-catch�ǉ�
-            try
-            {
-                //�`���C���h�X���b�h�I�u�W�F�N�g�̐���
-                for (int i = _childThreads.Count - 1; i >= 0; i--)
-                {
-                    if (!_childThreads[i].IsAlive)
-                    {
-                        _childThreads.RemoveAt(i);
-                    }
-                }
-                return _childThreads.Count;
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-
+            return _childThreads.Count;
         }
 
         //�����[�g����(�f�[�^�̎擾)
@@ -102,6 +86,7 @@ namespace Bjd.server
             Conf = conf;
             _oneBind = oneBind;
             IsJp = kernel.IsJp();
+            kernel.CancelToken.Register(() => this.StopLife());
 
             //Ver6.1.6
             Lang = new Lang(IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);
@@ -152,7 +137,7 @@ namespace Bjd.server
             }
 
             //bind����������܂őҋ@����
-            while ( (_sockServerTcp == null &&  _sockServerUdp == null) || this.SockState == sock.SockState.Idle)
+            while ((_sockServerTcp == null && _sockServerUdp == null) || this.SockState == sock.SockState.Idle)
             {
                 Thread.Sleep(100);
             }
@@ -285,14 +270,13 @@ namespace Bjd.server
                 if (AclCheck(child) == AclKind.Deny)
                 {
                     child.Close();
+                    child.Dispose();
                     continue;
                 }
-                lock (SyncObj)
-                {
-                    var t = new Thread(SubThread) { IsBackground = true };
-                    t.Start(child);
-                    _childThreads.Add(t);
-                }
+                var t = new Task(() => this.SubThread(child));
+                t.ContinueWith(this.RemoveTask);
+                this.AddTask(t);
+                t.Start();
             }
 
         }
@@ -333,14 +317,26 @@ namespace Bjd.server
                     child.Close();
                     continue;
                 }
-                lock (SyncObj)
-                {
-                    var t = new Thread(SubThread) { IsBackground = true };
-                    t.Start(child);
-                    _childThreads.Add(t);
-                }
+                var t = new Task(() => this.SubThread(child));
+                t.ContinueWith(this.RemoveTask);
+                this.AddTask(t);
+                t.Start();
             }
 
+        }
+        private void RemoveTask(Task t)
+        {
+            lock (SyncObj)
+            {
+                _childThreads.Remove(t);
+            }
+        }
+        private void AddTask(Task t)
+        {
+            lock (SyncObj)
+            {
+                _childThreads.Add(t);
+            }
         }
 
         //ACL�����̃`�F�b�N
@@ -366,7 +362,7 @@ namespace Bjd.server
         private String _denyAddress = ""; //Ver5.3.5 DoS�Ώ�
 
         //�P���N�G�X�g�ɑ΂���q�X���b�h�Ƃ��ċN�������
-        public void SubThread(Object o)
+        public void SubThread(SockObj o)
         {
             var sockObj = (SockObj)o;
 
@@ -390,10 +386,12 @@ namespace Bjd.server
                     Logger.Exception(ex, null, 2);
                 }
             }
-
-            sockObj.Close();
-
-            Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));
+            finally
+            {
+                sockObj.Close();
+                Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));
+                sockObj.Dispose();
+            }
 
         }
 

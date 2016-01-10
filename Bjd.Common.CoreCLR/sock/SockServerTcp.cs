@@ -114,8 +114,15 @@ namespace Bjd.sock
             BeginReceiveTcp();
         }
 
+        protected override void Cancel()
+        {
+            WaitSelect.Set();
+            isCancel = true;
+        }
+
         Queue<sock.SockTcp> sockQueue = new Queue<sock.SockTcp>();
         ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false);
+        bool isCancel = false;
 
         public SockTcp Select(ILife iLife)
         {
@@ -129,7 +136,7 @@ namespace Bjd.sock
                     {
                         return sockQueue.Dequeue();
                     }
-                    else
+                    else if(!isCancel)
                     {
                         WaitSelect.Reset();
                     }

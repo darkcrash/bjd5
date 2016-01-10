@@ -6,7 +6,8 @@ using Bjd.option;
 
 namespace Bjd.SmtpServer
 {
-    class Agent : ThreadBase {
+    class Agent : ThreadBase
+    {
         readonly Conf _conf;
         readonly Logger _logger;
 
@@ -19,8 +20,9 @@ namespace Bjd.SmtpServer
 
 
         //public Agent(Server server, Kernel kernel, MailQueue mailQueue, SaveMail saveMail,bool always):base(kernel,"Agent") {
-        public Agent(Kernel kernel, Server server,Conf conf, Logger logger,MailQueue mailQueue, bool always)
-            : base(kernel.CreateLogger("Agent",true, null)) {
+        public Agent(Kernel kernel, Server server, Conf conf, Logger logger, MailQueue mailQueue, bool always)
+            : base( kernel.CreateLogger("Agent", true, null))
+        {
             _conf = conf;
             _logger = logger;
             _mailQueue = mailQueue;
@@ -33,12 +35,13 @@ namespace Bjd.SmtpServer
         }
         override protected bool OnStartThread() { return true; }//�O����
         override protected void OnStopThread() { }//�㏈��
-        override protected void OnRunThread() {//�{��
+        override protected void OnRunThread()
+        {//�{��
 
             //[C#]
             ThreadBaseKind = ThreadBaseKind.Running;
 
-            
+
             var ar = new List<OneAgent>();
             var threadMax = (int)_conf.Get("threadMax");//�X���b�h���d����
             var threadSpan = (int)_conf.Get("threadSpan");//�ŏ������Ԋu�i���j
@@ -47,29 +50,33 @@ namespace Bjd.SmtpServer
             if (_kernel.ServerName == "")
                 _logger.Set(LogKind.Error, null, 20, "");
 
-            while (IsLife()) {
+            while (IsLife())
+            {
 
-                if (!_always) {//�L���[�펞����
+                if (!_always)
+                {//�L���[�펞����
                     Thread.Sleep(300);
                     continue;
                 }
 
                 //�L���[����ŏ��������Ԃ�o�߂��Ă��郁�[������o���i�擾����̂́A�ő�Łu�X���b�h���d�����v�܂Łj
                 List<OneQueue> queueList = _mailQueue.GetList(threadMax, threadSpan);
-                if (queueList.Count == 0) {
+                if (queueList.Count == 0)
+                {
                     //for (int i = 0; i < 6000 && life; i++) {
                     Thread.Sleep(10);//�����Ώۂ������ꍇ�́A����(1�����x)�x�e
                     //}
                     continue;
                 }
                 //�擾�������X�g����������i���d�j�Ŏ��s
-                foreach (OneQueue oneQueue in queueList) {
+                foreach (OneQueue oneQueue in queueList)
+                {
                     //Vrt5.3.6
                     //if(oneQueue.MailInfo.From.ToString()==oneQueue.MailInfo.To.ToString())
                     //    continue;//���[�v���[���͏��u���Ȃ�
 
                     //OneAgent oneAgent = new OneAgent(kernel, server, mailQueue, this, oneQueue);
-                    var oneAgent = new OneAgent(_kernel,_server ,_conf,_logger, _mailQueue, oneQueue);
+                    var oneAgent = new OneAgent(_kernel, _server, _conf, _logger, _mailQueue, oneQueue);
                     oneAgent.Start();
                     ar.Add(oneAgent);
                 }
@@ -77,10 +84,13 @@ namespace Bjd.SmtpServer
                 //�S�����I������̂�҂iOneAgent���Agent����ɍ폜�����Ɩ�肪����j
                 //life=false��OneAgent�͂��ꂼ��i���f���āj�I���Ɍ�����
                 //�����ł́AOneAgent���S��������I����܂őҋ@����
-                while (true) {
+                while (true)
+                {
                     bool isRun = false;
-                    foreach (OneAgent oneAgent in ar) {
-                        if(oneAgent.ThreadBaseKind == ThreadBaseKind.Running){
+                    foreach (OneAgent oneAgent in ar)
+                    {
+                        if (oneAgent.ThreadBaseKind == ThreadBaseKind.Running)
+                        {
                             isRun = true;
                             break;
                         }
@@ -92,7 +102,8 @@ namespace Bjd.SmtpServer
             }
         }
 
-        public override string GetMsg(int no){
+        public override string GetMsg(int no)
+        {
             throw new System.NotImplementedException();
         }
     }

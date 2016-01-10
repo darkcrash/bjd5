@@ -96,14 +96,13 @@ namespace Bjd.trace
             Console.WriteLine(message);
         }
 
-        private System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
             Action tAct = () =>
             {
+                var sb = new System.Text.StringBuilder();
 
-                sb.Clear();
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.DateTime))
                 {
                     var date = eventCache.DateTime.ToLocalTime().ToString("HH\\:mm\\:ss\\.fff");

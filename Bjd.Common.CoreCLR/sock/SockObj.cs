@@ -10,7 +10,7 @@ using Bjd.util;
 
 namespace Bjd.sock{
     //SockTcp 及び SockUdp の基底クラス
-    public abstract class SockObj
+    public abstract class SockObj : IDisposable
     {
 
         //****************************************************************
@@ -48,7 +48,24 @@ namespace Bjd.sock{
             SockState = SockState.Idle;
             LocalAddress = null;
             RemoteAddress = null;
+            Kernel.Cancel += this.Kernel_Cancel;
         }
+
+        private void Kernel_Cancel(object sender, EventArgs e)
+        {
+            this.Cancel();
+        }
+
+        protected abstract void Cancel();
+
+        protected bool IsCancel
+        {
+            get
+            {
+                return this.Kernel.CancelToken.IsCancellationRequested;
+            }
+        }
+
 
         //****************************************************************
         // LastError関連
@@ -160,6 +177,47 @@ namespace Bjd.sock{
             }
 
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                }
+
+                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                this._lastError = null;
+                Kernel.Cancel -= this.Kernel_Cancel;
+                this.Kernel = null;
+
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
+        ~SockObj()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(false);
+        }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(true);
+            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
 
