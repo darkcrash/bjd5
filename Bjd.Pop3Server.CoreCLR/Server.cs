@@ -31,7 +31,7 @@ namespace Bjd.Pop3Server
         {
 
             //Ver5.8.9
-            if (kernel.RunMode == RunMode.Normal || kernel.RunMode == RunMode.Service)
+            if ( kernel.RunMode == RunMode.Service)
             {
                 //���[���{�b�N�X�̏�������Ԋm�F
                 if (kernel.MailBox == null || !kernel.MailBox.Status)

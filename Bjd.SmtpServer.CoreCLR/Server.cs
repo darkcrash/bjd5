@@ -42,7 +42,7 @@ namespace Bjd.SmtpServer
         {
 
             //Ver5.8.9
-            if (kernel.RunMode == RunMode.Normal || kernel.RunMode == RunMode.Service)
+            if (kernel.RunMode == RunMode.Service)
             {
                 //メールボックスの初期化状態確認
                 if (kernel.MailBox == null || !kernel.MailBox.Status)

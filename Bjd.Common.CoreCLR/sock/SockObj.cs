@@ -119,10 +119,6 @@ namespace Bjd.sock{
                 return;
             }
 
-            if (Kernel.RunMode == RunMode.Remote){
-                return; //リモートクライアントの場合は、ここから追加されることはない
-            }
-
             bool isText = false; //対象がテキストかどうかの判断
             Encoding encoding = null;
 

@@ -44,11 +44,6 @@ namespace Bjd.server{
         private void Initialize(ListPlugin listPlugin){
             Ar.Clear();
 
-            //Java fix
-            if (kernel.RunMode == RunMode.Remote){
-                return;
-            }
-
             foreach (OneOption op in kernel.ListOption){
 
                 if (!op.UseServer){

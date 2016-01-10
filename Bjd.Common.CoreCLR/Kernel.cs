@@ -97,7 +97,7 @@ namespace Bjd
             this.CancelTokenSource = new CancellationTokenSource();
             this.CancelToken = this.CancelTokenSource.Token;
 
-            RunMode = RunMode.Normal;
+            RunMode = RunMode.Service;
             RemoteConnect = null;//�����[�g����Őڑ�����Ă��鎞���������������
 
             //�v���Z�X�N�����ɏ����������
@@ -108,7 +108,7 @@ namespace Bjd
             //RunMode
             RunMode = RunMode.Service;
 
-            IniDb = new IniDb(Define.ExecutableDirectory, (RunMode == RunMode.Remote) ? "$remote" : "Option");
+            IniDb = new IniDb(Define.ExecutableDirectory, "Option");
 
             MailBox = null;
 
@@ -120,7 +120,6 @@ namespace Bjd
 
             switch (RunMode)
             {
-                case RunMode.Normal:
                 case RunMode.Service:
                     break;
                 default:
@@ -165,11 +164,7 @@ namespace Bjd
             var listPlugin = new ListPlugin();
             foreach (var o in listPlugin)
             {
-                //�����[�g�N���C�A���g�̏ꍇ�A���̃��O�́A��₱�����̂ŕ\�����Ȃ�
-                if (RunMode == RunMode.Normal)
-                {
-                    tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
-                }
+                tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
             }
 
             _isJp = IniDb.IsJp();
@@ -182,7 +177,7 @@ namespace Bjd
             //OptionLog
             var confOption = new Conf(ListOption.Get("Log"));
 
-            if (RunMode == RunMode.Normal || RunMode == RunMode.Service)
+            if (RunMode == RunMode.Service)
             {
                 //LogFile�̏�����
                 var saveDirectory = (String)confOption.Get("saveDirectory");
@@ -309,22 +304,6 @@ namespace Bjd
             Trace.TraceInformation("Kernel.Dispose Start");
             try
             {
-
-                //Ver5.8.6 Java fix 
-                if (RunMode == RunMode.Normal)
-                {
-                    var iniTmp = new IniDb(Define.ExecutableDirectory, "$tmp");//�o�b�N�A�b�v��쐬����ini�t�@�C����폜����
-                                                                               //��U�A�ʃt�@�C���Ɍ��ݗL���Ȃ�̂���������߂�
-                    ListOption.Save(iniTmp);
-                    //�㏑������
-                    File.Copy(iniTmp.Path, IniDb.Path, true);
-                    iniTmp.Delete();
-                }
-                else if (RunMode == RunMode.Remote)
-                {
-                    IniDb.Delete(); //$Remote.ini�̍폜
-                }
-
                 //**********************************************
                 // �j��
                 //**********************************************
