@@ -100,36 +100,42 @@ namespace Bjd.trace
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
-            sb.Clear();
-            if (this.TraceOutputOptions.HasFlag(TraceOptions.DateTime))
+            Action tAct = () =>
             {
-                var date = eventCache.DateTime.ToLocalTime().ToString("HH\\:mm\\:ss\\.fff");
-                sb.Append($"[{date}]");
-            }
-            if (this.TraceOutputOptions.HasFlag(TraceOptions.Timestamp))
-            {
-                var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
-                sb.Append($"[{time}]");
-            }
-            if (this.TraceOutputOptions.HasFlag(TraceOptions.ProcessId))
-            {
-                sb.Append($"[PID:{eventCache.ProcessId}]");
-            }
-            if (this.TraceOutputOptions.HasFlag(TraceOptions.ThreadId))
-            {
-                sb.Append($"[{eventCache.ThreadId.PadLeft(3)}]");
-            }
 
-            var ind = this.NeedIndent;
-            this.NeedIndent = false;
-            //sb.Append($"[{eventType.ToString().Remove(4)}][{id}] ");
-            sb.Append($"[{id}] ");
-            this.Write(sb.ToString());
-            this.NeedIndent = ind;
+                sb.Clear();
+                if (this.TraceOutputOptions.HasFlag(TraceOptions.DateTime))
+                {
+                    var date = eventCache.DateTime.ToLocalTime().ToString("HH\\:mm\\:ss\\.fff");
+                    sb.Append($"[{date}]");
+                }
+                if (this.TraceOutputOptions.HasFlag(TraceOptions.Timestamp))
+                {
+                    var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
+                    sb.Append($"[{time}]");
+                }
+                if (this.TraceOutputOptions.HasFlag(TraceOptions.ProcessId))
+                {
+                    sb.Append($"[PID:{eventCache.ProcessId}]");
+                }
+                if (this.TraceOutputOptions.HasFlag(TraceOptions.ThreadId))
+                {
+                    sb.Append($"[{eventCache.ThreadId.PadLeft(3)}]");
+                }
 
-            this.WriteLine(message);
+                var ind = this.NeedIndent;
+                this.NeedIndent = false;
+                //sb.Append($"[{eventType.ToString().Remove(4)}][{id}] ");
+                sb.Append($"[{id}] ");
+                this.Write(sb.ToString());
+                this.NeedIndent = ind;
 
-            //base.TraceEvent(eventCache, source, eventType, id, message);
+                this.WriteLine(message);
+
+                //base.TraceEvent(eventCache, source, eventType, id, message);
+            };
+            var t = new Task(tAct, TaskCreationOptions.PreferFairness);
+            t.Start();
 
         }
 

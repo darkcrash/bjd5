@@ -157,7 +157,7 @@ namespace Bjd.ProxyHttpServer {
                 if (DataPort >= 9999) {
                     DataPort = 2000;
                 }                
-                if (SockServer.IsAvailable(_kernel,bindAddr, DataPort)){
+                if (SockServerTcp.IsAvailable(_kernel,bindAddr, DataPort)){
                     break;
                 }
             }
@@ -429,7 +429,7 @@ namespace Bjd.ProxyHttpServer {
 
 
             void Pipe() {
-                _sockTcp = SockServer.CreateConnection(_kernel, _ip, _listenPort, null, this);
+                _sockTcp = SockServerTcp.CreateConnection(_kernel, _ip, _listenPort, null, this);
                 if (_sockTcp != null){
                     while (_life){
                         var len = _sockTcp.Length();

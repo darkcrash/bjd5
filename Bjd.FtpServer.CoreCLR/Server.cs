@@ -619,7 +619,7 @@ namespace Bjd.FtpServer
                     port = 2000;
                 }
                 //�o�C���h�\���ǂ����̊m�F
-                if (SockServer.IsAvailable(Kernel, ip, port))
+                if (SockServerTcp.IsAvailable(Kernel, ip, port))
                 {
                     //����
                     if (ftpCmd == FtpCmd.Epsv)
@@ -635,7 +635,7 @@ namespace Bjd.FtpServer
                         session.StringSend(string.Format("227 Entering Passive Mode ({0},{1},{2})", ipStr.Replace('.', ','), port / 256, port % 256));
                     }
                     //�w�肵���A�h���X�E�|�[�g�ő҂��󂯂�
-                    var sockData = SockServer.CreateConnection(Kernel, ip, port, null, this);
+                    var sockData = SockServerTcp.CreateConnection(Kernel, ip, port, null, this);
                     if (sockData == null)
                     {
                         //�ڑ����s

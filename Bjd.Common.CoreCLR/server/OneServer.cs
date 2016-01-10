@@ -10,17 +10,20 @@ using Bjd.option;
 using Bjd.sock;
 using Bjd.util;
 
-namespace Bjd.server{
+namespace Bjd.server
+{
 
-//OneServer �P�̃o�C���h�A�h���X�F�|�[�g���ƂɃT�[�o��\������N���X<br>
-//�e�T�[�o�I�u�W�F�N�g�̊��N���X<br>
-    public abstract class OneServer : ThreadBase{
+    //OneServer �P�̃o�C���h�A�h���X�F�|�[�g���ƂɃT�[�o��\������N���X<br>
+    //�e�T�[�o�I�u�W�F�N�g�̊��N���X<br>
+    public abstract class OneServer : ThreadBase
+    {
 
         protected Conf Conf;
         public Logger Logger;
         protected bool IsJp;
         protected int Timeout;//sec
-        SockServer _sockServer;
+        SockServerTcp _sockServerTcp;
+        SockServerUdp _sockServerUdp;
         readonly OneBind _oneBind;
         //Ver5.9.2 Java fix
         protected Ssl ssl = null;
@@ -28,57 +31,72 @@ namespace Bjd.server{
         public String NameTag { get; private set; }
         protected Kernel Kernel; //SockObj��Trace�̂���
         protected AclList AclList = null;
-        
+
         //�q�X���b�h�Ǘ�
         private static readonly object SyncObj = new object(); //�r������I�u�W�F�N�g
         readonly List<Thread> _childThreads = new List<Thread>();
         readonly int _multiple; //�����ڑ���
 
         //�X�e�[�^�X�\���p
-        public override String ToString(){
+        public override String ToString()
+        {
             var stat = IsJp ? "+ �T�[�r�X�� " : "+ In execution ";
-            if (ThreadBaseKind != ThreadBaseKind.Running){
+            if (ThreadBaseKind != ThreadBaseKind.Running)
+            {
                 stat = IsJp ? "- ��~ " : "- Initialization failure ";
             }
-            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int) Conf.Get("port"), Count(), _multiple);
+            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)Conf.Get("port"), Count(), _multiple);
         }
 
 
 
-        public int Count(){
+        public int Count()
+        {
             //Java fix try-catch�ǉ�
-            try{
+            try
+            {
                 //�`���C���h�X���b�h�I�u�W�F�N�g�̐���
-                for (int i = _childThreads.Count - 1; i >= 0; i--){
-                    if (!_childThreads[i].IsAlive){
+                for (int i = _childThreads.Count - 1; i >= 0; i--)
+                {
+                    if (!_childThreads[i].IsAlive)
+                    {
                         _childThreads.RemoveAt(i);
                     }
                 }
                 return _childThreads.Count;
-            } catch (Exception){
+            }
+            catch (Exception)
+            {
                 return 0;
             }
 
         }
 
         //�����[�g����(�f�[�^�̎擾)
-        public String cmd(String cmdStr){
+        public String cmd(String cmdStr)
+        {
             return "";
         }
 
-        public SockState SockState(){
-            if (_sockServer == null){
+        public SockState SockState
+        {
+            get
+            {
+                if (_sockServerTcp != null)
+                    return _sockServerTcp.SockState;
+                if (_sockServerUdp != null)
+                    return _sockServerUdp.SockState;
                 return sock.SockState.Error;
             }
-            return _sockServer.SockState;
         }
 
         //Ver6.1.6
         protected readonly Lang Lang;
 
         //�R���X�g���N�^
-        protected OneServer(Kernel kernel, Conf conf, OneBind oneBind) 
-            : base(kernel.CreateLogger(conf.NameTag,true,null)){
+        protected OneServer(Kernel kernel, Conf conf, OneBind oneBind)
+            : base(kernel.CreateLogger(conf.NameTag, true, null))
+        {
             Kernel = kernel;
             NameTag = conf.NameTag;
             Conf = conf;
@@ -90,7 +108,8 @@ namespace Bjd.server{
             CheckLang();//��`�̃e�X�g
 
             //�e�X�g�p
-            if (Conf == null){
+            if (Conf == null)
+            {
                 var optionSample = new OptionSample(kernel, "");
                 Conf = new Conf(optionSample);
                 Conf.Set("port", 9990);
@@ -100,58 +119,67 @@ namespace Bjd.server{
                 Conf.Set("timeOut", 3);
             }
             //�e�X�g�p
-            if (_oneBind == null){
+            if (_oneBind == null)
+            {
                 var ip = new Ip(IpKind.V4Localhost);
                 _oneBind = new OneBind(ip, ProtocolKind.Tcp);
             }
 
             Logger = kernel.CreateLogger(conf.NameTag, (bool)Conf.Get("useDetailsLog"), this);
-            _multiple = (int) Conf.Get("multiple");
+            _multiple = (int)Conf.Get("multiple");
 
             //DHCP�ɂ�ACL�����݂��Ȃ�
-            if (NameTag != "Dhcp"){
+            if (NameTag != "Dhcp")
+            {
                 //ACL���X�g ��`�������ꍇ�́AaclList�𐶐����Ȃ�
                 var acl = (Dat)Conf.Get("acl");
                 AclList = new AclList(acl, (int)Conf.Get("enableAcl"), Logger);
             }
-            Timeout = (int) Conf.Get("timeOut");
+            Timeout = (int)Conf.Get("timeOut");
         }
 
 
 
-        public new void Start(){
+        public new void Start()
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.Start ");
 
             base.Start();
             //Ver5.9.8
-            if (!IsLife()){
+            if (!IsLife())
+            {
                 return;
             }
 
             //bind����������܂őҋ@����
-            while (_sockServer == null || _sockServer.SockState == sock.SockState.Idle){
+            while ( (_sockServerTcp == null &&  _sockServerUdp == null) || this.SockState == sock.SockState.Idle)
+            {
                 Thread.Sleep(100);
             }
         }
 
 
-        public new void Stop(){
+        public new void Stop()
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.Stop ");
-            if (_sockServer == null){
+            if (_sockServerTcp == null)
+            {
                 return; //���łɏI���������I����Ă���
             }
             base.Stop(); //life=false �ł��ׂẴ��[�v��������
-            _sockServer.Close();
+            _sockServerTcp.Close();
 
             // �S���̎q�X���b�h���I������̂�҂�
-            while (Count() > 0){
+            while (Count() > 0)
+            {
                 Thread.Sleep(500);
             }
-            _sockServer = null;
+            _sockServerTcp = null;
 
         }
 
-        public new void Dispose(){
+        public new void Dispose()
+        {
             // super.dispose()�́AThreadBase��stop()���Ă΂�邾���Ȃ̂ŕK�v�Ȃ�
             Stop();
         }
@@ -159,10 +187,12 @@ namespace Bjd.server{
         //�X���b�h��~����
         protected abstract void OnStopServer(); //�X���b�h��~����
 
-        protected override void OnStopThread(){
+        protected override void OnStopThread()
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.OnStopThread {this.GetType().FullName} ");
             OnStopServer(); //�q�N���X�̃X���b�h��~����
-            if (ssl != null){
+            if (ssl != null)
+            {
                 ssl.Dispose();
             }
         }
@@ -171,15 +201,17 @@ namespace Bjd.server{
         //�T�[�o������ɋN���ł���ꍇ(isInitSuccess==true)�̂݃X���b�h�J�n�ł���
         protected abstract bool OnStartServer(); //�X���b�h�J�n����
 
-        protected override bool OnStartThread(){
+        protected override bool OnStartThread()
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.OnStartThread {this.GetType().FullName}");
             return OnStartServer(); //�q�N���X�̃X���b�h�J�n����
         }
 
-        protected override void OnRunThread(){
+        protected override void OnRunThread()
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.OnRunThread {this.GetType().FullName}");
 
-            var port = (int) Conf.Get("port");
+            var port = (int)Conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
 
             Logger.Set(LogKind.Normal, null, 9000000, bindStr);
@@ -189,116 +221,141 @@ namespace Bjd.server{
 
             //Ver5.9,2 Java fix
             //_sockServer = new SockServer(this.Kernel,_oneBind.Protocol);
-            _sockServer = new SockServer(Kernel, _oneBind.Protocol,ssl);
-
-            //Ver5.9.2 Java fix
-            if (ssl != null && !ssl.Status){
-                Logger.Set(LogKind.Error, null, 9000024, bindStr);
-                //[C#]
-                ThreadBaseKind = ThreadBaseKind.Running;
-            } else{
-                if (_sockServer.SockState != sock.SockState.Error) {
-                    if (_sockServer.ProtocolKind == ProtocolKind.Tcp) {
+            switch (_oneBind.Protocol)
+            {
+                case ProtocolKind.Tcp:
+                    _sockServerTcp = new SockServerTcp(Kernel, _oneBind.Protocol, ssl);
+                    if (ssl != null && !ssl.Status)
+                    {
+                        Logger.Set(LogKind.Error, null, 9000024, bindStr);
+                        //[C#]
+                        ThreadBaseKind = ThreadBaseKind.Running;
+                    }
+                    else if (this.SockState != sock.SockState.Error)
+                    {
                         RunTcpServer(port);
-                    } else {
+                    }
+                    _sockServerTcp.Close();
+                    break;
+                case ProtocolKind.Udp:
+                    _sockServerUdp = new SockServerUdp(Kernel, _oneBind.Protocol, ssl);
+                    if (this.SockState != sock.SockState.Error)
+                    {
                         RunUdpServer(port);
                     }
-                }
+                    _sockServerUdp.Close();
+                    break;
             }
 
             //Java fix
-            _sockServer.Close();
             Logger.Set(LogKind.Normal, null, 9000001, bindStr);
 
         }
 
-        private void RunTcpServer(int port){
+        private void RunTcpServer(int port)
+        {
             System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer {this.GetType().FullName}");
 
-            const int listenMax = 5;
-
             //[C#]
             ThreadBaseKind = ThreadBaseKind.Running;
+            const int listenMax = 10;
 
-            if (!_sockServer.Bind(_oneBind.Addr, port, listenMax)) {
-                Logger.Set(LogKind.Error, _sockServer, 9000006, _sockServer.GetLastEror());
-            } else{
+            if (!_sockServerTcp.Bind(_oneBind.Addr, port, listenMax))
+            {
+                Logger.Set(LogKind.Error, _sockServerTcp, 9000006, _sockServerTcp.GetLastEror());
+                return;
+            }
 
-                while (IsLife()){
-                    var child = (SockTcp) _sockServer.Select(this);
-                    if (child == null){
-                        break;
-                    }
-                    if (Count() >= _multiple){
-                        Logger.Set(LogKind.Secure, _sockServer, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
-                        //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
-                        child.Close();
-                        continue;
-                    }
-
-                    // ACL�����̃`�F�b�N
-                    if (AclCheck(child) == AclKind.Deny){
-                        child.Close();
-                        continue;
-                    }
-                    lock (SyncObj){
-                        var t = new Thread(SubThread){IsBackground = true};
-                        t.Start(child);
-                        _childThreads.Add(t);
-                    }
+            while (IsLife())
+            {
+                var child = _sockServerTcp.Select(this);
+                if (child == null)
+                {
+                    break;
+                }
+                if (Count() >= _multiple)
+                {
+                    Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                    //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
+                    child.Close();
+                    continue;
                 }
 
+                // ACL�����̃`�F�b�N
+                if (AclCheck(child) == AclKind.Deny)
+                {
+                    child.Close();
+                    continue;
+                }
+                lock (SyncObj)
+                {
+                    var t = new Thread(SubThread) { IsBackground = true };
+                    t.Start(child);
+                    _childThreads.Add(t);
+                }
             }
+
         }
 
-        private void RunUdpServer(int port) {
+        private void RunUdpServer(int port)
+        {
+            System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer {this.GetType().FullName}");
 
             //[C#]
             ThreadBaseKind = ThreadBaseKind.Running;
 
-
-            if (!_sockServer.Bind(_oneBind.Addr, port)) {
-                Logger.Set(LogKind.Error, _sockServer, 9000006, _sockServer.GetLastEror());
+            if (!_sockServerUdp.Bind(_oneBind.Addr, port))
+            {
+                Logger.Set(LogKind.Error, _sockServerUdp, 9000006, _sockServerUdp.GetLastEror());
                 //println(string.Format("bind()=false %s", sockServer.getLastEror()));
-            } else{
-                while (IsLife()){
-                    var child = (SockUdp) _sockServer.Select(this);
-                    if (child == null){
-                        //Select�ŗ�O�����������ꍇ�́A���̃R�l�N�V������̂ĂāA���̑҂��󂯂ɓ���
-                        continue;
-                    }
-                    if (Count() >= _multiple){
-                        Logger.Set(LogKind.Secure, _sockServer, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
-                        //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
-                        child.Close();
-                        continue;
-                    }
+                return;
+            }
 
-                    // ACL�����̃`�F�b�N
-                    if (AclCheck(child) == AclKind.Deny){
-                        child.Close();
-                        continue;
-                    }
-                    lock (SyncObj) {
-                        var t = new Thread(SubThread) { IsBackground = true };
-                        t.Start(child);
-                        _childThreads.Add(t);
-                    }
+            while (IsLife())
+            {
+                var child = _sockServerUdp.Select(this);
+                if (child == null)
+                {
+                    //Select�ŗ�O�����������ꍇ�́A���̃R�l�N�V������̂ĂāA���̑҂��󂯂ɓ���
+                    continue;
+                }
+                if (Count() >= _multiple)
+                {
+                    Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                    //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
+                    child.Close();
+                    continue;
                 }
 
+                // ACL�����̃`�F�b�N
+                if (AclCheck(child) == AclKind.Deny)
+                {
+                    child.Close();
+                    continue;
+                }
+                lock (SyncObj)
+                {
+                    var t = new Thread(SubThread) { IsBackground = true };
+                    t.Start(child);
+                    _childThreads.Add(t);
+                }
             }
+
         }
 
         //ACL�����̃`�F�b�N
-	    //sockObj �����Ώۂ̃\�P�b�g
-        private AclKind AclCheck(SockObj sockObj){
+        //sockObj �����Ώۂ̃\�P�b�g
+        private AclKind AclCheck(SockObj sockObj)
+        {
             var aclKind = AclKind.Allow;
-            if (AclList != null){
+            if (AclList != null)
+            {
                 var ip = new Ip(sockObj.RemoteAddress.Address.ToString());
                 aclKind = AclList.Check(ip);
             }
 
-            if (aclKind == AclKind.Deny){
+            if (aclKind == AclKind.Deny)
+            {
                 _denyAddress = sockObj.RemoteAddress.ToString();
             }
             return aclKind;
@@ -308,22 +365,27 @@ namespace Bjd.server{
 
         private String _denyAddress = ""; //Ver5.3.5 DoS�Ώ�
 
-	    //�P���N�G�X�g�ɑ΂���q�X���b�h�Ƃ��ċN�������
-        public void SubThread(Object o){
-            var sockObj = (SockObj) o;
+        //�P���N�G�X�g�ɑ΂���q�X���b�h�Ƃ��ċN�������
+        public void SubThread(Object o)
+        {
+            var sockObj = (SockObj)o;
 
             //�N���C�A���g�̃z�X�g����t��������
-            sockObj.Resolve((bool) Conf.Get("useResolve"), Logger);
+            sockObj.Resolve((bool)Conf.Get("useResolve"), Logger);
 
             //_subThread�̒���SockObj�͔j������i������UDP�̏ꍇ�́A�N���[���Ȃ̂�Close()���Ă�socket�͔j������Ȃ��j
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));
 
             //Ver5.8.9 Java fix �ڑ��P�ʂ̂��ׂĂ̗�O��L���b�`���ăv���O�����̒�~������
             //OnSubThread(sockObj); //�ڑ��P�ʂ̏���
-            try{
+            try
+            {
                 OnSubThread(sockObj); //�ڑ��P�ʂ̏���
-            } catch (Exception ex){
-                if (Logger != null) {
+            }
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
                     Logger.Set(LogKind.Error, null, 9000061, ex.Message);
                     Logger.Exception(ex, null, 2);
                 }
@@ -340,18 +402,23 @@ namespace Bjd.server{
         public abstract void Append(OneLog oneLog);
 
         //1�s�Ǎ��ҋ@
-        public Cmd WaitLine(SockTcp sockTcp){
+        public Cmd WaitLine(SockTcp sockTcp)
+        {
             var tout = new util.Timeout(Timeout);
 
-            while (IsLife()){
+            while (IsLife())
+            {
                 Cmd cmd = recvCmd(sockTcp);
-                if (cmd == null){
+                if (cmd == null)
+                {
                     return null;
                 }
-                if (cmd.CmdStr != ""){
+                if (cmd.CmdStr != "")
+                {
                     return cmd;
                 }
-                if (tout.IsFinish()){
+                if (tout.IsFinish())
+                {
                     return null;
                 }
                 Thread.Sleep(100);
@@ -361,20 +428,24 @@ namespace Bjd.server{
 
         //TODO RecvCmd�̃p�����[�^�`����ύX���邪�A����́A��قǁAWeb,Ftp,Smtp��Server�Ŏg�p����Ă��邽�߉e�����ł�\��
         //�R�}���h�擾
-	    //�R�l�N�V�����ؒf�ȂǃG���[��������������null���Ԃ����
-        protected Cmd recvCmd(SockTcp sockTcp){
-            if (sockTcp.SockState != sock.SockState.Connect){
+        //�R�l�N�V�����ؒf�ȂǃG���[��������������null���Ԃ����
+        protected Cmd recvCmd(SockTcp sockTcp)
+        {
+            if (sockTcp.SockState != sock.SockState.Connect)
+            {
                 //�ؒf����Ă���
                 return null;
             }
             var recvbuf = sockTcp.LineRecv(Timeout, this);
             //�ؒf���ꂽ�ꍇ
-            if (recvbuf == null){
+            if (recvbuf == null)
+            {
                 return null;
             }
 
             //��M�ҋ@���̏ꍇ
-            if (recvbuf.Length == 0){
+            if (recvbuf.Length == 0)
+            {
 
                 //Ver5.8.5 Java fix
                 //return new Cmd("", "", "");
@@ -387,25 +458,31 @@ namespace Bjd.server{
             //String str = new String(recvbuf, Charset.forName("Shift-JIS"));
             //var str = Encoding.GetEncoding("Shift-JIS").GetString(recvbuf);
             var str = Encoding.GetEncoding("utf-8").GetString(recvbuf);
-            if (str == "") {
+            if (str == "")
+            {
                 return new Cmd("", "", "");
             }
             //��M�s��R�}���h�ƃp�����[�^�ɕ������i�R�}���h�ƃp�����[�^�͂P�ȏ�̃X�y�[�X�ŋ�؂��Ă���j
             String cmdStr = null;
             String paramStr = null;
-            for (int i = 0; i < str.Length; i++){
-                if (str[i] == ' '){
-                    if (cmdStr == null){
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == ' ')
+                {
+                    if (cmdStr == null)
+                    {
                         cmdStr = str.Substring(0, i);
                     }
                 }
-                if (cmdStr == null || str[i] == ' '){
+                if (cmdStr == null || str[i] == ' ')
+                {
                     continue;
                 }
                 paramStr = str.Substring(i);
                 break;
             }
-            if (cmdStr == null){
+            if (cmdStr == null)
+            {
                 //�p�����[�^��؂肪������Ȃ������ꍇ
                 cmdStr = str; //�S���R�}���h
             }
@@ -413,22 +490,25 @@ namespace Bjd.server{
         }
 
         //������
-//        public void Append(OneLog oneLog){
-//            Util.RuntimeException("OneServer.Append(OneLog) ������");
-//        }
+        //        public void Append(OneLog oneLog){
+        //            Util.RuntimeException("OneServer.Append(OneLog) ������");
+        //        }
 
         //�����[�g����(�f�[�^�̎擾)
-    	public virtual String Cmd(String cmdStr) {
-		    return "";
-	    }
+        public virtual String Cmd(String cmdStr)
+        {
+            return "";
+        }
 
         /********************************************************/
         //�ڐA�̂��߂̎b�菈�u(POP3�ł̂ݎg�p����Ă���)
         /********************************************************/
-        protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr){
+        protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
+        {
 
             var cmd = recvCmd(sockTcp);
-            if (cmd == null){
+            if (cmd == null)
+            {
                 return false;
             }
             cmdStr = cmd.CmdStr;
@@ -437,9 +517,11 @@ namespace Bjd.server{
             return true;
         }
 
-        public bool WaitLine(SockTcp sockTcp, ref string cmdStr, ref string paramStr) {
+        public bool WaitLine(SockTcp sockTcp, ref string cmdStr, ref string paramStr)
+        {
             var cmd = WaitLine(sockTcp);
-            if (cmd == null){
+            if (cmd == null)
+            {
                 return false;
             }
             cmdStr = cmd.CmdStr;
