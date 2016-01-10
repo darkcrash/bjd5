@@ -506,7 +506,10 @@ namespace Bjd.sock
                     return _oneSsl.Write(buf, buf.Length);
                 }
                 else {
-                    return _socket.Send(buf, 0, length, SocketFlags.None);
+                    //return _socket.Send(buf, 0, length, SocketFlags.None);
+                    var t = _socket.SendAsync(new ArraySegment<byte>(buf, 0, length), SocketFlags.None);
+                    t.Wait(this.Kernel.CancelToken);
+                    return t.Result;
                 }
             }
             catch (Exception e)
