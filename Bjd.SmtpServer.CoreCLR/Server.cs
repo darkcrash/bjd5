@@ -15,7 +15,8 @@ using Bjd.util;
 
 namespace Bjd.SmtpServer
 {
-    public partial class Server : OneServer {
+    public partial class Server : OneServer
+    {
 
         public List<string> DomainList { get; private set; }
         readonly MailQueue _mailQueue;
@@ -31,41 +32,48 @@ namespace Bjd.SmtpServer
         //ヘッダ置換
         private readonly ChangeHeader _changeHeader;
 
-//#if ML_SERVER
+        //#if ML_SERVER
         readonly MlList _mlList;//MLリスト
-//#endif
+                                //#endif
 
         //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
-            : base(kernel, conf, oneBind) {
+            : base(kernel, conf, oneBind)
+        {
 
             //Ver5.8.9
-            if (kernel.RunMode == RunMode.Normal || kernel.RunMode == RunMode.Service) {
+            if (kernel.RunMode == RunMode.Normal || kernel.RunMode == RunMode.Service)
+            {
                 //メールボックスの初期化状態確認
-                if (kernel.MailBox == null || !kernel.MailBox.Status) {
+                if (kernel.MailBox == null || !kernel.MailBox.Status)
+                {
                     Logger.Set(LogKind.Error, null, 4, "");
                     return; //初期化失敗(サーバは機能しない)
                 }
             }
 
-            
+
             //ドメイン名のリスト整備
             DomainList = new List<string>();
-            foreach (var s in ((string)Conf.Get("domainName")).Split(',')) {
+            foreach (var s in ((string)Conf.Get("domainName")).Split(','))
+            {
                 //Ver6.1.9
                 // 設定時に誤って空白が入ってしまった際、強制的に削除する
                 DomainList.Add(s.Trim());
                 //DomainList.Add(s);
             }
-            if (DomainList.Count == 0) {
+            if (DomainList.Count == 0)
+            {
                 Logger.Set(LogKind.Error, null, 3, "");
                 return;//初期化失敗(サーバは機能しない)
             }
 
             //エリアス初期化
             Alias = new Alias(DomainList, kernel.MailBox);
-            foreach (var dat in (Dat)Conf.Get("aliasList")) {
-                if (dat.Enable) {
+            foreach (var dat in (Dat)Conf.Get("aliasList"))
+            {
+                if (dat.Enable)
+                {
                     var name = dat.StrList[0];
                     var alias = dat.StrList[1];
                     Alias.Add(name, alias, Logger);
@@ -77,7 +85,7 @@ namespace Bjd.SmtpServer
 
             //SaveMail初期化
             var receivedHeader = new ReceivedHeader(kernel, (string)Conf.Get("receivedHeader"));
-            _mailSave = new MailSave(kernel.MailBox,Alias, _mailQueue,Logger, receivedHeader, DomainList);
+            _mailSave = new MailSave(kernel.MailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
 
             var always = (bool)Conf.Get("always");//キュー常時処理
             _agent = new Agent(kernel, this, Conf, Logger, _mailQueue, always);
@@ -95,78 +103,98 @@ namespace Bjd.SmtpServer
 
             //ヘッダ置換
             _changeHeader = new ChangeHeader((Dat)Conf.Get("patternList"), (Dat)Conf.Get("appendList"));
-            
+
 
             //Ver5.3.3 Ver5.2以前のバージョンのカラムの違いを修正する
             var d = (Dat)Conf.Get("hostList");
-            if (d.Count > 0 && d[0].StrList.Count == 6) {
-                foreach (var o in d) {
+            if (d.Count > 0 && d[0].StrList.Count == 6)
+            {
+                foreach (var o in d)
+                {
                     o.StrList.Add("False");
                 }
                 conf.Set("hostList", d);
                 conf.Save(kernel.IniDb);
             }
 
-//#if ML_SERVER
-            _mlList = new MlList(kernel,this,_mailSave, DomainList);
-//#endif
+            //#if ML_SERVER
+            _mlList = new MlList(kernel, this, _mailSave, DomainList);
+            //#endif
         }
 
 
 
         //リモート操作（データの取得）
-        override public string Cmd(string cmdStr) {
+        override public string Cmd(string cmdStr)
+        {
 
             if (!Kernel.MailBox.Status)
                 return "";
 
-            if (cmdStr == "Refresh-MailBox") {
+            if (cmdStr == "Refresh-MailBox")
+            {
                 //キュー一覧
                 var sb = new StringBuilder();
                 var files = Directory.GetFiles(_mailQueue.Dir, "DF_*");
                 Array.Sort(files);
-                foreach (string fileName in files) {
+                foreach (string fileName in files)
+                {
                     var mailInfo = new MailInfo(fileName);
                     sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", "$queue", mailInfo.Uid, mailInfo.From, mailInfo.To, mailInfo.Size.ToString(), mailInfo.Date));
                     sb.Append('\b');
                 }
                 //ユーザメール一覧
-                foreach (var user in Kernel.MailBox.UserList) {
-                    var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
+                foreach (var user in Kernel.MailBox.UserList)
+                {
+                    //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
+                    var folder = Path.Combine(Kernel.MailBox.Dir, user);
                     files = Directory.GetFiles(folder, "DF_*");
                     Array.Sort(files);
-                    foreach (string fileName in files) {
+                    foreach (string fileName in files)
+                    {
                         var mailInfo = new MailInfo(fileName);
                         sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", user, mailInfo.Uid, mailInfo.From, mailInfo.To, mailInfo.Size.ToString(), mailInfo.Date));
                         sb.Append('\b');
                     }
                 }
                 return sb.ToString();
-            } else if (cmdStr.IndexOf("Cmd-View") == 0) {
+            }
+            else if (cmdStr.IndexOf("Cmd-View") == 0)
+            {
                 var tmp = cmdStr.Split('-');
-                if (tmp.Length == 4) {
+                if (tmp.Length == 4)
+                {
                     var folder = "";
                     var mailInfo = Search(tmp[2], tmp[3], ref folder);
-                    if (mailInfo != null) {
-                        var emlFileName = string.Format("{0}\\MF_{1}", folder, mailInfo.FileName);
+                    if (mailInfo != null)
+                    {
+                        //var emlFileName = string.Format("{0}\\MF_{1}", folder, mailInfo.FileName);
+                        var emlFileName = $"{folder}{Path.DirectorySeparatorChar}MF_{mailInfo.FileName}";
                         var mail = new Mail();
                         mail.Read(emlFileName);
                         return Inet.FromBytes(mail.GetBytes());
                     }
                     return "ERROR";
                 }
-            } else if (cmdStr.IndexOf("Cmd-Delete") == 0) {
-                if (ThreadBaseKind == ThreadBaseKind.Running) {
+            }
+            else if (cmdStr.IndexOf("Cmd-Delete") == 0)
+            {
+                if (ThreadBaseKind == ThreadBaseKind.Running)
+                {
                     return "running";
                 }
                 var tmp = cmdStr.Split('-');
-                if (tmp.Length == 4) {
+                if (tmp.Length == 4)
+                {
                     string folder = "";
                     var mailInfo = Search(tmp[2], tmp[3], ref folder);
-                    if (mailInfo != null) {
-                        string fileName = string.Format("{0}\\MF_{1}", folder, mailInfo.FileName);
+                    if (mailInfo != null)
+                    {
+                        //string fileName = string.Format("{0}\\MF_{1}", folder, mailInfo.FileName);
+                        string fileName = $"{folder}{Path.DirectorySeparatorChar}MF_{mailInfo.FileName}";
                         File.Delete(fileName);
-                        fileName = string.Format("{0}\\DF_{1}", folder, mailInfo.FileName);
+                        //fileName = string.Format("{0}\\DF_{1}", folder, mailInfo.FileName);
+                        fileName = $"{folder}{Path.DirectorySeparatorChar}DF_{mailInfo.FileName}";
                         File.Delete(fileName);
                         return "success";
                     }
@@ -174,57 +202,68 @@ namespace Bjd.SmtpServer
             }
             return "";
         }
-        MailInfo Search(string user, string uid, ref string folder) {
-            folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
+        MailInfo Search(string user, string uid, ref string folder)
+        {
+            //folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
+            folder = Path.Combine(Kernel.MailBox.Dir, user);
             if (user == "QUEUE")
                 folder = _mailQueue.Dir;
 
-            foreach (var fileName in Directory.GetFiles(folder, "DF_*")) {
+            foreach (var fileName in Directory.GetFiles(folder, "DF_*"))
+            {
                 var mailInfo = new MailInfo(fileName);
-                if (mailInfo.Uid == uid) {
+                if (mailInfo.Uid == uid)
+                {
                     return mailInfo;
                 }
             }
             return null;
         }
 
-        new public void Dispose() {
-//#if ML_SERVER
+        new public void Dispose()
+        {
+            //#if ML_SERVER
             _mlList.Dispose();
-//#endif
+            //#endif
             base.Dispose();
         }
-        override protected bool OnStartServer() {
+        override protected bool OnStartServer()
+        {
             if (_agent != null)
                 _agent.Start();
-            
+
             //Ver5.9.8
-            if (Kernel.MailBox == null || !Kernel.MailBox.Status){
+            if (Kernel.MailBox == null || !Kernel.MailBox.Status)
+            {
                 return false;
             }
 
-                    //fetchList = (Dat) conf.Get("fetchList");
-        //_timeout = (int) conf.Get("timeOut");
-        //_sizeLimit = (int) conf.Get("sizeLimit");
-            _fetch = new Fetch(Kernel,_mailSave,DomainList[0],(Dat) Conf.Get("fetchList"),(int) Conf.Get("timeOut"),(int) Conf.Get("sizeLimit"));
+            //fetchList = (Dat) conf.Get("fetchList");
+            //_timeout = (int) conf.Get("timeOut");
+            //_sizeLimit = (int) conf.Get("sizeLimit");
+            _fetch = new Fetch(Kernel, _mailSave, DomainList[0], (Dat)Conf.Get("fetchList"), (int)Conf.Get("timeOut"), (int)Conf.Get("sizeLimit"));
             _fetch.Start();
             return true;
         }
-        override protected void OnStopServer() {
+        override protected void OnStopServer()
+        {
             if (_agent != null)
                 _agent.Stop();
 
-            if (_fetch != null) {
+            if (_fetch != null)
+            {
                 _fetch.Stop();
                 _fetch = null;
             }
         }
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj) {
+        override protected void OnSubThread(SockObj sockObj)
+        {
             var sockTcp = (SockTcp)sockObj;
 
             //WebApi関連
-            if (!Kernel.WebApi.ServiceSmtp) {
+            if (!Kernel.WebApi.ServiceSmtp)
+            {
                 if (sockTcp != null)
                     sockTcp.Close();
                 return;
@@ -240,8 +279,10 @@ namespace Bjd.SmtpServer
             SmtpAuth smtpAuth = null;
 
             var useEsmtp = (bool)Conf.Get("useEsmtp");
-            if (useEsmtp) {
-                if (_smtpAuthRange.IsHit(sockTcp.RemoteIp)) {
+            if (useEsmtp)
+            {
+                if (_smtpAuthRange.IsHit(sockTcp.RemoteIp))
+                {
                     var usePlain = (bool)Conf.Get("useAuthPlain");
                     var useLogin = (bool)Conf.Get("useAuthLogin");
                     var useCramMd5 = (bool)Conf.Get("useAuthCramMD5");
@@ -257,14 +298,17 @@ namespace Bjd.SmtpServer
             var useCheckFrom = (bool)Conf.Get("useCheckFrom");
 
 
-            while (IsLife()) {
+            while (IsLife())
+            {
                 Thread.Sleep(0);
 
                 var cmd = recvCmd(sockTcp);
-                if (cmd == null){
+                if (cmd == null)
+                {
                     break;//切断された
                 }
-                if (cmd.Str == "") {
+                if (cmd.Str == "")
+                {
                     Thread.Sleep(100);//受信待機中
                     continue;
                 }
@@ -272,19 +316,24 @@ namespace Bjd.SmtpServer
 
                 //WebApi関連
                 var responseSmtp = Kernel.WebApi.ResponseSmtp(cmd.CmdStr);
-                if (responseSmtp != -1){
+                if (responseSmtp != -1)
+                {
                     sockTcp.AsciiSend(string.Format("{0} WebAPI response", responseSmtp));
                     continue;
                 }
 
 
-                if (smtpCmd.Kind == SmtpCmdKind.Unknown) {//無効コマンド
+                if (smtpCmd.Kind == SmtpCmdKind.Unknown)
+                {//無効コマンド
 
                     //SMTP認証
-                    if (smtpAuth != null) {
-                        if (!smtpAuth.IsFinish) {
+                    if (smtpAuth != null)
+                    {
+                        if (!smtpAuth.IsFinish)
+                        {
                             var ret = smtpAuth.Job(smtpCmd.Str);
-                            if (ret != null) {
+                            if (ret != null)
+                            {
                                 sockTcp.AsciiSend(ret);
                                 continue;
                             }
@@ -293,8 +342,9 @@ namespace Bjd.SmtpServer
                     sockTcp.AsciiSend(string.Format("500 command not understood: {0}", smtpCmd.Str));
                     //無効コマンドが10回続くと不正アクセスとして切断する
                     session.UnknownCmdCounter++;
-              
-                    if (session.UnknownCmdCounter > 10) {
+
+                    if (session.UnknownCmdCounter > 10)
+                    {
                         Logger.Set(LogKind.Secure, sockTcp, 54, string.Format("unknownCmdCount={0}", session.UnknownCmdCounter));
                         break;
 
@@ -305,61 +355,76 @@ namespace Bjd.SmtpServer
 
 
                 //QUIT・NOOP・RSETはいつでも受け付ける
-                if (smtpCmd.Kind == SmtpCmdKind.Quit) {
+                if (smtpCmd.Kind == SmtpCmdKind.Quit)
+                {
                     sockTcp.AsciiSend("221 closing connection");
                     break;
                 }
-                if (smtpCmd.Kind == SmtpCmdKind.Noop) {
+                if (smtpCmd.Kind == SmtpCmdKind.Noop)
+                {
                     sockTcp.AsciiSend("250 OK");
                     continue;
                 }
-                if (smtpCmd.Kind == SmtpCmdKind.Rset) {
+                if (smtpCmd.Kind == SmtpCmdKind.Rset)
+                {
                     session.Rest();
                     sockTcp.AsciiSend("250 Reset state");
                     continue;
                 }
 
                 //下記のコマンド以外は、SMTP認証の前には使用できない
-                if (smtpCmd.Kind != SmtpCmdKind.Noop && smtpCmd.Kind != SmtpCmdKind.Helo && smtpCmd.Kind != SmtpCmdKind.Ehlo && smtpCmd.Kind != SmtpCmdKind.Rset) {
-                    if (smtpAuth != null) {
-                        if (!smtpAuth.IsFinish) {
+                if (smtpCmd.Kind != SmtpCmdKind.Noop && smtpCmd.Kind != SmtpCmdKind.Helo && smtpCmd.Kind != SmtpCmdKind.Ehlo && smtpCmd.Kind != SmtpCmdKind.Rset)
+                {
+                    if (smtpAuth != null)
+                    {
+                        if (!smtpAuth.IsFinish)
+                        {
                             sockTcp.AsciiSend("530 Authentication required.");
                             continue;
                         }
                     }
                 }
 
-                if (smtpCmd.Kind == SmtpCmdKind.Helo || smtpCmd.Kind == SmtpCmdKind.Ehlo) {
-                    if (session.Hello != null) {//HELO/EHLOは１回しか受け取らない
+                if (smtpCmd.Kind == SmtpCmdKind.Helo || smtpCmd.Kind == SmtpCmdKind.Ehlo)
+                {
+                    if (session.Hello != null)
+                    {//HELO/EHLOは１回しか受け取らない
                         sockTcp.AsciiSend(string.Format("503 {0} Duplicate HELO/EHLO", Kernel.ServerName));
                         continue;
                     }
-                    if (smtpCmd.ParamList.Count < 1) {
+                    if (smtpCmd.ParamList.Count < 1)
+                    {
                         sockTcp.AsciiSend(string.Format("501 {0} requires domain address", smtpCmd.Kind.ToString().ToUpper()));
                         continue;
                     }
                     session.Helo(smtpCmd.ParamList[0]);
                     Logger.Set(LogKind.Normal, sockTcp, 1, string.Format("{0} {1} from {2}[{3}]", smtpCmd.Kind.ToString().ToUpper(), session.Hello, sockObj.RemoteHostname, sockTcp.RemoteAddress));
 
-                    if (smtpCmd.Kind == SmtpCmdKind.Ehlo) {
+                    if (smtpCmd.Kind == SmtpCmdKind.Ehlo)
+                    {
                         sockTcp.AsciiSend(string.Format("250-{0} Helo {1}[{2}], Pleased to meet you.", Kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
                         sockTcp.AsciiSend("250-8BITMIME");
                         sockTcp.AsciiSend(string.Format("250-SIZE={0}", sizeLimit));
-                        if (smtpAuth != null) {
+                        if (smtpAuth != null)
+                        {
                             string ret = smtpAuth.EhloStr();//SMTP認証に関するhelp文字列の取得
-                            if (ret != null) {
+                            if (ret != null)
+                            {
                                 sockTcp.AsciiSend(ret);
                             }
                         }
                         sockTcp.AsciiSend("250 HELP");
-                    } else {
+                    }
+                    else {
                         sockTcp.AsciiSend(string.Format("250 {0} Helo {1}[{2}], Pleased to meet you.", Kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
                     }
                     continue;
                 }
 
-                if (smtpCmd.Kind == SmtpCmdKind.Mail) {
-                    if (!checkParam.Mail(smtpCmd.ParamList)){
+                if (smtpCmd.Kind == SmtpCmdKind.Mail)
+                {
+                    if (!checkParam.Mail(smtpCmd.ParamList))
+                    {
                         sockTcp.AsciiSend(checkParam.Message);
                         continue;
                     }
@@ -368,55 +433,66 @@ namespace Bjd.SmtpServer
                     sockTcp.AsciiSend(string.Format("250 {0}... Sender ok", smtpCmd.ParamList[1]));
                     continue;
                 }
-                if (smtpCmd.Kind == SmtpCmdKind.Rcpt) {
+                if (smtpCmd.Kind == SmtpCmdKind.Rcpt)
+                {
 
-                    if (session.From == null) {//RCPTの前にMAILコマンドが必要
+                    if (session.From == null)
+                    {//RCPTの前にMAILコマンドが必要
                         sockTcp.AsciiSend("503 Need MAIL before RCPT");
                         continue;
                     }
 
-                    if (!checkParam.Rcpt(smtpCmd.ParamList)) {
+                    if (!checkParam.Rcpt(smtpCmd.ParamList))
+                    {
                         sockTcp.AsciiSend(checkParam.Message);
                         continue;
                     }
-            
+
                     var mailAddress = new MailAddress(smtpCmd.ParamList[1]);
 
-                    if (mailAddress.Domain == "") {//ドメイン指定の無い場合は、自ドメイン宛と判断する
+                    if (mailAddress.Domain == "")
+                    {//ドメイン指定の無い場合は、自ドメイン宛と判断する
                         mailAddress = new MailAddress(mailAddress.User, DomainList[0]);
                     }
 
                     //自ドメイン宛かどうかの確認
-                    if (mailAddress.IsLocal(DomainList)) {
+                    if (mailAddress.IsLocal(DomainList))
+                    {
                         //Ver5.0.0-b4 エリアスで指定したユーザ名の確認
-                        if (!Alias.IsUser(mailAddress.User)) {
+                        if (!Alias.IsUser(mailAddress.User))
+                        {
                             //有効なユーザかどうかの確認
-                            if (!Kernel.MailBox.IsUser(mailAddress.User)) {
+                            if (!Kernel.MailBox.IsUser(mailAddress.User))
+                            {
                                 //Ver_Ml
                                 //有効なメーリングリスト名かどうかの確認
 
                                 //**********************************************************************
                                 //Ver_Ml
                                 //**********************************************************************
-//#if ML_SERVER
-                                if(!_mlList.IsUser(mailAddress)){
-                                    this.Logger.Set(LogKind.Secure,sockTcp,6,mailAddress.User);
-                                    sockTcp.AsciiSend(string.Format("550 {0}... User unknown",mailAddress.User));
+                                //#if ML_SERVER
+                                if (!_mlList.IsUser(mailAddress))
+                                {
+                                    this.Logger.Set(LogKind.Secure, sockTcp, 6, mailAddress.User);
+                                    sockTcp.AsciiSend(string.Format("550 {0}... User unknown", mailAddress.User));
                                     continue;
                                 }
-//#else
-//                                Logger.Set(LogKind.Secure, sockTcp, 6, mailAddress.User);
-//                                sockTcp.AsciiSend(string.Format("550 {0}... User unknown", mailAddress.User));
-//                                continue;
-//#endif
+                                //#else
+                                //                                Logger.Set(LogKind.Secure, sockTcp, 6, mailAddress.User);
+                                //                                sockTcp.AsciiSend(string.Format("550 {0}... User unknown", mailAddress.User));
+                                //                                continue;
+                                //#endif
                                 //**********************************************************************
 
                             }
                         }
-                    } else {//中継（リレー）が許可されているかどうかのチェック
-                        if (!_popBeforeSmtp.Auth(sockObj.RemoteIp)) {
+                    }
+                    else {//中継（リレー）が許可されているかどうかのチェック
+                        if (!_popBeforeSmtp.Auth(sockObj.RemoteIp))
+                        {
                             //Allow及びDenyリストで中継（リレー）が許可されているかどうかのチェック
-                            if (!_relay.IsAllow(sockObj.RemoteIp)) {
+                            if (!_relay.IsAllow(sockObj.RemoteIp))
+                            {
                                 sockTcp.AsciiSend(string.Format("553 {0}... Relay operation rejected", mailAddress));
                                 continue;
                             }
@@ -427,55 +503,65 @@ namespace Bjd.SmtpServer
                     sockTcp.AsciiSend(string.Format("250 {0}... Recipient ok", mailAddress));
                     continue;
                 }
-                if (smtpCmd.Kind == SmtpCmdKind.Data) {
-                    if (session.From == null) {
+                if (smtpCmd.Kind == SmtpCmdKind.Data)
+                {
+                    if (session.From == null)
+                    {
                         sockTcp.AsciiSend("503 Need MAIL command");
                         continue;
                     }
-                    if (session.To.Count == 0) {
+                    if (session.To.Count == 0)
+                    {
                         sockTcp.AsciiSend("503 Need RCPT (recipient)");
                         continue;
                     }
 
                     sockTcp.AsciiSend("354 Enter mail,end with \".\" on a line by ltself");
-                    
+
                     var data = new Data(sizeLimit);
-                    if(!data.Recv(sockTcp,20,Logger,this)){
+                    if (!data.Recv(sockTcp, 20, Logger, this))
+                    {
                         Thread.Sleep(1000);
                         break;
                     }
-                
+
                     //以降は、メール受信完了の場合
 
-                    if (useCheckFrom) {//Frmo:偽造の拒否
+                    if (useCheckFrom)
+                    {//Frmo:偽造の拒否
                         var mailAddress = new MailAddress(data.Mail.GetHeader("From"));
-                        if (mailAddress.User == "") {
+                        if (mailAddress.User == "")
+                        {
                             Logger.Set(LogKind.Secure, sockTcp, 52, string.Format("From:{0}", mailAddress));
                             sockTcp.AsciiSend("530 There is not an email address in a local user");
                             continue;
                         }
 
                         //ローカルドメインでない場合は拒否する
-                        if (!mailAddress.IsLocal(DomainList)) {
+                        if (!mailAddress.IsLocal(DomainList))
+                        {
                             Logger.Set(LogKind.Secure, sockTcp, 28, string.Format("From:{0}", mailAddress));
                             sockTcp.AsciiSend("530 There is not an email address in a local domain");
                             continue;
                         }
                         //有効なユーザでない場合拒否する
-                        if (!Kernel.MailBox.IsUser(mailAddress.User)) {
+                        if (!Kernel.MailBox.IsUser(mailAddress.User))
+                        {
                             Logger.Set(LogKind.Secure, sockTcp, 29, string.Format("From:{0}", mailAddress));
                             sockTcp.AsciiSend("530 There is not an email address in a local user");
                             continue;
                         }
                     }
-                    
+
                     //ヘッダの変換及び追加
                     _changeHeader.Exec(data.Mail, Logger);
 
                     //テンポラリバッファの内容でMailオブジェクトを生成する
                     var error = false;
-                    foreach (var to in Alias.Reflection(session.To, Logger)) {
-                        if (!MailSave2(session.From, to, data.Mail, sockTcp.RemoteHostname, sockTcp.RemoteIp)) {//MLとそれ以外を振り分けて保存する
+                    foreach (var to in Alias.Reflection(session.To, Logger))
+                    {
+                        if (!MailSave2(session.From, to, data.Mail, sockTcp.RemoteHostname, sockTcp.RemoteIp))
+                        {//MLとそれ以外を振り分けて保存する
                             error = true;
                             break;
                         }
@@ -490,23 +576,27 @@ namespace Bjd.SmtpServer
         }
 
         //メール保存(MLとそれ以外を振り分ける)
-        public bool MailSave2(MailAddress from, MailAddress to, Mail mail, string host, Ip addr) {
-//#if ML_SERVER
-            if (_mlList.IsUser(to)) {
+        public bool MailSave2(MailAddress from, MailAddress to, Mail mail, string host, Ip addr)
+        {
+            //#if ML_SERVER
+            if (_mlList.IsUser(to))
+            {
                 var mlEnvelope = new MlEnvelope(from, to, host, addr);
-                return _mlList.Job(mlEnvelope,mail);
-            } else {
-//#endif
-            return _mailSave.Save(from, to, mail, host, addr);
-//#if ML_SERVER
+                return _mlList.Job(mlEnvelope, mail);
             }
-//#endif
+            else {
+                //#endif
+                return _mailSave.Save(from, to, mail, host, addr);
+                //#if ML_SERVER
+            }
+            //#endif
         }
 
 
 
         //RemoteServerでのみ使用される
-        public override void Append(OneLog oneLog) {
+        public override void Append(OneLog oneLog)
+        {
 
         }
 

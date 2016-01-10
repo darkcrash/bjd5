@@ -45,7 +45,8 @@ namespace Bjd.WebApiServer
         public OneMail(String owner,String fileName){
             Owner = owner;
             _mailInfo = new MailInfo(fileName);
-            fileName = fileName.Replace("\\DF_","\\MF_");
+            //fileName = fileName.Replace("\\DF_","\\MF_");
+            fileName = fileName.Replace($"{Path.DirectorySeparatorChar}DF_",$"{Path.DirectorySeparatorChar}MF_");
 
             _mail = new Mail();
             if (File.Exists(fileName)) {

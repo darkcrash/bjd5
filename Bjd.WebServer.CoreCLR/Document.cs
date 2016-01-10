@@ -65,7 +65,7 @@ namespace Bjd.WebServer
         //*********************************************************************
         //public void Send(bool keepAlive,ref bool life) {
         public void Send(bool keepAlive,ILife iLife) {
-            System.Diagnostics.Trace.WriteLine($"Document.Send");
+            //System.Diagnostics.Trace.WriteLine($"Document.Send");
             _sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
 
             //�w�b�_���M
@@ -97,7 +97,7 @@ namespace Bjd.WebServer
         // �h�L�������g����
         //*********************************************************************
         public bool CreateFromFile(string fileName,long rangeFrom,long rangeTo) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromFile");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromFile");
             if (File.Exists(fileName)) {
 
                 _body.Set(fileName,rangeFrom,rangeTo);
@@ -120,7 +120,7 @@ namespace Bjd.WebServer
         //}
 
         public void CreateFromXml(string str) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromXml");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromXml");
 
             _body.Set(Encoding.UTF8.GetBytes(str));
             _sendHeader.Replace("Content-Length",_body.Length.ToString());
@@ -129,14 +129,14 @@ namespace Bjd.WebServer
         }
 
         public void CreateFromSsi(byte[] output,string fileName) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromSsi");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromSsi");
             _body.Set(output);
             _sendHeader.Replace("Content-Length",_body.Length.ToString());
             _sendHeader.Replace("Content-Type",_contentType.Get(fileName));
         }
         // CGI�œ���ꂽ�o�͂���ASendHeader�y��doc�𐶐�����
         public bool CreateFromCgi(byte[] output) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromCgi");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromCgi");
             while (true) {
                 var tmp = new byte[output.Length];
                 Buffer.BlockCopy(output,0,tmp,0,output.Length);
@@ -179,7 +179,7 @@ namespace Bjd.WebServer
         }
         //Ver5.0.0-a20 �G���R�[�h�̓I�v�V�����ݒ�ɏ]��
         bool GetEncodeOption(out Encoding encoding,out string charset) {
-            System.Diagnostics.Trace.WriteLine($"Document.GetEncodeOption");
+            //System.Diagnostics.Trace.WriteLine($"Document.GetEncodeOption");
             charset = "utf-8";
             encoding = Encoding.UTF8;
             var enc = (string)_conf.Get("encode");
@@ -202,7 +202,7 @@ namespace Bjd.WebServer
 
 
         public bool CreateFromErrorCode(Request request,int responseCode) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromErrorCode");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromErrorCode");
 
             //Ver5.0.0-a20 �G���R�[�h�̓I�v�V�����ݒ�ɏ]��
             Encoding encoding;
@@ -241,7 +241,7 @@ namespace Bjd.WebServer
 
         }
         public bool CreateFromIndex(Request request,string path) {
-            System.Diagnostics.Trace.WriteLine($"Document.CreateFromIndex");
+            //System.Diagnostics.Trace.WriteLine($"Document.CreateFromIndex");
 
             //Ver5.0.0-a20 �G���R�[�h�̓I�v�V�����ݒ�ɏ]��
             Encoding encoding;

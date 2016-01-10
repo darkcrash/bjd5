@@ -110,7 +110,8 @@ namespace Bjd
             ListInitialize(); //�T�[�o�ċN���ŁA�ēx���s����鏉���� 
 
             //�E�C���h�T�C�Y�̕���
-            var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
+            //var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
+            var path = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
 
             switch (RunMode)
             {
@@ -458,7 +459,8 @@ namespace Bjd
             {
                 if (path == "")
                 {
-                    path = "\\";
+                    //path = "\\";
+                    path = $"{Path.DirectorySeparatorChar}";
                 }
 
                 {

@@ -19,7 +19,8 @@ namespace Bjd.SmtpServer
             Status = false;
             _logger = logger;
            
-            _dir = string.Format("{0}\\{1}", manageDir, mlName);
+            //_dir = string.Format("{0}\\{1}", manageDir, mlName);
+            _dir = $"{manageDir}{Path.DirectorySeparatorChar}{mlName}";
             if (!Directory.Exists(_dir)) {
                 try {
                     Directory.CreateDirectory(_dir);
@@ -88,11 +89,13 @@ namespace Bjd.SmtpServer
         }
         //連番ファイル
         private string NoFile() {
-            return string.Format("{0}\\number", _dir);
+            //return string.Format("{0}\\number", _dir);
+            return $"{_dir}{Path.DirectorySeparatorChar}number";
         }
         //メールファイル
         private string MailFile(int no) {
-            return string.Format("{0}\\{1:D5}.eml", _dir,no);
+            //return string.Format("{0}\\{1:D5}.eml", _dir,no);
+            return $"{_dir}{Path.DirectorySeparatorChar}{no.ToString("D5")}.eml";
         }
         //外部から連番を尋ねられた場合は、現在の連番だけを返す
         public int Count() {

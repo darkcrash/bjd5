@@ -9,53 +9,67 @@ using Bjd.mail;
 
 namespace Bjd.SmtpServer
 {
-    class MailQueue {
+    class MailQueue
+    {
         readonly object _lockObj = new Object();
- 
+
         public bool Status { get; private set; }//��������� false�̏ꍇ�́A�������Ɏ��s���Ă���̂Ŏg�p�ł��Ȃ�
         public string Dir { get; private set; }
 
-        public MailQueue(string currentDirectory) {
+        public MailQueue(string currentDirectory)
+        {
 
             Status = true;//��������� false�̏ꍇ�́A�������Ɏ��s���Ă���̂Ŏg�p�ł��Ȃ�
 
             //���N���X��string dir�̏�����
-            Dir = string.Format("{0}\\MailQueue", currentDirectory);
+            //Dir = string.Format("{0}\\MailQueue", currentDirectory);
+            Dir = $"{currentDirectory}{Path.DirectorySeparatorChar}MailQueue";
             if (Directory.Exists(Dir))
                 return;
-            try {
+            try
+            {
                 Directory.CreateDirectory(Dir);
-            } catch {
+            }
+            catch
+            {
                 Status = false;//���������s
                 Dir = null;
             }
         }
 
         //�d�����Ȃ��t�@�C������擾����
-        protected string CreateName() {
-            while (true) {
+        protected string CreateName()
+        {
+            while (true)
+            {
                 var str = string.Format("{0:D20}", DateTime.Now.Ticks);
                 Thread.Sleep(1);//Ver5.0.0-b18
-                var fileName = string.Format("{0}\\MF_{1}", Dir, str);
-                if (!Directory.Exists(fileName)) {
+                //var fileName = string.Format("{0}\\MF_{1}", Dir, str);
+                var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{str}";
+                if (!Directory.Exists(fileName))
+                {
                     return str;
                 }
             }
         }
 
         //sec:�Ō��GetList���Ă���sec���Ԍo�߂��Ȃ���͎̂擾�̑ΏۊO�Ƃ���
-        public List<OneQueue> GetList(int max, int sec) {
+        public List<OneQueue> GetList(int max, int sec)
+        {
 
             var queueList = new List<OneQueue>();
 
-            lock (_lockObj) {//�r������
-                foreach (var fileName in Directory.GetFiles(Dir, "DF_*")) {
+            lock (_lockObj)
+            {//�r������
+                foreach (var fileName in Directory.GetFiles(Dir, "DF_*"))
+                {
                     if (queueList.Count == max)
                         break;
                     var mailInfo = new MailInfo(fileName);
 
                     //�����Ώۂ��ǂ����̊m�F
-                    if (mailInfo.IsProcess(sec, fileName)) {
+                    if (mailInfo.IsProcess(sec, fileName))
+                    {
                         var fname = Path.GetFileName(fileName);
                         queueList.Add(new OneQueue(fname.Substring(3), mailInfo));
                     }
@@ -63,30 +77,42 @@ namespace Bjd.SmtpServer
                 return queueList;
             }
         }
-        public void Delete(string fname) {
-            lock (_lockObj) {//�r������
-                var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
+        public void Delete(string fname)
+        {
+            lock (_lockObj)
+            {//�r������
+                //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
+                var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
                 File.Delete(fileName);
-                fileName = string.Format("{0}\\DF_{1}", Dir, fname);
+                //fileName = string.Format("{0}\\DF_{1}", Dir, fname);
+                fileName = $"{Dir}{Path.DirectorySeparatorChar}DF_{fname}";
                 File.Delete(fileName);
             }
         }
-        public bool Save(Mail mail, MailInfo mailInfo) {
+        public bool Save(Mail mail, MailInfo mailInfo)
+        {
 
-            lock (_lockObj) {//�r������
+            lock (_lockObj)
+            {//�r������
                 var fname = CreateName();
-                var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
-                if (mail.Save(fileName)){
-                    fileName = string.Format("{0}\\DF_{1}", Dir, fname);
+                //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
+                var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
+                if (mail.Save(fileName))
+                {
+                    //fileName = string.Format("{0}\\DF_{1}", Dir, fname);
+                    fileName = $"{Dir}{Path.DirectorySeparatorChar}DF_{fname}";
                     mailInfo.Save(fileName);
                     return true;
                 }
                 return false;
             }
         }
-        public bool Read(string fname, ref Mail mail) {
-            lock (_lockObj) {//�r������
-                var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
+        public bool Read(string fname, ref Mail mail)
+        {
+            lock (_lockObj)
+            {//�r������
+                //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
+                var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
                 return mail.Read(fileName);
             }
         }

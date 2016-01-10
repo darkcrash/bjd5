@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Bjd.FtpServer
 {
@@ -18,8 +19,11 @@ namespace Bjd.FtpServer
             UserName = userName;
             Password = password;
             //ホームディレクトリの指定は、必ず最後が\\になるようにする
-            if (homeDir[homeDir.Length - 1] != '\\'){
-                homeDir = homeDir + "\\";
+            //if (homeDir[homeDir.Length - 1] != '\\'){
+            //    homeDir = homeDir + "\\";
+            if (homeDir[homeDir.Length - 1] != Path.DirectorySeparatorChar)
+            {
+                homeDir = homeDir + Path.DirectorySeparatorChar;
             }
             HomeDir = homeDir;
         }

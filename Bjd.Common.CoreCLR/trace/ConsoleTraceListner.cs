@@ -7,7 +7,6 @@ namespace Bjd.trace
 {
     public class ConsoleTraceListner : System.Diagnostics.TraceListener
     {
-        static TaskScheduler ts;
         public ConsoleTraceListner()
         {
 

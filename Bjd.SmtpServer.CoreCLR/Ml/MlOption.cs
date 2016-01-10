@@ -33,12 +33,13 @@ namespace Bjd.SmtpServer
             //Ver6.0.1
             manageDir = kernel.ReplaceOptionEnv(manageDir);
             //Ver6.0.0で間違えたフォルダの修復
-            if (Directory.Exists("%ExecutablePath%") && Directory.Exists("%ExecutablePath%\\ml")) {
+            //if (Directory.Exists("%ExecutablePath%") && Directory.Exists("%ExecutablePath%\\ml")) {
+            if (Directory.Exists("%ExecutablePath%") && Directory.Exists($"%ExecutablePath%{Path.DirectorySeparatorChar}ml")) {
                 try{
                     var path = Path.GetFullPath("%ExecutablePath%");
                     var dir = Path.GetDirectoryName(path);
                     if (dir != null){
-                        Directory.Move(path + "\\ml", dir + "\\ml");
+                        Directory.Move(path + $"{Path.DirectorySeparatorChar}ml", dir + $"{Path.DirectorySeparatorChar}ml");
                         Directory.Delete(path);
                     }
                 } catch (Exception){

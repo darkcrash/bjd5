@@ -507,7 +507,8 @@ namespace Bjd.FtpServer
                                 switch (existsKind)
                                 {
                                     case ExistsKind.Dir:
-                                        mask = param + "\\*.*";
+                                        //mask = param + "\\*.*";
+                                        mask = param + $"{Path.DirectorySeparatorChar}*.*";
                                         break;
                                     case ExistsKind.File:
                                         mask = param;

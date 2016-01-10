@@ -76,7 +76,8 @@ namespace Bjd.TftpServer
                 goto end;
             if (!GetMode(sockUdp,ref tftpMode,ref offset))//モードの取得
                 goto end;
-            var path = string.Format("{0}\\{1}",_workDir,fileName);
+            //var path = string.Format("{0}\\{1}",_workDir,fileName);
+            var path = $"{_workDir}{Path.DirectorySeparatorChar}{fileName}";
 
             //リクエスト元に対するソケットを新規に作成する
             var ip = sockUdp.RemoteIp;

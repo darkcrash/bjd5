@@ -14,7 +14,8 @@ namespace Bjd.WebServer
         public string NameTag { get; private set; }
         public WebDavDb(Kernel kernel, string nameTag) {
             NameTag = nameTag;
-            _fileName = string.Format("{0}\\webdav.{1}.db", Define.ExecutableDirectory, Util.SwapChar(':', '-', nameTag));
+            //_fileName = string.Format("{0}\\webdav.{1}.db", Define.ExecutableDirectory, Util.SwapChar(':', '-', nameTag));
+            _fileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}webdav.{Util.SwapChar(':', '-', nameTag)}.db";
             //ファイルからの読み込み
             if (File.Exists(_fileName)) {
                 using (var bs = new FileStream(_fileName,  FileMode.Open))

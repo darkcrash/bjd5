@@ -35,7 +35,8 @@ namespace Bjd.DnsServer
         protected override bool OnStartServer() {
             //ルートキャッシュの初期化
             _rootCache = null;
-            var namedCaPath = string.Format("{0}\\{1}", Define.ExecutableDirectory, Conf.Get("rootCache"));
+            //var namedCaPath = string.Format("{0}\\{1}", Define.ExecutableDirectory, Conf.Get("rootCache"));
+            var namedCaPath = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}{Conf.Get("rootCache")}";
             if (File.Exists(namedCaPath)) {
                 try {
                     //named.ca読み込み用コンストラクタ

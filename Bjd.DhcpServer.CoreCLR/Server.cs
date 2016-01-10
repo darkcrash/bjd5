@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using Bjd;
 using Bjd.ctrl;
@@ -43,7 +44,7 @@ namespace Bjd.DhcpServer
             
             //DB����
             //string fileName = string.Format("{0}\\lease.db", kernel.ProgDir());
-            string fileName = string.Format("{0}\\lease.db", Define.ExecutableDirectory);
+            string fileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}lease.db";
             var startIp = (Ip)Conf.Get("startIp");
             var endIp = (Ip)Conf.Get("endIp");
             _macAcl = (Dat)Conf.Get("macAcl");

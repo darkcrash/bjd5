@@ -108,7 +108,8 @@ namespace Bjd.RemoteServer
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLocaladdress, LocalAddress.GetInstance().RemoteStr());
 
             //�I�v�V�����̑��M
-            var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
+            //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
+            var optionFileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
             string optionStr;
             using (var bs = new FileStream(optionFileName, FileMode.Open))
             using (var sr = new StreamReader(bs, Encoding.UTF8))
@@ -196,7 +197,8 @@ namespace Bjd.RemoteServer
                     //    �ύX���ꂽ��e���A�����ɓ������Ă��邩�ǂ�����m�F����
 
 
-                    var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
+                    //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
+                    var optionFileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
                     using (var bs = new FileStream(optionFileName, FileMode.Open))
                     using (var sw = new StreamWriter(bs, Encoding.UTF8))
                     {

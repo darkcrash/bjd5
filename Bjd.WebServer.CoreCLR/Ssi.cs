@@ -373,12 +373,14 @@ namespace Bjd.WebServer
             var newTarget = new Target(_conf, _logger);
             if (tag == "file") {
                 //現在のドキュメンのフルパスからからファイル名を生成する
-                string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\" + val;
+                //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\" + val;
+                string fullPath = Path.Combine( Path.GetDirectoryName(_target.FullPath), val);
                 newTarget.InitFromFile(fullPath);
             } else if (tag == "virtual") {
                 newTarget.InitFromUri(val);
             } else if (tag == "comspec") {
-                string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\";
+                //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\";
+                string fullPath = Path.GetDirectoryName(_target.FullPath) + Path.DirectorySeparatorChar;
                 newTarget.InitFromCmd(fullPath);
             } else {
                 return null;

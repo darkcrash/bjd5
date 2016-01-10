@@ -362,7 +362,8 @@ namespace Bjd.WebServer
                 if (pathInfo != null)
                 {
                     pathInfo = target.DocumentRoot + pathInfo;
-                    document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
+                    //document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
+                    document.AddHeader("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
                 }
                 //***************************************************************
                 //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
@@ -783,7 +784,7 @@ namespace Bjd.WebServer
         //********************************************************
         int CheckUri(SockTcp sockTcp, Request request, Header recvHeader)
         {
-            System.Diagnostics.Trace.WriteLine($"WebServer.CheckUri ");
+            //System.Diagnostics.Trace.WriteLine($"WebServer.CheckUri ");
             var responseCode = 200;
 
             // v2.3.1 Uri の１文字目が/で無い場合

@@ -21,7 +21,8 @@ namespace Bjd.SmtpServer
             {
                 name = name.Replace(c, '_');
             }
-            FileName = string.Format("{0}\\fetch.{1}.db", dir, name);
+            //FileName = string.Format("{0}\\fetch.{1}.db", dir, name);
+            FileName = $"{dir}{Path.DirectorySeparatorChar}fetch.{name}.db";
 
             Read();
         }

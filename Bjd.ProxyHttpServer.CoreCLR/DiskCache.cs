@@ -18,11 +18,13 @@ namespace Bjd.ProxyHttpServer {
         }
 
         string CreatePath(string hostName, int port, string uri) {
-            var path = string.Format("{0}\\{1}_{2}\\{3}", _dir, hostName, port, uri);
+            //var path = string.Format("{0}\\{1}_{2}\\{3}", _dir, hostName, port, uri);
+            var path = $"{_dir}{Path.DirectorySeparatorChar}{hostName}_{port}{Path.DirectorySeparatorChar}{uri}";
             if (path[path.Length - 1] == '/') {
                 path = path + "$$$";
             }
-            path = Util.SwapChar('/', '\\', path);
+            //path = Util.SwapChar('/', '\\', path);
+            path = Util.SwapChar('/', Path.DirectorySeparatorChar, path);
             return path;
         }
 
@@ -46,7 +48,8 @@ namespace Bjd.ProxyHttpServer {
                     var fi = new FileInfo(name);
 
                     var str = name.Substring(_dir.Length + 1);
-                    str = Util.SwapChar('\\', '/', str);
+                    //str = Util.SwapChar('\\', '/', str);
+                    str = Util.SwapChar(Path.DirectorySeparatorChar, '/', str);
                     str = Util.SwapStr("$$$", "", str);
 
                     var index = str.IndexOf('/');

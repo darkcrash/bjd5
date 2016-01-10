@@ -23,7 +23,8 @@ namespace Bjd.FtpServer
 
         public bool IsToFolder(string dir)
         {
-            if ((ToFolder + "\\") == dir)
+            //if ((ToFolder + "\\") == dir)
+            if ((ToFolder + Path.DirectorySeparatorChar) == dir)
             {
                 return true;
             }

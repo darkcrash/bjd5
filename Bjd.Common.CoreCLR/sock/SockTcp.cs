@@ -164,7 +164,6 @@ namespace Bjd.sock
             // Using the LocalEndPoint property.
             string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
 
-
             try
             {
                 //Ver5.6.0
@@ -179,13 +178,12 @@ namespace Bjd.sock
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             //socket.BeginReceive(tcpBuffer, 0, (oneSsl != null) ? 0 : tcpQueue.Space, SocketFlags.None, new AsyncCallback(EndReceive), this);
 
-
             try
             {
                 if (_ssl != null)
                 {
                     //Ver5.9.2 Java fix
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this);
                 }
                 else {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
@@ -201,70 +199,70 @@ namespace Bjd.sock
 
         public void EndReceive(Task<int> result)
         {
-            System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
+            //System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
+
             if (!result.IsCompleted)
             {
-                //受信待機
-                while ((_sockQueue.Space) == 0)
-                {
-                    Thread.Sleep(10); //他のスレッドに制御を譲る  
-                    if (SockState != SockState.Connect)
-                        goto err;
-                }
-            }
-            else {
-                //受信完了
-                lock (this)
-                {
-                    //ポインタを移動する場合は、排他制御が必要
-                    try
-                    {
-                        //Ver5.9.2 Java fix
-                        int bytesRead = result.Result;
-                        if (bytesRead == 0)
-                        {
-                            //  切断されている場合は、0が返される?
-                            if (_ssl == null)
-                                goto err; //エラー発生
-                            Thread.Sleep(10); //Ver5.0.0-a19
-                        }
-                        else if (bytesRead < 0)
-                        {
-                            goto err; //エラー発生
-                        }
-                        else {
-                            _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
-                        //受信待機のままソケットがクローズされた場合は、ここにくる
-                        goto err; //エラー発生
-                    }
-                }
+                this.SetErrorReceive();
+                return;
             }
 
-            if (_sockQueue.Space == 0)
-                //バッファがいっぱい 空の受信待機をかける
-                EndReceive(null);
-            else
-                //受信待機の開始
+            //受信完了
+            lock (this)
+            {
+                //ポインタを移動する場合は、排他制御が必要
                 try
                 {
                     //Ver5.9.2 Java fix
-                    //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    var tReceive = _socket.ReceiveAsync(new ArraySegment<byte>(_recvBuf, 0, _sockQueue.Space), SocketFlags.None);
-                    tReceive.ContinueWith(_ => this.EndReceive(_));
-
+                    int bytesRead = result.Result;
+                    if (bytesRead <= 0)
+                    {
+                        //  切断されている場合は、0が返される?
+                        this.SetErrorReceive();
+                        return;
+                    }
+                    _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
-                    goto err; //切断されている
+                    //受信待機のままソケットがクローズされた場合は、ここにくる
+                    this.SetErrorReceive();
+                    return;
                 }
-            return;
-            err: //エラー発生
+            }
+
+            //バッファがいっぱい 空の受信待機をかける
+            //受信待機
+            while ((_sockQueue.Space) == 0)
+            {
+                Thread.Sleep(10); //他のスレッドに制御を譲る  
+                if (SockState != SockState.Connect)
+                {
+                    this.SetErrorReceive();
+                    return;
+                }
+            }
+
+            //受信待機の開始
+            try
+            {
+                //Ver5.9.2 Java fix
+                //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
+                var tReceive = _socket.ReceiveAsync(new ArraySegment<byte>(_recvBuf, 0, _sockQueue.Space), SocketFlags.None);
+                tReceive.ContinueWith(_ => this.EndReceive(_));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
+                this.SetErrorReceive();
+                return;
+            }
+        }
+
+        private void SetErrorReceive()
+        {
+            //err: //エラー発生
             //【2009.01.12 追加】相手が存在しなくなっている
             SetError("disconnect");
             //state = SocketObjState.Disconnect;
@@ -273,7 +271,7 @@ namespace Bjd.sock
         }
 
         //受信処理・受信待機
-        public void EndReceive(IAsyncResult ar)
+        public void EndReceiveSsl(IAsyncResult ar)
         {
             System.Diagnostics.Trace.WriteLine("SockTcp.EndReceive");
             if (ar == null)
@@ -283,7 +281,10 @@ namespace Bjd.sock
                 {
                     Thread.Sleep(10); //他のスレッドに制御を譲る  
                     if (SockState != SockState.Connect)
-                        goto err;
+                    {
+                        this.SetErrorReceive();
+                        return;
+                    }
                 }
             }
             else {
@@ -294,19 +295,21 @@ namespace Bjd.sock
                     try
                     {
                         //Ver5.9.2 Java fix
-                        //int bytesRead = _oneSsl != null ? _oneSsl.EndRead(ar) : _socket.EndReceive(ar);
                         int bytesRead = _oneSsl.EndRead(ar);
-                        //int bytesRead = _socket.EndReceive(ar);
                         if (bytesRead == 0)
                         {
                             //  切断されている場合は、0が返される?
                             if (_ssl == null)
-                                goto err; //エラー発生
+                            {
+                                this.SetErrorReceive();
+                                return;
+                            }
                             Thread.Sleep(10); //Ver5.0.0-a19
                         }
                         else if (bytesRead < 0)
                         {
-                            goto err; //エラー発生
+                            this.SetErrorReceive();
+                            return;
                         }
                         else {
                             _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
@@ -316,40 +319,31 @@ namespace Bjd.sock
                     {
                         System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
                         //受信待機のままソケットがクローズされた場合は、ここにくる
-                        goto err; //エラー発生
+                        this.SetErrorReceive();
+                        return;
                     }
                 }
             }
 
             if (_sockQueue.Space == 0)
+            {
                 //バッファがいっぱい 空の受信待機をかける
-                EndReceive(null);
+                EndReceiveSsl(null);
+            }
             else
+            {
                 //受信待機の開始
                 try
                 {
-                    //Ver5.9.2 Java fix
-                    //if (_oneSsl != null)
-                    //{
-                    //    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
-                    //}
-                    //else {
-                    //    _socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    //}
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceive, this);
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this);
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
-                    goto err; //切断されている
+                    this.SetErrorReceive();
+                    return;
                 }
-            return;
-            err: //エラー発生
-            //【2009.01.12 追加】相手が存在しなくなっている
-            SetError("disconnect");
-            //state = SocketObjState.Disconnect;
-
-            //Close();クローズは外部から明示的に行う
+            }
         }
 
 

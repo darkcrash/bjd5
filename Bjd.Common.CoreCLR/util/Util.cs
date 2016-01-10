@@ -396,8 +396,11 @@ namespace Bjd.util
             foreach (var dir in Directory.GetDirectories(srcPath))
             {
                 var name = dir.Substring(srcPath.Length);
-                var nextSrcPath = srcPath + name + "\\";
-                var nextDstPath = dstPath + name + "\\";
+                //var nextSrcPath = srcPath + name + "\\";
+                //var nextDstPath = dstPath + name + "\\";
+                var nextSrcPath = srcPath + name + Path.DirectorySeparatorChar;
+                var nextDstPath = dstPath + name + Path.DirectorySeparatorChar;
+
                 if (!CopyDirectory(nextSrcPath, nextDstPath))
                     return false;
             }

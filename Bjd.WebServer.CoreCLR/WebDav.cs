@@ -14,12 +14,14 @@ namespace Bjd.WebServer
     //RFC 2518「分散オーサリングのためのHTTP拡張 --WEBDAV」具体的定義
     //RFC 3253 「WebDAVのバージョニング拡張メソッドやヘッダやリソースタイプのセット」参考
     //**********************************************************************************
-    class WebDav {
+    class WebDav
+    {
         //RFC2518(9.2 Depth Header)
         //Depth:0 指定したリソースだけに効果を及ぼす
         //Depth:1 リソースおよびその直下のリソースにメソッドの効果を及ぼす
         //Depth:infinity 配下のリソース全てに効果を及ぼす
-        enum Depth {
+        enum Depth
+        {
             Depth0 = 0,
             Depth1 = 1,
             DepthInfinity = 2,
@@ -38,7 +40,8 @@ namespace Bjd.WebServer
         readonly ContentType _contentType;
         readonly bool _useEtag;
 
-        public WebDav(Logger logger, WebDavDb webDavDb, Target target, Document document, string urlStr, string depthStr, ContentType contentType, bool useEtag) {
+        public WebDav(Logger logger, WebDavDb webDavDb, Target target, Document document, string urlStr, string depthStr, ContentType contentType, bool useEtag)
+        {
             _logger = logger;
             _webDavDb = webDavDb;
             _document = document;
@@ -47,12 +50,18 @@ namespace Bjd.WebServer
             _contentType = contentType;
             _useEtag = useEtag;
 
-            if (depthStr != null) {
-                if (depthStr == "0") {
+            if (depthStr != null)
+            {
+                if (depthStr == "0")
+                {
                     _depth = Depth.Depth0;
-                } else if (depthStr == "1") {
+                }
+                else if (depthStr == "1")
+                {
                     _depth = Depth.Depth1;
-                } else if (depthStr == "infinity") {
+                }
+                else if (depthStr == "infinity")
+                {
                     _depth = Depth.DepthInfinity;
                 }
             }
@@ -61,15 +70,18 @@ namespace Bjd.WebServer
             _hrefHost = urlStr + target.Uri;
             //hrefをhttp://hostname　と uri部分に分解する
             var index = _hrefHost.IndexOf("://");
-            if (index != -1) {
+            if (index != -1)
+            {
                 _hrefUri = _hrefHost.Substring(index + 3);
                 var pos = _hrefUri.IndexOf('/');
-                if (pos != -1) {
+                if (pos != -1)
+                {
                     _hrefUri = _hrefUri.Substring(pos);
                     _hrefHost = _hrefHost.Substring(0, index + pos + 3);
                 }
             }
-            if (_hrefUri != "") {
+            if (_hrefUri != "")
+            {
                 if (_targetKind == TargetKind.Dir && _hrefUri[_hrefUri.Length - 1] != '/')
                     _hrefUri = _hrefUri + "/";
             }
@@ -90,8 +102,10 @@ namespace Bjd.WebServer
             document.AddHeader("Content-Location", _hrefHost + href);
         }
 
-        public static bool IsTarget(HttpMethod httpMethod) {
-            switch (httpMethod) {
+        public static bool IsTarget(HttpMethod httpMethod)
+        {
+            switch (httpMethod)
+            {
                 case HttpMethod.Options:
                 case HttpMethod.Delete:
                 case HttpMethod.Put:
@@ -106,13 +120,16 @@ namespace Bjd.WebServer
         }
 
         //階層下リソースのプロパティ値の取得
-        void FindAll(PropFindResponce propFindResponce, Depth depth, string hrefHost, string hrefUri, string path, bool useEtag) {
-            if (hrefUri.Length > 1 && hrefUri[hrefUri.Length - 1] != '/') {
+        void FindAll(PropFindResponce propFindResponce, Depth depth, string hrefHost, string hrefUri, string path, bool useEtag)
+        {
+            if (hrefUri.Length > 1 && hrefUri[hrefUri.Length - 1] != '/')
+            {
                 hrefUri = hrefUri + "/";
             }
             var di = new DirectoryInfo(path);
             var isCollection = true;
-            foreach (DirectoryInfo info in di.GetDirectories("*.*")) {
+            foreach (DirectoryInfo info in di.GetDirectories("*.*"))
+            {
                 propFindResponce.Add(isCollection,
                     info.Name,
                     hrefHost,
@@ -122,16 +139,20 @@ namespace Bjd.WebServer
                     0, //Directoryのサイズは0で初期化する
                     info.CreationTime,
                     info.LastWriteTime);
-                if (depth == Depth.DepthInfinity) {
+                if (depth == Depth.DepthInfinity)
+                {
                     //さらに階層下を再帰処理
                     string newPath = path + info.Name;
-                    if (path[path.Length - 1] != '\\')
-                        newPath = path + "\\" + info.Name;
+                    //if (path[path.Length - 1] != '\\')
+                    //    newPath = path + "\\" + info.Name;
+                    if (path[path.Length - 1] != Path.DirectorySeparatorChar)
+                        newPath = Path.Combine(path, info.Name);
                     FindAll(propFindResponce, depth, hrefHost, hrefUri + info.Name + "/", newPath, useEtag);
                 }
             }
             isCollection = false;
-            foreach (FileInfo info in di.GetFiles("*.*")) {
+            foreach (FileInfo info in di.GetFiles("*.*"))
+            {
                 propFindResponce.Add(isCollection,
                     info.Name,
                     hrefHost,
@@ -145,7 +166,8 @@ namespace Bjd.WebServer
         }
 
         //PROPFIND
-        public int PropFind() {
+        public int PropFind()
+        {
             if (_webDavKind == WebDavKind.Non)
                 return 500;
 
@@ -161,7 +183,8 @@ namespace Bjd.WebServer
             var propFindResponce = new PropFindResponce(_webDavDb);
 
             //if(target.Kind == TARGET_KIND.DIR) {//１コレクションのプロパテイ値の取得
-            if (_targetKind == TargetKind.Dir) { //１コレクションのプロパテイ値の取得
+            if (_targetKind == TargetKind.Dir)
+            { //１コレクションのプロパテイ値の取得
                 const bool isCollection = true; //コレクション
                 var di = new DirectoryInfo(_fullPath);
                 propFindResponce.Add(isCollection,
@@ -173,11 +196,13 @@ namespace Bjd.WebServer
                     0, //Directoryのサイズは0で初期化する
                     di.CreationTime,
                     di.LastWriteTime);
-                if (_depth != Depth.Depth0) {
+                if (_depth != Depth.Depth0)
+                {
                     //直下のリソースのプロパテイ値の取得
                     FindAll(propFindResponce, _depth, _hrefHost, _hrefUri, _fullPath, _useEtag);
                 }
-            } else { //１リソースのプロパテイ値の取得
+            }
+            else { //１リソースのプロパテイ値の取得
                 const bool isCollection = false; //非コレクション
                 var info = new FileInfo(_fullPath);
                 propFindResponce.Add(isCollection,
@@ -196,12 +221,14 @@ namespace Bjd.WebServer
         }
 
         //PROPPATCH
-        public int PropPatch(byte[] input) {
+        public int PropPatch(byte[] input)
+        {
             if (_targetKind == TargetKind.Non)
                 return 404;
 
             int responseCode = 500;
-            if (_webDavKind == WebDavKind.Write) {
+            if (_webDavKind == WebDavKind.Write)
+            {
                 responseCode = 207;
 
                 var propPatchResponce = new PropPatchResponce(_hrefUri);
@@ -210,18 +237,24 @@ namespace Bjd.WebServer
                 var doc = new XmlDocument();
                 doc.LoadXml(Encoding.ASCII.GetString(input));
                 //set
-                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:set")) {
-                    foreach (XmlNode nodeProp in nodeSet.ChildNodes) {
-                        if (nodeProp.LocalName.ToLower() == "prop") {
-                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes) {
+                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:set"))
+                {
+                    foreach (XmlNode nodeProp in nodeSet.ChildNodes)
+                    {
+                        if (nodeProp.LocalName.ToLower() == "prop")
+                        {
+                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes)
+                            {
                                 var nameSpace = nodeTarget.NamespaceURI;
                                 var name = nodeTarget.LocalName;
                                 var value = nodeTarget.InnerText;
                                 var responceCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:"){
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:") {
+                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                {
                                     _webDavDb.Set(_hrefUri, nameSpace, name, value);//DB更新処理
-                                } else {
+                                }
+                                else {
                                     responceCode = 409;
                                 }
                                 propPatchResponce.Add(nameSpace, name, responceCode);
@@ -230,18 +263,24 @@ namespace Bjd.WebServer
                     }
                 }
                 //propertyupdate
-                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:propertyupdate")) {
-                    foreach (XmlNode nodeProp in nodeSet.ChildNodes) {
-                        if (nodeProp.LocalName.ToLower() == "prop") {
-                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes) {
+                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:propertyupdate"))
+                {
+                    foreach (XmlNode nodeProp in nodeSet.ChildNodes)
+                    {
+                        if (nodeProp.LocalName.ToLower() == "prop")
+                        {
+                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes)
+                            {
                                 var nameSpace = nodeTarget.NamespaceURI;
                                 var name = nodeTarget.LocalName;
                                 var value = nodeTarget.InnerText;
                                 responseCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:") {
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:") {
+                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                {
                                     _webDavDb.Set(_hrefUri, nameSpace, name, value);//DB更新処理
-                                } else {
+                                }
+                                else {
                                     responseCode = 409;
                                 }
                                 propPatchResponce.Add(nameSpace, name, responseCode);
@@ -250,17 +289,23 @@ namespace Bjd.WebServer
                     }
                 }
                 //remove
-                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:remove")) {
-                    foreach (XmlNode nodeProp in nodeSet.ChildNodes) {
-                        if (nodeProp.LocalName.ToLower() == "prop") {
-                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes) {
+                foreach (XmlNode nodeSet in doc.GetElementsByTagName("D:remove"))
+                {
+                    foreach (XmlNode nodeProp in nodeSet.ChildNodes)
+                    {
+                        if (nodeProp.LocalName.ToLower() == "prop")
+                        {
+                            foreach (XmlNode nodeTarget in nodeProp.ChildNodes)
+                            {
                                 var nameSpace = nodeTarget.NamespaceURI;
                                 var name = nodeTarget.LocalName;
                                 responseCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:") {
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:") {
+                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                {
                                     _webDavDb.Remove(_hrefUri, nameSpace, name);//DB更新処理
-                                } else {
+                                }
+                                else {
                                     responseCode = 409;
                                 }
                                 propPatchResponce.Add(nameSpace, name, responseCode);
@@ -276,13 +321,16 @@ namespace Bjd.WebServer
         }
 
         //OPTION 処理
-        public int Option() {
+        public int Option()
+        {
             const int responseCode = 200;
             var sb = new StringBuilder();
             sb.Append("GET, POST, HEAD, OPTIONS");//通常ディレクトリ
-            if (_webDavKind != WebDavKind.Non) { //WebDAV対象ディレクトリ
+            if (_webDavKind != WebDavKind.Non)
+            { //WebDAV対象ディレクトリ
                 sb.Append(", PROPFIND");
-                if (_webDavKind == WebDavKind.Write) { //WebDAV書き込み可の場合
+                if (_webDavKind == WebDavKind.Write)
+                { //WebDAV書き込み可の場合
                     sb.Append(", PROPATCH, PUT, DELETE, COPY, MOVE, MKCOL");
                 }
                 //RFC 2518(5.2) OptiopnでDavヘッダを返さなければならない
@@ -298,34 +346,47 @@ namespace Bjd.WebServer
         }
 
         //DELETE
-        public int Delete() {
-            if (_targetKind == TargetKind.Dir || _targetKind == TargetKind.Move) {
+        public int Delete()
+        {
+            if (_targetKind == TargetKind.Dir || _targetKind == TargetKind.Move)
+            {
                 _depth = Depth.DepthInfinity;//コレクションに対するDELETE では「infinity」が使用されているように動作しなければならない RFC2518(8.6.2)
             }
             if (_depth == Depth.Null)
                 _depth = Depth.DepthInfinity;//指定されない場合は、「infinity」とする RFC2518(9.2)
 
             int responseCode = 405;
-            if (_webDavKind == WebDavKind.Write) {
+            if (_webDavKind == WebDavKind.Write)
+            {
                 _webDavDb.Remove(_hrefUri);//データベース削除
 
-                if (Directory.Exists(_fullPath)) {
-                    try {
+                if (Directory.Exists(_fullPath))
+                {
+                    try
+                    {
                         //ディレクトリの削除
                         RemoveDirectory(_hrefUri, _fullPath, true);
                         responseCode = 204;//No Content
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex)
+                    {
                         _logger.Set(LogKind.Error, null, 29, ex.Message);
                         responseCode = 500;//ERROR
                     }
-                } else if (File.Exists(_fullPath)) {
-                    try {
+                }
+                else if (File.Exists(_fullPath))
+                {
+                    try
+                    {
                         responseCode = RemoveFile(_hrefUri, _fullPath) ? 204 : 500;
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex)
+                    {
                         _logger.Set(LogKind.Error, null, 30, ex.Message);
                         responseCode = 500;//ERROR
                     }
-                } else {
+                }
+                else {
                     responseCode = 404;//Not Found
                 }
             }
@@ -333,9 +394,11 @@ namespace Bjd.WebServer
         }
 
         //PUT
-        public int Put(byte[] input) {
+        public int Put(byte[] input)
+        {
             var responseCode = 405;
-            if (_webDavKind == WebDavKind.Write) {
+            if (_webDavKind == WebDavKind.Write)
+            {
                 _webDavDb.Remove(_hrefUri);//データベース削除
 
                 //if(File.Exists(fullPath)) {
@@ -343,15 +406,19 @@ namespace Bjd.WebServer
                 //} else {
                 responseCode = 201;//Created
                 //}
-                try {
+                try
+                {
                     //ファイルの作成
-                    using (var writer = new FileStream(_fullPath, FileMode.Create, FileAccess.ReadWrite)) {
+                    using (var writer = new FileStream(_fullPath, FileMode.Create, FileAccess.ReadWrite))
+                    {
                         if (input != null)
                             writer.Write(input, 0, input.Length);
                         writer.Flush();
                         //writer.Close();
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.Set(LogKind.Error, null, 31, ex.Message);
                     responseCode = 500;//ERROR
                 }
@@ -360,72 +427,103 @@ namespace Bjd.WebServer
         }
 
         //MOVE.COPY
-        public int MoveCopy(Target destTarget, bool overwrite, HttpMethod httpMethod) {
+        public int MoveCopy(Target destTarget, bool overwrite, HttpMethod httpMethod)
+        {
             int responseCode = 405;
-            if (_targetKind == TargetKind.Dir) {
+            if (_targetKind == TargetKind.Dir)
+            {
                 _depth = Depth.DepthInfinity;//コレクションに対するMOVE では「infinity」が使用されているように動作しなければならない RFC2518(8.9.2)
             }
             if (_depth == Depth.Null)
                 _depth = Depth.DepthInfinity;//指定されない場合は、「infinity」とする RFC2518(9.2)
 
-            if (Directory.Exists(_fullPath)) {
-                try {
+            if (Directory.Exists(_fullPath))
+            {
+                try
+                {
                     responseCode = 201;
-                    if (overwrite) {
-                        if (Directory.Exists(destTarget.FullPath)) {
+                    if (overwrite)
+                    {
+                        if (Directory.Exists(destTarget.FullPath))
+                        {
                             responseCode = 204;
-                            try {
+                            try
+                            {
                                 //ディレクトリの削除
                                 RemoveDirectory(destTarget.Uri, destTarget.FullPath, false);
-                            } catch (Exception ex) {
+                            }
+                            catch (Exception ex)
+                            {
                                 _logger.Set(LogKind.Error, null, 32, ex.Message);
                             }
                         }
                     }
-                    if (Directory.Exists(destTarget.FullPath)) { //対象が存在する場合は、エラーとなる
+                    if (Directory.Exists(destTarget.FullPath))
+                    { //対象が存在する場合は、エラーとなる
                         responseCode = 403;
-                    } else {
+                    }
+                    else {
                         //ディレクトリのコピー
-                        if (CopyDirectory(_hrefUri, _fullPath, destTarget.Uri, destTarget.FullPath)) {
-                            if (httpMethod == HttpMethod.Move) {
+                        if (CopyDirectory(_hrefUri, _fullPath, destTarget.Uri, destTarget.FullPath))
+                        {
+                            if (httpMethod == HttpMethod.Move)
+                            {
                                 //元ディレクトリの削除
                                 RemoveDirectory(_hrefUri, _fullPath, true);
                             }
-                        } else {
+                        }
+                        else {
                             responseCode = 403;
                         }
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.Set(LogKind.Error, null, 34, ex.Message);
                     responseCode = 500;
                 }
-            } else if (File.Exists(_fullPath)) {
-                try {
+            }
+            else if (File.Exists(_fullPath))
+            {
+                try
+                {
                     responseCode = 201;
-                    if (overwrite) {
-                        if (File.Exists(destTarget.FullPath)) {
+                    if (overwrite)
+                    {
+                        if (File.Exists(destTarget.FullPath))
+                        {
                             responseCode = 204;
-                            try {
+                            try
+                            {
                                 RemoveFile(destTarget.Uri, destTarget.FullPath);//ファイルの削除
-                            } catch (Exception ex) {
+                            }
+                            catch (Exception ex)
+                            {
                                 _logger.Set(LogKind.Error, null, 33, ex.Message);
                             }
                         }
                     }
-                    if (File.Exists(destTarget.FullPath)) { //対象が存在する場合は、エラーとなる
+                    if (File.Exists(destTarget.FullPath))
+                    { //対象が存在する場合は、エラーとなる
                         responseCode = 403;
-                    } else {
+                    }
+                    else {
                         //ファイルのコピー
-                        if (CopyFile(_hrefUri, _fullPath, destTarget.Uri, destTarget.FullPath)) {
-                            if (httpMethod == HttpMethod.Move) {
+                        if (CopyFile(_hrefUri, _fullPath, destTarget.Uri, destTarget.FullPath))
+                        {
+                            if (httpMethod == HttpMethod.Move)
+                            {
                                 //元ファイルの削除
                                 RemoveFile(_hrefUri, _fullPath);
                             }
-                        } else {
+                        }
+                        else {
                             responseCode = 403;
                         }
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.Set(LogKind.Error, null, 35, ex.Message);
                     responseCode = 500;
                 }
@@ -434,23 +532,32 @@ namespace Bjd.WebServer
         }
 
         //ディレクトリの削除
-        bool RemoveDirectory(string uri, string path, bool recursive) {
-            if (!recursive) { //階層下を削除しない場合
-                try {
+        bool RemoveDirectory(string uri, string path, bool recursive)
+        {
+            if (!recursive)
+            { //階層下を削除しない場合
+                try
+                {
                     Directory.Delete(path);
                     _webDavDb.Remove(uri);
-                } catch {
+                }
+                catch
+                {
                     return false;
                 }
-            } else { //階層下も削除する場合
-                foreach (var dir in Directory.GetDirectories(path)) {
+            }
+            else { //階層下も削除する場合
+                foreach (var dir in Directory.GetDirectories(path))
+                {
                     var name = dir.Substring(path.Length);
                     var nextUri = uri + name + "/";
-                    var nextPath = path + name + "\\";
+                    //var nextPath = path + name + "\\";
+                    var nextPath = path + name + Path.DirectorySeparatorChar;
                     if (!RemoveDirectory(nextUri, nextPath, recursive))
                         return false;
                 }
-                foreach (var file in Directory.GetFiles(path)) {
+                foreach (var file in Directory.GetFiles(path))
+                {
                     if (!RemoveFile(uri + file.Substring(path.Length), file))
                         return false;
                 }
@@ -461,20 +568,25 @@ namespace Bjd.WebServer
         }
 
         //ディレクトリのコピー
-        bool CopyDirectory(string srcUri, string srcPath, string dstUri, string dstPath) {
+        bool CopyDirectory(string srcUri, string srcPath, string dstUri, string dstPath)
+        {
             Directory.CreateDirectory(dstPath);
             File.SetAttributes(dstPath, File.GetAttributes(srcPath));
 
-            foreach (var dir in Directory.GetDirectories(srcPath)) {
+            foreach (var dir in Directory.GetDirectories(srcPath))
+            {
                 var name = dir.Substring(srcPath.Length);
                 var nextSrcUri = srcUri + name + "/";
-                var nextSrcPath = srcPath + name + "\\";
+                //var nextSrcPath = srcPath + name + "\\";
+                var nextSrcPath = srcPath + name + Path.DirectorySeparatorChar;
                 var nextDstUri = dstUri + name + "/";
-                var nextDstPath = dstPath + name + "\\";
+                //var nextDstPath = dstPath + name + "\\";
+                var nextDstPath = dstPath + name + Path.DirectorySeparatorChar;
                 if (!CopyDirectory(nextSrcUri, nextSrcPath, nextDstUri, nextDstPath))
                     return false;
             }
-            foreach (var file in Directory.GetFiles(srcPath)) {
+            foreach (var file in Directory.GetFiles(srcPath))
+            {
                 var name = file.Substring(srcPath.Length);
                 var nextSrcUri = srcUri + name;
                 var nextSrcPath = srcPath + name;
@@ -487,26 +599,35 @@ namespace Bjd.WebServer
         }
 
         //ファイルのコピー
-        bool CopyFile(string srcUri, string srcPath, string dstUri, string dstPath) {
-            try {
+        bool CopyFile(string srcUri, string srcPath, string dstUri, string dstPath)
+        {
+            try
+            {
                 File.Copy(srcPath, dstPath);
                 //プロパティのコピー
                 var list = _webDavDb.Get(srcUri);
-                foreach (var o in list) {
+                foreach (var o in list)
+                {
                     _webDavDb.Set(dstUri, o.NameSpace, o.Name, o.Value);
                 }
-            } catch {
+            }
+            catch
+            {
                 return false;
             }
             return true;
         }
 
         //ファイルの削除
-        bool RemoveFile(string uri, string path) {
-            try {
+        bool RemoveFile(string uri, string path)
+        {
+            try
+            {
                 File.Delete(path);//ファイルの削除
                 _webDavDb.Remove(uri);//プロパティの削除
-            } catch {
+            }
+            catch
+            {
                 return false;
             }
             return true;
@@ -514,19 +635,28 @@ namespace Bjd.WebServer
 
 
         //MKCOL
-        public int MkCol() {
+        public int MkCol()
+        {
             int responseCode = 405;
-            if (_webDavKind == WebDavKind.Write) {
+            if (_webDavKind == WebDavKind.Write)
+            {
                 //親ディレクトリの存在確認
-                if (_fullPath.Length > 0) {
+                if (_fullPath.Length > 0)
+                {
                     var dir = Path.GetDirectoryName(_fullPath.Substring(0, _fullPath.Length - 1));
-                    if (dir!=null && !Directory.Exists(dir)) {
+                    if (dir != null && !Directory.Exists(dir))
+                    {
                         responseCode = 409;
-                    } else if (!Directory.Exists(_fullPath) && !File.Exists(_fullPath)) {
-                        try {
+                    }
+                    else if (!Directory.Exists(_fullPath) && !File.Exists(_fullPath))
+                    {
+                        try
+                        {
                             Directory.CreateDirectory(_fullPath);
                             responseCode = 201;
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex)
+                        {
                             _logger.Set(LogKind.Error, null, 36, ex.Message);
                             responseCode = 500;
                         }
