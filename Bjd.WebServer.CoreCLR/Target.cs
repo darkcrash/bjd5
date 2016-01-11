@@ -51,7 +51,9 @@ namespace Bjd.WebServer
         //uri�ɂ�鏉����
         public void InitFromUri(string uri)
         {
+            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri {uri}");
             Init(uri);
+            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri TargetKind {TargetKind} WebDavKind {WebDavKind}");
         }
         //filename�ɂ�鏉����
         public void InitFromFile(string file)
@@ -228,6 +230,7 @@ namespace Bjd.WebServer
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
             FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, DocumentRoot + uri);
+            System.Diagnostics.Trace.TraceInformation($"Target.Init {FullPath}");
 
             /*************************************************/
             //�t�@�C���w�肳�ꂽ�^�[�Q�b�g���t�@�C���ł͂Ȃ��f�B���N�g���̏ꍇ
@@ -244,7 +247,8 @@ namespace Bjd.WebServer
                     }
                 }
             }
-            else {
+            else
+            {
                 if (TargetKind == TargetKind.File)
                 {
                     if (Directory.Exists(FullPath))
@@ -276,6 +280,7 @@ namespace Bjd.WebServer
                             if (File.Exists(newPath))
                             {
                                 FullPath = newPath;
+                                System.Diagnostics.Trace.TraceInformation($"Target.Init welcomeFileName {FullPath}");
                                 break;
                             }
                         }
