@@ -13,6 +13,12 @@ namespace Bjd.service
 
         public static void ServiceMain(IServiceProvider sb)
         {
+            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
+            {
+                var f = new EventTypeFilter(SourceLevels.Warning);
+                l.Filter = f;
+            }
+
             // Add console trace
             System.Diagnostics.Trace.Listeners.Add(new trace.ConsoleTraceListner());
             Trace.TraceInformation("Service.ServiceMain Start");

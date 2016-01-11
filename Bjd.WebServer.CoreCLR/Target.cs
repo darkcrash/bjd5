@@ -18,6 +18,7 @@ namespace Bjd.WebServer
         readonly Logger _logger;
         public Target(Conf conf, Logger logger)
         {
+            System.Diagnostics.Trace.TraceInformation($"Target..ctor ");
             //_oneOption = oneOption;
             _conf = conf;
             _logger = logger;

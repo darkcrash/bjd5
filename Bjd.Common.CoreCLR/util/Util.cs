@@ -306,7 +306,7 @@ namespace Bjd.util
         public static void RuntimeException(string msg)
         {
             //Msg.Show(MsgKind.Error, msg);
-            Console.WriteLine(msg);
+            System.Diagnostics.Trace.Fail(msg);
             throw new Exception("RuntimeException" + msg);
         }
 

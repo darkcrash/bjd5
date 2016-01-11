@@ -56,45 +56,37 @@ namespace Bjd.trace
 
         public override void Write(string message)
         {
-            //var t = new Task(
-            //    () =>
-            //    {
-            //        if (this.NeedIndent)
-            //            this.WriteIndent();
-            //        Console.Write(message);
-            //    }, TaskCreationOptions.PreferFairness);
-            //t.Start();
             if (this.NeedIndent)
                 this.WriteIndent();
-            Console.Write(message);
 
+            //Console.Write(message);
+
+            var t = new Task(
+                () => Console.Write(message), TaskCreationOptions.PreferFairness);
+            t.Start(this.sts);
 
         }
         protected override void WriteIndent()
         {
-            //var t = new Task(
-            //    () =>
-            //    {
-            //        Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
-            //    },  TaskCreationOptions.PreferFairness);
-            //t.Start();
-            Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+            //Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+            var t = new Task(
+                () =>
+                    Console.Write(new string(' ', this.IndentLevel * this.IndentSize)), TaskCreationOptions.PreferFairness);
+            t.Start(this.sts);
 
         }
 
         public override void WriteLine(string message)
         {
-            //var t = new Task(
-            //    () =>
-            //    {
-            //        if (this.NeedIndent)
-            //            this.WriteIndent();
-            //        Console.WriteLine(message);
-            //    }, TaskCreationOptions.PreferFairness);
-            //t.Start();
             if (this.NeedIndent)
                 this.WriteIndent();
-            Console.WriteLine(message);
+
+            //Console.WriteLine(message);
+
+            var t = new Task(
+                () => Console.WriteLine(message), TaskCreationOptions.PreferFairness);
+            t.Start(this.sts);
+
         }
 
 
@@ -168,7 +160,10 @@ namespace Bjd.trace
 
         protected override IEnumerable<Task> GetScheduledTasks()
         {
-            return _q.ToArray();
+            lock (Lock)
+            {
+                return _q.ToArray();
+            }
         }
 
         protected override void QueueTask(Task task)

@@ -32,6 +32,7 @@ namespace Bjd.WebServer
         public bool SetRangeTo{get;set;}//Range�w�b�_�Ŕ͈́i�I���j���w�肳�ꂽ�ꍇTrue
 
         public Document(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, ContentType contentType) {
+            System.Diagnostics.Trace.TraceInformation($"Document..ctor");
             //this.kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;

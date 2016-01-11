@@ -133,6 +133,7 @@ namespace Bjd.WebServer
         //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
+            System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = new CultureInfo("en-US");
 
@@ -204,8 +205,8 @@ namespace Bjd.WebServer
                     //Ver5.1.x
                     var hostStr = recvHeader.GetVal("host");
                     urlStr = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
+                    System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {urlStr}");
                 }
-                System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {urlStr}");
 
                 //入力取得（POST及びPUTの場合）
                 var contentLengthStr = recvHeader.GetVal("Content-Length");
@@ -291,7 +292,8 @@ namespace Bjd.WebServer
                 {
                     keepAlive = false;//SSL通信では、１回づつコネクションが必要
                 }
-                else {
+                else
+                {
                     if (request.Ver == "HTTP/1.1")
                     {//HTTP1.1はデフォルトで keepAlive=true
                         keepAlive = true;
@@ -669,6 +671,7 @@ namespace Bjd.WebServer
                 }
 
                 SEND:
+                System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread SEND");
                 //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
                 if (responseCode != 200 && responseCode != 302 && responseCode != 206 && responseCode != 207 && responseCode != 204 && responseCode != 201)
                 {

@@ -46,6 +46,7 @@ namespace Bjd.WebServer
         //�f�[�^�擾�i����f�[�^�́A�����������j
         //public bool Recv(int timeout,sockTcp sockTcp,ref bool life) {
         public bool Init(string requestStr) {
+            System.Diagnostics.Trace.TraceInformation($"Request.Init");
 
             //�����̃f�[�^���c���Ă���ꍇ�͍폜���Ă����M�ɂ͂���
             Uri = "";
