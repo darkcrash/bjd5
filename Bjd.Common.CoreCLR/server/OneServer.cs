@@ -258,22 +258,30 @@ namespace Bjd.server
                 {
                     break;
                 }
-                if (Count() >= _multiple)
-                {
-                    Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
-                    //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
-                    child.Close();
-                    continue;
-                }
 
-                // ACL�����̃`�F�b�N
-                if (AclCheck(child) == AclKind.Deny)
-                {
-                    child.Close();
-                    child.Dispose();
-                    continue;
-                }
-                var t = new Task(() => this.SubThread(child));
+                var t = new Task(
+                    () =>
+                    {
+                        if (Count() >= _multiple)
+                        {
+                            Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                            //�����ڑ����𒴂����̂Ń��N�G�X�g��L�����Z�����܂�
+                            child.Close();
+                            child.Dispose();
+                            return;
+                        }
+
+                        // ACL�����̃`�F�b�N
+                        if (AclCheck(child) == AclKind.Deny)
+                        {
+                            child.Close();
+                            child.Dispose();
+                            return;
+                        }
+
+                        this.SubThread(child);
+                    }, Kernel.CancelToken);
+
                 t.ContinueWith(this.RemoveTask);
                 this.AddTask(t);
                 t.Start();
@@ -350,16 +358,10 @@ namespace Bjd.server
                 aclKind = AclList.Check(ip);
             }
 
-            if (aclKind == AclKind.Deny)
-            {
-                _denyAddress = sockObj.RemoteAddress.ToString();
-            }
             return aclKind;
         }
 
         protected abstract void OnSubThread(SockObj sockObj);
-
-        private String _denyAddress = ""; //Ver5.3.5 DoS�Ώ�
 
         //�P���N�G�X�g�ɑ΂���q�X���b�h�Ƃ��ċN�������
         public void SubThread(SockObj o)

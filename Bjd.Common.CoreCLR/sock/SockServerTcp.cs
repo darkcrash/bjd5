@@ -70,9 +70,6 @@ namespace Bjd.sock
 
                 Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
 
-                //受信開始
-                BeginReceiveTcp();
-
                 return true;
 
             }
@@ -82,72 +79,27 @@ namespace Bjd.sock
             }
         }
 
-
-        //受信開始
-        void BeginReceiveTcp()
-        {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.BeginReceiveTcp");
-            // TCP
-            //_socket.BeginAccept(AcceptFunc, this);
-            var tTcp = _socket.AcceptAsync();
-            tTcp.ContinueWith(_ => this.Accept(_), Kernel.CancelToken);
-        }
-
-        void Accept(Task<Socket> taskResult)
-        {
-            if (taskResult.IsCanceled)
-                return;
-            if (taskResult.IsCompleted)
-            {
-                try
-                {
-                    var client = new SockTcp(Kernel, _ssl, taskResult.Result);
-                    lock (Lock)
-                    {
-                        sockQueue.Enqueue(client);
-                        WaitSelect.Set();
-                    }
-                }
-                catch { }
-            }
-            //受信開始
-            BeginReceiveTcp();
-        }
-
         protected override void Cancel()
         {
-            WaitSelect.Set();
             isCancel = true;
         }
 
-        Queue<sock.SockTcp> sockQueue = new Queue<sock.SockTcp>();
-        ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false);
         bool isCancel = false;
 
         public SockTcp Select(ILife iLife)
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
 
-            while (iLife.IsLife())
+            var tTcp = _socket.AcceptAsync();
+            tTcp.Wait(this.Kernel.CancelToken);
+            if (this.IsCancel || !iLife.IsLife())
             {
-                lock (Lock)
-                {
-                    if (sockQueue.Count > 0)
-                    {
-                        return sockQueue.Dequeue();
-                    }
-                    else if(!isCancel)
-                    {
-                        WaitSelect.Reset();
-                    }
-                }
-                //Ver5.8.1
-                //Thread.Sleep(0);
-                //Thread.Sleep(1);
-                WaitSelect.Wait();
+                SetError("isLife()==false");
+                return null;
             }
-            SetError("isLife()==false");
-            return null;
+            var client = new SockTcp(Kernel, _ssl, tTcp.Result);
+            return client;
+
         }
 
 
