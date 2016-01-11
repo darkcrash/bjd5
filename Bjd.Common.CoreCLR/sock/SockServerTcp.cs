@@ -91,7 +91,13 @@ namespace Bjd.sock
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
 
             var tTcp = _socket.AcceptAsync();
-            tTcp.Wait(this.Kernel.CancelToken);
+            while (true)
+            {
+                if (tTcp.Wait(2000, this.Kernel.CancelToken))
+                    break;
+                if (tTcp.Status == TaskStatus.Canceled)
+                    break;
+            }
             if (this.IsCancel || !iLife.IsLife())
             {
                 SetError("isLife()==false");
