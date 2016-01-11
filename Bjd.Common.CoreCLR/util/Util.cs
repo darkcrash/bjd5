@@ -44,6 +44,8 @@ namespace Bjd.util
         //string str�̒��̕��� before �𕶎� after�ɒu��������
         public static string SwapChar(char before, char after, string str)
         {
+            if (before == after)
+                return str;
             while (true)
             {
                 int index = str.IndexOf(before);
