@@ -66,6 +66,8 @@ namespace Bjd.util
         //string str�̒��̕��� beforeStr �� afterStr�ɒu��������
         public static string SwapStr(string beforeStr, string afterStr, string str)
         {
+            if (beforeStr == afterStr)
+                return str;
             var offset = 0; //�����ςݕ����ʒu
             while (true)
             {
