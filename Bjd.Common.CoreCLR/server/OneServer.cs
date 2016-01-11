@@ -380,6 +380,8 @@ namespace Bjd.server
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Trace.Fail(ex.Message);
+                System.Diagnostics.Trace.Fail(ex.StackTrace);
                 if (Logger != null)
                 {
                     Logger.Set(LogKind.Error, null, 9000061, ex.Message);

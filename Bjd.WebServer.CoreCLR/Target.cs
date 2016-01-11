@@ -24,8 +24,10 @@ namespace Bjd.WebServer
             _logger = logger;
 
             DocumentRoot = (string)_conf.Get("documentRoot");
+            System.Diagnostics.Trace.TraceInformation($"Target..ctor {DocumentRoot} ");
             if (!Directory.Exists(DocumentRoot))
             {
+                System.Diagnostics.Trace.TraceInformation($"Target..ctor DocumentRoot not exists ");
                 DocumentRoot = null;//�h�L�������g���[�g����
             }
             FullPath = "";
