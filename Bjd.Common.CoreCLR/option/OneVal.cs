@@ -132,7 +132,7 @@ namespace Bjd.option
             {
                 throw;
             }
-
+            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 

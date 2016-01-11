@@ -295,8 +295,19 @@ namespace Bjd.log
             var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
             var oneLog = new OneLog(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
                                        detailInfomation);
+            switch (logKind)
+            {
+                case LogKind.Error:
+                    System.Diagnostics.Trace.TraceError($"{oneLog.ToString()}");
+                    break;
+                case LogKind.Secure:
+                    System.Diagnostics.Trace.TraceWarning($"{oneLog.ToString()}");
+                    break;
+                default:
+                    System.Diagnostics.Trace.TraceInformation($"{oneLog.ToString()}");
+                    break;
+            }
 
-            System.Diagnostics.Trace.TraceInformation($"{oneLog.ToString()}");
 
             // 表示制限にヒットするかどうかの確認
             var isDisplay = true;

@@ -8,6 +8,7 @@ namespace Bjd.trace
 {
     public class ConsoleTraceListner : System.Diagnostics.TraceListener
     {
+        SequentialTaskScheduler sts = new SequentialTaskScheduler();
         public ConsoleTraceListner()
         {
 
@@ -127,14 +128,78 @@ namespace Bjd.trace
                 sb.Append($"[{id}] ");
                 sb.Append(new string(' ', this.IndentLevel * this.IndentSize));
                 sb.Append(message);
-                this.WriteLine(sb.ToString());
+                Console.WriteLine(sb.ToString());
 
                 //base.TraceEvent(eventCache, source, eventType, id, message);
             };
             var t = new Task(tAct, TaskCreationOptions.PreferFairness);
-            t.Start();
+            t.Start(this.sts);
 
         }
 
+    }
+
+    class SequentialTaskScheduler : System.Threading.Tasks.TaskScheduler
+    {
+        List<Task> _q = new List<Task>();
+        object Lock = new object();
+        bool isRunning = false;
+        public SequentialTaskScheduler() : base()
+        {
+        }
+        private void WaitCallback(object state)
+        {
+            Task t;
+            while (true)
+            {
+                lock (Lock)
+                {
+                    if (_q.Count == 0)
+                    {
+                        isRunning = false;
+                        return;
+                    }
+                    t = _q.First();
+                    _q.Remove(t);
+                }
+                this.TryExecuteTask(t);
+            }
+        }
+
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            return _q.ToArray();
+        }
+
+        protected override void QueueTask(Task task)
+        {
+            lock (Lock)
+            {
+                _q.Add(task);
+                if (isRunning)
+                    return;
+                isRunning = true;
+                System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
+            }
+        }
+
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        {
+            return false;
+        }
+        protected override bool TryDequeue(Task task)
+        {
+            lock (Lock)
+            {
+                return _q.Remove(task);
+            }
+        }
+        public override int MaximumConcurrencyLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
     }
 }
