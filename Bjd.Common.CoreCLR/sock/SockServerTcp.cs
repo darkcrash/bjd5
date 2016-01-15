@@ -79,13 +79,6 @@ namespace Bjd.sock
             }
         }
 
-        protected override void Cancel()
-        {
-            isCancel = true;
-        }
-
-        bool isCancel = false;
-
         public SockTcp Select(ILife iLife)
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");

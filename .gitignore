@@ -32,3 +32,4 @@ BJD/out
 BJDTest/$$Tmp.ini
 project.lock.json
 mailbox/*
+*.parameters.json

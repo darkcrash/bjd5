@@ -20,6 +20,8 @@ namespace Bjd.sock{
         public IPEndPoint LocalAddress { get; set; }
         public String RemoteHostname { get; private set; }
 
+        private bool isCancel = false;
+
         //このKernelはTrace()のためだけに使用されているので、Traceしない場合は削除することができる
         protected Kernel Kernel;
 
@@ -56,13 +58,16 @@ namespace Bjd.sock{
             this.Cancel();
         }
 
-        protected abstract void Cancel();
+        protected virtual void Cancel()
+        {
+            isCancel = true;
+        }
 
         protected bool IsCancel
         {
             get
             {
-                return this.Kernel.CancelToken.IsCancellationRequested;
+                return isCancel || this.Kernel.CancelToken.IsCancellationRequested;
             }
         }
 

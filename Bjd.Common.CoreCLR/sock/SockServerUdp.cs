@@ -114,6 +114,7 @@ namespace Bjd.sock
 
         protected override void Cancel()
         {
+            base.Cancel();
             WaitSelect.Set();
         }
 

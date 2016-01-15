@@ -85,10 +85,6 @@ namespace Bjd.sock
             }
         }
 
-        protected override void Cancel()
-        {
-        }
-
         //通常のサーバでは、このファンクションを外部で作成する
         //private void CallbackConnect(IAsyncResult ar)
         //{
