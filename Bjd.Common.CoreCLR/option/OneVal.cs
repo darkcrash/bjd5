@@ -73,7 +73,10 @@ namespace Bjd.option
             {
                 list = new List<OneVal>();
             }
-
+            if (this.ValueType == typeof(Dat))
+            {
+                ((Dat)this.Value).GetList(list);
+            }
             list.Add(this);
             return list;
         }
@@ -96,7 +99,13 @@ namespace Bjd.option
         //isSecret=true デバッグ用の設定ファイル出力用（パスワード等を***で表現する）
         public String ToReg(bool isSecret)
         {
-            return "";
+
+            if (this.ValueType == typeof(Dat))
+            {
+                ((Dat)this.Value).ToReg(isSecret);
+            }
+
+            return this.Value.ToString();
         }
 
         //出力ファイル(Option.ini)からの入力用<br>
@@ -130,7 +139,9 @@ namespace Bjd.option
             }
             catch (Exception)
             {
-                throw;
+                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({str})");
+                Value = null;
+                return false;
             }
             System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;

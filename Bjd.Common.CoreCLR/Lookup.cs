@@ -130,30 +130,36 @@ namespace Bjd
             //udpClient.Close();
 
 
-            var client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            var endPoint = new IPEndPoint(IPAddress.Parse(dnsServer), 53);
-            //3�b�Ń^�C���A�E�g
-            //client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 3000);
-
-            //byte[] q = Encoding.ASCII.GetBytes(query);
-            //client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
-            client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
-            //IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-
-            var senderEP = (EndPoint)endPoint;
-            try
+            for (var i = 0; i <= 99; i++)
             {
-                var data = new byte[1024];
-                client.ReceiveTimeout = 3000;
-                var recv = client.ReceiveFrom(data, ref senderEP);//��M
-                buffer = new byte[recv];
-                Buffer.BlockCopy(data, 0, buffer, 0, recv);
-                client.Dispose();
-            }
-            catch
-            {//�^�C���A�E�g
-                client.Dispose();
-                return hostList;
+                var client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                var endPoint = new IPEndPoint(IPAddress.Parse(dnsServer), 53);
+                //3�b�Ń^�C���A�E�g
+                //client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 3000);
+
+                //byte[] q = Encoding.ASCII.GetBytes(query);
+                //client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
+                client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
+                                                                     //IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+
+                var senderEP = (EndPoint)endPoint;
+                try
+                {
+                    var data = new byte[1024];
+                    client.ReceiveTimeout = 2000;
+                    var recv = client.ReceiveFrom(data, ref senderEP);//��M
+                    buffer = new byte[recv];
+                    Buffer.BlockCopy(data, 0, buffer, 0, recv);
+                    client.Dispose();
+                    break;
+                }
+                catch
+                {//�^�C���A�E�g
+                    client.Dispose();
+                    if (i <= 5)
+                        continue;
+                    return hostList;
+                }
             }
 
 

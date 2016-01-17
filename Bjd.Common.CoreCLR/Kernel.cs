@@ -26,7 +26,6 @@ namespace Bjd
         public RunMode RunMode { get; set; } //通常起動;
         public RemoteConnect RemoteConnect { get; set; } //�����[�g����Őڑ�����Ă��鎞���������������
         public DnsCache DnsCache { get; private set; }
-        public Ver Ver { get; private set; }
         public MailBox MailBox { get; private set; }
 
         //�T�[�o�N�����ɍŏ����������ϐ�
@@ -112,8 +111,6 @@ namespace Bjd
 
             //�v���Z�X�N�����ɏ����������
             DnsCache = new DnsCache();
-
-            Ver = new Ver(); //�o�[�W�����Ǘ�
 
             //RunMode
             RunMode = RunMode.Service;
@@ -405,7 +402,7 @@ namespace Bjd
                             tmp2 = serverName == "" ? "localhost" : serverName;
                             break;
                         case "$v":
-                            tmp2 = Ver.Version();
+                            tmp2 = Define.ProductVersion;
                             break;
                         case "$p":
                             tmp2 = Define.ApplicationName();

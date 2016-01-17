@@ -12,10 +12,11 @@ namespace BjdTest.mail {
 
         [SetUp]
         public void SetUp() {
-            const string srcDir = "C:\\tmp2\\bjd5\\BJDTest";
+            //const string srcDir = "C:\\tmp2\\bjd5\\BJDTest";
+            const string srcDir = ".";
             //テンポラリテストデータの準備
             //ファイルの内容が変更されるので、テンポラリファイルで作業する
-            var src = string.Format("{0}\\DF_MailInfoTest.dat", srcDir);
+            var src = "DF_MailInfoTest.dat";
             _dfFile = string.Format("{0}\\$$$", srcDir);
             File.Copy(src, _dfFile);
         }

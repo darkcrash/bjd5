@@ -44,7 +44,7 @@ namespace Bjd.WebServer
 
             //���M�w�b�_������
             _sendHeader = new Header();
-            _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Ver.Version(), (string)_conf.Get("serverHeader")));
+            _sendHeader.Replace("Server", Util.SwapStr("$v", Define.ProductVersion, (string)_conf.Get("serverHeader")));
             _sendHeader.Replace("MIME-Version","1.0");
             _sendHeader.Replace("Date",Util.UtcTime2Str(DateTime.UtcNow));
 

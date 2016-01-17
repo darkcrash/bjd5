@@ -151,6 +151,7 @@ namespace Bjd.server
             {
                 return; //���łɏI���������I����Ă���
             }
+            _sockServerTcp.Cancel();
             base.Stop(); //life=false �ł��ׂẴ��[�v��������
             _sockServerTcp.Close();
 

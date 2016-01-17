@@ -16,7 +16,7 @@ namespace Bjd.option {
 
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(Page2("User", Lang.Value("User")));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            //Add(new OneVal("tab", null, Crlf.Nextline));
 
             Read(kernel.IniDb); //　レジストリからの読み込み
         }
@@ -47,7 +47,7 @@ namespace Bjd.option {
             var listVal = new ListVal();
             listVal.Add(new OneVal("userName", "", Crlf.Nextline));
             listVal.Add(new OneVal("password", "", Crlf.Nextline, true));
-            Add(new OneVal("user", new Dat(ListVal), Crlf.Nextline));
+            Add(new OneVal("user", new Dat(listVal), Crlf.Nextline));
 
             return onePage;
         }

@@ -69,7 +69,7 @@ namespace Bjd.ProxyHttpServer {
                     oneObj.Header[CS.Client].Append("X-Forwarded-For", Encoding.ASCII.GetBytes(Define.ServerAddress()));
                 }
                 if ((bool)_conf.Get("addHeaderForwarded")) {
-                    string str = string.Format("by {0} (Version {1}) for {2}", Define.ApplicationName(), _kernel.Ver.Version(), Define.ServerAddress());
+                    string str = string.Format("by {0} (Version {1}) for {2}", Define.ApplicationName(), Define.ProductVersion, Define.ServerAddress());
                     oneObj.Header[CS.Client].Append("Forwarded", Encoding.ASCII.GetBytes(str));
                 }
             }

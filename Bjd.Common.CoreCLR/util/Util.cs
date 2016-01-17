@@ -310,7 +310,11 @@ namespace Bjd.util
         public static void RuntimeException(string msg)
         {
             //Msg.Show(MsgKind.Error, msg);
-            System.Diagnostics.Trace.Fail(msg);
+            try
+            {
+                System.Diagnostics.Trace.TraceError(msg);
+            }
+            catch { }
             throw new Exception("RuntimeException" + msg);
         }
 

@@ -122,7 +122,7 @@ namespace BjdTest.server{
 
             const string addr = "127.0.0.1";
             const int port = 9991;
-            const int timeout = 300;
+            const int timeout = 5;
             Ip ip = null;
             try{
                 ip = new Ip(addr);

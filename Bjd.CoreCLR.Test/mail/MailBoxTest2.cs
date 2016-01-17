@@ -16,7 +16,7 @@ namespace BjdTest.mail {
         [SetUp]
         public void SetUp(){
             //設定ファイルの退避と上書き
-            _op = new TmpOption("BJDTest","MailBoxTest.ini");
+            _op = new TmpOption("Bjd.CoreCLR.Test", "MailBoxTest.ini");
             var kernel = new Kernel();
             var oneOption = new OptionMailBox(kernel,"");
             _conf = new Conf(oneOption);

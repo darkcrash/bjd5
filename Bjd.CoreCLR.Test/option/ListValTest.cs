@@ -53,12 +53,12 @@ namespace BjdTest.option
 
             var onePage = new OnePage("page1", "ページ１");
             //onePage.Add(new OneVal("n0", 1, Crlf.Nextline, new CtrlInt("help", 10)));
-            onePage.Add(new OneVal("n0", 1, Crlf.Nextline));
+            listVal.Add(new OneVal("n0", 1, Crlf.Nextline));
             pageList.Add(onePage);
 
             onePage = new OnePage("page2", "ページ２");
             //onePage.Add(new OneVal("n1", 1, Crlf.Nextline, new CtrlInt("help", 10)));
-            onePage.Add(new OneVal("n1", 1, Crlf.Nextline));
+            listVal.Add(new OneVal("n1", 1, Crlf.Nextline));
             pageList.Add(onePage);
 
             //listVal.Add(new OneVal("n2", null, Crlf.Nextline, new CtrlTabPage("help", pageList)));

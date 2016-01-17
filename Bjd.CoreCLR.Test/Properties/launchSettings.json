@@ -1,5 +1,8 @@
 {
   "profiles": {
-    "NUnit": { "commandName": "NUnitLite"}
+    "NUnit": {
+      "commandName": "NUnitLite",
+      "sdkVersion": "dnx-coreclr-win-x64.1.0.0-rc1-update1"
+    }
   }
 }

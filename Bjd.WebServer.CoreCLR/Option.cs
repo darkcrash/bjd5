@@ -106,7 +106,8 @@ namespace Bjd.WebServer
                 //onePage.Add(new OneVal("cgiCmd", "", Crlf.Nextline));
                 Add(new OneVal("cgiCmd", new Dat(l), Crlf.Nextline));
             }//DAT
-            onePage.Add(new OneVal("cgiTimeout", 10, Crlf.Nextline));
+            //onePage.Add(new OneVal("cgiTimeout", 10, Crlf.Nextline));
+            Add(new OneVal("cgiTimeout", 10, Crlf.Nextline));
             {//DAT
                 var l = new ListVal();
                 l.Add(new OneVal("CgiPath", "", Crlf.Nextline));

@@ -16,6 +16,8 @@ namespace Bjd.log
         private readonly int _saveDays;
         //Ver6.0.7
         private readonly bool _useLogFile;
+        private bool isDisposed = false;
+        private object _lock = new object();
 
 
         private OneLogFile _normalLog; // 通常ログ
@@ -24,7 +26,7 @@ namespace Bjd.log
         private DateTime _dt; //インスタンス生成時に初期化し、日付が変化したかどうかの確認に使用する
         private DateTime _lastDelete = new DateTime(0);
         //private readonly System.Timers.Timer _timer;
-        private readonly System.Threading.Timer _timer;
+        private System.Threading.Timer _timer;
 
         //保存ディレクトリとファイル名の種類を指定する。例外が発生した場合は、事後のappend()等は、すべて失敗する
         //saveDirectory 保存ディレクトリ
@@ -65,7 +67,7 @@ namespace Bjd.log
             {
                 return false;
             }
-            lock (this)
+            lock (_lock)
             {
                 try
                 {
@@ -132,10 +134,10 @@ namespace Bjd.log
             switch (_secureLogKind)
             {
                 case 0: // secure.yyyy.mm.dd.log
-                    fileName = string.Format("secure.{0:D4}.{1:D2}.{2:D2}.log",  _dt.Year, _dt.Month, _dt.Day);
+                    fileName = string.Format("secure.{0:D4}.{1:D2}.{2:D2}.log", _dt.Year, _dt.Month, _dt.Day);
                     break;
                 case 1: // secure.yyyy.mm.log
-                    fileName = string.Format("secure.{0:D4}.{1:D2}.log",  _dt.Year, _dt.Month);
+                    fileName = string.Format("secure.{0:D4}.{1:D2}.log", _dt.Year, _dt.Month);
                     break;
                 case 2: // secure.Log
                     fileName = "secure.Log";
@@ -321,8 +323,9 @@ namespace Bjd.log
             if (_lastDelete.Ticks != 0 && _lastDelete.Day == now.Day)
                 return;
 
-            lock (this)
+            lock (_lock)
             {
+                if (isDisposed) return;
                 LogClose(); //クローズ
                 LogDelete(); //過去ログの自動削除
                 LogOpen(); //オープン
@@ -335,14 +338,21 @@ namespace Bjd.log
         //過去ログの自動削除が行われる
         public void Dispose()
         {
-            if (_timer != null)
+            lock (_lock)
             {
-                _timer.Dispose();
-                //_timer.Stop();
-                //_timer.Close();
+                isDisposed = true;
+
+                if (_timer != null)
+                {
+                    _timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                    _timer.Dispose();
+                    //_timer.Stop();
+                    //_timer.Close();
+                    _timer = null;
+                }
+                LogClose();
+                LogDelete(); // 過去ログの自動削除
             }
-            LogClose();
-            LogDelete(); // 過去ログの自動削除
         }
 
     }

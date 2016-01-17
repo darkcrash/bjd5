@@ -90,6 +90,8 @@ namespace Bjd.sock
                     break;
                 if (tTcp.Status == TaskStatus.Canceled)
                     break;
+                if (!iLife.IsLife())
+                    break;
             }
             if (this.IsCancel || !iLife.IsLife())
             {

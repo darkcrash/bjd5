@@ -102,7 +102,7 @@ namespace Bjd.RemoteServer
             Logger.Set(LogKind.Normal, _sockTcp, 1, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
 
             //�o�[�W����/���O�C�������̑��M
-            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Kernel.Ver.VerData());
+            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Define.ProductVersion);
 
             //kernel.LocalAddress��Remote���Ő�������
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLocaladdress, LocalAddress.GetInstance().RemoteStr());

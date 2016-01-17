@@ -36,7 +36,7 @@ namespace Bjd.WebServer
 
 
 
-            _ar.Add(new OneEnv("SERVER_SOFTWARE", string.Format("{0}/{1} (Windows)", Define.ApplicationName(), kernel.Ver.Version())));
+            _ar.Add(new OneEnv("SERVER_SOFTWARE", string.Format("{0}/{1} (Windows)", Define.ApplicationName(), Define.ProductVersion)));
 
             _ar.Add(new OneEnv("REQUEST_METHOD", request.Method.ToString().ToUpper()));
             _ar.Add(new OneEnv("REQUEST_URI", request.Uri));

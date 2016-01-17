@@ -24,7 +24,7 @@ namespace BjdTest.mail {
 
         [SetUp]
         public void SetUp(){
-            const string dir = "c:\\tmp2\\bjd5\\BJDTest\\mailbox";
+            const string dir = "mailbox";
 
             _datUser = new Dat(new CtrlType[2]{CtrlType.TextBox, CtrlType.TextBox});
             _datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");

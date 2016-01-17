@@ -2,6 +2,7 @@
 using System.Text;
 using Bjd.util;
 using Bjd.ctrl;
+using System.Collections.Generic;
 
 namespace Bjd.option
 {
@@ -10,6 +11,7 @@ namespace Bjd.option
 
         private readonly bool[] _isSecretList;
         private readonly int _colMax;
+        private readonly ListVal _listVal;
 
         public Dat(CtrlType[] ctrlTypeList)
         {
@@ -28,6 +30,7 @@ namespace Bjd.option
         }
         public Dat(ListVal val)
         {
+            _listVal = val;
             //カラム数の初期化
             _colMax = val.Count;
             //isSecretListの生成
@@ -66,6 +69,16 @@ namespace Bjd.option
             }
             Ar.Add(oneDat);
             return true;
+        }
+
+        public List<OneVal> GetList(List<OneVal> list)
+        {
+            if (list == null)
+            {
+                list = new List<OneVal>();
+            }
+            _listVal.GetList(list);
+            return list;
         }
 
         //文字列化

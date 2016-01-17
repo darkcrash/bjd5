@@ -58,7 +58,7 @@ namespace Bjd.sock{
             this.Cancel();
         }
 
-        protected virtual void Cancel()
+        protected internal virtual void Cancel()
         {
             isCancel = true;
         }

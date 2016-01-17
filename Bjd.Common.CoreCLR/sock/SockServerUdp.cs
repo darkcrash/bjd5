@@ -112,7 +112,7 @@ namespace Bjd.sock
             BeginReceiveUdp();
         }
 
-        protected override void Cancel()
+        protected internal override void Cancel()
         {
             base.Cancel();
             WaitSelect.Set();
@@ -142,7 +142,7 @@ namespace Bjd.sock
                 }                //Ver5.8.1
                 //Thread.Sleep(0);
                 //Thread.Sleep(1);
-                WaitSelect.Wait();
+                WaitSelect.Wait(2000, this.Kernel.CancelToken);
             }
             SetError("isLife()==false");
             return null;
