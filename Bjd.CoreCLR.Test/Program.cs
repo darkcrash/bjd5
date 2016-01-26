@@ -42,6 +42,7 @@ namespace Bjd.CoreCLR.Test
             finally
             {
                 CleanUp();
+                Console.ReadKey();
             }
             return result;
         }
