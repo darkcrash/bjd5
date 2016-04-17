@@ -48,8 +48,8 @@ namespace BjdTest.option
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        [TestCase(CtrlType.CheckBox, "true")]
-        [TestCase(CtrlType.CheckBox, "false")]
+        [TestCase(CtrlType.CheckBox, "True")]
+        [TestCase(CtrlType.CheckBox, "False")]
         [TestCase(CtrlType.Int, "100")]
         [TestCase(CtrlType.Int, "0")]
         [TestCase(CtrlType.File, "c:\\test.txt")]
@@ -293,7 +293,9 @@ namespace BjdTest.option
 
                     if (val == null)
                     {
-                        val = new Dat(new[] { CtrlType.CheckBox, CtrlType.CheckBox });
+                        //var v = new Dat(new[] { CtrlType.CheckBox, CtrlType.CheckBox });
+                        var v = new Dat(listVal);
+                        val = v;
                     }
 
                     //oneCtrl = new CtrlDat(help, listVal, 300, LangKind.Jp);

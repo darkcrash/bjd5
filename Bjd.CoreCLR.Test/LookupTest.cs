@@ -4,7 +4,7 @@ using Bjd;
 
 namespace BjdTest {
     
-    [TestFixture]
+    [TestFixture(TestName = "LookupTest", Category = "Bjd.Common")]
     class LookupTest {
         
         
