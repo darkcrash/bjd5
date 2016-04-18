@@ -15,7 +15,7 @@ namespace BjdTest.plugin {
 
         //var sut = new ListPlugin(currentDir);
         var sut = new ListPlugin();
-		const int expected = 17; 
+		const int expected = 16; 
 		//exercise
 		var actual = sut.Count; 
 		//verify

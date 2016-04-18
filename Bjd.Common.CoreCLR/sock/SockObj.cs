@@ -198,6 +198,7 @@ namespace Bjd.sock{
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
 
+                this.Cancel();
                 this._lastError = null;
                 Kernel.Cancel -= this.Kernel_Cancel;
                 this.Kernel = null;

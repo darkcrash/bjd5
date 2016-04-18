@@ -278,7 +278,7 @@ namespace BjdTest.option
 
                     if (val == null)
                     {
-                        val = 0;
+                        val =  new[] { "1", "2" };
                     }
                     //oneCtrl = new CtrlComboBox(help, new[] { "1", "2" }, 10);
                     break;

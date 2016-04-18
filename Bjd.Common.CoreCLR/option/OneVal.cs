@@ -99,11 +99,15 @@ namespace Bjd.option
         //isSecret=true デバッグ用の設定ファイル出力用（パスワード等を***で表現する）
         public String ToReg(bool isSecret)
         {
+            if (this.Value == null)
+                return null;
 
             if (this.ValueType == typeof(Dat))
             {
-                ((Dat)this.Value).ToReg(isSecret);
+                return ((Dat)this.Value).ToReg(isSecret);
             }
+
+            // TODO:isSecretの対応が必要 2016-04-18
 
             return this.Value.ToString();
         }
