@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace BjdTest.option
 {
 
-    [TestFixture]
+    //[TestFixture]
     internal class OneValTest
     {
 
@@ -278,7 +278,8 @@ namespace BjdTest.option
 
                     if (val == null)
                     {
-                        val =  new[] { "1", "2" };
+                        //val =  new[] { "1", "2" };
+                        val =  "1";
                     }
                     //oneCtrl = new CtrlComboBox(help, new[] { "1", "2" }, 10);
                     break;
