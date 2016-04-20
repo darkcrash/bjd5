@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.util {
    
@@ -35,7 +35,7 @@ public class ListBaseTest {
 		}
 	}
 
-	[Test]
+	[Fact]
 	public void 要素を３つ追加してsizeは3になる(){
 		//setUp
 		var sut = new TestClass();
@@ -49,10 +49,10 @@ public class ListBaseTest {
 		var actual = sut.Count;
 
 		//verify
-		Assert.That(actual, Is.EqualTo(expected));
+		Assert.Equal(actual, expected);
 	}
 
-	[Test]
+	[Fact]
 	public void 要素を３つ追加してforループを回す(){
 		//setUp
 		var sut = new TestClass();
@@ -69,7 +69,7 @@ public class ListBaseTest {
 		}
 
 		//verify
-		Assert.That(actual, Is.EqualTo(expected));
+		Assert.Equal(actual, expected);
 	}
 
 //	[Test] これはC#では未実装
@@ -93,7 +93,7 @@ public class ListBaseTest {
 //		Assert.That(actual, Is.EqualTo(expected));
 //	}
 
-	[Test]
+	[Fact]
 	public void 要素を３つ追加してgetSで取得する(){
 		//setUp
 		var sut = new TestClass();
@@ -111,10 +111,10 @@ public class ListBaseTest {
 		var actual = sb.ToString();
 
 		//verify
-		Assert.That(actual, Is.EqualTo(expected));
+		Assert.Equal(actual, expected);
 	}
 
-	[Test]
+	[Fact]
 	public void 要素を３つ追加してremobveで一部の要素を削除する(){
 		//setUp
 		var sut = new TestClass();
@@ -133,7 +133,7 @@ public class ListBaseTest {
 		var actual = sb.ToString();
 
 		//verify
-		Assert.That(actual, Is.EqualTo(expected));
+		Assert.Equal(actual, expected);
 	}
 }
 }

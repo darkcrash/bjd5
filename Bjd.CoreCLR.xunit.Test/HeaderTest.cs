@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 using Bjd;
 
 namespace BjdTest {
-    class HeaderTest {
-        [Test]
+    public class HeaderTest {
+        [Fact]
         public void TotalTest() {
             const int max = 5;
             var sb = new StringBuilder();
@@ -19,11 +19,11 @@ namespace BjdTest {
             //自動的に追加される空行を追加すると、初期化したbyte[]と同じになるはず
             var tmp = Bytes.Create(header.GetBytes(),"\r\n");
             for (int i=0;i<buf.Length;i++) {
-                Assert.AreEqual(buf[i],tmp[i]);
+                Assert.Equal(buf[i],tmp[i]);
             }
 
             //Count
-            Assert.AreEqual(header.Count,max);
+            Assert.Equal(header.Count,max);
 
 
             for(var i=0;i<header.Count;i++){
@@ -31,12 +31,12 @@ namespace BjdTest {
                 var valStr = string.Format("val_{0:D3}",i);
 
                 //GetVal(string key)
-                Assert.AreEqual(header.GetVal(key), valStr);
+                Assert.Equal(header.GetVal(key), valStr);
 
                 //Replace(string key,string str)
                 var replaceStr = string.Format("replace_{0:D3}",i);
                 header.Replace(key,replaceStr);
-                Assert.AreEqual(header.GetVal(key), replaceStr);
+                Assert.Equal(header.GetVal(key), replaceStr);
             }
 
             const int appendMax = 3;
@@ -46,9 +46,9 @@ namespace BjdTest {
                 var val = string.Format("AppendVal_{0:D3}", i);
                 header.Append(key, Encoding.ASCII.GetBytes(val));
                 //string s = header.GetVal(key);
-                Assert.AreEqual(header.GetVal(key), val);
+                Assert.Equal(header.GetVal(key), val);
             }
-            Assert.AreEqual(header.Count, max + appendMax);
+            Assert.Equal(header.Count, max + appendMax);
 
         }
         

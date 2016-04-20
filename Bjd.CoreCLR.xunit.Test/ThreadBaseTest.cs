@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using Bjd;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest{
 
@@ -31,53 +31,53 @@ namespace BjdTest{
             }
         }
 
-        [Test]
+        [Fact]
         public void Startする前はThreadBaseKindはBeforeとなる(){
             //setUp
             var sut = new MyThread();
-            var expected = ThreadBaseKind.Before;
+            //var expected = ThreadBaseKind.Before;
             //exercise
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, ThreadBaseKind.Before);
             //tearDown
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void StartするとThreadBaseKindはRunningとなる(){
             //setUp
             var sut = new MyThread();
-            var expected = ThreadBaseKind.Running;
+            //var expected = ThreadBaseKind.Running;
             //exercise
             sut.Start();
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, ThreadBaseKind.Running);
             //tearDown
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void Startは重複しても問題ない(){
             //setUp
             var sut = new MyThread();
-            var expected = ThreadBaseKind.Running;
+            //var expected = ThreadBaseKind.Running;
             //exercise
             sut.Start();
             sut.Start(); //重複
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, ThreadBaseKind.Running);
             //tearDown
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void Stopは重複しても問題ない(){
             //setUp
             var sut = new MyThread();
-            var expected = ThreadBaseKind.After;
+            //var expected = ThreadBaseKind.After;
             //exercise
             sut.Stop(); //重複
             sut.Start();
@@ -85,12 +85,12 @@ namespace BjdTest{
             sut.Stop(); //重複
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, ThreadBaseKind.After);
             //tearDown
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void start及びstopしてisRunnigの状態を確認する_負荷テスト(){
 
             //setUp
@@ -98,24 +98,24 @@ namespace BjdTest{
             //exercise verify 
             for (var i = 0; i < 5; i++){
                 sut.Start();
-                Assert.That(sut.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
+                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
                 sut.Stop();
-                Assert.That(sut.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
+                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.After);
             }
             //tearDown
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void new及びstart_stop_disposeしてisRunnigの状態を確認する_負荷テスト(){
 
             //exercise verify 
             for (var i = 0; i < 3; i++){
                 var sut = new MyThread();
                 sut.Start();
-                Assert.That(sut.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
+                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
                 sut.Stop();
-                Assert.That(sut.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
+                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.After);
                 sut.Dispose();
             }
         }

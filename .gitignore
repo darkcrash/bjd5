@@ -47,3 +47,4 @@ mailbox/*
 /packages/
 /.vs/config
 /BJDTest
+/Bjd.CoreCLR.xunit.Test/iniDbTestTmp.ini

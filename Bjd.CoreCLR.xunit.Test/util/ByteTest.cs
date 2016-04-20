@@ -1,9 +1,8 @@
 ﻿using System.Text;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.util{
-    [TestFixture]
     public class BytesTest{
 
         //*****************************************************
@@ -27,30 +26,30 @@ namespace BjdTest.util{
         }
 
 
-
-        [TestCase(100, (byte) 1)]
-        [TestCase(100 + 1, (byte) 2)]
-        [TestCase(100 + 1 + 2, (byte) 3)]
-        [TestCase(100 + 1 + 2 + 4, (byte) 4)]
-        [TestCase(100 + 1 + 2 + 4 + 8 + 0, (byte) '1')]
-        [TestCase(100 + 1 + 2 + 4 + 8 + 1, (byte) '2')]
-        [TestCase(100 + 1 + 2 + 4 + 8 + 2, (byte) '3')]
-        [TestCase(100 + 1 + 2 + 4 + 8 + 3, (byte) 0)]
+        [Theory]
+        [InlineData(100, (byte) 1)]
+        [InlineData(100 + 1, (byte) 2)]
+        [InlineData(100 + 1 + 2, (byte) 3)]
+        [InlineData(100 + 1 + 2 + 4, (byte) 4)]
+        [InlineData(100 + 1 + 2 + 4 + 8 + 0, (byte) '1')]
+        [InlineData(100 + 1 + 2 + 4 + 8 + 1, (byte) '2')]
+        [InlineData(100 + 1 + 2 + 4 + 8 + 2, (byte) '3')]
+        [InlineData(100 + 1 + 2 + 4 + 8 + 3, (byte) 0)]
         public void Bytes_create_offset番目のデータの確認(int offset, byte expected){
             //setUp
             var data = Data.Generate();
             //exercise
             var actual = data[offset];
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-
-        [TestCase(0, 49)] //１つ目dmyの中に存在する
-        [TestCase(50, 100 + 1 + 2 + 4 + 8)]
-        [TestCase(100, 100 + 1 + 2 + 4 + 8)]
-        [TestCase(150, 167)] //2つ目dmyの中に存在する
-        [TestCase(200, -1)] //存在しない
+        [Theory]
+        [InlineData(0, 49)] //１つ目dmyの中に存在する
+        [InlineData(50, 100 + 1 + 2 + 4 + 8)]
+        [InlineData(100, 100 + 1 + 2 + 4 + 8)]
+        [InlineData(150, 167)] //2つ目dmyの中に存在する
+        [InlineData(200, -1)] //存在しない
         public void Bytes_search指定したoffset以降で123が出現する位置を検索する(int offset, int expected){
             //setUp
             var data = Data.Generate();
@@ -58,7 +57,7 @@ namespace BjdTest.util{
             //exercise
             var actual = Bytes.IndexOf(data, offset, src);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }
