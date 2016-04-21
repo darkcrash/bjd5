@@ -3,14 +3,14 @@ using System.Threading;
 using Bjd;
 using Bjd.net;
 using Bjd.sock;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.sock
 {
-    [TestFixture]
-    internal class SockServerTest
+    public class SockServerTest
     {
-        [Test]
+
+        [Fact]
         public void test()
         {
             var execute = new Execute();
@@ -20,8 +20,28 @@ namespace BjdTest.sock
             execute.getLocalAddress("a004 UDPサーバのgetLocalAddress()の確認", ProtocolKind.Udp);
         }
 
+        [Fact]
+        public void test1()
+        {
+            var execute = new Execute();
+            execute.startStop("a001 TCPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Tcp);
+        }
+
+        [Fact]
+        public void test2()
+        {
+            var execute = new Execute();
+            execute.startStop("a002 UDPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Udp);
+        }
+
+
         private class Execute
         {
+            public Execute()
+            {
+                Define.Initialize(null);
+            }
+
             public void startStop(String title, ProtocolKind protocolKind)
             {
                 if (protocolKind == ProtocolKind.Tcp)
@@ -45,7 +65,7 @@ namespace BjdTest.sock
 
                 var sockServer = new SockServerTcp(new Kernel(), ProtocolKind.Tcp, ssl);
 
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Idle));
+                Assert.Equal(sockServer.SockState, SockState.Idle);
 
                 ThreadStart action = () =>
                 {
@@ -60,9 +80,9 @@ namespace BjdTest.sock
                 {
                     Thread.Sleep(100);
                 }
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(sockServer.SockState, SockState.Bind);
                 sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(sockServer.SockState, SockState.Error);
 
             }
 
@@ -75,7 +95,7 @@ namespace BjdTest.sock
 
                 var sockServer = new SockServerUdp(new Kernel(), ProtocolKind.Udp, ssl);
 
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Idle));
+                Assert.Equal(sockServer.SockState, SockState.Idle);
 
                 ThreadStart action = () =>
                 {
@@ -90,9 +110,9 @@ namespace BjdTest.sock
                 {
                     Thread.Sleep(100);
                 }
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(sockServer.SockState, SockState.Bind);
                 sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
-                Assert.That(sockServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(sockServer.SockState, SockState.Error);
 
             }
 
@@ -134,11 +154,11 @@ namespace BjdTest.sock
                 }
 
                 var localAddress = sockServer.LocalAddress;
-                Assert.That(localAddress.ToString(), Is.EqualTo("127.0.0.1:9991"));
+                Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
                 //bind()後 localAddressの取得が可能になる
 
                 var remoteAddress = sockServer.RemoteAddress;
-                Assert.IsNull(remoteAddress);
+                Assert.Null(remoteAddress);
                 //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
 
                 sockServer.Close();
@@ -169,11 +189,11 @@ namespace BjdTest.sock
                 }
 
                 var localAddress = sockServer.LocalAddress;
-                Assert.That(localAddress.ToString(), Is.EqualTo("127.0.0.1:9991"));
+                Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
                 //bind()後 localAddressの取得が可能になる
 
                 var remoteAddress = sockServer.RemoteAddress;
-                Assert.IsNull(remoteAddress);
+                Assert.Null(remoteAddress);
                 //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
 
                 sockServer.Close();

@@ -19,10 +19,14 @@ namespace BjdTest.util
             string str = "あいうえお";
             string[] charsetList = new[] { "utf-8", "euc-jp", "iso-2022-jp", "shift_jis" };
 
+            var enc = System.Text.CodePagesEncodingProvider.Instance;
+
             //verify
             foreach (string charset in charsetList)
             {
-                byte[] bytes = Encoding.GetEncoding(charset).GetBytes(str);
+                // fix coreclr
+                //byte[] bytes = Encoding.GetEncoding(charset).GetBytes(str);
+                byte[] bytes = enc.GetEncoding(charset).GetBytes(str);
                 Assert.Equal(MLang.GetEncoding(bytes).WebName, charset);
                 Assert.Equal(MLang.GetString(bytes), str);
             }

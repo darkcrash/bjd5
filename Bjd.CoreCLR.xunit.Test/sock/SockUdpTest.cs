@@ -3,15 +3,20 @@ using System.Threading;
 using Bjd;
 using Bjd.net;
 using Bjd.sock;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.sock{
     //**************************************************
     // Echoサーバを使用したテスト
     //**************************************************
 
-    [TestFixture]
-    internal class SockUdpTest{
+    public class SockUdpTest{
+
+        public SockUdpTest()
+        {
+            Define.Initialize(null);
+        }
+
         private class EchoServer : ThreadBase{
             //private readonly SockServer _sockServer;
             private readonly SockServerUdp _sockServer;
@@ -44,7 +49,7 @@ namespace BjdTest.sock{
                 try{
                     ip = new Ip(_addr);
                 } catch (ValidObjException ex){
-                    Assert.Fail(ex.Message);
+                    Assert.False(true, ex.Message);
                 }
                 if (_sockServer.Bind(ip, _port)){
                     //[C#]
@@ -73,7 +78,7 @@ namespace BjdTest.sock{
 
 
 
-        [Test]
+        [Fact]
         public void Echoサーバにsendしてlength分ずつRecvする(){
             //setUp
             const string addr = "127.0.0.1";
@@ -100,7 +105,7 @@ namespace BjdTest.sock{
 
                 //verify
                 for (var m = 0; m < max; m += 10){
-                    Assert.That(b[m], Is.EqualTo(tmp[m])); //送信したデータと受信したデータが同一かどうかのテスト
+                    Assert.Equal(b[m], tmp[m]); //送信したデータと受信したデータが同一かどうかのテスト
                 }
                 sockUdp.Close();
             }

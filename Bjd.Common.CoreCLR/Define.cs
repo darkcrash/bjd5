@@ -33,10 +33,13 @@ namespace Bjd
             var applicationEnvironment = GetService<IApplicationEnvironment>(sb);
             var libraryManager = GetService<ILibraryManager>(sb);
 
-            Trace.TraceError($"----------------------------------------------------------------");
-            Trace.TraceError($"- {applicationEnvironment.ApplicationName} - {applicationEnvironment.ApplicationVersion}");
-            Trace.TraceError($"- {applicationEnvironment.RuntimeFramework.FullName} ");
-            Trace.TraceError($"----------------------------------------------------------------");
+            if (applicationEnvironment != null)
+            {
+                Trace.TraceError($"----------------------------------------------------------------");
+                Trace.TraceError($"- {applicationEnvironment.ApplicationName} - {applicationEnvironment.ApplicationVersion}");
+                Trace.TraceError($"- {applicationEnvironment.RuntimeFramework.FullName} ");
+                Trace.TraceError($"----------------------------------------------------------------");
+            }
 
             // RuntimeServices
             if (runtimeServices != null)
@@ -133,8 +136,17 @@ namespace Bjd
             Instance._executableDirectory = AppContext.BaseDirectory;
             Instance._executablePath = System.IO.Path.Combine(AppContext.BaseDirectory, "BJD.CoreCLR");
             Instance._productVersion = asmName.Version.ToString();
-            Instance._OperatingSystem = $"{runtimeEnvironment.OperatingSystem} {runtimeEnvironment.OperatingSystemVersion}";
-            Instance.isWindows = (runtimeEnvironment.OperatingSystem == "Windows");
+
+            if (runtimeEnvironment != null)
+            {
+                Instance._OperatingSystem = $"{runtimeEnvironment.OperatingSystem} {runtimeEnvironment.OperatingSystemVersion}";
+                Instance.isWindows = (runtimeEnvironment.OperatingSystem == "Windows");
+            }
+            else
+            {
+                Instance._OperatingSystem = "Unknow";
+                Instance.isWindows = false;
+            }
             OnChangeOperationSystem();
 
 
@@ -150,6 +162,7 @@ namespace Bjd
 
         private static T GetService<T>(IServiceProvider serviceProvider)
         {
+            if (serviceProvider == null) return default(T);
             return (T)serviceProvider.GetService(typeof(T));
         }
 

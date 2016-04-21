@@ -7,11 +7,16 @@ using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.server{
-    [TestFixture]
-    internal class ServerTest{
+
+    public class ServerTest{
+
+        public ServerTest ()
+        {
+            Define.Initialize(null);
+        }
 
         //サーバ動作確認用
         private class MyServer : OneServer{
@@ -48,7 +53,7 @@ namespace BjdTest.server{
             protected override void CheckLang() {}
         }
 
-        [Test]
+        [Fact]
         public void A001(){
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);

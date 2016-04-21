@@ -32,12 +32,15 @@ namespace Bjd.plugin
             //}
 
             Trace.Indent();
-            foreach (var lib in Define.Libraries)
+            if (Define.Libraries != null)
             {
-                if (!lib.Name.EndsWith("Server.CoreCLR"))
-                    continue;
-                Ar.Add(new OnePlugin(lib));
-                Trace.TraceInformation($"plugin {lib.Name}");
+                foreach (var lib in Define.Libraries)
+                {
+                    if (!lib.Name.EndsWith("Server.CoreCLR"))
+                        continue;
+                    Ar.Add(new OnePlugin(lib));
+                    Trace.TraceInformation($"plugin {lib.Name}");
+                }
             }
             Trace.Unindent();
 

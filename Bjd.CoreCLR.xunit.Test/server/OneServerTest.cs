@@ -9,15 +9,19 @@ using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 using Bjd.ctrl;
 
 namespace BjdTest.server
 {
 
-    [TestFixture]
     public class OneServerTest
     {
+        public OneServerTest()
+        {
+            Define.Initialize(null);
+        }
+
         private class MyServer : OneServer
         {
             public MyServer(Conf conf, OneBind oneBind) : base(new Kernel(), conf, oneBind)
@@ -119,7 +123,7 @@ namespace BjdTest.server
             }
         }
 
-        [Test]
+        [Fact]
         public void start_stopの繰り返し_負荷テスト()
         {
 
@@ -138,18 +142,18 @@ namespace BjdTest.server
             {
                 myServer.Start();
 
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(myServer.SockState, SockState.Bind);
                 myServer.Stop();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(myServer.SockState, SockState.Error);
 
             }
 
             myServer.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void start_stopの繰り返し_負荷テスト_UDP()
         {
 
@@ -168,11 +172,11 @@ namespace BjdTest.server
             {
                 myServer.Start();
 
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(myServer.SockState, SockState.Bind);
                 myServer.Stop();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(myServer.SockState, SockState.Error);
 
             }
 
@@ -180,7 +184,7 @@ namespace BjdTest.server
         }
 
 
-        [Test]
+        [Fact]
         public void new及びstart_stop_disposeの繰り返し_負荷テスト()
         {
 
@@ -198,18 +202,18 @@ namespace BjdTest.server
                 var myServer = new MyServer(conf, oneBind);
 
                 myServer.Start();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(myServer.SockState, SockState.Bind);
 
                 myServer.Stop();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(myServer.SockState, SockState.Error);
 
                 myServer.Dispose();
             }
         }
 
-        [Test]
+        [Fact]
         public void new及びstart_stop_disposeの繰り返し_負荷テスト_UDP()
         {
 
@@ -227,19 +231,19 @@ namespace BjdTest.server
                 var myServer = new MyServer(conf, oneBind);
 
                 myServer.Start();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.Running));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Bind));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(myServer.SockState, SockState.Bind);
 
                 myServer.Stop();
-                Assert.That(myServer.ThreadBaseKind, Is.EqualTo(ThreadBaseKind.After));
-                Assert.That(myServer.SockState, Is.EqualTo(SockState.Error));
+                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(myServer.SockState, SockState.Error);
 
                 myServer.Dispose();
             }
         }
 
 
-        [Test]
+        [Fact]
         public void multipleを超えたリクエストは破棄される事をcountで確認する()
         {
 
@@ -269,7 +273,7 @@ namespace BjdTest.server
             Thread.Sleep(100);
 
             //multiple以上は接続できない
-            Assert.That(myServer.Count(), Is.EqualTo(multiple));
+            Assert.Equal(myServer.Count(), multiple);
 
             myServer.Stop();
             myServer.Dispose();

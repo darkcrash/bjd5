@@ -8,11 +8,15 @@ using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.server{
-    [TestFixture]
-    internal class OneServerTest3 : ILife{
+    public class OneServerTest3 : ILife{
+        public OneServerTest3 ()
+        {
+            Define.Initialize(null);
+        }
+
         private class EchoServer : OneServer{
 
 
@@ -69,7 +73,7 @@ namespace BjdTest.server{
             return cl;
         }
 
-        [Test]
+        [Fact]
         public void 許可リスト無し_のみ許可する_Deny() {
 
             //setUp
@@ -85,7 +89,7 @@ namespace BjdTest.server{
             var actual = sut.Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //tearDown
             cl.Close();
@@ -95,7 +99,7 @@ namespace BjdTest.server{
         }
 
         
-        [Test]
+        [Fact]
         public void 許可リスト無し_のみ禁止する_Allow(){
             //setUp
             const int port = 9988;
@@ -110,7 +114,7 @@ namespace BjdTest.server{
             var actual = sut.Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //tearDown
             cl.Close();
@@ -118,7 +122,7 @@ namespace BjdTest.server{
             sut.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void 許可リスト有り_のみ許可する_Allow() {
 
             //setUp
@@ -136,7 +140,7 @@ namespace BjdTest.server{
             var actual = sut.Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //tearDown
             cl.Close();
@@ -145,7 +149,7 @@ namespace BjdTest.server{
 
         }
 
-        [Test]
+        [Fact]
         public void 許可リスト有り_のみ禁止する_Deny() {
 
             //setUp
@@ -162,7 +166,7 @@ namespace BjdTest.server{
             var actual = sut.Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //tearDown
             cl.Close();
