@@ -4,12 +4,12 @@ using System.Text;
 using Bjd.ctrl;
 using Bjd.option;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.option
 {
     //テストでは、リソースの開放（dispose）を省略する
-    internal class ListValTest
+    public class ListValTest
     {
 
         //テスト用のListVal作成(パターン１)
@@ -78,7 +78,7 @@ namespace BjdTest.option
             return sb.ToString();
         }
 
-        [Test]
+        [Fact]
         public void パターン１で作成したListValをgetListで取得する()
         {
             //setUp
@@ -89,10 +89,10 @@ namespace BjdTest.option
             var actual = ArrayToString(sut.GetList(null));
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void パターン２で作成したListValをgetListで取得する()
         {
             //setUp
@@ -103,10 +103,10 @@ namespace BjdTest.option
             var actual = ArrayToString(sut.GetList(null));
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 存在するデータを検査するとnull以外が返る()
         {
             //setUp
@@ -116,10 +116,10 @@ namespace BjdTest.option
             var actual = sut.Search("n1");
 
             //verify
-            Assert.IsNotNull(actual);
+            Assert.NotNull(actual);
         }
 
-        [Test]
+        [Fact]
         public void 存在しないデータを検査するとnullが返る()
         {
             //setUp
@@ -129,7 +129,7 @@ namespace BjdTest.option
             var actual = sut.Search("xxx");
 
             //verify
-            Assert.IsNull(actual);
+            Assert.Null(actual);
         }
 
     }

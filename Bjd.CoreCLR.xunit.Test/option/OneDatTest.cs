@@ -1,18 +1,19 @@
 ﻿using System;
 using Bjd.option;
-using NUnit.Framework;
+using Xunit;
 
 
 
 namespace BjdTest.option {
-    [TestFixture]
-    class OneDatTest {
+
+    public class OneDatTest {
         
         private static readonly String[] StrList = new[] { "user1", "pass" };
 	    private static readonly bool[] IsSecretlList = new[] { true, false };
 
-        [TestCase(false, "\tuser1\tpass")]
-        [TestCase(true, "\t***\tpass")]
+        [Theory]
+        [InlineData(false, "\tuser1\tpass")]
+        [InlineData(true, "\t***\tpass")]
         public void IsSecretの違いによるToRegの確認Enableがtrueの場合(bool isSecret, string expected) {
             //setUp
 			var enable = true; //Enable=TRUE
@@ -20,11 +21,12 @@ namespace BjdTest.option {
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase(false, "#\tuser1\tpass")]
-        [TestCase(true, "#\t***\tpass")]
+        [Theory]
+        [InlineData(false, "#\tuser1\tpass")]
+        [InlineData(true, "#\t***\tpass")]
         public void IsSecretの違いによるToRegの確認Enableがfalseの場合(bool isSecret, string expected) {
             //setUp
             var enable = false; //Enable=FALSE
@@ -32,12 +34,13 @@ namespace BjdTest.option {
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-		[TestCase(2, "\tuser1\tpass")]
-		[TestCase(2, "#\tuser1\tpass")]
-		[TestCase(3, "\tn1\tn2\tn3")]
+        [Theory]
+		[InlineData(2, "\tuser1\tpass")]
+		[InlineData(2, "#\tuser1\tpass")]
+		[InlineData(3, "\tn1\tn2\tn3")]
         public void FromRegで初期化してToRegで出力する(int max, String str) {
             //setUp
 		    var sut = new OneDat(true, new String[max], new bool[max]);
@@ -46,14 +49,15 @@ namespace BjdTest.option {
             //exercise
             var actual = sut.ToReg(false);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-		[TestCase(3, "\tuser1\tpass")] //カラム数宇一致
-		[TestCase(2, null)]
-		[TestCase(3, "_\tn1\tn2\tn3")] //無効文字列
-		[TestCase(3, "")] //無効文字列
-		[TestCase(3, "\t")] //無効文字列
+        [Theory]
+		[InlineData(3, "\tuser1\tpass")] //カラム数宇一致
+		[InlineData(2, null)]
+		[InlineData(3, "_\tn1\tn2\tn3")] //無効文字列
+		[InlineData(3, "")] //無効文字列
+		[InlineData(3, "\t")] //無効文字列
         public void FromRegに無効な入力があった時falseが帰る(int max, String str) {
             //setUp
 			var sut = new OneDat(true, new String[max], new bool[max]);
@@ -61,7 +65,7 @@ namespace BjdTest.option {
             //exercise
 			var actual = sut.FromReg(str);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
     }

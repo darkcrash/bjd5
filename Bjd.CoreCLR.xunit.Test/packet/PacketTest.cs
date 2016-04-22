@@ -1,5 +1,5 @@
 ﻿using Bjd.packet;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.packet{
 
@@ -24,7 +24,7 @@ namespace BjdTest.packet{
 
         }
 
-        [Test]
+        [Fact]
         public void SetShortで値を設定してgetShortで取得する(){
             //setUp
             var sut = new MyPacket();
@@ -34,10 +34,10 @@ namespace BjdTest.packet{
             //exercise
             var actual = sut.GetUShort(20);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void SetIntで値を設定してgetIntで取得する(){
             //setUp
             var sut = new MyPacket();
@@ -46,11 +46,11 @@ namespace BjdTest.packet{
             //exercise
             var actual = sut.GetUInt(20);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal<uint>(actual, expected);
 
         }
 
-        [Test]
+        [Fact]
         public void SetByteで値を設定してgetByteで取得する(){
             //setUp
             var sut = new MyPacket();
@@ -59,10 +59,10 @@ namespace BjdTest.packet{
             //exercise
             var actual = sut.GetByte(20,1);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void SetLongで値を設定してgetLongで取得する(){
             //setUp
             var sut = new MyPacket();
@@ -71,10 +71,10 @@ namespace BjdTest.packet{
             //exercise
             var actual = sut.GetULong(20);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void SetBytesで値を設定してgetBytesで取得する(){
             //setUp
             var sut = new MyPacket();
@@ -87,7 +87,7 @@ namespace BjdTest.packet{
             //exercise
             var actual = sut.GetBytes(20, Max - 20);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

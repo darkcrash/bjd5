@@ -5,38 +5,38 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.ctrl;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 
 
 namespace BjdTest.option
 {
 
-    //[TestFixture]
-    internal class OneValTest
+    public class OneValTest
     {
 
-        [TestCase(CtrlType.CheckBox, true, "true")]
-        [TestCase(CtrlType.CheckBox, false, "false")]
-        [TestCase(CtrlType.Int, 100, "100")]
-        [TestCase(CtrlType.Int, 0, "0")]
-        [TestCase(CtrlType.Int, -100, "-100")]
-        [TestCase(CtrlType.File, "c:\\test.txt", "c:\\test.txt")]
-        [TestCase(CtrlType.Folder, "c:\\test", "c:\\test")]
-        [TestCase(CtrlType.TextBox, "abcdefg１２３", "abcdefg１２３")]
-        [TestCase(CtrlType.Radio, 1, "1")]
-        [TestCase(CtrlType.Radio, 5, "5")]
-        //[TestCase(CtrlType.Font, null, "Microsoft Sans Serif,10,Regular")]
-        [TestCase(CtrlType.Memo, "1\r\n2\r\n3\r\n", "1\t2\t3\t")]
-        [TestCase(CtrlType.Memo, "123", "123")]
-        [TestCase(CtrlType.Hidden, null, "0t9GC1bkpWNzg1uea3drbQ==")] //その他はA004でテストする
-        [TestCase(CtrlType.AddressV4, "192.168.0.1", "192.168.0.1")]
-        //[TestCase(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }), "")] // CtrlDatはTESTBOX×2で初期化されている
-        [TestCase(CtrlType.Dat, null, "")] // CtrlDatはTESTBOX×2で初期化されている
-        //[TestCase(CtrlType.BindAddr, new BindAddr(), "V4ONLY,INADDR_ANY,IN6ADDR_ANY_INIT")]
-        [TestCase(CtrlType.BindAddr, null, "V4ONLY,INADDR_ANY,IN6ADDR_ANY_INIT")]
-        //[TestCase(CtrlType.BindAddr, new BindAddr(BindStyle.V4ONLY, new Ip(InetKind.V4), new Ip(InetKind.V6)), "V4ONLY,0.0.0.0,::0")]
-        [TestCase(CtrlType.ComboBox, 0, "0")]
-        [TestCase(CtrlType.ComboBox, 1, "1")]
+        [Theory]
+        [InlineData(CtrlType.CheckBox, true, "true")]
+        [InlineData(CtrlType.CheckBox, false, "false")]
+        [InlineData(CtrlType.Int, 100, "100")]
+        [InlineData(CtrlType.Int, 0, "0")]
+        [InlineData(CtrlType.Int, -100, "-100")]
+        [InlineData(CtrlType.File, "c:\\test.txt", "c:\\test.txt")]
+        [InlineData(CtrlType.Folder, "c:\\test", "c:\\test")]
+        [InlineData(CtrlType.TextBox, "abcdefg１２３", "abcdefg１２３")]
+        [InlineData(CtrlType.Radio, 1, "1")]
+        [InlineData(CtrlType.Radio, 5, "5")]
+        //[InlineData(CtrlType.Font, null, "Microsoft Sans Serif,10,Regular")]
+        [InlineData(CtrlType.Memo, "1\r\n2\r\n3\r\n", "1\t2\t3\t")]
+        [InlineData(CtrlType.Memo, "123", "123")]
+        [InlineData(CtrlType.Hidden, null, "0t9GC1bkpWNzg1uea3drbQ==")] //その他はA004でテストする
+        [InlineData(CtrlType.AddressV4, "192.168.0.1", "192.168.0.1")]
+        //[InlineData(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }), "")] // CtrlDatはTESTBOX×2で初期化されている
+        [InlineData(CtrlType.Dat, null, "")] // CtrlDatはTESTBOX×2で初期化されている
+        //[InlineData(CtrlType.BindAddr, new BindAddr(), "V4ONLY,INADDR_ANY,IN6ADDR_ANY_INIT")]
+        [InlineData(CtrlType.BindAddr, null, "V4ONLY,INADDR_ANY,IN6ADDR_ANY_INIT")]
+        //[InlineData(CtrlType.BindAddr, new BindAddr(BindStyle.V4ONLY, new Ip(InetKind.V4), new Ip(InetKind.V6)), "V4ONLY,0.0.0.0,::0")]
+        [InlineData(CtrlType.ComboBox, 0, "0")]
+        [InlineData(CtrlType.ComboBox, 1, "1")]
         public void デフォルト値をtoRegで取り出す(CtrlType ctrlType, Object val, String expected)
         {
             //setUp
@@ -45,32 +45,33 @@ namespace BjdTest.option
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase(CtrlType.CheckBox, "True")]
-        [TestCase(CtrlType.CheckBox, "False")]
-        [TestCase(CtrlType.Int, "100")]
-        [TestCase(CtrlType.Int, "0")]
-        [TestCase(CtrlType.File, "c:\\test.txt")]
-        [TestCase(CtrlType.Folder, "c:\\test")]
-        [TestCase(CtrlType.TextBox, "abcdefg１２３")]
-        [TestCase(CtrlType.Radio, "1")]
-        [TestCase(CtrlType.Radio, "0")]
-        //[TestCase(CtrlType.Font, "Times New Roman,2,Bold")]
-        //[TestCase(CtrlType.Font, "ＭＳ ゴシック,1,Strikeout")]
-        //[TestCase(CtrlType.Font, "Arial,1,Bold")]
-        //[TestCase(CtrlType.Font, "Arial,1,Italic")]
-        //[TestCase(CtrlType.Font, "Arial,1,Underline")]
-        [TestCase(CtrlType.Memo, "1\t2\t3\t")]
-        [TestCase(CtrlType.Hidden, "qmw+Wuj6Y3f3WlWdncmLEQ==")]
-        [TestCase(CtrlType.Hidden, "Htt+6zREaQU3sc7UrnAWHQ==")]
-        [TestCase(CtrlType.AddressV4, "192.168.0.1")]
-        [TestCase(CtrlType.Dat, "\tn1\tn2")]
-        [TestCase(CtrlType.Dat, "\tn1\tn2\b\tn1#\tn2")]
-        [TestCase(CtrlType.BindAddr, "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT")]
-        [TestCase(CtrlType.BindAddr, "V6Only,198.168.0.1,ffe0::1")]
-        [TestCase(CtrlType.ComboBox, "1")]
+        [Theory]
+        [InlineData(CtrlType.CheckBox, "True")]
+        [InlineData(CtrlType.CheckBox, "False")]
+        [InlineData(CtrlType.Int, "100")]
+        [InlineData(CtrlType.Int, "0")]
+        [InlineData(CtrlType.File, "c:\\test.txt")]
+        [InlineData(CtrlType.Folder, "c:\\test")]
+        [InlineData(CtrlType.TextBox, "abcdefg１２３")]
+        [InlineData(CtrlType.Radio, "1")]
+        [InlineData(CtrlType.Radio, "0")]
+        //[InlineData(CtrlType.Font, "Times New Roman,2,Bold")]
+        //[InlineData(CtrlType.Font, "ＭＳ ゴシック,1,Strikeout")]
+        //[InlineData(CtrlType.Font, "Arial,1,Bold")]
+        //[InlineData(CtrlType.Font, "Arial,1,Italic")]
+        //[InlineData(CtrlType.Font, "Arial,1,Underline")]
+        [InlineData(CtrlType.Memo, "1\t2\t3\t")]
+        [InlineData(CtrlType.Hidden, "qmw+Wuj6Y3f3WlWdncmLEQ==")]
+        [InlineData(CtrlType.Hidden, "Htt+6zREaQU3sc7UrnAWHQ==")]
+        [InlineData(CtrlType.AddressV4, "192.168.0.1")]
+        [InlineData(CtrlType.Dat, "\tn1\tn2")]
+        [InlineData(CtrlType.Dat, "\tn1\tn2\b\tn1#\tn2")]
+        [InlineData(CtrlType.BindAddr, "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT")]
+        [InlineData(CtrlType.BindAddr, "V6Only,198.168.0.1,ffe0::1")]
+        [InlineData(CtrlType.ComboBox, "1")]
         public void FromRegで設定した値をtoRegで取り出す(CtrlType ctrlType, String str)
         {
             //setUp
@@ -81,41 +82,42 @@ namespace BjdTest.option
             //exercise
             String actual = sut.ToReg(isSecret);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase(CtrlType.CheckBox, "true", true)]
-        [TestCase(CtrlType.CheckBox, "TRUE", true)]
-        [TestCase(CtrlType.CheckBox, "false", true)]
-        [TestCase(CtrlType.CheckBox, "FALSE", true)]
-        [TestCase(CtrlType.CheckBox, "t", false)] // 不正入力
-        [TestCase(CtrlType.CheckBox, "", false)] // 不正入力
-        [TestCase(CtrlType.Int, "-100", true)]
-        [TestCase(CtrlType.Int, "0", true)]
-        [TestCase(CtrlType.Int, "aaa", false)] // 不正入力
-        [TestCase(CtrlType.File, "c:\\test.txt", true)]
-        [TestCase(CtrlType.Folder, "c:\\test", true)]
-        [TestCase(CtrlType.TextBox, "abcdefg１２３", true)]
-        [TestCase(CtrlType.Radio, "0", true)]
-        [TestCase(CtrlType.Radio, "5", true)]
-        [TestCase(CtrlType.Radio, "-1", false)] //不正入力 Radioは0以上
-        [TestCase(CtrlType.Font, "Default,-1,1", false)] //不正入力(styleが無効値)
-        [TestCase(CtrlType.Font, "Default,2,-1", false)] //不正入力(sizeが0以下)
-        [TestCase(CtrlType.Font, "XXX,1,8", false)] //　C#:エラー Java:(Font名ではエラーが発生しない)
-        [TestCase(CtrlType.Font, "Serif,1,-1", false)] //不正入力
-        [TestCase(CtrlType.Memo, null, false)] //不正入力
-        [TestCase(CtrlType.Hidden, null, false)] //不正入力
-        [TestCase(CtrlType.AddressV4, null, false)] //不正入力
-        [TestCase(CtrlType.AddressV4, "xxx", false)] //不正入力
-        [TestCase(CtrlType.AddressV4, "1", false)] //不正入力
-        [TestCase(CtrlType.Dat, "", false)] //不正入力
-        [TestCase(CtrlType.Dat, null, false)] //不正入力
-        [TestCase(CtrlType.Dat, "\tn1", false)] //不正入力(カラム不一致)
-        [TestCase(CtrlType.BindAddr, null, false)] //不正入力
-        [TestCase(CtrlType.BindAddr, "XXX", false)] //不正入力
-        [TestCase(CtrlType.ComboBox, "XXX", false)] //不正入力
-        [TestCase(CtrlType.ComboBox, null, false)] //不正入力
-        [TestCase(CtrlType.ComboBox, "2", false)] //不正入力 list.size()オーバー
+        [Theory]
+        [InlineData(CtrlType.CheckBox, "true", true)]
+        [InlineData(CtrlType.CheckBox, "TRUE", true)]
+        [InlineData(CtrlType.CheckBox, "false", true)]
+        [InlineData(CtrlType.CheckBox, "FALSE", true)]
+        [InlineData(CtrlType.CheckBox, "t", false)] // 不正入力
+        [InlineData(CtrlType.CheckBox, "", false)] // 不正入力
+        [InlineData(CtrlType.Int, "-100", true)]
+        [InlineData(CtrlType.Int, "0", true)]
+        [InlineData(CtrlType.Int, "aaa", false)] // 不正入力
+        [InlineData(CtrlType.File, "c:\\test.txt", true)]
+        [InlineData(CtrlType.Folder, "c:\\test", true)]
+        [InlineData(CtrlType.TextBox, "abcdefg１２３", true)]
+        [InlineData(CtrlType.Radio, "0", true)]
+        [InlineData(CtrlType.Radio, "5", true)]
+        [InlineData(CtrlType.Radio, "-1", false)] //不正入力 Radioは0以上
+        [InlineData(CtrlType.Font, "Default,-1,1", false)] //不正入力(styleが無効値)
+        [InlineData(CtrlType.Font, "Default,2,-1", false)] //不正入力(sizeが0以下)
+        [InlineData(CtrlType.Font, "XXX,1,8", false)] //　C#:エラー Java:(Font名ではエラーが発生しない)
+        [InlineData(CtrlType.Font, "Serif,1,-1", false)] //不正入力
+        [InlineData(CtrlType.Memo, null, false)] //不正入力
+        [InlineData(CtrlType.Hidden, null, false)] //不正入力
+        [InlineData(CtrlType.AddressV4, null, false)] //不正入力
+        [InlineData(CtrlType.AddressV4, "xxx", false)] //不正入力
+        [InlineData(CtrlType.AddressV4, "1", false)] //不正入力
+        [InlineData(CtrlType.Dat, "", false)] //不正入力
+        [InlineData(CtrlType.Dat, null, false)] //不正入力
+        [InlineData(CtrlType.Dat, "\tn1", false)] //不正入力(カラム不一致)
+        [InlineData(CtrlType.BindAddr, null, false)] //不正入力
+        [InlineData(CtrlType.BindAddr, "XXX", false)] //不正入力
+        [InlineData(CtrlType.ComboBox, "XXX", false)] //不正入力
+        [InlineData(CtrlType.ComboBox, null, false)] //不正入力
+        [InlineData(CtrlType.ComboBox, "2", false)] //不正入力 list.size()オーバー
         public void FromRegの不正パラメータ判定(CtrlType ctrlType, String str, bool expected)
         {
             //setUp
@@ -123,14 +125,15 @@ namespace BjdTest.option
             //exercise
             var actual = sut.FromReg(str);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase(CtrlType.Hidden, true, "123", "***")]
-        [TestCase(CtrlType.Hidden, false, "123", "qmw+Wuj6Y3f3WlWdncmLEQ==")]
-        [TestCase(CtrlType.Hidden, false, "", "0t9GC1bkpWNzg1uea3drbQ==")]
-        [TestCase(CtrlType.Hidden, false, null, "0t9GC1bkpWNzg1uea3drbQ==")]
-        [TestCase(CtrlType.Hidden, false, "本日は晴天なり", "Htt+6zREaQU3sc7UrnAWHQ==")]
+        [Theory]
+        [InlineData(CtrlType.Hidden, true, "123", "***")]
+        [InlineData(CtrlType.Hidden, false, "123", "qmw+Wuj6Y3f3WlWdncmLEQ==")]
+        [InlineData(CtrlType.Hidden, false, "", "0t9GC1bkpWNzg1uea3drbQ==")]
+        [InlineData(CtrlType.Hidden, false, null, "0t9GC1bkpWNzg1uea3drbQ==")]
+        [InlineData(CtrlType.Hidden, false, "本日は晴天なり", "Htt+6zREaQU3sc7UrnAWHQ==")]
         public void IsDebugTrueの時のToReg出力(CtrlType ctrlType, bool isDebug, String str, String expected)
         {
             //setUp
@@ -138,25 +141,26 @@ namespace BjdTest.option
             //exercise
             String actual = sut.ToReg(isDebug);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase(CtrlType.CheckBox, true)]
-        [TestCase(CtrlType.Hidden, "123")]
-        [TestCase(CtrlType.TextBox, "123")]
-        [TestCase(CtrlType.Memo, "123\n123")]
-        [TestCase(CtrlType.CheckBox, true)]
-        [TestCase(CtrlType.Int, 0)]
-        [TestCase(CtrlType.Folder, "c:\\test")]
-        [TestCase(CtrlType.TextBox, "abcdefg１２３")]
-        [TestCase(CtrlType.Radio, 1)]
-        //[TestCase(CtrlType.Font, new Font("Times New Roman", Font.ITALIC, 15))]
-        [TestCase(CtrlType.Memo, "1\r\n2\r\n3\r\n")]
-        //[TestCase(CtrlType.AddressV4, new Ip(IpKind.V4Localhost))]
-        //[TestCase(CtrlType.AddressV4, new Ip(IpKind.V6Localhost))] //追加
-        //×[TestCase(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }))]
-        //[TestCase(CtrlType.BindAddr, new BindAddr())]
-        [TestCase(CtrlType.ComboBox, 0)]
+        [Theory]
+        [InlineData(CtrlType.CheckBox, true)]
+        [InlineData(CtrlType.Hidden, "123")]
+        [InlineData(CtrlType.TextBox, "123")]
+        [InlineData(CtrlType.Memo, "123\n123")]
+        [InlineData(CtrlType.CheckBox, true)]
+        [InlineData(CtrlType.Int, 0)]
+        [InlineData(CtrlType.Folder, "c:\\test")]
+        [InlineData(CtrlType.TextBox, "abcdefg１２３")]
+        [InlineData(CtrlType.Radio, 1)]
+        //[InlineData(CtrlType.Font, new Font("Times New Roman", Font.ITALIC, 15))]
+        [InlineData(CtrlType.Memo, "1\r\n2\r\n3\r\n")]
+        //[InlineData(CtrlType.AddressV4, new Ip(IpKind.V4Localhost))]
+        //[InlineData(CtrlType.AddressV4, new Ip(IpKind.V6Localhost))] //追加
+        //×[InlineData(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }))]
+        //[InlineData(CtrlType.BindAddr, new BindAddr())]
+        [InlineData(CtrlType.ComboBox, 0)]
         public void ReadCtrlFalseでデフォルトの値に戻るかどうかのテスト(CtrlType ctrlType, Object value)
         {
             //setUp
@@ -169,7 +173,7 @@ namespace BjdTest.option
             //exercise
             var actual = sut.Value;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 
@@ -268,7 +272,7 @@ namespace BjdTest.option
                     }
                     catch (ValidObjException ex)
                     {
-                        Assert.Fail(ex.Message);
+                        Assert.False(true, ex.Message);
 
                     }
                     //oneCtrl = new CtrlBindAddr(help, list.ToArray(), list.ToArray());
@@ -279,7 +283,7 @@ namespace BjdTest.option
                     if (val == null)
                     {
                         //val =  new[] { "1", "2" };
-                        val =  "1";
+                        val = "1";
                     }
                     //oneCtrl = new CtrlComboBox(help, new[] { "1", "2" }, 10);
                     break;
