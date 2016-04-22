@@ -2,11 +2,11 @@
 using Bjd.ctrl;
 using Bjd.log;
 using Bjd.option;
-using NUnit.Framework;
+using Xunit;
 
 
 namespace BjdTest.log{
-    internal class LogLimitTest{
+    public class LogLimitTest{
         //初期化
         private LogLimit create(bool isDisplay){
             var dat = new Dat(new[]{CtrlType.TextBox});
@@ -17,7 +17,7 @@ namespace BjdTest.log{
             return new LogLimit(dat, isDisplay);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示する_で初期化された場合_AAA_は表示する(){
 
             //setUp
@@ -30,10 +30,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("AAA");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示する_で初期化された場合_表示A_は表示する(){
 
             //setUp
@@ -46,10 +46,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("表示A");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示する_で初期化された場合_表A123_は表示する(){
 
             //setUp
@@ -62,10 +62,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("表A123");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示する_で初期化された場合_123_は表示する(){
 
             //setUp
@@ -78,10 +78,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("123");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示する_で初期化された場合_12アイウ_は表示する(){
 
             //setUp
@@ -94,11 +94,11 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("12アイウ");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示しない_で初期化された場合_AAA_は表示しない(){
 
             //setUp
@@ -111,10 +111,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("AAA");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示しない_で初期化された場合_表示A_は表示しない(){
 
             //setUp
@@ -127,10 +127,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("表示A");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示しない_で初期化された場合_表A123_は表示しない(){
 
             //setUp
@@ -143,12 +143,12 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("表A123");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示しない_で初期化された場合_123_は表示しない(){
 
             //setUp
@@ -161,10 +161,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("123");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定文字列を表示しない_で初期化された場合_12アイウ_は表示しない(){
 
             //setUp
@@ -177,10 +177,10 @@ namespace BjdTest.log{
             var actual = sut.IsDisplay("12アイウ");
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 指定した文字列が表示対象か否かの判断(){
 
             var dat = new Dat(new[]{CtrlType.TextBox});
@@ -212,7 +212,7 @@ namespace BjdTest.log{
 
         private static void Check(LogLimit logLimit, String str, bool expected){
             var actual = logLimit.IsDisplay(str);
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using Bjd.log;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.log{
-    internal class OneLogFileTest{
+    public class OneLogFileTest: IDisposable{
 
         //テンポラリディレクトリ名
         private const String TmpDir = "OneLogFileTest";
@@ -15,13 +15,19 @@ namespace BjdTest.log{
         //このクラスの最後に１度だけ実行される
         //個々のテストでは、例外終了等で完全に削除出来ないので、ここで最後にディレクトリごと削除する
         //[TestFixtureTearDown]
-        [OneTimeTearDown]
+        //[OneTimeTearDown]
         public static void AfterClass(){
             var dir = TestUtil.GetTmpDir(TmpDir);
             Directory.Delete(dir, true);
         }
 
-        [Test]
+        public void Dispose()
+        {
+            var dir = TestUtil.GetTmpDir(TmpDir);
+            Directory.Delete(dir, true);
+        }
+
+        [Fact]
         public void 一度disposeしたファイルに正常に追加できるかどうか(){
 
             //setUp
@@ -47,7 +53,7 @@ namespace BjdTest.log{
             var actual = File.ReadAllLines(fileName).Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

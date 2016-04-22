@@ -1,10 +1,10 @@
 ﻿using System;
 using Bjd;
 using Bjd.log;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.log{
-    internal class OneLogTest{
+    public class OneLogTest{
         private const String NameTag = "NAME";
         private const long ThreadId = 100;
         private const String RemoteHostname = "127.0.0.1";
@@ -16,7 +16,7 @@ namespace BjdTest.log{
             return new DateTime(1970,1,1,9,0,0);
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof (ValidObjException))]
         public void 無効な文字列で初期化すると例外_ValidObjException_が発生する(){
             //exercise
@@ -24,7 +24,7 @@ namespace BjdTest.log{
             NUnit.Framework.Assert.Throws<ValidObjException>(() => new OneLog("xxx"));
         }
 
-        [Test]
+        [Fact]
         public void ToStringによる出力の確認(){
             //setUp
             var sut = new OneLog(GetDateTime(), LogKind.Debug, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
@@ -32,10 +32,10 @@ namespace BjdTest.log{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void isSecureによる確認_LogKind_SECUREでtrueが返る(){
 
             //setUp
@@ -45,11 +45,11 @@ namespace BjdTest.log{
             //exercise
             var actual = sut.IsSecure();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
 
-        [Test]
+        [Fact]
         public void isSecureによる確認_LogKind_DEBUGでfalseが返る(){
 
             //setUp
@@ -59,7 +59,7 @@ namespace BjdTest.log{
             //exercise
             var actual = sut.IsSecure();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
     }
