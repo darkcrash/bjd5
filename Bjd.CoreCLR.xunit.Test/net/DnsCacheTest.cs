@@ -3,27 +3,31 @@ using System.Linq;
 using Bjd.log;
 using Bjd.net;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 
-namespace BjdTest.net{
-    internal class DnsCacheTest{
-        [Test]
-        public void アドレスからホスト名を取得する(){
+namespace BjdTest.net
+{
+    public class DnsCacheTest
+    {
+        [Fact]
+        public void アドレスからホスト名を取得する()
+        {
 
             //setUp
-		    var sut = new DnsCache();
+            var sut = new DnsCache();
             var ip = new Ip("59.106.27.208");
-		    const string expected = "www1968.sakura.ne.jp";
+            const string expected = "www1968.sakura.ne.jp";
 
-		    //exercise
+            //exercise
             String actual = sut.GetHostName(ip.IPAddress, new Logger());
 
-		    //verify
-		    Assert.That(actual, Is.EqualTo(expected));
+            //verify
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void ホスト名からアドレスを取得する(){
+        [Fact]
+        public void ホスト名からアドレスを取得する()
+        {
 
             //setUp
             var sut = new DnsCache();
@@ -34,12 +38,13 @@ namespace BjdTest.net{
             var actual = ipList[0].ToString();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
 
-        [Test]
-        public void 一度検索するとキャッシュ件数は１となる(){
+        [Fact]
+        public void 一度検索するとキャッシュ件数は１となる()
+        {
             //setUp
             var sut = new DnsCache();
 
@@ -50,11 +55,12 @@ namespace BjdTest.net{
             var actual = sut.size();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void 同じ内容を複数回検索してもキャッシュ件数は１となる(){
+        [Fact]
+        public void 同じ内容を複数回検索してもキャッシュ件数は１となる()
+        {
             //setUp
             var sut = new DnsCache();
 
@@ -67,11 +73,12 @@ namespace BjdTest.net{
             var actual = sut.size();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void 違う内容を検索するとキャッシュ件数は２となる(){
+        [Fact]
+        public void 違う内容を検索するとキャッシュ件数は２となる()
+        {
 
             //setUp
             var sut = new DnsCache();
@@ -84,11 +91,12 @@ namespace BjdTest.net{
             var actual = sut.size();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void 無効なホスト名を検索すると0件の配列が返される_タイムアウトに時間を要する(){
+        [Fact]
+        public void 無効なホスト名を検索すると0件の配列が返される_タイムアウトに時間を要する()
+        {
 
             //setUp
             var sut = new DnsCache();
@@ -101,14 +109,15 @@ namespace BjdTest.net{
             var actual = ipList.Count();
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
             //TearDown
             TestUtil.WaitDisp(null);
 
         }
 
-        [Test]
-        public void 無効なアドレスを検索するとアドレス表記がそのまま返される_タイムアウトに時間を要する(){
+        [Fact]
+        public void 無効なアドレスを検索するとアドレス表記がそのまま返される_タイムアウトに時間を要する()
+        {
 
             //setUp
             var sut = new DnsCache();
@@ -122,7 +131,7 @@ namespace BjdTest.net{
             var actual = sut.GetHostName(ip.IPAddress, new Logger());
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
             //TearDown
             TestUtil.WaitDisp(null);
         }

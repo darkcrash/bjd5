@@ -3,10 +3,13 @@ using Bjd.net;
 using Xunit;
 using Bjd;
 
-namespace BjdTest {
-    public class AttackDbTest {
+namespace BjdTest
+{
+    public class AttackDbTest
+    {
         [Fact]
-        public void TotalTest() {
+        public void TotalTest()
+        {
 
             const int max = 5; //制限回数5回
             var sec = 1;//期間１秒

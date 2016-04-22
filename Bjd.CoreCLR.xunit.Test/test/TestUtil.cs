@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.net;
 using Bjd.option;
 using Bjd.util;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.test
 {
@@ -101,7 +101,7 @@ namespace BjdTest.test
             }
             catch (ValidObjException e)
             {
-                Assert.Fail(e.Message);
+                Assert.False(true, e.Message);
             }
             return ip;
         }
@@ -125,7 +125,8 @@ namespace BjdTest.test
             {
                 sb.Append("null");
             }
-            else {
+            else
+            {
                 foreach (byte b in buf)
                 {
                     sb.Append(string.Format("0x{0:X2} ", b & 0xFF));

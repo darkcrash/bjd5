@@ -3,137 +3,152 @@ using System.Text;
 using Bjd.util;
 using Xunit;
 
-namespace BjdTest.util {
-   
-/**
- * テストの性格上、リソース解放のdisposeは省略する
- * @author SIN
- *
- */
-public class ListBaseTest {
+namespace BjdTest.util
+{
 
-	//テストのためにListBaseを継承するクラスを定義する
-	class OneClass : IDisposable {
-		private readonly string _s;
+    /**
+     * テストの性格上、リソース解放のdisposeは省略する
+     * @author SIN
+     *
+     */
+    public class ListBaseTest
+    {
 
-		public OneClass(string s) {
-			_s = s;
-		}
+        //テストのためにListBaseを継承するクラスを定義する
+        class OneClass : IDisposable
+        {
+            private readonly string _s;
 
-		public string GetS() {
-			return _s;
-		}
+            public OneClass(string s)
+            {
+                _s = s;
+            }
 
-		
-		public void Dispose() {
-		}
-	}
+            public string GetS()
+            {
+                return _s;
+            }
 
-	class TestClass : ListBase<OneClass> {
-		public void Add(OneClass o) {
-			Ar.Add(o);
-		}
-	}
 
-	[Fact]
-	public void 要素を３つ追加してsizeは3になる(){
-		//setUp
-		var sut = new TestClass();
-		sut.Add(new OneClass("1"));
-		sut.Add(new OneClass("2"));
-		sut.Add(new OneClass("3"));
+            public void Dispose()
+            {
+            }
+        }
 
-		const int expected = 3;
+        class TestClass : ListBase<OneClass>
+        {
+            public void Add(OneClass o)
+            {
+                Ar.Add(o);
+            }
+        }
 
-		//exercise
-		var actual = sut.Count;
+        [Fact]
+        public void 要素を３つ追加してsizeは3になる()
+        {
+            //setUp
+            var sut = new TestClass();
+            sut.Add(new OneClass("1"));
+            sut.Add(new OneClass("2"));
+            sut.Add(new OneClass("3"));
 
-		//verify
-		Assert.Equal(actual, expected);
-	}
+            const int expected = 3;
 
-	[Fact]
-	public void 要素を３つ追加してforループを回す(){
-		//setUp
-		var sut = new TestClass();
-		sut.Add(new OneClass("1"));
-		sut.Add(new OneClass("2"));
-		sut.Add(new OneClass("3"));
+            //exercise
+            var actual = sut.Count;
 
-		const int expected = 3;
+            //verify
+            Assert.Equal(actual, expected);
+        }
 
-		//exercise
-		var actual = 0;
-		foreach (var o in sut) {
-			actual++;
-		}
+        [Fact]
+        public void 要素を３つ追加してforループを回す()
+        {
+            //setUp
+            var sut = new TestClass();
+            sut.Add(new OneClass("1"));
+            sut.Add(new OneClass("2"));
+            sut.Add(new OneClass("3"));
 
-		//verify
-		Assert.Equal(actual, expected);
-	}
+            const int expected = 3;
 
-//	[Test] これはC#では未実装
-//	public void 要素を３つ追加してwhileで回す(){
-//		//setUp
-//		TestClass sut = new TestClass();
-//		sut.Add(new OneClass("1"));
-//		sut.Add(new OneClass("2"));
-//		sut.Add(new OneClass("3"));
-//
-//		int expected = 3;
-//
-//		//exercise
-//		int actual = 0;
-//		while (sut.hasNext()) {
-//			sut.next();
-//			actual++;
-//		}
-//
-//		//verify
-//		Assert.That(actual, Is.EqualTo(expected));
-//	}
+            //exercise
+            var actual = 0;
+            foreach (var o in sut)
+            {
+                actual++;
+            }
 
-	[Fact]
-	public void 要素を３つ追加してgetSで取得する(){
-		//setUp
-		var sut = new TestClass();
-		sut.Add(new OneClass("1"));
-		sut.Add(new OneClass("2"));
-		sut.Add(new OneClass("3"));
+            //verify
+            Assert.Equal(actual, expected);
+        }
 
-		const string expected = "123";
+        //	[Test] これはC#では未実装
+        //	public void 要素を３つ追加してwhileで回す(){
+        //		//setUp
+        //		TestClass sut = new TestClass();
+        //		sut.Add(new OneClass("1"));
+        //		sut.Add(new OneClass("2"));
+        //		sut.Add(new OneClass("3"));
+        //
+        //		int expected = 3;
+        //
+        //		//exercise
+        //		int actual = 0;
+        //		while (sut.hasNext()) {
+        //			sut.next();
+        //			actual++;
+        //		}
+        //
+        //		//verify
+        //		Assert.That(actual, Is.EqualTo(expected));
+        //	}
 
-		//exercise
-		var sb = new StringBuilder();
-		foreach (var o in sut) {
-			sb.Append(o.GetS());
-		}
-		var actual = sb.ToString();
+        [Fact]
+        public void 要素を３つ追加してgetSで取得する()
+        {
+            //setUp
+            var sut = new TestClass();
+            sut.Add(new OneClass("1"));
+            sut.Add(new OneClass("2"));
+            sut.Add(new OneClass("3"));
 
-		//verify
-		Assert.Equal(actual, expected);
-	}
+            const string expected = "123";
 
-	[Fact]
-	public void 要素を３つ追加してremobveで一部の要素を削除する(){
-		//setUp
-		var sut = new TestClass();
-		sut.Add(new OneClass("1"));
-		sut.Add(new OneClass("2"));
-		sut.Add(new OneClass("3"));
-		sut.Remove(0);
+            //exercise
+            var sb = new StringBuilder();
+            foreach (var o in sut)
+            {
+                sb.Append(o.GetS());
+            }
+            var actual = sb.ToString();
 
-		const string expected = "23";
+            //verify
+            Assert.Equal(actual, expected);
+        }
 
-		//exercise
-		var sb = new StringBuilder();
-		foreach (var o in sut) {
-			sb.Append(o.GetS());
-		}
-		var actual = sb.ToString();
+        [Fact]
+        public void 要素を３つ追加してremobveで一部の要素を削除する()
+        {
+            //setUp
+            var sut = new TestClass();
+            sut.Add(new OneClass("1"));
+            sut.Add(new OneClass("2"));
+            sut.Add(new OneClass("3"));
+            sut.Remove(0);
 
-		//verify
-		Assert.Equal(actual, expected);
-	}
-}
+            const string expected = "23";
+
+            //exercise
+            var sb = new StringBuilder();
+            foreach (var o in sut)
+            {
+                sb.Append(o.GetS());
+            }
+            var actual = sb.ToString();
+
+            //verify
+            Assert.Equal(actual, expected);
+        }
+    }
 }

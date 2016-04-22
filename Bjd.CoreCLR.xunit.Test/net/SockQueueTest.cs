@@ -1,5 +1,5 @@
 ﻿using Bjd.sock;
-using NUnit.Framework;
+using Xunit;
 
 
 namespace BjdTest.net{
@@ -7,7 +7,7 @@ namespace BjdTest.net{
 
     public class SockQueueTest{
 
-        [Test]
+        [Fact]
         public void 生成時のlengthは0になる(){
             //setUp
             var sut = new SockQueue();
@@ -15,10 +15,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Length;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Lengthが0の時Dequeueで100バイト取得しても0バイトしか返らない(){
             //setUp
             var sut = new SockQueue();
@@ -26,10 +26,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Lengthが50の時Dequeueで100バイト取得しても50バイトしか返らない(){
             //setUp
             var sut = new SockQueue();
@@ -38,10 +38,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Lengthが200の時Dequeueで100バイト取得すると100バイト返る(){
             //setUp
             var sut = new SockQueue();
@@ -50,10 +50,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Lengthが200の時Dequeueで100バイト取得すると残りは100バイトになる(){
             //setUp
             var sut = new SockQueue();
@@ -63,10 +63,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Length;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void EnqueueしたデータとDequeueしたデータの整合性を確認する(){
             //setUp
             var sut = new SockQueue();
@@ -75,10 +75,10 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(10);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Enqueueしたデータの一部をDequeueしたデータの整合性を確認する(){
             //setUp
             var sut = new SockQueue();
@@ -89,11 +89,11 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(5);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
-        [Test]
+        [Fact]
         public void SockQueueスペース確認(){
             const int max = 2000000;
 
@@ -101,22 +101,22 @@ namespace BjdTest.net{
 
             var space = sockQueu.Space;
             //キューの空きサイズ
-            Assert.That(space, Is.EqualTo(max));
+            Assert.Equal(space, max);
 
             var buf = new byte[max - 100];
             sockQueu.Enqueue(buf, buf.Length);
 
             space = sockQueu.Space;
             //キューの空きサイズ
-            Assert.That(space, Is.EqualTo(100));
+            Assert.Equal(space, 100);
 
             var len = sockQueu.Enqueue(buf, 200);
             //空きサイズを超えて格納すると失敗する(※0が返る)
-            Assert.That(len, Is.EqualTo(0));
+            Assert.Equal(len, 0);
 
         }
 
-        [Test]
+        [Fact]
         public void SockQueue行取得(){
             //int max = 1048560;
 
@@ -128,15 +128,15 @@ namespace BjdTest.net{
 
             var buf = sockQueu.DequeueLine();
             //sockQueue.dequeuLine()=\"1/r/n\" 1行目取得
-            Assert.That(buf, Is.EqualTo(new byte[]{0x61, 0x0d, 0x0a}));
+            Assert.Equal(buf, new byte[]{0x61, 0x0d, 0x0a});
 
             //sockQueue.dequeuLine()=\"2/r/n\" 2行目取得 
             buf = sockQueu.DequeueLine();
-            Assert.That(buf, Is.EqualTo(new byte[]{0x62, 0x0d, 0x0a}));
+            Assert.Equal(buf, new byte[]{0x62, 0x0d, 0x0a});
 
             buf = sockQueu.DequeueLine();
             //sockQueue.dequeuLine()=\"\" 3行目の取得は失敗する
-            Assert.That(buf, Is.EqualTo(new byte[0]));
+            Assert.Equal(buf, new byte[0]);
 
             lines = new byte[]{0x0d, 0x0a};
             sockQueu.Enqueue(lines, lines.Length);
@@ -144,7 +144,7 @@ namespace BjdTest.net{
 
             buf = sockQueu.DequeueLine();
             //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
-            Assert.That(buf, Is.EqualTo(new byte[]{0x63, 0x0d, 0x0a}));
+            Assert.Equal(buf, new byte[]{0x63, 0x0d, 0x0a});
         }
     }
 }

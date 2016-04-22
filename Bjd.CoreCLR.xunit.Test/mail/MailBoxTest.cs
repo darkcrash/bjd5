@@ -9,21 +9,20 @@ using Bjd.mail;
 using Bjd.net;
 using Bjd.option;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 using Bjd;
 using System.Security.Cryptography;
 using System.Threading;
 
 namespace BjdTest.mail {
-    [TestFixture]
-    internal class MailBoxTest{
+
+    public class MailBoxTest : IDisposable{
         
         private MailBox sut;
         private Dat _datUser = null;
 
 
-        [SetUp]
-        public void SetUp(){
+        public  MailBoxTest(){
             const string dir = "mailbox";
 
             _datUser = new Dat(new CtrlType[2]{CtrlType.TextBox, CtrlType.TextBox});
@@ -34,8 +33,7 @@ namespace BjdTest.mail {
             sut = new MailBox(new Logger(),_datUser,dir);
         }
 
-        [TearDown]
-        public void TearDown(){
+        public void Dispose(){
             Thread.Sleep(100);
             //後始末で、MainBoxフォルダごと削除する
             if(Directory.Exists(sut.Dir)){
@@ -47,80 +45,85 @@ namespace BjdTest.mail {
             }
         }
 
-        [TestCase]
+        [Fact]
         public void ステータス確認(){
             //setUp
             var expected = true;
             //exercise
             var actual = sut.Status;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase("user1",true)]
-        [TestCase("user2", true)]
-        [TestCase("user3", true)]
-        [TestCase("", false)]
-        [TestCase("xxx", false)]
-        [TestCase(null, false)]
+        [Theory]
+        [InlineData("user1",true)]
+        [InlineData("user2", true)]
+        [InlineData("user3", true)]
+        [InlineData("", false)]
+        [InlineData("xxx", false)]
+        [InlineData(null, false)]
         public void IsUserによるユーザの存在確認(string user, bool expected) {
             //exercise
             var actual = sut.IsUser(user);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase("user1", "user1")]
-        [TestCase("user2", "user2")]
-        [TestCase("user3", null)]//user3は、無効なパスワードで初期化されている
-        [TestCase("xxx", null)]//存在しないユーザの問い合わせ
+        [Theory]
+        [InlineData("user1", "user1")]
+        [InlineData("user2", "user2")]
+        [InlineData("user3", null)]//user3は、無効なパスワードで初期化されている
+        [InlineData("xxx", null)]//存在しないユーザの問い合わせ
         public void GetPassによるパスワードの取得(string user, string expected) {
             //exercise
             var actual = sut.GetPass(user);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase("user1", "user1", true)]
-        [TestCase("user2", "user2",true)]
-        [TestCase("user1", "xxx", false)]//パスワード誤り
-        [TestCase("user3", "user3", false)]//パスワードが無効
-        [TestCase("xxx", "xxx", false)]//登録外のユーザ
-        [TestCase(null, "xxx", false)]//ユーザ名が無効（不正）
-        [TestCase("user1", null, false)]//パスワードが無効（不正）
+        [Theory]
+        [InlineData("user1", "user1", true)]
+        [InlineData("user2", "user2",true)]
+        [InlineData("user1", "xxx", false)]//パスワード誤り
+        [InlineData("user3", "user3", false)]//パスワードが無効
+        [InlineData("xxx", "xxx", false)]//登録外のユーザ
+        [InlineData(null, "xxx", false)]//ユーザ名が無効（不正）
+        [InlineData("user1", null, false)]//パスワードが無効（不正）
         public void Authによる認証(string user, string pass, bool expected) {
             //exercise
             var actual = sut.Auth(user,pass);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
-        [TestCase("user1", "192.168.0.1")]
-        [TestCase("user1", "10.0.0.1")]
-        [TestCase("user2", "10.0.0.1")]
-        [TestCase("user3", "10.0.0.1")]
+        [Theory]
+        [InlineData("user1", "192.168.0.1")]
+        [InlineData("user1", "10.0.0.1")]
+        [InlineData("user2", "10.0.0.1")]
+        [InlineData("user3", "10.0.0.1")]
         public void Loginによるログイン処理_成功(string user, string ip){
             //setUp
             var expected = true;
             //exercise
             var actual = sut.Login(user, new Ip(ip));
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [TestCase("xxx", "10.0.0.1")]//無効ユーザではログインできない
-        [TestCase(null, "10.0.0.1")]//無効(不正)ユーザではログインできない
+        [Theory]
+        [InlineData("xxx", "10.0.0.1")]//無効ユーザではログインできない
+        [InlineData(null, "10.0.0.1")]//無効(不正)ユーザではログインできない
         public void Loginによるログイン処理_失敗(string user, string ip) {
             //setUp
             var expected = false; //失敗した場合はfalseが返される
             //exercise
             var actual = sut.Login(user, new Ip(ip));
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Login_二重ログインでfalseが返る() {
             //setUp
             var ip = new Ip("10.0.0.1");
@@ -130,10 +133,10 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, ip); //２回目のログイン
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void Login_二重ログイン後にログアウトすればログインは成功する() {
             //setUp
             const string user = "user1";
@@ -145,13 +148,14 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, ip); //２回目のログイン
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
 
-        [TestCase("user1", 0)]
-        [TestCase("user1", 1000)]//１秒経過
+        [Theory]
+        [InlineData("user1", 0)]
+        [InlineData("user1", 1000)]//１秒経過
         public void LastLoginによる最終ログイン時間の取得(string user, int waitMsec) {
             //Ticksは100ナノ秒単位
             //10で１マイクロ秒
@@ -168,11 +172,13 @@ namespace BjdTest.mail {
             var dt = sut.LastLogin(ip);//ログイン後の時間計測
             var actual = (dt.Ticks - now.Ticks) < 1000000; //10ミリ秒以下の誤差
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
-        [TestCase("xxx")]//無効(不正)ユーザではログインできない
-        [TestCase(null)]//無効(不正)ユーザではログインできない
+
+        [Theory]
+        [InlineData("xxx")]//無効(不正)ユーザではログインできない
+        [InlineData(null)]//無効(不正)ユーザではログインできない
         public void LastLoginによる最終ログイン時間の取得_無効ユーザの場合0が返る(string user) {
             //setUp
             var ip = new Ip("10.0.0.1");
@@ -181,14 +187,15 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.LastLogin(ip).Ticks;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
 
 
-        [TestCase("user1",false, true)]
-        [TestCase("user1", true, true)]//ログアウトしても経過時間の取得は成功する
-        [TestCase("xxx", false, false)]//無効ユーザ
+        [Theory]
+        [InlineData("user1",false, true)]
+        [InlineData("user1", true, true)]//ログアウトしても経過時間の取得は成功する
+        [InlineData("xxx", false, false)]//無効ユーザ
         public void LogoutTest(string user, bool logout, bool success) {
             var ip = new Ip("10.0.0.1");
             sut.Login(user, ip);//ログイン
@@ -197,9 +204,9 @@ namespace BjdTest.mail {
             }
             var dt = sut.LastLogin(ip);//ログイン後の時間計測
             if(success){
-                Assert.AreNotEqual(dt.Ticks,0);//過去にログインした記録があれば0以外が返る
+                Assert.NotEqual(dt.Ticks,0);//過去にログインした記録があれば0以外が返る
             }else{
-                Assert.AreEqual(dt.Ticks, 0);//過去にログイン形跡なし
+                Assert.Equal(dt.Ticks, 0);//過去にログイン形跡なし
             }
             sut.Logout(user);
         }
@@ -208,21 +215,22 @@ namespace BjdTest.mail {
 
 
         
-        [Test]
+        [Fact]
         public void UserListによるユーザ一覧取得() {
             //exercise
             var actual = sut.UserList;
             //verify
-            Assert.That(actual.Count, Is.EqualTo(3));
-            Assert.That(actual[0], Is.EqualTo("user1"));
-            Assert.That(actual[1], Is.EqualTo("user2"));
-            Assert.That(actual[2], Is.EqualTo("user3"));
+            Assert.Equal(actual.Count, 3);
+            Assert.Equal(actual[0], "user1");
+            Assert.Equal(actual[1], "user2");
+            Assert.Equal(actual[2], "user3");
         }
 
 
         //保存件数（ファイル数)
-        [TestCase(1)]
-        [TestCase(3)]
+        [Theory]
+        [InlineData(1)]
+        [InlineData(3)]
         public void SaveCountTest(int n) {
             var mail = new Mail();
             const string uid = "XXX123";
@@ -245,16 +253,17 @@ namespace BjdTest.mail {
          
             //DF_*がn個存在する
             var files = di.GetFiles("DF_*");
-            Assert.AreEqual(files.Count(), n);
+            Assert.Equal(files.Count(), n);
             //MF_*がn個存在する
             files = di.GetFiles("MF_*");
-            Assert.AreEqual(files.Count(), n);
+            Assert.Equal(files.Count(), n);
 
         }
 
         //保存（DF内容)
-        [TestCase("user1",true,"UID",100,"hostname","1@1","2@2")]
-        [TestCase("zzzz", false, "", 0, "", "", "")]//無効ユーザで保存失敗
+        [Theory]
+        [InlineData("user1",true,"UID",100,"hostname","1@1","2@2")]
+        [InlineData("zzzz", false, "", 0, "", "", "")]//無効ユーザで保存失敗
         public void SaveDfTest(string user, bool status, string uid, int size, string hostname, string from, string to) {
             var mail = new Mail();
             var ip = new Ip("10.0.0.1");
@@ -266,21 +275,21 @@ namespace BjdTest.mail {
             var di = new DirectoryInfo(path);
             
             if (status){
-                Assert.AreEqual(b,true);//保存成功
+                Assert.Equal(b,true);//保存成功
             
                 var files = di.GetFiles("DF_*");
                 
                 //メールボックス内に蓄積されたファイル数を検証する
                 var lines = File.ReadAllLines(files[0].FullName);
-                Assert.AreEqual(lines[0], uid); //１行目 uid
-                Assert.AreEqual(lines[1], size.ToString()); //２行目 size
-                Assert.AreEqual(lines[2], hostname); //３行目 hostname
-                Assert.AreEqual(lines[3], ip.ToString()); //４行目 ip
-                Assert.AreEqual(lines[7], from); //８行目 from
-                Assert.AreEqual(lines[8], to); //９行目 to
+                Assert.Equal(lines[0], uid); //１行目 uid
+                Assert.Equal(lines[1], size.ToString()); //２行目 size
+                Assert.Equal(lines[2], hostname); //３行目 hostname
+                Assert.Equal(lines[3], ip.ToString()); //４行目 ip
+                Assert.Equal(lines[7], from); //８行目 from
+                Assert.Equal(lines[8], to); //９行目 to
             }else{
-                Assert.AreEqual(b, false);//保存失敗
-                Assert.AreEqual(Directory.Exists(di.FullName),false);
+                Assert.Equal(b, false);//保存失敗
+                Assert.Equal(Directory.Exists(di.FullName),false);
             }
         }
 

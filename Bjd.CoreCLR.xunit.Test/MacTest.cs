@@ -2,17 +2,21 @@
 using Xunit;
 using Bjd;
 
-namespace BjdTest {
-    
-    public class MacTest {
-        
+namespace BjdTest
+{
+
+    public class MacTest
+    {
+
         //[SetUp]
-        public void SetUp() {
+        public void SetUp()
+        {
         }
-        
+
         //[TearDown]
-        public void TearDown() {
-        
+        public void TearDown()
+        {
+
         }
 
         [Theory]
@@ -20,7 +24,8 @@ namespace BjdTest {
         [InlineData("FF-FF-FF-FF-FF-FF")]
         [InlineData("00-26-2D-3F-3F-67")]
         [InlineData("00-ff-ff-ff-3F-67")]
-        public void ToStringTest(string macStr) {
+        public void ToStringTest(string macStr)
+        {
             var target = new Mac(macStr);
             Assert.Equal(target.ToString(), macStr.ToUpper());
         }
@@ -30,7 +35,8 @@ namespace BjdTest {
         [InlineData("FF-FF-FF-FF-FF-FF")]
         [InlineData("00-26-2D-3F-3F-67")]
         [InlineData("00-ff-ff-ff-3F-67")]
-        public void OperandTest(string macStr) {
+        public void OperandTest(string macStr)
+        {
             const string dmy = "11-11-11-11-11-11";
             Assert.Equal(new Mac(macStr) == new Mac(macStr), true);
             Assert.Equal(new Mac(macStr) != new Mac(macStr), false);

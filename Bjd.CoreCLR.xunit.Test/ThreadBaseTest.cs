@@ -2,37 +2,47 @@
 using Bjd;
 using Xunit;
 
-namespace BjdTest{
+namespace BjdTest
+{
 
-    public class ThreadBaseTest{
-        private class MyThread : ThreadBase{
-            public MyThread() : base(null){
+    public class ThreadBaseTest
+    {
+        private class MyThread : ThreadBase
+        {
+            public MyThread() : base(null)
+            {
 
             }
 
-            protected override bool OnStartThread(){
+            protected override bool OnStartThread()
+            {
                 return true;
             }
 
-            protected override void OnStopThread(){
+            protected override void OnStopThread()
+            {
             }
 
-            protected override void OnRunThread(){
-               //[C#]
+            protected override void OnRunThread()
+            {
+                //[C#]
                 ThreadBaseKind = ThreadBaseKind.Running;
-                
-                while (IsLife()){
+
+                while (IsLife())
+                {
                     Thread.Sleep(100);
                 }
             }
 
-            public override string GetMsg(int no){
+            public override string GetMsg(int no)
+            {
                 return "";
             }
         }
 
         [Fact]
-        public void Startする前はThreadBaseKindはBeforeとなる(){
+        public void Startする前はThreadBaseKindはBeforeとなる()
+        {
             //setUp
             var sut = new MyThread();
             //var expected = ThreadBaseKind.Before;
@@ -45,7 +55,8 @@ namespace BjdTest{
         }
 
         [Fact]
-        public void StartするとThreadBaseKindはRunningとなる(){
+        public void StartするとThreadBaseKindはRunningとなる()
+        {
             //setUp
             var sut = new MyThread();
             //var expected = ThreadBaseKind.Running;
@@ -59,7 +70,8 @@ namespace BjdTest{
         }
 
         [Fact]
-        public void Startは重複しても問題ない(){
+        public void Startは重複しても問題ない()
+        {
             //setUp
             var sut = new MyThread();
             //var expected = ThreadBaseKind.Running;
@@ -74,7 +86,8 @@ namespace BjdTest{
         }
 
         [Fact]
-        public void Stopは重複しても問題ない(){
+        public void Stopは重複しても問題ない()
+        {
             //setUp
             var sut = new MyThread();
             //var expected = ThreadBaseKind.After;
@@ -91,12 +104,14 @@ namespace BjdTest{
         }
 
         [Fact]
-        public void start及びstopしてisRunnigの状態を確認する_負荷テスト(){
+        public void start及びstopしてisRunnigの状態を確認する_負荷テスト()
+        {
 
             //setUp
             var sut = new MyThread();
             //exercise verify 
-            for (var i = 0; i < 5; i++){
+            for (var i = 0; i < 5; i++)
+            {
                 sut.Start();
                 Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
                 sut.Stop();
@@ -107,10 +122,12 @@ namespace BjdTest{
         }
 
         [Fact]
-        public void new及びstart_stop_disposeしてisRunnigの状態を確認する_負荷テスト(){
+        public void new及びstart_stop_disposeしてisRunnigの状態を確認する_負荷テスト()
+        {
 
             //exercise verify 
-            for (var i = 0; i < 3; i++){
+            for (var i = 0; i < 3; i++)
+            {
                 var sut = new MyThread();
                 sut.Start();
                 Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);

@@ -87,7 +87,7 @@ namespace BjdTest.acl
         {
             //exercise
             //new AclV4("TAG", aclStr);
-            NUnit.Framework.Assert.Throws<ValidObjException>(() => new AclV4("TAG", aclStr));
+            Assert.Throws<ValidObjException>(() => new AclV4("TAG", aclStr));
         }
 
         //public void 無効な文字列で初期化するとStatusがFalseとなる(string aclStr) {

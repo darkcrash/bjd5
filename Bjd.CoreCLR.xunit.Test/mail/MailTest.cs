@@ -4,41 +4,45 @@ using System.Linq;
 using System.Text;
 using Bjd.log;
 using Bjd.mail;
-using NUnit.Framework;
+using Xunit;
 
-namespace BjdTest.mail {
-    [TestFixture]
-    class MailTest{
+namespace BjdTest.mail
+{
+
+    public class MailTest : IDisposable
+    {
         private Mail sut = null;
-        
-        [SetUp]
-        public void SetUp(){
+
+        public MailTest()
+        {
             sut = new Mail();
         }
-        
-        [TearDown]
-        public void TearDown(){
-            
+
+        public void Dispose()
+        {
+
         }
 
-        [Test]
-        public void AddHeaderによるヘッダの追加(){
+        [Fact]
+        public void AddHeaderによるヘッダの追加()
+        {
             //setUp
             const string val = "value1";
             const string tag = "tag";
-            
+
             var expected = val;
 
             //exerceise
             sut.AddHeader(tag, val);
             var actual = sut.GetHeader(tag);
-            
+
             //verify
-            Assert.That(actual,Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void ConvertHeaderによるヘッダの変換() {
+        [Fact]
+        public void ConvertHeaderによるヘッダの変換()
+        {
             //setUp
             const string val = "value1";
             const string tag = "tag";
@@ -51,10 +55,10 @@ namespace BjdTest.mail {
             var actual = sut.GetHeader(tag);
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-    //TODO まだ、全部のテストを実装できていない
+        //TODO まだ、全部のテストを実装できていない
 
     }
 }

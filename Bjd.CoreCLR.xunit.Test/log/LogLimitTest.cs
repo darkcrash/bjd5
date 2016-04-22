@@ -5,11 +5,14 @@ using Bjd.option;
 using Xunit;
 
 
-namespace BjdTest.log{
-    public class LogLimitTest{
+namespace BjdTest.log
+{
+    public class LogLimitTest
+    {
         //初期化
-        private LogLimit create(bool isDisplay){
-            var dat = new Dat(new[]{CtrlType.TextBox});
+        private LogLimit create(bool isDisplay)
+        {
+            var dat = new Dat(new[] { CtrlType.TextBox });
             dat.Add(true, "AAA");
             dat.Add(true, "表示");
             dat.Add(true, "123");
@@ -18,7 +21,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示する_で初期化された場合_AAA_は表示する(){
+        public void 指定文字列を表示する_で初期化された場合_AAA_は表示する()
+        {
 
             //setUp
             const bool isDisplay = true; //表示する
@@ -34,7 +38,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示する_で初期化された場合_表示A_は表示する(){
+        public void 指定文字列を表示する_で初期化された場合_表示A_は表示する()
+        {
 
             //setUp
             const bool isDisplay = true; //表示する
@@ -50,7 +55,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示する_で初期化された場合_表A123_は表示する(){
+        public void 指定文字列を表示する_で初期化された場合_表A123_は表示する()
+        {
 
             //setUp
             const bool isDisplay = true; //表示する
@@ -66,7 +72,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示する_で初期化された場合_123_は表示する(){
+        public void 指定文字列を表示する_で初期化された場合_123_は表示する()
+        {
 
             //setUp
             const bool isDisplay = true; //表示する
@@ -82,7 +89,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示する_で初期化された場合_12アイウ_は表示する(){
+        public void 指定文字列を表示する_で初期化された場合_12アイウ_は表示する()
+        {
 
             //setUp
             const bool isDisplay = true; //表示する
@@ -99,7 +107,8 @@ namespace BjdTest.log{
 
 
         [Fact]
-        public void 指定文字列を表示しない_で初期化された場合_AAA_は表示しない(){
+        public void 指定文字列を表示しない_で初期化された場合_AAA_は表示しない()
+        {
 
             //setUp
             const bool isDisplay = false; //表示しない
@@ -115,7 +124,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示しない_で初期化された場合_表示A_は表示しない(){
+        public void 指定文字列を表示しない_で初期化された場合_表示A_は表示しない()
+        {
 
             //setUp
             const bool isDisplay = false; //表示しない
@@ -131,7 +141,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示しない_で初期化された場合_表A123_は表示しない(){
+        public void 指定文字列を表示しない_で初期化された場合_表A123_は表示しない()
+        {
 
             //setUp
             const bool isDisplay = false; //表示しない
@@ -149,7 +160,8 @@ namespace BjdTest.log{
 
 
         [Fact]
-        public void 指定文字列を表示しない_で初期化された場合_123_は表示しない(){
+        public void 指定文字列を表示しない_で初期化された場合_123_は表示しない()
+        {
 
             //setUp
             const bool isDisplay = false; //表示しない
@@ -165,7 +177,8 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定文字列を表示しない_で初期化された場合_12アイウ_は表示しない(){
+        public void 指定文字列を表示しない_で初期化された場合_12アイウ_は表示しない()
+        {
 
             //setUp
             const bool isDisplay = false; //表示しない
@@ -181,9 +194,10 @@ namespace BjdTest.log{
         }
 
         [Fact]
-        public void 指定した文字列が表示対象か否かの判断(){
+        public void 指定した文字列が表示対象か否かの判断()
+        {
 
-            var dat = new Dat(new[]{CtrlType.TextBox});
+            var dat = new Dat(new[] { CtrlType.TextBox });
             dat.Add(true, "AAA");
             dat.Add(true, "表示");
             dat.Add(true, "123");
@@ -210,7 +224,8 @@ namespace BjdTest.log{
 
         }
 
-        private static void Check(LogLimit logLimit, String str, bool expected){
+        private static void Check(LogLimit logLimit, String str, bool expected)
+        {
             var actual = logLimit.IsDisplay(str);
             Assert.Equal(actual, expected);
         }

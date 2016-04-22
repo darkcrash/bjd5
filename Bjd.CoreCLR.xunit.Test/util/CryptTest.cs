@@ -5,7 +5,6 @@ using Xunit;
 namespace BjdTest.util
 {
 
-
     public class CryptTest
     {
 

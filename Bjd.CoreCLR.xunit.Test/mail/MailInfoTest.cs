@@ -1,17 +1,20 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Bjd.mail;
-using NUnit.Framework;
+using Xunit;
 using System.IO;
 using System.Reflection;
 
-namespace BjdTest.mail {
-    
-    class MailInfoTest{
-        
+namespace BjdTest.mail
+{
+
+    public class MailInfoTest : IDisposable
+    {
+
         private string _dfFile;
 
-        [SetUp]
-        public void SetUp() {
+        public MailInfoTest()
+        {
             //const string srcDir = "C:\\tmp2\\bjd5\\BJDTest";
             const string srcDir = ".";
             //テンポラリテストデータの準備
@@ -21,46 +24,50 @@ namespace BjdTest.mail {
             File.Copy(src, _dfFile);
         }
 
-        [TearDown]
-        public void TearDown() {
+        public void Dispose()
+        {
             //テンポラリテストデータの削除
             File.Delete(_dfFile);//テンポラリ削除
         }
 
-        [TestCase("Date", "Sat, 28 Apr 2012 14:16:34 +0900")]
-        [TestCase("From", "sin@comco.ne.jp")]
-        [TestCase("Host", "win7-201108")]
-        //[TestCase("Name", "MailInfoTest.dat")]
-        [TestCase("RetryCounter", "0")]
-        [TestCase("Size", "310")]
-        [TestCase("To", "user1@example.com")]
-        [TestCase("Uid", "bjd.00634712193942765633.000")]
-        [TestCase("Addr", "127.0.0.1")]
-        public void プロパティによる値取得(string tag, string expected) {
-			//setUp
+        [Theory]
+        [InlineData("Date", "Sat, 28 Apr 2012 14:16:34 +0900")]
+        [InlineData("From", "sin@comco.ne.jp")]
+        [InlineData("Host", "win7-201108")]
+        //[InlineData("Name", "MailInfoTest.dat")]
+        [InlineData("RetryCounter", "0")]
+        [InlineData("Size", "310")]
+        [InlineData("To", "user1@example.com")]
+        [InlineData("Uid", "bjd.00634712193942765633.000")]
+        [InlineData("Addr", "127.0.0.1")]
+        public void プロパティによる値取得(string tag, string expected)
+        {
+            //setUp
             var sut = new MailInfo(_dfFile);
             //exercise
             var actual = sut.GetType().GetProperty(tag).GetValue(sut, null).ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
-        
-        [TestCase(0,true)]
-        [TestCase(100, true)]
-        public void IsProcessにより処理対象かどうかを判断する(double threadSpan, bool expected) {
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(100, true)]
+        public void IsProcessにより処理対象かどうかを判断する(double threadSpan, bool expected)
+        {
             //setUp
             var sut = new MailInfo(_dfFile);
             //exercise
-            var actual = sut.IsProcess(threadSpan,_dfFile);
+            var actual = sut.IsProcess(threadSpan, _dfFile);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
 
-        [Test]
-        public void Saveによる保存() {
+        [Fact]
+        public void Saveによる保存()
+        {
 
             //setUp
             var tmpFile = Path.GetTempFileName();
@@ -71,28 +78,31 @@ namespace BjdTest.mail {
             //verify
             var src = File.ReadAllLines(_dfFile);
             var dst = File.ReadAllLines(tmpFile);
-            Assert.AreEqual(src.Count(), dst.Count());
-            for (int i = 0; i < src.Count(); i++) {
-                Assert.AreEqual(src[i], dst[i]);
+            Assert.Equal(src.Count(), dst.Count());
+            for (int i = 0; i < src.Count(); i++)
+            {
+                Assert.Equal(src[i], dst[i]);
             }
 
             //tearDown
             File.Delete(tmpFile);
         }
 
-        [Test]
-        public void ToStringによる文字列化() {
+        [Fact]
+        public void ToStringによる文字列化()
+        {
             //setUp
             var sut = new MailInfo(_dfFile);
             var expected = "from:sin@comco.ne.jp to:user1@example.com size:310 uid:bjd.00634712193942765633.000";
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
-        public void パラメータ指定によるコンストラクタの動作確認() {
+        [Fact]
+        public void パラメータ指定によるコンストラクタの動作確認()
+        {
             //setUp
             var a = new MailInfo(_dfFile);
             //var sut = new MailInfo(a.Uid, a.Size, a.Host, a.Addr, a.Date,a.From, a.To);
@@ -101,7 +111,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
     }

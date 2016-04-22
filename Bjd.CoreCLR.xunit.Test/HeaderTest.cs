@@ -3,44 +3,51 @@ using Bjd.util;
 using Xunit;
 using Bjd;
 
-namespace BjdTest {
-    public class HeaderTest {
+namespace BjdTest
+{
+    public class HeaderTest
+    {
         [Fact]
-        public void TotalTest() {
+        public void TotalTest()
+        {
             const int max = 5;
             var sb = new StringBuilder();
-            for (int i = 0; i < max; i++) {
+            for (int i = 0; i < max; i++)
+            {
                 sb.Append(string.Format("key_{0:D3}: val_{0:D3}\r\n", i));
             }
-            byte [] buf = Bytes.Create(sb.ToString());
+            byte[] buf = Bytes.Create(sb.ToString());
             var header = new Header(buf);
 
             //GetBytes()
             //自動的に追加される空行を追加すると、初期化したbyte[]と同じになるはず
-            var tmp = Bytes.Create(header.GetBytes(),"\r\n");
-            for (int i=0;i<buf.Length;i++) {
-                Assert.Equal(buf[i],tmp[i]);
+            var tmp = Bytes.Create(header.GetBytes(), "\r\n");
+            for (int i = 0; i < buf.Length; i++)
+            {
+                Assert.Equal(buf[i], tmp[i]);
             }
 
             //Count
-            Assert.Equal(header.Count,max);
+            Assert.Equal(header.Count, max);
 
 
-            for(var i=0;i<header.Count;i++){
-                var key = string.Format("key_{0:D3}",i);
-                var valStr = string.Format("val_{0:D3}",i);
+            for (var i = 0; i < header.Count; i++)
+            {
+                var key = string.Format("key_{0:D3}", i);
+                var valStr = string.Format("val_{0:D3}", i);
 
                 //GetVal(string key)
                 Assert.Equal(header.GetVal(key), valStr);
 
                 //Replace(string key,string str)
-                var replaceStr = string.Format("replace_{0:D3}",i);
-                header.Replace(key,replaceStr);
+                var replaceStr = string.Format("replace_{0:D3}", i);
+                header.Replace(key, replaceStr);
                 Assert.Equal(header.GetVal(key), replaceStr);
             }
 
             const int appendMax = 3;
-            for (int i = 0; i < appendMax; i++) {
+            for (int i = 0; i < appendMax; i++)
+            {
                 //Append(string key,string val)
                 var key = string.Format("AppendKey_{0:D3}", i);
                 var val = string.Format("AppendVal_{0:D3}", i);
@@ -51,8 +58,8 @@ namespace BjdTest {
             Assert.Equal(header.Count, max + appendMax);
 
         }
-        
-        
+
+
         //Recv のテスト
         /*[Test]
         public void RecvTest() {
