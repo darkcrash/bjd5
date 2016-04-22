@@ -4,12 +4,11 @@ using System.Linq;
 using System.Reflection;
 using Bjd.log;
 using BjdTest.test;
-using NUnit.Framework;
+using Xunit;
 
 namespace BjdTest.log
 {
-    [TestFixture]
-    class LogFileTest
+    public class LogFileTest
     {
         //テンポラリディレクトリ名
         const String TmpDir = "LogFileTest";
@@ -25,7 +24,7 @@ namespace BjdTest.log
             Directory.Delete(dir, true);
         }
 
-        [Test]
+        [Fact]
         public void ログの種類日別で予想されたパターンのファイルが２つ生成される()
         {
 
@@ -43,14 +42,14 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.That(actual, Is.EqualTo(expected));
+                Assert.Equal(actual, expected);
 
                 //tearDown
                 //sut.Dispose();
             }
         }
 
-        [Test]
+        [Fact]
         public void ログの種類月別で予想されたパターンのファイルが２つ生成される()
         {
 
@@ -68,7 +67,7 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.That(actual, Is.EqualTo(expected));
+                Assert.Equal(actual, expected);
 
                 //tearDown
                 //sut.Dispose();
@@ -76,7 +75,7 @@ namespace BjdTest.log
 
         }
 
-        [Test]
+        [Fact]
         public void ログの種類固定で予想されたパターンのファイルが２つ生成される()
         {
 
@@ -94,7 +93,7 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.That(actual, Is.EqualTo(expected));
+                Assert.Equal(actual, expected);
 
                 //tearDown
                 //sut.Dispose();
@@ -102,7 +101,7 @@ namespace BjdTest.log
 
         }
 
-        [Test]
+        [Fact]
         public void Appendで３行ログを追加すると通常ログが3行になる()
         {
 
@@ -130,11 +129,11 @@ namespace BjdTest.log
             var actual = lines.Length;
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
 
-        [Test]
+        [Fact]
         public void Appendで３行ログを追加するとセキュアログが1行になる()
         {
 
@@ -163,13 +162,16 @@ namespace BjdTest.log
             var actual = lines.Length;
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
         }
 
-        [Test]
+        [Fact]
         public void 過去7日分のログを準備して本日からsaveDaysでtailする()
         {
+            //// コードページ932を先に読み込むことで、エラーを回避する
+            //var encService = System.Text.CodePagesEncodingProvider.Instance;
+            //encService.GetEncoding(932);
 
             //setUp
             var dir = TestUtil.GetTmpPath(TmpDir);
@@ -212,7 +214,7 @@ namespace BjdTest.log
             var actual = File.ReadAllLines(path).Length;
 
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
 
         }
