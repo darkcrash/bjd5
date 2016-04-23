@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Bjd.DhcpServer.CoreCLR")]
+[assembly: AssemblyTitle("Bjd.DhcpServer.CoreCLR.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Bjd.DhcpServer.CoreCLR")]
+[assembly: AssemblyProduct("Bjd.DhcpServer.CoreCLR.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,5 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cd1276ee-55f6-4ae8-97b8-5fe3222ee63a")]
-[assembly: InternalsVisibleTo("Bjd.DhcpServer.CoreCLR.Test")]
+[assembly: Guid("83ca1be5-58ab-48f9-91d6-9b4c22322f3a")]

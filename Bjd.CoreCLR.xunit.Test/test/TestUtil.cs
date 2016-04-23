@@ -25,7 +25,7 @@ namespace BjdTest.test
         //BJD.Lang.txtを作業ディレクトリにコピーする
         public static void CopyLangTxt()
         {
-            var src = string.Format("{0}\\BJD.Lang.txt", ProjectDirectory() + "\\SetupFiles");
+            var src = string.Format("{0}\\BJD.Lang.txt", ProjectDirectory() + "\\Bjd.CoreCLR");
             var dst = string.Format("{0}\\BJD.Lang.txt", Directory.GetCurrentDirectory());
             File.Copy(src, dst, true);
         }
