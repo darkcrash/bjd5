@@ -14,7 +14,17 @@ namespace Bjd
     {
 
         private Define() { }
-        static Define Instance = new Define();
+
+        static Define _Instance = new Define();
+        static Define Instance
+        {
+            get
+            {
+                if (!isInitialize) Initialize(null);
+                return _Instance;
+            }
+        }
+        static bool isInitialize = false;
         string _executablePath;
         string _executableDirectory;
         string _productVersion;
@@ -24,6 +34,7 @@ namespace Bjd
 
         public static void Initialize(IServiceProvider sb)
         {
+            isInitialize = true;
             Trace.TraceInformation("Define.Initialize Start");
 
             // get service
@@ -32,6 +43,13 @@ namespace Bjd
             var runtimeEnvironment = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeEnvironment>(sb);
             var applicationEnvironment = GetService<IApplicationEnvironment>(sb);
             var libraryManager = GetService<ILibraryManager>(sb);
+
+            if (applicationEnvironment == null)
+                applicationEnvironment = PlatformServices.Default.Application;
+            if (runtimeEnvironment == null)
+                runtimeEnvironment = PlatformServices.Default.Runtime;
+            if (libraryManager == null)
+                libraryManager = PlatformServices.Default.LibraryManager;
 
             if (applicationEnvironment != null)
             {

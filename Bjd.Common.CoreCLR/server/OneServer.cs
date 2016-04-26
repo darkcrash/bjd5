@@ -41,7 +41,7 @@ namespace Bjd.server
         //�X�e�[�^�X�\���p
         public override String ToString()
         {
-            var stat = IsJp ? "+ �T�[�r�X�� " : "+ In execution ";
+            var stat = IsJp ? "+ サービス中 " : "+ In execution ";
             if (ThreadBaseKind != ThreadBaseKind.Running)
             {
                 stat = IsJp ? "- ��~ " : "- Initialization failure ";

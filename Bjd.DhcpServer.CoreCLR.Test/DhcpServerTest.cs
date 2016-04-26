@@ -9,6 +9,7 @@ using Xunit;
 using Bjd.DhcpServer;
 using Bjd;
 using System.Net;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace DhcpServerTest
 {
@@ -19,14 +20,9 @@ namespace DhcpServerTest
         private static TmpOption _op; //設定ファイルの上書きと退避
         private static Server _sv; //サーバ
 
-        private  IServiceProvider _serviceProvider;
 
-        public DhcpServerTest(IServiceProvider serviceProvider)
+        public DhcpServerTest()
         {
-
-            _serviceProvider = serviceProvider;
-            Define.Initialize(_serviceProvider);
-
             TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //設定ファイルの退避と上書き
@@ -45,11 +41,16 @@ namespace DhcpServerTest
         public void Dispose()
         {
             //サーバ停止
-            _sv.Stop();
-            _sv.Dispose();
-
-            //設定ファイルのリストア
-            _op.Dispose();
+            try
+            {
+                _sv.Stop();
+                _sv.Dispose();
+            }
+            finally
+            {
+                //設定ファイルのリストア
+                _op.Dispose();
+            }
         }
 
         PacketDhcp Access(byte[] buf)
