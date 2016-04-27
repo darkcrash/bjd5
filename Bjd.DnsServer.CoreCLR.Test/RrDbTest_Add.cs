@@ -1,13 +1,13 @@
 ﻿using Bjd.net;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
 
     public class RrDbTest_add{
 
-        [Test]
+        [Fact]
         public void 新規のリソース追加は成功する(){
             //setUp
             var sut = new RrDb();
@@ -15,10 +15,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Add(new RrA("domain", 100, new Ip("1.2.3.4")));
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 同一リソースの追加_TTLが0の場合は失敗する(){
             //setUp
             var sut = new RrDb();
@@ -28,10 +28,10 @@ namespace DnsServerTest{
             sut.Add(new RrA("domain", ttl, new Ip("1.2.3.4")));
             var actual = sut.Add(new RrA("domain", 100, new Ip("1.2.3.4")));
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 同一リソースの追加_TTLが0以外の場合は上書きされる(){
             //setUp
             var sut = new RrDb();
@@ -40,11 +40,11 @@ namespace DnsServerTest{
             sut.Add(new RrA("domain", ttl, new Ip("1.2.3.4")));
             sut.Add(new RrA("domain", 20, new Ip("1.2.3.4")));
             //verify
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(1)); //件数は１件になる
-            Assert.That(RrDbTest.Get(sut, 0).Ttl, Is.EqualTo(20)); //TTLは後から追加した20になる
+            Assert.Equal(RrDbTest.Size(sut), 1); //件数は１件になる
+            Assert.Equal(RrDbTest.Get(sut, 0).Ttl, 20u); //TTLは後から追加した20になる
         }
 
-        [Test]
+        [Fact]
         public void 異なるリソースの追加(){
             //setUp
             var sut = new RrDb();
@@ -55,7 +55,7 @@ namespace DnsServerTest{
             sut.Add(new RrNs("domain", 10, "ns"));
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

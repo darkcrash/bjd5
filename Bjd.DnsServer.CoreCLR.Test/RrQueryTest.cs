@@ -1,11 +1,11 @@
 ﻿using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
     public class RrQueryTest{
 
-        [Test]
+        [Fact]
         public void GetDnsTypeの確認(){
             //setUp
             var expected = DnsType.A;
@@ -13,10 +13,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DnsType;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void ToStringの確認(){
             //setUp
             var expected = "Query A aaa.com";
@@ -24,7 +24,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

@@ -11,7 +11,7 @@ using Bjd.option;
 using Bjd.util;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest
 {
@@ -87,7 +87,7 @@ namespace DnsServerTest
             return (bool)func.Invoke(sut, new object[] { domainName, mail, serial, refresh, retry, expire, minimum });
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof(IOException))]
         //例外テスト
         public void コンストラクタの例外処理_指定したファイルが存在しない()
@@ -99,7 +99,7 @@ namespace DnsServerTest
                 );
         }
 
-        [Test]
+        [Fact]
         public void getDomainNameの確認_namedcaで初期化された場合ルートになる()
         {
             //setUp
@@ -109,10 +109,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetDomainName();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getDomainNameの確認_Datで初期化された場合指定されたドメインになる()
         {
             //setUp
@@ -121,10 +121,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetDomainName();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getListによる検索_ヒットするデータが存在する場合()
         {
             //setUp
@@ -134,10 +134,10 @@ namespace DnsServerTest
             //exercise
             int actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetListによる検索_ヒットするデータが存在しない場合()
         {
             //setUp
@@ -147,10 +147,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetListによる検索_名前が同じでタイプのデータが存在する場合()
         {
             //setUp
@@ -160,10 +160,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetListを使用すると期限の切れたリソースが削除される()
         {
             //setUp
@@ -179,12 +179,12 @@ namespace DnsServerTest
             sut.GetList("www.example.com.", DnsType.A);
             var actual = RrDbTest.Size(sut); //DBのサイズは0になっている
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
             //TearDown
             TestUtil.WaitDisp(null);
         }
 
-        [Test]
+        [Fact]
         public void Findによる検索_ヒットするデータが存在しない場合()
         {
             //setUp
@@ -194,10 +194,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Find("www.example.com.", DnsType.A);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void findによる検索_ヒットするデータが存在する場合()
         {
             //setUp
@@ -208,10 +208,10 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Find("www.example.com.", DnsType.A);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 重複しない２つのリソースの追加()
         {
             //setUp
@@ -228,10 +228,10 @@ namespace DnsServerTest
             //exercise
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 重複する２つのリソースの追加()
         {
             //setUp
@@ -245,10 +245,10 @@ namespace DnsServerTest
             //exercise
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 一部が重複する２つのリソースの追加()
         {
             //setUp
@@ -263,7 +263,7 @@ namespace DnsServerTest
             //exercise
             int actual = Size(sut);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

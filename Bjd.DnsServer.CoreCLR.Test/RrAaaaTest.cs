@@ -1,7 +1,7 @@
 ﻿using Bjd.net;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
@@ -11,7 +11,7 @@ namespace DnsServerTest{
         //type= 0x0001(A) class=0x0001 ttl=0x00000e10 dlen=0x0004 data=3b6a1bd0
         private const string Str0 = "001c0001000151800010200102000dfffff102163efffeb144d7";
 
-        [Test]
+        [Fact]
         public void GetIpの確認(){
             //setUp
             var expected = new Ip("2001:200:dff:fff1:216:3eff:feb1:44d7");
@@ -19,10 +19,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ip;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void バイナリ初期化との比較(){
             //setUp
             var sut = new RrAaaa("aaa.com", 64800, new Ip("::1"));
@@ -30,10 +30,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 実パケット生成したオブジェクトとの比較(){
             //setUp
             var sut = new RrAaaa("orange.kame.net", 0x00015180, new Ip("2001:200:dff:fff1:216:3eff:feb1:44d7"));
@@ -42,18 +42,18 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void ToStringの確認(){
             //setUp
-            var expected = "Aaaa www.com TTL=100 ::1";
+            var expected = "AAAA www.com TTL=100 ::1";
             var sut = new RrAaaa("www.com", 100, new Ip("::1"));
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

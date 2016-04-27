@@ -2,7 +2,7 @@
 using Bjd.option;
 using Bjd.util;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest
 {
@@ -40,7 +40,7 @@ namespace DnsServerTest
             return "";
         }
 
-        [Test]
+        [Fact]
         public void Aレコードを読み込んだ時_A及びPTRが保存される()
         {
 
@@ -51,13 +51,13 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(2)); //A,PTR
-            Assert.That(print(RrDbTest.Get(sut, 0)), Is.EqualTo("A www.aaa.com. TTL=0 192.168.0.1"));
-            Assert.That(print(RrDbTest.Get(sut, 1)), Is.EqualTo("Ptr 1.0.168.192.in-addr.arpa. TTL=0 www.aaa.com."));
+            Assert.Equal(RrDbTest.Size(sut), 2); //A,PTR
+            Assert.Equal(print(RrDbTest.Get(sut, 0)), "A www.aaa.com. TTL=0 192.168.0.1");
+            Assert.Equal(print(RrDbTest.Get(sut, 1)), "Ptr 1.0.168.192.in-addr.arpa. TTL=0 www.aaa.com.");
 
         }
 
-        [Test]
+        [Fact]
         public void AAAAレコードを読み込んだ時_AAAA及びPTRが保存される()
         {
             //setUp
@@ -67,12 +67,12 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(2)); //AAAA,PTR
-            Assert.That(print(RrDbTest.Get(sut, 0)), Is.EqualTo("Aaaa www.aaa.com. TTL=0 fe80::f509:c5be:437b:3bc5"));
-            Assert.That(print(RrDbTest.Get(sut, 1)), Is.EqualTo("Ptr 5.c.b.3.b.7.3.4.e.b.5.c.9.0.5.f.0.0.0.0.0.0.0.0.0.0.0.0.0.8.e.f.ip6.arpa. TTL=0 www.aaa.com."));
+            Assert.Equal(RrDbTest.Size(sut), 2); //AAAA,PTR
+            Assert.Equal(print(RrDbTest.Get(sut, 0)), "AAAA www.aaa.com. TTL=0 fe80::f509:c5be:437b:3bc5");
+            Assert.Equal(print(RrDbTest.Get(sut, 1)), "Ptr 5.c.b.3.b.7.3.4.e.b.5.c.9.0.5.f.0.0.0.0.0.0.0.0.0.0.0.0.0.8.e.f.ip6.arpa. TTL=0 www.aaa.com.");
         }
 
-        [Test]
+        [Fact]
         public void MXレコードを読み込んだ時_MX_A及びPTRが保存される()
         {
             //setUp
@@ -82,13 +82,13 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(3)); //MX,A,PTR
-            Assert.That(print(RrDbTest.Get(sut, 0)), Is.EqualTo("Mx aaa.com. TTL=0 15 smtp.aaa.com."));
-            Assert.That(print(RrDbTest.Get(sut, 1)), Is.EqualTo("A smtp.aaa.com. TTL=0 210.10.2.250"));
-            Assert.That(print(RrDbTest.Get(sut, 2)), Is.EqualTo("Ptr 250.2.10.210.in-addr.arpa. TTL=0 smtp.aaa.com."));
+            Assert.Equal(RrDbTest.Size(sut), 3); //MX,A,PTR
+            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Mx aaa.com. TTL=0 15 smtp.aaa.com.");
+            Assert.Equal(print(RrDbTest.Get(sut, 1)), "A smtp.aaa.com. TTL=0 210.10.2.250");
+            Assert.Equal(print(RrDbTest.Get(sut, 2)), "Ptr 250.2.10.210.in-addr.arpa. TTL=0 smtp.aaa.com.");
         }
 
-        [Test]
+        [Fact]
         public void NSレコードを読み込んだ時_NS_A及びPTRが保存される()
         {
             //setUp
@@ -98,13 +98,13 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify count
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(3)); //NS,A,PTR
-            Assert.That(print(RrDbTest.Get(sut, 0)), Is.EqualTo("Ns aaa.com. TTL=0 ns.aaa.com."));
-            Assert.That(print(RrDbTest.Get(sut, 1)), Is.EqualTo("A ns.aaa.com. TTL=0 111.3.255.0"));
-            Assert.That(print(RrDbTest.Get(sut, 2)), Is.EqualTo("Ptr 0.255.3.111.in-addr.arpa. TTL=0 ns.aaa.com."));
+            Assert.Equal(RrDbTest.Size(sut), 3); //NS,A,PTR
+            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Ns aaa.com. TTL=0 ns.aaa.com.");
+            Assert.Equal(print(RrDbTest.Get(sut, 1)), "A ns.aaa.com. TTL=0 111.3.255.0");
+            Assert.Equal(print(RrDbTest.Get(sut, 2)), "Ptr 0.255.3.111.in-addr.arpa. TTL=0 ns.aaa.com.");
         }
 
-        [Test]
+        [Fact]
         public void CNAMEレコードを読み込んだ時_CNAMEが保存される()
         {
             //setUp
@@ -114,11 +114,11 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.That(RrDbTest.Size(sut), Is.EqualTo(1)); //Cname
-            Assert.That(print(RrDbTest.Get(sut, 0)), Is.EqualTo("Cname alias.aaa.com. TTL=0 cname.aaa.com."));
+            Assert.Equal(RrDbTest.Size(sut), 1); //Cname
+            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Cname alias.aaa.com. TTL=0 cname.aaa.com.");
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof (ValidObjException))]
         public void enable_falseのデータを追加すると例外が発生する()
         {
@@ -136,7 +136,7 @@ namespace DnsServerTest
             //Assert.Fail("ここが実行されたらテスト失敗");
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof (ValidObjException))]
         public void 無効なAレコードを読み込むと例外が発生する()
         {
@@ -156,7 +156,7 @@ namespace DnsServerTest
 
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof(ValidObjException))]
         public void 無効なAAAAレコードを読み込むと例外が発生する()
         {
@@ -176,7 +176,7 @@ namespace DnsServerTest
 
         }
 
-        [Test]
+        [Fact]
         //[ExpectedException(typeof(ValidObjException))]
         public void 無効なタイプのレコードを読み込むと例外が発生する()
         {

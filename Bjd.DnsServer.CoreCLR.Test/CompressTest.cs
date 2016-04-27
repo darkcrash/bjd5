@@ -1,13 +1,13 @@
 ﻿using Bjd.util;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
     public class CompressTest{
         private const string Str0 = "9c608180000100010004000407737570706f727406676f6f676c6503636f6d00001c0001c00c00050001000017fe00090477777733016cc014c01400020001000017dd0006036e7331c014c01400020001000017dd0006036e7332c014c01400020001000017dd0006036e7334c014c01400020001000017dd0006036e7333c014c04500010001000018830004d8ef200ac057000100010000192c0004d8ef220ac07b00010001000018830004d8ef240ac06900010001000018240004d8ef260a";
 
-        [Test]
+        [Fact]
         public void ホスト名を圧縮して格納する(){
             //setUp
             var buf = TestUtil.HexStream2Bytes(Str0);
@@ -18,16 +18,16 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.GetData();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //以下の、UnCompressでもう一度元に戻してみる
             //exercise
             var s = new UnCompress(Bytes.Create(buf, actual), buf.Length);
             //verify
-            Assert.That(s.HostName, Is.EqualTo("google.com."));
+            Assert.Equal(s.HostName, "google.com.");
         }
 
-        [Test]
+        [Fact]
         public void ホスト名を圧縮しないで格納する(){
             //setUp
             var buf = TestUtil.HexStream2Bytes(Str0);
@@ -38,13 +38,13 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.GetData();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
 
             //以下の、UnCompressでもう一度元に戻してみる
             //exercise
             var s = new UnCompress(Bytes.Create(buf, actual), buf.Length);
             //verify
-            Assert.That(s.HostName, Is.EqualTo("goo.com."));
+            Assert.Equal(s.HostName, "goo.com.");
         }
     }
 }

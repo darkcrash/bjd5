@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
     public class PacketDnsHeaderTest{
@@ -13,7 +13,7 @@ namespace DnsServerTest{
         //private string str0 = "000381800001000200030004";
         private string str0 = "000381800001000200030004";
 
-        [Test]
+        [Fact]
         public void getClsの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -21,10 +21,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.Id;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getFlagsの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -32,10 +32,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.Flags;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getQDの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -43,10 +43,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(0); //QD=0
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getANの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -54,10 +54,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(1); //AN=1
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getNSの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -65,10 +65,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(2); //NS=2
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void getARの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader(TestUtil.HexStream2Bytes(str0), 0);
@@ -76,10 +76,10 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(3); //AR=3
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void setCountの確認(){
             //setUp
             PacketDnsHeader sut = new PacketDnsHeader();
@@ -88,7 +88,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(3);
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
@@ -10,7 +10,7 @@ namespace DnsServerTest{
         //PTR class=1 ttl=0x000000e10 localhost
         private const string Str0 = "000c000100000e10000b096c6f63616c686f737400";
 
-        [Test]
+        [Fact]
         public void GetPtrの確認(){
             //setUp
             var expected = "www.aaa.com.";
@@ -18,10 +18,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ptr;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void バイナリ初期化との比較(){
             //setUp
             var sut = new RrPtr("1.0.0.127.in-addr.arpa.", 64800, "1.");
@@ -29,10 +29,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 実パケット生成したオブジェクトとの比較(){
             //setUp
             var sut = new RrPtr("1.0.0.127.in-addr.arpa.", 0x00000e10, "localhost");
@@ -41,10 +41,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void ToStringの確認(){
             //setUp
             var expected = "Ptr 1.0.0.127.in-addr.arpa. TTL=0 www.aaa.com.";
@@ -52,7 +52,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
@@ -12,7 +12,7 @@ namespace DnsServerTest{
         private const string Str0 = "0002000100011e860006036e7332c00c";
 
 
-        [Test]
+        [Fact]
         public void GetClsの確認(){
             //setUp
             var sut = new PacketRr(TestUtil.HexStream2Bytes(Str0), 0);
@@ -20,10 +20,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Cls;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetTypeの確認(){
             //setUp
             var sut = new PacketRr(TestUtil.HexStream2Bytes(Str0), 0);
@@ -31,10 +31,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DnsType;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetTtlの確認(){
             //setUp
             var sut = new PacketRr(TestUtil.HexStream2Bytes(Str0), 0);
@@ -42,10 +42,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ttl;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetDLenの確認(){
             //setUp
             var sut = new PacketRr(TestUtil.HexStream2Bytes(Str0), 0);
@@ -53,10 +53,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DLen;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void GetData確認(){
             //setUp
             var sut = new PacketRr(TestUtil.HexStream2Bytes(Str0), 0);
@@ -65,10 +65,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Data;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void SetClsの確認(){
             //setUp
             var sut = new PacketRr(0);
@@ -79,10 +79,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Cls;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void SetTypeの確認(){
             //setUp
             var sut = new PacketRr(0);
@@ -92,7 +92,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DnsType;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }

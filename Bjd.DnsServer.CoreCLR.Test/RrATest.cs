@@ -1,7 +1,7 @@
 ﻿using Bjd.net;
 using BjdTest.test;
 using Bjd.DnsServer;
-using NUnit.Framework;
+using Xunit;
 
 namespace DnsServerTest{
 
@@ -11,7 +11,7 @@ namespace DnsServerTest{
         //type= 0x0001(A) class=0x0001 ttl=0x00000e10 dlen=0x0004 data=3b6a1bd0
         private const string Str0 = "0001000100000e1000043b6a1bd0";
 
-        [Test]
+        [Fact]
         public void GetIpの確認(){
             //setUp
             var expected = new Ip("127.0.0.1");
@@ -19,10 +19,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ip;
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void バイナリ初期化との比較(){
             //setUp
             var sut = new RrA("aaa.com", 64800, new Ip("1.2.3.4"));
@@ -30,10 +30,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void 実パケット生成したオブジェクトとの比較(){
             //setUp
             var sut = new RrA("aaa.com", 0x00000e10, new Ip("59.106.27.208"));
@@ -42,10 +42,10 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
 
-        [Test]
+        [Fact]
         public void ToStringの確認(){
             //setUp
             var expected = "A aaa.com TTL=0 127.0.0.1";
@@ -53,7 +53,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.That(actual, Is.EqualTo(expected));
+            Assert.Equal(actual, expected);
         }
     }
 }
