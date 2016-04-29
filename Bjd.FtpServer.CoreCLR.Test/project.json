@@ -1,6 +1,6 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "Bjd.DnsServer.CoreCLR.Test Class Library",
+  "description": "Bjd.FtpServer.CoreCLR.Test Class Library",
   "authors": [ "y.m" ],
   "tags": [ "" ],
   "repository": {
@@ -14,7 +14,8 @@
     "Bjd.Common.CoreCLR": "1.0.0-*",
     "Bjd.CoreCLR": "1.0.0-*",
     "Bjd.CoreCLR.xunit.Test": "1.0.0-*",
-    "Bjd.DnsServer.CoreCLR": "1.0.0-*",
+    "Bjd.FtpServer.CoreCLR": "1.0.0-*",
+    "NUnit": "3.2.0",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204",
     "System.Reflection": "4.1.0-beta-23516",

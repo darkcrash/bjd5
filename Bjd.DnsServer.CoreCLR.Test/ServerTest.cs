@@ -30,12 +30,12 @@ namespace DnsServerTest
             TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //named.caのコピー
-            var src = string.Format("{0}\\DnsServerTest\\named.ca", TestUtil.ProjectDirectory());
-            var dst = string.Format("{0}\\BJD\\out\\named.ca", TestUtil.ProjectDirectory());
+            var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
+            var dst = string.Format("{0}\\Bjd.CoreCLR\\named.ca", TestUtil.ProjectDirectory());
             File.Copy(src, dst, true);
 
             //設定ファイルの退避と上書き
-            _op = new TmpOption("DnsServerTest", "DnsServerTest.ini");
+            _op = new TmpOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             Kernel kernel = new Kernel();
             var option = kernel.ListOption.Get("Dns");

@@ -61,6 +61,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DhcpServer.CoreCLR.Test
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DnsServer.CoreCLR.Test", "Bjd.DnsServer.CoreCLR.Test\Bjd.DnsServer.CoreCLR.Test.xproj", "{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.FtpServer.CoreCLR.Test", "Bjd.FtpServer.CoreCLR.Test\Bjd.FtpServer.CoreCLR.Test.xproj", "{6F407C21-A6AC-4851-965B-4F8C20B38F56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -983,6 +985,42 @@ Global
 		{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
 		{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}.Tmp|x86.ActiveCfg = Debug|Any CPU
 		{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}.Tmp|x86.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|Any CPU.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|x86.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.CD_ROM|x86.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Debug|x86.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.DVD-5|x86.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|x86.ActiveCfg = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Release|x86.Build.0 = Release|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|Any CPU.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|x86.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.SingleImage|x86.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|Any CPU.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|x86.ActiveCfg = Debug|Any CPU
+		{6F407C21-A6AC-4851-965B-4F8C20B38F56}.Tmp|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

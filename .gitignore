@@ -27,8 +27,6 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-Setup/Setup/Express
-BJD/out
 BJDTest/$$Tmp.ini
 project.lock.json
 mailbox/*
