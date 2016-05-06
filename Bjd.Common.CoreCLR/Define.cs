@@ -152,7 +152,7 @@ namespace Bjd
 
             // set define
             Instance._executableDirectory = AppContext.BaseDirectory;
-            Instance._executablePath = System.IO.Path.Combine(AppContext.BaseDirectory, "BJD.CoreCLR");
+            Instance._executablePath = System.IO.Path.Combine(Instance._executableDirectory, "BJD.CoreCLR");
             Instance._productVersion = asmName.Version.ToString();
 
             if (runtimeEnvironment != null)
@@ -169,6 +169,14 @@ namespace Bjd
 
 
             Trace.TraceInformation("Define.Initialize End");
+        }
+
+        public static void TestInitalize()
+        {
+            Initialize(null);
+            var parent = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
+            Instance._executableDirectory = System.IO.Path.Combine(parent, "Bjd.CoreCLR");
+
         }
 
         public static event EventHandler ChangeOperationSystem;

@@ -15,15 +15,24 @@ namespace FtpServerTest
     //[TestFixture]
     public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.InternalFixture>
     {
-        public class InternalFixture: IDisposable
+        public class InternalFixture : IDisposable
         {
+            public TmpOption _op; //設定ファイルの上書きと退避
+            public Server _v6Sv; //サーバ
+            public Server _v4Sv; //サーバ
+
             //[TestFixtureSetUp]
-            static InternalFixture()
+            public InternalFixture()
             {
+                //Define.Initialize(null);
+
                 TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
+
+                Bjd.service.Service.ServiceTest();
+
                 Kernel kernel = new Kernel();
                 var option = kernel.ListOption.Get("Ftp");
                 Conf conf = new Conf(option);
@@ -58,9 +67,6 @@ namespace FtpServerTest
         }
 
 
-        private static TmpOption _op; //設定ファイルの上書きと退避
-        private static Server _v6Sv; //サーバ
-        private static Server _v4Sv; //サーバ
         private SockTcp _v6Cl; //クライアント
         private SockTcp _v4Cl; //クライアント
 
@@ -108,8 +114,8 @@ namespace FtpServerTest
         //共通処理(ログイン成功)
         private void Login(string userName, SockTcp cl)
         {
-
-            CheckBanner(cl.StringRecv(1, this));//バナーチェック
+            var banner = cl.StringRecv(1, this);
+            CheckBanner(banner);//バナーチェック
 
             cl.StringSend(string.Format("USER {0}", userName));
             Assert.Equal(cl.StringRecv(1, this), string.Format("331 Password required for {0}.\r\n", userName));
@@ -121,7 +127,7 @@ namespace FtpServerTest
         public void ステータス情報_ToString_の出力確認_V4()
         {
 
-            var sv = _v4Sv;
+            var sv = this._fixture._v4Sv;
             var expected = "+ サービス中 \t                 Ftp\t[127.0.0.1\t:TCP 21]\tThread";
 
             //exercise
@@ -135,7 +141,7 @@ namespace FtpServerTest
         public void ステータス情報_ToString_の出力確認_V6()
         {
 
-            var sv = _v6Sv;
+            var sv = this._fixture._v6Sv;
             var expected = "+ サービス中 \t                 Ftp\t[::1\t:TCP 21]\tThread";
 
             //exercise
@@ -758,7 +764,7 @@ namespace FtpServerTest
             var port = 249;
             cl.StringSend("PORT 127,0,0,1,0,249");
             var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal(cl.StringRecv(2, this), "200 PORT command successful.\r\n");
 
             //stor
             cl.StringSend("STOR 0.txt");

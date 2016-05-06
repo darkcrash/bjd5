@@ -14,7 +14,7 @@ namespace FtpServerTest
 
         public CurrentDirTest()
         {
-            Define.Initialize(null);
+            Define.TestInitalize();
         }
 
 
@@ -32,7 +32,7 @@ namespace FtpServerTest
 
             //var workDir = dir + "\\work";
             //var rootDirectory = workDir + "\\FtpTestDir";
-            var workDir = System.IO.Path.Combine(startup, "work");
+            //var workDir = System.IO.Path.Combine(startup, "work");
             //var rootDirectory = Path.Combine(workDir, "Bjd.FtpServer.CoreCLR.Test");
             var rootDirectory = Path.Combine(startup, "TestDir");
 
@@ -103,8 +103,9 @@ namespace FtpServerTest
             //**************************************************
             //仮想フォルダを追加して試験する
             //**************************************************
-            var fromFolder = string.Format("{0}\\home2", rootDirectory);
-            var toFolder = string.Format("{0}\\home0", rootDirectory);
+            //var fromFolder = string.Format("{0}\\home2", rootDirectory);
+            var fromFolder = Path.Combine(rootDirectory, "home2");
+            var toFolder = Path.Combine(rootDirectory, "home0");
             listMount.Add(fromFolder, toFolder);
 
             //ファイル一覧の取得
@@ -138,8 +139,10 @@ namespace FtpServerTest
             //**************************************************
             ////仮想フォルダを追加して試験する
             //**************************************************
-            fromFolder = workDir + "\\FtpTestDir2\\tmp";
-            toFolder = string.Format("{0}\\home0", rootDirectory);
+            //fromFolder = workDir + "\\FtpTestDir2\\tmp";
+            fromFolder = Path.Combine(startup, "TestDir2");
+            //toFolder = string.Format("{0}\\home0", rootDirectory);
+            toFolder = Path.Combine(rootDirectory, "home0");
             listMount.Add(fromFolder, toFolder);
 
             //ファイル一覧の取得

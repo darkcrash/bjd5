@@ -11,6 +11,29 @@ namespace Bjd.service
         static Service instance = new Service();
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
 
+        public static void ServiceTest()
+        {
+            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
+            {
+                var f = new EventTypeFilter(SourceLevels.All);
+                l.Filter = f;
+            }
+
+            // Add console trace
+            //System.Diagnostics.Trace.Listeners.Add(new trace.ConsoleTraceListner());
+            Trace.TraceInformation("Service.ServiceTest Start");
+
+            // Define Initialize
+            Define.TestInitalize();
+
+            // service start
+            //Service.instance.OnStart();
+            //Console.CancelKeyPress += Console_CancelKeyPress;
+            //signal.WaitOne();
+
+            Trace.TraceInformation("Service.ServiceTest End");
+        }
+
         public static void ServiceMain(IServiceProvider sb)
         {
             foreach (TraceListener l in System.Diagnostics.Trace.Listeners)

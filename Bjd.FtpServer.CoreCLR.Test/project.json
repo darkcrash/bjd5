@@ -12,7 +12,6 @@
   "licenseUrl": "",
   "dependencies": {
     "Bjd.Common.CoreCLR": "1.0.0-*",
-    "Bjd.CoreCLR": "1.0.0-*",
     "Bjd.CoreCLR.xunit.Test": "1.0.0-*",
     "Bjd.FtpServer.CoreCLR": "1.0.0-*",
     "NUnit": "3.2.0",
