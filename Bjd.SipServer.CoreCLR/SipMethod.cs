@@ -1,7 +1,8 @@
 ﻿
 namespace Bjd.SipServer
 {
-    enum SipMethod {
+    public enum SipMethod
+    {
         Unknown = 0,
         Invite = 1,
         Ack = 2,
