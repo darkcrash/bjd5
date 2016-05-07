@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Bjd.CoreCLR.Test Class Library",
+  "description": "Bjd.Common.CoreCLR.Test Class Library",
   "authors": [ "y.m" ],
   "tags": [ "" ],
   "repository": {
