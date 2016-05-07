@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Bjd.ProxyHttpServer.CoreCLR")]
+[assembly: AssemblyTitle("Bjd.ProxyHttpServer.CoreCLR.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Bjd.ProxyHttpServer.CoreCLR")]
+[assembly: AssemblyProduct("Bjd.ProxyHttpServer.CoreCLR.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0fd8cf7a-cb45-48a2-9175-53d869694935")]
-
-
-[assembly: InternalsVisibleTo("Bjd.ProxyHttpServer.CoreCLR.Test")]
+[assembly: Guid("225dfcd8-2b6f-406c-8e5c-c6019acb8127")]
