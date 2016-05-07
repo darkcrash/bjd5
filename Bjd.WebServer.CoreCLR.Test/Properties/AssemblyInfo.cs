@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BJD.WebServer.CoreCLR")]
+[assembly: AssemblyTitle("Bjd.WebServer.CoreCLR.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BJD.WebServer.CoreCLR")]
-[assembly: AssemblyCopyright("Copyright(c) 1998/05.. by SIN/SapporoWorks")]
+[assembly: AssemblyProduct("Bjd.WebServer.CoreCLR.Test")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("98424797-eaef-4717-b8d9-bdf587aa370b")]
-
-
-[assembly: InternalsVisibleTo("Bjd.WebServer.CoreCLR.Test")]
+[assembly: Guid("c92878e0-61f7-45b9-973c-39f96a378d86")]
