@@ -17,7 +17,7 @@ namespace Bjd.SmtpServer.Test
         Smtp
     }
 
-    public class TestServer
+    public class TestServer : IDisposable
     {
 
         private readonly TmpOption _op; //設定ファイルの上書きと退避
@@ -26,11 +26,15 @@ namespace Bjd.SmtpServer.Test
 
         public TestServer(TestServerType type, String iniSubDir, String iniFileName)
         {
+            TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             var confName = type == TestServerType.Pop ? "Pop3" : "Smtp";
 
             //設定ファイルの退避と上書き
             _op = new TmpOption(iniSubDir, iniFileName);
+
+            service.Service.ServiceTest();
+
             var kernel = new Kernel();
             var option = kernel.ListOption.Get(confName);
             var conf = new Conf(option);
@@ -66,17 +70,20 @@ namespace Bjd.SmtpServer.Test
         public void SetMail(String user, String fileName)
         {
             //メールボックスへのデータセット
-            var srcDir = String.Format("{0}\\SmtpServerTest\\", TestUtil.ProjectDirectory());
-            var dstDir = String.Format("{0}\\mailbox\\{1}\\", srcDir, user);
-            File.Copy(srcDir + "DF_" + fileName, dstDir + "DF_" + fileName, true);
-            File.Copy(srcDir + "MF_" + fileName, dstDir + "MF_" + fileName, true);
+            var srcDir = AppContext.BaseDirectory;
+            var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            //File.Copy(srcDir + "DF_" + fileName, dstDir + "DF_" + fileName, true);
+            //File.Copy(srcDir + "MF_" + fileName, dstDir + "MF_" + fileName, true);
+            File.Copy(Path.Combine(srcDir, "DF_" + fileName), Path.Combine(dstDir, "DF_" + fileName), true);
+            File.Copy(Path.Combine(srcDir, "MF_" + fileName), Path.Combine(dstDir, "MF_" + fileName), true);
         }
 
         //DFファイルの一覧を取得する
         public string[] GetDf(string user)
         {
-            var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
             //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
+            //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
+            var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var files = Directory.GetFiles(dir, "DF*");
             return files;
         }
@@ -84,7 +91,8 @@ namespace Bjd.SmtpServer.Test
         //メールの一覧を取得する
         public List<Mail> GetMf(string user)
         {
-            var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
+            //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
+            var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var ar = new List<Mail>();
             foreach (var fileName in Directory.GetFiles(dir, "MF*"))
             {
@@ -109,7 +117,8 @@ namespace Bjd.SmtpServer.Test
             _op.Dispose();
 
             //メールボックスの削除
-            var path = String.Format("{0}\\SmtpServerTest\\mailbox", TestUtil.ProjectDirectory());
+            //var path = String.Format("{0}\\SmtpServerTest\\mailbox", TestUtil.ProjectDirectory());
+            var path = TestDefine.Instance.TestMailboxPath;
             //Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
             Directory.Delete(path, true);
         }

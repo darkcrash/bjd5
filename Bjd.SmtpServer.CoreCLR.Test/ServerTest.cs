@@ -13,23 +13,29 @@ using System.Collections.Generic;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class ServerTest : ILife, IDisposable
+    public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.SmtpTestServer>
     {
 
-        private TestServer _testServer;
-
-        public  ServerTest()
+        public class SmtpTestServer : TestServer
         {
+            public SmtpTestServer() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test", "ServerTest.ini")
+            {
+            }
+        }
 
-            TestUtil.CopyLangTxt();//BJD.Lang.txt
+        private SmtpTestServer _testServer;
 
-            _testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest", "ServerTest.ini");
+        public ServerTest(SmtpTestServer server)
+        {
+            _testServer = server;
+
+
+
 
         }
 
         public void Dispose()
         {
-            _testServer.Dispose();
 
         }
 

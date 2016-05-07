@@ -32,7 +32,6 @@ project.lock.json
 mailbox/*
 *.parameters.json
 /*ServerTest
-/Bjd.AzureResourceGroup
 /packages/
 /.vs/config
 /BJDTest

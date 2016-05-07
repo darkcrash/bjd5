@@ -13,59 +13,82 @@ using System.Collections.Generic;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTest : ILife, IDisposable
+    public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
     {
 
-        private static TmpOption _op; //設定ファイルの上書きと退避
-        private static Server _v4Sv; //サーバ
-        private static Server _v6Sv; //サーバ
 
-
-        public EsmtpServerTest()
+        public class ServerFixture : IDisposable
         {
-            //MailBoxは、Smtp3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
-            //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
+            public TmpOption _op; //設定ファイルの上書きと退避
+            public Server _v4Sv; //サーバ
+            public Server _v6Sv; //サーバ
 
-            //設定ファイルの退避と上書き
-            _op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
-            var kernel = new Kernel();
-            var option = kernel.ListOption.Get("Smtp");
-            var conf = new Conf(option);
+            public ServerFixture()
+            {
 
-            //サーバ起動
-            _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
-            _v4Sv.Start();
-            _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
-            _v6Sv.Start();
+                //MailBoxは、Smtp3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
+                //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
+
+                //設定ファイルの退避と上書き
+                //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
+                _op = new TmpOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
+
+                service.Service.ServiceTest();
+
+                var kernel = new Kernel();
+                var option = kernel.ListOption.Get("Smtp");
+                var conf = new Conf(option);
+
+                //サーバ起動
+                _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                _v4Sv.Start();
+                _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                _v6Sv.Start();
 
 
-            Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+                Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
 
+            }
+
+            public void Dispose()
+            {
+
+                //サーバ停止
+                _v4Sv.Stop();
+                _v6Sv.Stop();
+
+                _v4Sv.Dispose();
+                _v6Sv.Dispose();
+
+                //設定ファイルのリストア
+                _op.Dispose();
+
+                //メールボックスの削除
+                //Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
+                Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
+
+            }
+
+        }
+
+        private ServerFixture _server;
+
+        public EsmtpServerTest(ServerFixture fixture)
+        {
+            _server = fixture;
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
-            //サーバ停止
-            _v4Sv.Stop();
-            _v6Sv.Stop();
-
-            _v4Sv.Dispose();
-            _v6Sv.Dispose();
-
-            //設定ファイルのリストア
-            _op.Dispose();
-
-            //メールボックスの削除
-            Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
         }
-
 
 
         //DFファイルの一覧を取得する
         private string[] GetDf(string user)
         {
-            var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
+            //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
+            var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var files = Directory.GetFiles(dir, "DF*");
             return files;
         }
