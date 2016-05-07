@@ -13,29 +13,48 @@ using Bjd.SmtpServer;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class PopClientTest : ILife, IDisposable
+    public class PopClientTest : ILife, IDisposable, IClassFixture<PopClientTest.ServerFixture>
     {
 
-        private TestServer _testServer;
+        public class ServerFixture : TestServer, IDisposable
+        {
+            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Fetch", "PopClientTest.ini")
+            {
+                ////MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
+                ////また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
+                //_testServer = new TestServer(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini");
+
+                //usrr2のメールボックスへの２通のメールをセット
+                SetMail("user2", "00635026511425888292");
+                SetMail("user2", "00635026511765086924");
+
+            }
+            public override void Dispose()
+            {
+                //fetchDbの削除
+                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
+                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
+                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
+                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
+
+                base.Dispose();
+            }
+
+        }
+
+        private ServerFixture _testServer;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public PopClientTest()
+        public PopClientTest(ServerFixture fixture)
         {
+            _testServer = fixture;
 
-            //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
-            //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
-            _testServer = new TestServer(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini");
-
-            //usrr2のメールボックスへの２通のメールをセット
-            _testServer.SetMail("user2", "00635026511425888292");
-            _testServer.SetMail("user2", "00635026511765086924");
 
         }
 
 
         public void Dispose()
         {
-            _testServer.Dispose();
         }
 
         private PopClient CreatePopClient(InetKind inetKind)
@@ -281,7 +300,8 @@ namespace Bjd.SmtpServer.Test
         int CountMail(String user)
         {
             //メールボックス内に蓄積されたファイル数を検証する
-            var path = String.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
+            //var path = String.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
+            var path = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var di = new DirectoryInfo(path);
 
             //DF_*がn個存在する

@@ -72,6 +72,7 @@ namespace Bjd.SmtpServer.Test
             //メールボックスへのデータセット
             var srcDir = AppContext.BaseDirectory;
             var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            Directory.CreateDirectory(dstDir);
             //File.Copy(srcDir + "DF_" + fileName, dstDir + "DF_" + fileName, true);
             //File.Copy(srcDir + "MF_" + fileName, dstDir + "MF_" + fileName, true);
             File.Copy(Path.Combine(srcDir, "DF_" + fileName), Path.Combine(dstDir, "DF_" + fileName), true);
@@ -104,7 +105,7 @@ namespace Bjd.SmtpServer.Test
         }
 
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             //サーバ停止
             _v4Sv.Stop();

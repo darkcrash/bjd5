@@ -4,6 +4,7 @@ using Bjd;
 using Bjd.log;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Common.Test;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -12,19 +13,22 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini")
+            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Fetch", "PopClientTest.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user2", "00635026511425888292");
                 SetMail("user2", "00635026511765086924");
 
             }
-            public void Dispose()
+            public override void Dispose()
             {
                 //fetchDbの削除
-                File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
-                File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
+                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
+                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
+                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
+                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
 
+                base.Dispose();
             }
 
         }

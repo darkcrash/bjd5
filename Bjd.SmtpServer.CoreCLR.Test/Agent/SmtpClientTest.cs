@@ -10,19 +10,34 @@ using Bjd.Common.Test;
 
 namespace Bjd.SmtpServer.Test.Agent
 {
-    public class SmtpClientTest : ILife, IDisposable
+    public class SmtpClientTest : ILife, IDisposable, IClassFixture<SmtpClientTest.ServerFixture>
     {
-        private TestServer _testServer;
 
-
-        public SmtpClientTest()
+        public class ServerFixture : TestServer, IDisposable
         {
-            _testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest.ini");
+            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest.ini")
+            {
+                //usrr2のメールボックスへの２通のメールをセット
+                SetMail("user1", "00635026511425888292");
+                //SetMail("user1", "00635026511765086924");
+
+            }
+
+        }
+
+        private ServerFixture _testServer;
+
+
+        public SmtpClientTest(ServerFixture fixture)
+        {
+            //_testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest.ini");
+
+            _testServer = fixture;
+
         }
 
         public void Dispose()
         {
-            _testServer.Dispose();
         }
 
         private SmtpClient CreateSmtpClient(InetKind inetKind)
