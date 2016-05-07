@@ -7,6 +7,7 @@ using Bjd.mail;
 using Bjd.net;
 using Xunit;
 using Bjd.Common.Test;
+using System.IO;
 
 namespace Bjd.SmtpServer.Test.Agent
 {
@@ -15,12 +16,37 @@ namespace Bjd.SmtpServer.Test.Agent
 
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest.ini")
+            private string mailboxUser1;
+            private string mailboxUser2;
+
+            public ServerFixture() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
-                SetMail("user1", "00635026511425888292");
+                //SetMail("user1", "00635026511425888292");
                 //SetMail("user1", "00635026511765086924");
+                mailboxUser1 = Path.Combine(TestDefine.Instance.TestMailboxPath, "user1");
+                mailboxUser2 = Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
+                Directory.CreateDirectory(mailboxUser1);
+                Directory.CreateDirectory(mailboxUser2);
 
+
+            }
+
+            public override void Dispose()
+            {
+                try
+                {
+                    Directory.Delete(mailboxUser1);
+                }
+                catch { }
+                try
+                {
+                    Directory.Delete(mailboxUser2);
+                }
+                catch { }
+
+
+                base.Dispose();
             }
 
         }
@@ -77,6 +103,9 @@ namespace Bjd.SmtpServer.Test.Agent
             //setUp
             var sut = CreateSmtpClient(inetKind);
 
+            var expectedUser1 = _testServer.GetDf("user1").Count();
+            var expectedUser2 = _testServer.GetDf("user2").Count();
+
             //exercise
             sut.Connect();
             sut.Helo();
@@ -88,12 +117,11 @@ namespace Bjd.SmtpServer.Test.Agent
 
             //verify
             //user1及びuser2に１通づつメールが到着していることを確認する
-            var expected = 1;
             var actual = _testServer.GetDf("user1").Count();
-            Assert.Equal(actual, expected);
+            Assert.Equal(expectedUser1 + 1, actual);
 
-            actual = _testServer.GetDf("user1").Count();
-            Assert.Equal(actual, expected);
+            actual = _testServer.GetDf("user2").Count();
+            Assert.Equal(expectedUser2 + 1, actual);
 
             //tearDown
             sut.Dispose();
@@ -118,7 +146,8 @@ namespace Bjd.SmtpServer.Test.Agent
             sut.Quit();
 
             //verify
-            var mail2 = _testServer.GetMf("user1")[0];
+            var mailList = _testServer.GetMf("user1");
+            var mail2 = mailList[mailList.Count - 1];
             Assert.Equal(mail2.GetBody(), mail1.GetBody());
 
             //tearDown
@@ -144,7 +173,8 @@ namespace Bjd.SmtpServer.Test.Agent
             sut.Quit();
 
             //verify
-            var mail2 = _testServer.GetMf("user1")[0];
+            var mailList = _testServer.GetMf("user1");
+            var mail2 = mailList[mailList.Count - 1];
             Assert.Equal(mail2.GetBody(), mail1.GetBody());
 
             //tearDown
@@ -173,7 +203,7 @@ namespace Bjd.SmtpServer.Test.Agent
             var mail2 = _testServer.GetMf("user1")[0];
             var actual = mail2.GetBody().Length;
             var expected = mail1.GetBody().Length + 2;//\r\nが追加される
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Dispose();

@@ -157,7 +157,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsUser(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

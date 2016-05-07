@@ -14,19 +14,29 @@ using Bjd.SmtpServer;
 
 namespace Bjd.SmtpServer.Test.Agent
 {
-    public class SmtpClientTest_Auth : ILife, IDisposable
+    public class SmtpClientTest_Auth : ILife, IDisposable, IClassFixture<SmtpClientTest_Auth.ServerFixture>
     {
-
-        private TestServer _testServer;
-
-        public  SmtpClientTest_Auth()
+        public class ServerFixture : TestServer, IDisposable
         {
-            _testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest_Auth.ini");
+            public ServerFixture() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest_Auth.ini")
+            {
+                //usrr2のメールボックスへの２通のメールをセット
+                SetMail("user1", "00635026511425888292");
+                //SetMail("user1", "00635026511765086924");
+
+            }
+
+        }
+
+        private ServerFixture _testServer;
+
+        public SmtpClientTest_Auth(ServerFixture fixture)
+        {
+            _testServer = fixture;
         }
 
         public void Dispose()
         {
-            _testServer.Dispose();
         }
 
         private SmtpClient CreateSmtpClient(InetKind inetKind)
@@ -75,7 +85,7 @@ namespace Bjd.SmtpServer.Test.Agent
 
             var expected = "530 Authentication required.\r\n";
             var actual = sut.GetLastError();
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Dispose();
@@ -94,7 +104,7 @@ namespace Bjd.SmtpServer.Test.Agent
 
             var expected = "Mail() Status != Transaction";
             var actual = sut.GetLastError();
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Dispose();

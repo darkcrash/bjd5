@@ -30,7 +30,7 @@ namespace Bjd.SmtpServer.Test {
             var actual = Encoding.ASCII.GetString(mail.GetBytes()).Substring(0, 14);
 
             //varify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -53,7 +53,7 @@ namespace Bjd.SmtpServer.Test {
             var actual = mail.GetHeader("tag1");
 
             //varify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -76,7 +76,7 @@ namespace Bjd.SmtpServer.Test {
             var actual = mail.GetHeader("From");
 
             //varify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -97,7 +97,7 @@ namespace Bjd.SmtpServer.Test {
             var actual = mail.GetHeader("User-Agent");
 
             //varify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -120,7 +120,7 @@ namespace Bjd.SmtpServer.Test {
             var actual = mail.GetHeader("tag2");
 
             //varify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
         

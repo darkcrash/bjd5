@@ -106,7 +106,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = _testServer.ToString(InetKind.V4).Substring(0, 58);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -120,7 +120,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = _testServer.ToString(InetKind.V6).Substring(0, 52);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -171,7 +171,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -192,7 +192,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -213,7 +213,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -234,7 +234,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -255,7 +255,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -277,7 +277,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -302,7 +302,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -327,7 +327,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -354,7 +354,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -379,7 +379,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -402,7 +402,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -427,7 +427,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -452,7 +452,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -480,7 +480,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -513,7 +513,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -524,6 +524,8 @@ namespace Bjd.SmtpServer.Test
         [InlineData(InetKind.V6)]
         public void DATAコマンド_正常_メールボックス確認(InetKind inetKind)
         {
+            var expected = _testServer.GetDf("user1").Length + 1;
+
             //setUp
             var cl = CreateClient(inetKind);
             Helo(cl);
@@ -539,13 +541,11 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend(".");
             var l3 = cl.StringRecv(5, this);
 
-            var expected = 1;
-
             //exercise
             var actual = _testServer.GetDf("user1").Length;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -592,7 +592,7 @@ namespace Bjd.SmtpServer.Test
             var actual = lines.Count;//本分の行数を取得
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -640,7 +640,7 @@ namespace Bjd.SmtpServer.Test
             var actual = lines.Count;//本分の行数を取得
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -652,6 +652,8 @@ namespace Bjd.SmtpServer.Test
         [InlineData(InetKind.V6)]
         public void DATAコマンド_正常_連続２通(InetKind inetKind)
         {
+            var expected = _testServer.GetDf("user1").Length + 2;
+
             //setUp
             var cl = CreateClient(inetKind);
             Helo(cl);
@@ -677,13 +679,12 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend(".");
             cl.StringRecv(3, this);
 
-            var expected = 2;
 
             //exercise
             var actual = _testServer.GetDf("user1").Length;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -705,7 +706,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -730,7 +731,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -756,7 +757,7 @@ namespace Bjd.SmtpServer.Test
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -805,7 +806,7 @@ namespace Bjd.SmtpServer.Test
             var actual = lines.Count;//本分の行数を取得
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -854,7 +855,7 @@ namespace Bjd.SmtpServer.Test
             var actual = lines.Count;//本分の行数を取得
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();

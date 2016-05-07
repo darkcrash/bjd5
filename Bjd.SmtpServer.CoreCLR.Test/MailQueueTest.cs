@@ -73,7 +73,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.GetList(max, threadSpan).Count;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -99,7 +99,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.GetList(max, sec).Count;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -134,7 +134,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.GetList(max, threadSpan).Count;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -163,7 +163,7 @@ namespace Bjd.SmtpServer.Test
             var actual = mail.GetHeader("tag");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

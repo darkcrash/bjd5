@@ -82,7 +82,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Connect();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
 
             //tearDown
@@ -102,7 +102,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Connect();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
 
             //tearDown
@@ -123,7 +123,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Login("user1", "user1");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Dispose();
@@ -143,7 +143,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Login("user1", "xxx");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(sut.GetLastError(), "Timeout in PopClient RecvStatus()");
 
             //tearDown
@@ -167,7 +167,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Uidl(lines);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(lines.Count, 0);
 
             //tearDown
@@ -191,9 +191,9 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Uidl(lines);
 
             //verify
-            Assert.Equal(actual, expected);
-            Assert.Equal(lines[0], "1 bjd.00635026511425808252.000");
-            Assert.Equal(lines[1], "2 bjd.00635026511765066907.001");
+            Assert.Equal(expected, actual);
+            Assert.Equal("1 bjd.00635026511425808252.000", lines[0]);
+            Assert.Equal("2 bjd.00635026511765066907.001", lines[1]);
 
             //tearDown
             sut.Dispose();
@@ -216,7 +216,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Retr(0, mail);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(mail.GetBytes().Length, 308);
             //tearDown
             sut.Dispose();
@@ -239,7 +239,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Retr(0, mail); //user1は滞留が0通なので、存在しないメールをリクエストしている
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
             //tearDown
             sut.Dispose();
@@ -253,6 +253,7 @@ namespace Bjd.SmtpServer.Test
             //setUp
             var sut = CreatePopClient(inetKind);
             //var expected = true;
+            var expected = CountMail("user2");
 
             //exercise
             sut.Connect();
@@ -260,10 +261,10 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             sut.Dele(0);//1通削除
-            Assert.Equal(CountMail("user2"), 2);//QUIT前は２通
+            Assert.Equal(expected, CountMail("user2"));//QUIT前は２通
 
             sut.Quit();
-            Assert.Equal(CountMail("user2"), 1);//QUIT後は１通
+            Assert.Equal(expected - 1, CountMail("user2"));//QUIT後は１通
 
 
 
@@ -287,7 +288,7 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             var actual = sut.Dele(0);
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
 
 

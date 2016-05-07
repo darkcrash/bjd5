@@ -28,7 +28,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsHit(new Ip(ipStr));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         //enableEsmtp 0:適用しない　1:適用する
@@ -49,7 +49,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsHit(new Ip(ipStr));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

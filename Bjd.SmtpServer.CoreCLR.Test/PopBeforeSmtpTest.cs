@@ -46,7 +46,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(new Ip("127.0.0.1"));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(ip);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(ip);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

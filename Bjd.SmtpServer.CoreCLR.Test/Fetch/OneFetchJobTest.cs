@@ -66,7 +66,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Job(new Logger(), DateTime.Now, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             sut.Dispose();
         }
@@ -87,7 +87,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Job(new Logger(), DateTime.Now, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             sut.Dispose();
         }
@@ -111,7 +111,7 @@ namespace Bjd.SmtpServer.Test
             //２回目（5分後）の接続
             var actual = sut.Job(new Logger(), DateTime.Now.AddMinutes(5), this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             sut.Dispose();
         }
@@ -131,7 +131,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Job(new Logger(), DateTime.Now, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             sut.Dispose();
         }

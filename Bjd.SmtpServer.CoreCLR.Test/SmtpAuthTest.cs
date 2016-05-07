@@ -40,7 +40,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsFinish;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.IsFinish;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Job("AUTH XXXX");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -93,7 +93,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Job("AUTH PLAIN");//本来は、正しいコマンドだが
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -113,7 +113,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.IsFinish;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -134,7 +134,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Job(Base64.Encode("user1\0user1\0user2"));
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.IsFinish;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -176,7 +176,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Job(Base64.Encode("xxx"));
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.IsFinish;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -222,7 +222,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.IsFinish;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -243,7 +243,7 @@ namespace Bjd.SmtpServer.Test
             var actual = sut.Job(Base64.Encode(string.Format("user1 {0}", hash)));
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

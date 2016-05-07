@@ -44,7 +44,7 @@ namespace SmtpServerTest
             //exercise
             var actual = sut.Mail(paramList);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -65,7 +65,7 @@ namespace SmtpServerTest
             sut.Mail(paramList);
             var actual = sut.Message;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -83,7 +83,7 @@ namespace SmtpServerTest
             sut.Mail(paramList);
             var actual = sut.Message;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -103,7 +103,7 @@ namespace SmtpServerTest
             sut.Mail(paramList);
             var actual = sut.Message;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -122,7 +122,7 @@ namespace SmtpServerTest
             //exercise
             var actual = sut.Mail(paramList);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -144,7 +144,7 @@ namespace SmtpServerTest
             //exercise
             var actual = sut.Rcpt(paramList);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -165,7 +165,7 @@ namespace SmtpServerTest
             sut.Rcpt(paramList);
             var actual = sut.Message;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -183,7 +183,7 @@ namespace SmtpServerTest
             sut.Rcpt(paramList);
             var actual = sut.Message;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 

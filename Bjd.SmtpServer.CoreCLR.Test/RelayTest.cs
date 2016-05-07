@@ -29,7 +29,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsAllow(new Ip("192.168.0.1"));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -43,7 +43,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsAllow(new Ip("192.168.0.1"));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -60,7 +60,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.IsAllow(new Ip("192.168.0.1"));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
     }

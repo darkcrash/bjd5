@@ -85,6 +85,8 @@ namespace Bjd.SmtpServer.Test
             //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
             //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
             var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            if (!Directory.Exists(dir))
+                return new string[] { };
             var files = Directory.GetFiles(dir, "DF*");
             return files;
         }
@@ -94,6 +96,8 @@ namespace Bjd.SmtpServer.Test
         {
             //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
             var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            if (!Directory.Exists(dir))
+                return new List<Mail>();
             var ar = new List<Mail>();
             foreach (var fileName in Directory.GetFiles(dir, "MF*"))
             {

@@ -22,7 +22,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n.\r\n"));//<CL><CR>.<CL><CR>
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
         [Fact]
         public void Appendでドットのみの行を受信()
@@ -34,7 +34,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n..\r\n"));//<CL><CR>..<CL><CR>
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace Bjd.SmtpServer.Test
             var lines = Inet.GetLines(sut.Mail.GetBody());
             var actual = Encoding.ASCII.GetString(lines[0]);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace Bjd.SmtpServer.Test
             var lines = Inet.GetLines(sut.Mail.GetBody());
             var actual = Encoding.ASCII.GetString(lines[0]);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -78,7 +78,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("123.\r\n"));//.<CL><CR>
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
         [Fact]
         public void Appendでメール受信中にContinueが返される()
@@ -90,7 +90,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n."));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
         [Theory]
         [InlineData(1, 1023, RecvStatus.Continue)] //1Kbyte制限
@@ -105,7 +105,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Append(new byte[size]);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

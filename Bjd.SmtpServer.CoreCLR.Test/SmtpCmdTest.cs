@@ -43,7 +43,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Kind;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

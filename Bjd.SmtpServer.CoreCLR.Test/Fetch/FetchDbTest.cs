@@ -38,7 +38,7 @@ namespace Bjd.SmtpServer.Test {
             //exercise
             var actual = sut.IndexOf("2-1234567890");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             File.Delete(sut.FileName);
@@ -60,7 +60,7 @@ namespace Bjd.SmtpServer.Test {
             //存在するかどうか検索してみる
             var actual = sut.IndexOf("0-1234567890");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             File.Delete(sut.FileName);
@@ -80,7 +80,7 @@ namespace Bjd.SmtpServer.Test {
             //存在するデータの削除
             var actual = sut.Del("0-1234567890");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //存在するかどうか検索してみる(存在しない)
             Assert.Equal(sut.IndexOf("0-1234567890"), -1);
 
@@ -102,7 +102,7 @@ namespace Bjd.SmtpServer.Test {
             //存在するデータの削除
             var actual = sut.Del("XXX");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //存在するかどうか検索してみる(存在する)
             Assert.Equal(sut.IndexOf("0-1234567890"), 0);
 
@@ -123,7 +123,7 @@ namespace Bjd.SmtpServer.Test {
             //exercise
             var actual = sut.IsPast("0-1234567890",1);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             File.Delete(sut.FileName);
@@ -141,7 +141,7 @@ namespace Bjd.SmtpServer.Test {
             //exercise
             var actual = sut.IsPast("0-1234567890", 1);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             File.Delete(sut.FileName);

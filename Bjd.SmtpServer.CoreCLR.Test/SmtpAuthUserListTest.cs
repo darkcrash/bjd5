@@ -56,7 +56,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(user, pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -71,7 +71,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(user, pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -86,7 +86,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Auth(user, pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -101,7 +101,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.GetPass(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -116,7 +116,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.GetPass(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -131,7 +131,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.GetPass(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
