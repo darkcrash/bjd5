@@ -27,6 +27,8 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
+                Bjd.service.Service.ServiceTest();
+
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("Web-localhost:88");
                 var conf = new Conf(option);
