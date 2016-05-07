@@ -31,16 +31,7 @@ BJDTest/$$Tmp.ini
 project.lock.json
 mailbox/*
 *.parameters.json
-/WebServerTest
-/WebApiServerTest
-/SmtpServerTest
-/SipServerTest
-/ProxyPop3ServerTest
-/ProxyHttpServerTest
-/Pop3ServerTest
-/FtpServerTest
-/DnsServerTest
-/DhcpServerTest
+/*ServerTest
 /Bjd.AzureResourceGroup
 /packages/
 /.vs/config

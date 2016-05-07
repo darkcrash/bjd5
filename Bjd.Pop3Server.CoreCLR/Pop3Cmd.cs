@@ -1,6 +1,7 @@
 ﻿namespace Bjd.Pop3Server
 {
-    enum Pop3Cmd{
+    enum Pop3Cmd
+    {
         Quit,
         Noop,
         User,

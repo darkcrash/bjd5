@@ -25,7 +25,7 @@ namespace Bjd.FtpServer
             pageList.Add(Page2("VirtualFolder", Lang.Value("VirtualFolder"), kernel));
             pageList.Add(Page3("User", Lang.Value("User"), kernel));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            //Add(new OneVal("tab", null, Crlf.Nextline));
 
             Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
         }
@@ -50,6 +50,7 @@ namespace Bjd.FtpServer
             Add(new OneVal("reservationTime", 5000, Crlf.Nextline));
             return onePage;
         }
+
         private OnePage Page2(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);
@@ -65,6 +66,7 @@ namespace Bjd.FtpServer
             Add(new OneVal("mountList", new Dat(listVal), Crlf.Nextline));
             return onePage;
         }
+
         private OnePage Page3(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);

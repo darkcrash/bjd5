@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BJD.Pop3Server.CoreCLR")]
+[assembly: AssemblyTitle("Bjd.Pop3Server.CoreCLR.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BJD.Pop3Server.CoreCLR")]
+[assembly: AssemblyProduct("Bjd.Pop3Server.CoreCLR.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,11 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("699daad6-af4b-4bec-9a8d-476da30da3d4")]
-
-
-
-
-[assembly: InternalsVisibleTo("Bjd.Pop3Server.CoreCLR.Test")]
-[assembly: InternalsVisibleTo("Bjd.SmtpServer.CoreCLR.Test")]
-[assembly: InternalsVisibleTo("Bjd.ProxyPop3Server.CoreCLR.Test")]
+[assembly: Guid("65e3a9c9-debc-40d0-9de0-e3c3aa489db2")]

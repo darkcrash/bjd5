@@ -24,8 +24,6 @@ namespace FtpServerTest
             //[TestFixtureSetUp]
             public InternalFixture()
             {
-                //Define.Initialize(null);
-
                 TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き

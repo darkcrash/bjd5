@@ -3,19 +3,24 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Bjd.Pop3Server {
-    class APop {
-        
+namespace Bjd.Pop3Server
+{
+    internal class APop
+    {
+
         //認証
-        public static bool Auth(String user, String pass, string authStr, string recvStr) {
-            if (pass == null) {
+        public static bool Auth(String user, String pass, string authStr, string recvStr)
+        {
+            if (pass == null)
+            {
                 return false;
             }
             var data = Encoding.ASCII.GetBytes(authStr + pass);
             var md5 = MD5.Create();
             var result = md5.ComputeHash(data);
             var sb = new StringBuilder();
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++)
+            {
                 sb.Append(string.Format("{0:x2}", result[i]));
             }
             if (sb.ToString() == recvStr)
@@ -28,7 +33,8 @@ namespace Bjd.Pop3Server {
         }
 
         //AUTH文字列の生成
-        public static string CreateAuthStr(string serverName){
+        public static string CreateAuthStr(string serverName)
+        {
             var random = new Random();
             return string.Format("<{0}.{1}@{2}>", random.Next(GetCurrentThreadId()), DateTime.Now.Ticks, serverName);
         }

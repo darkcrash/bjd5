@@ -18,25 +18,27 @@ namespace Bjd.server
     //�e�T�[�o�I�u�W�F�N�g�̊��N���X<br>
     public abstract class OneServer : ThreadBase
     {
+        public Logger Logger;
+        public String NameTag { get; private set; }
 
         protected Conf Conf;
-        public Logger Logger;
         protected bool IsJp;
         protected int Timeout;//sec
-        SockServerTcp _sockServerTcp;
-        SockServerUdp _sockServerUdp;
-        readonly OneBind _oneBind;
+     
         //Ver5.9.2 Java fix
         protected Ssl ssl = null;
-
-        public String NameTag { get; private set; }
         protected Kernel Kernel; //SockObj��Trace�̂���
         protected AclList AclList = null;
 
+        private SockServerTcp _sockServerTcp;
+        private SockServerUdp _sockServerUdp;
+
         //�q�X���b�h�Ǘ�
-        readonly object SyncObj = new object(); //�r������I�u�W�F�N�g
-        readonly List<Task> _childThreads = new List<Task>();
-        readonly int _multiple; //�����ڑ���
+        private readonly object SyncObj = new object(); //�r������I�u�W�F�N�g
+        private readonly List<Task> _childThreads = new List<Task>();
+        private readonly int _multiple; //�����ڑ���
+        private readonly OneBind _oneBind;
+
 
         //�X�e�[�^�X�\���p
         public override String ToString()
@@ -48,8 +50,6 @@ namespace Bjd.server
             }
             return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)Conf.Get("port"), Count(), _multiple);
         }
-
-
 
         public int Count()
         {
@@ -86,6 +86,8 @@ namespace Bjd.server
             Conf = conf;
             _oneBind = oneBind;
             IsJp = kernel.IsJp();
+
+            // タスクのキャンセルにサーバー停止イベントを登録
             kernel.CancelToken.Register(() => this.StopLife());
 
             //Ver6.1.6
@@ -103,6 +105,7 @@ namespace Bjd.server
                 Conf.Set("enableAcl", 1);
                 Conf.Set("timeOut", 3);
             }
+
             //�e�X�g�p
             if (_oneBind == null)
             {
@@ -120,7 +123,9 @@ namespace Bjd.server
                 var acl = (Dat)Conf.Get("acl");
                 AclList = new AclList(acl, (int)Conf.Get("enableAcl"), Logger);
             }
+
             Timeout = (int)Conf.Get("timeOut");
+
         }
 
 
@@ -147,14 +152,19 @@ namespace Bjd.server
         public new void Stop()
         {
             System.Diagnostics.Trace.TraceInformation($"OneServer.Stop ");
+
+            // TCPソケットサーバーがなければ何もしない
             if (_sockServerTcp == null)
             {
                 return; //���łɏI���������I����Ă���
             }
+
+            // キャンセルして、停止
             _sockServerTcp.Cancel();
             base.Stop(); //life=false �ł��ׂẴ��[�v��������
             _sockServerTcp.Close();
 
+            // クライアント接続終了まで待機する
             // �S���̎q�X���b�h���I������̂�҂�
             while (Count() > 0)
             {

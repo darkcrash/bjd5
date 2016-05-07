@@ -31,7 +31,7 @@ namespace Bjd.Pop3Server
         {
 
             //Ver5.8.9
-            if ( kernel.RunMode == RunMode.Service)
+            if (kernel.RunMode == RunMode.Service)
             {
                 //���[���{�b�N�X�̏�������Ԋm�F
                 if (kernel.MailBox == null || !kernel.MailBox.Status)
@@ -94,7 +94,8 @@ namespace Bjd.Pop3Server
                 //USER/PASS
                 sockTcp.AsciiSend("+OK " + bannerMessage);
             }
-            else {
+            else
+            {
                 //APOP
                 authStr = APop.CreateAuthStr(Kernel.ServerName);
                 sockTcp.AsciiSend("+OK " + bannerMessage + " " + authStr);
@@ -196,12 +197,14 @@ namespace Bjd.Pop3Server
                                        new Ip(sockObj.RemoteAddress.Address.ToString())))
                                 goto END;
                         }
-                        else {
+                        else
+                        {
                             AuthError(sockTcp, user, paramList[1]);
                             goto END;
                         }
                     }
-                    else {
+                    else
+                    {
                         goto UNKNOWN;
                     }
                 }
@@ -228,7 +231,8 @@ namespace Bjd.Pop3Server
                                    new Ip(sockObj.RemoteAddress.Address.ToString())))
                             goto END;
                     }
-                    else {
+                    else
+                    {
                         AuthError(sockTcp, user, pass);
                         goto END;
                     }

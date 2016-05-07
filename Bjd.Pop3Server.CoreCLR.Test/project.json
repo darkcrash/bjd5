@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "Bjd.DnsServer.CoreCLR.Test Class Library",
-  "authors": [ "y.m" ],
+  "description": "Bjd.Pop3Server.CoreCLR.Test Class Library",
+  "authors": [ "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
     "type": "git",
@@ -10,10 +10,11 @@
   "projectUrl": "https://github.com/darkcrash/bjd5/",
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "licenseUrl": "",
+
   "dependencies": {
     "Bjd.Common.CoreCLR": "1.0.0-*",
     "Bjd.CoreCLR.xunit.Test": "1.0.0-*",
-    "Bjd.DnsServer.CoreCLR": "1.0.0-*",
+    "Bjd.Pop3Server.CoreCLR": "1.0.0-*",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204",
     "System.Reflection": "4.1.0-beta-23516",
