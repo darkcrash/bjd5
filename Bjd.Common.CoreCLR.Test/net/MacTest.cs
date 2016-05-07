@@ -19,7 +19,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString().ToLower();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -41,7 +41,7 @@ namespace BjdTest.net
             //exercise
             bool actual = sut.Equals(target);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
     }

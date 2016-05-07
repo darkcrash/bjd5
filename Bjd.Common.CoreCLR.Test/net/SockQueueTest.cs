@@ -15,7 +15,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(100).Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(10);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace BjdTest.net{
             //exercise
             var actual = sut.Dequeue(5);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 

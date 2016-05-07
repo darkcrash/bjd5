@@ -15,7 +15,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Add(new RrA("domain", 100, new Ip("1.2.3.4")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace DnsServerTest{
             sut.Add(new RrA("domain", ttl, new Ip("1.2.3.4")));
             var actual = sut.Add(new RrA("domain", 100, new Ip("1.2.3.4")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace DnsServerTest{
             sut.Add(new RrNs("domain", 10, "ns"));
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

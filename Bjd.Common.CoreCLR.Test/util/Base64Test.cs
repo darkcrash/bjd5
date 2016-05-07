@@ -18,7 +18,7 @@ namespace BjdTest.util
             //exercise
             string actual = Base64.Decode(Base64.Encode(str));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

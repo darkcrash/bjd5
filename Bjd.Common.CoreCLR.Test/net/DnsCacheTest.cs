@@ -22,7 +22,7 @@ namespace BjdTest.net
             String actual = sut.GetHostName(ip.IPAddress, new Logger());
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace BjdTest.net
             var actual = ipList[0].ToString();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -55,7 +55,7 @@ namespace BjdTest.net
             var actual = sut.size();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace BjdTest.net
             var actual = sut.size();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace BjdTest.net
             var actual = sut.size();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace BjdTest.net
             var actual = ipList.Count();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             TestUtil.WaitDisp(null);
 
@@ -131,7 +131,7 @@ namespace BjdTest.net
             var actual = sut.GetHostName(ip.IPAddress, new Logger());
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             TestUtil.WaitDisp(null);
         }

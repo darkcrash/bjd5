@@ -21,7 +21,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.NsName;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

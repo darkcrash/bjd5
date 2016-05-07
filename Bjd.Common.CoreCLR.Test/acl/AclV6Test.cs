@@ -22,7 +22,7 @@ namespace BjdTest.acl {
             //exercise
             var actual = sut.Start.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -40,7 +40,7 @@ namespace BjdTest.acl {
             //exercise
             var actual = sut.End.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -54,7 +54,7 @@ namespace BjdTest.acl {
             //exercise
             var actual = sut.IsHit(new Ip(ipStr));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]

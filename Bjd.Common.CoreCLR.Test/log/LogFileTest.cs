@@ -42,7 +42,7 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.Equal(actual, expected);
+                Assert.Equal(expected, actual);
 
                 //tearDown
                 //sut.Dispose();
@@ -67,7 +67,7 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.Equal(actual, expected);
+                Assert.Equal(expected, actual);
 
                 //tearDown
                 //sut.Dispose();
@@ -93,7 +93,7 @@ namespace BjdTest.log
                 var actual = Directory.GetFiles(dir, pattern).Count();
 
                 //verify
-                Assert.Equal(actual, expected);
+                Assert.Equal(expected, actual);
 
                 //tearDown
                 //sut.Dispose();
@@ -129,7 +129,7 @@ namespace BjdTest.log
             var actual = lines.Length;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -162,7 +162,7 @@ namespace BjdTest.log
             var actual = lines.Length;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -214,7 +214,7 @@ namespace BjdTest.log
             var actual = File.ReadAllLines(path).Length;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
 
         }

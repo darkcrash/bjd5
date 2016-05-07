@@ -23,6 +23,7 @@ namespace Bjd.option
             {
                 System.Diagnostics.Trace.TraceError(ex.Message);
                 System.Diagnostics.Trace.TraceError(ex.StackTrace);
+                throw;
             }
             finally
             {
@@ -175,7 +176,7 @@ namespace Bjd.option
                     }
                 }
             }
-            if (Get("Smtp") != null || Get("Pop") != null)
+            if (Get("Smtp") != null || Get("Pop3") != null)
             {
                 Add(new OptionMailBox(_kernel, Define.ExecutablePath)); //メールボックス
             }

@@ -46,7 +46,7 @@ namespace BjdTest.util
             var lines = File.ReadAllLines(path);
             string actual = lines[0];
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             sut.Delete();
 
@@ -91,7 +91,7 @@ namespace BjdTest.util
             string actual = oneVal.ToReg(false);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
 
             //TearDown

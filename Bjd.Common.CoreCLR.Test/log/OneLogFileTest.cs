@@ -57,7 +57,7 @@ namespace BjdTest.log
             var actual = File.ReadAllLines(fileName).Count();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

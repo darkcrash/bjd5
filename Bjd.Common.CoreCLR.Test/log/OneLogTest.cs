@@ -37,7 +37,7 @@ namespace BjdTest.log
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace BjdTest.log
             //exercise
             var actual = sut.IsSecure();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -66,7 +66,7 @@ namespace BjdTest.log
             //exercise
             var actual = sut.IsSecure();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
     }

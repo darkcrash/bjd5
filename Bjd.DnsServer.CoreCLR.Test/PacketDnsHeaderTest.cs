@@ -21,7 +21,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.Id;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.Flags;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(0); //QD=0
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(1); //AN=1
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(2); //NS=2
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(3); //AR=3
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace DnsServerTest{
             //exercise
             ushort actual = sut.GetCount(3);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

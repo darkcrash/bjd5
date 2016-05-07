@@ -203,7 +203,8 @@ namespace Bjd
                 {
                     tmpLogger.Set(LogKind.Error, null, 9000045, "It is not appointed");
                 }
-                else {
+                else
+                {
                     tmpLogger.Set(LogKind.Detail, null, 9000032, saveDirectory);
                     try
                     {
@@ -218,21 +219,30 @@ namespace Bjd
 
                 //Ver5.8.7 Java fix
                 //mailBox������
-                foreach (var o in ListOption)
+                var useMailBoxTag = new[] { "Smtp", "Pop3" };
+                foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
                 {
-                    //SmtpServer�Ⴕ���́APop3Server���g�p�����ꍇ�̂݃��[���{�b�N�X�����������                
-                    if (o.NameTag == "Smtp" || o.NameTag == "Pop3")
-                    {
-                        if (o.UseServer)
-                        {
-                            var conf = new Conf(ListOption.Get("MailBox"));
-                            var dir = ReplaceOptionEnv((String)conf.Get("dir"));
-                            var datUser = (Dat)conf.Get("user");
-                            var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
-                            MailBox = new MailBox(logger, datUser, dir);
-                            break;
-                        }
-                    }
+                    var op = ListOption.Get("MailBox");
+                    var conf = new Conf(op);
+                    var dir = ReplaceOptionEnv((String)conf.Get("dir"));
+                    var datUser = (Dat)conf.Get("user");
+                    var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
+                    MailBox = new MailBox(logger, datUser, dir);
+                    break;
+
+                    ////SmtpServer�Ⴕ���́APop3Server���g�p�����ꍇ�̂݃��[���{�b�N�X�����������                
+                    //if (o.NameTag == "Smtp" || o.NameTag == "Pop3")
+                    //{
+                    //    if (o.UseServer)
+                    //    {
+                    //        var conf = new Conf(ListOption.Get("MailBox"));
+                    //        var dir = ReplaceOptionEnv((String)conf.Get("dir"));
+                    //        var datUser = (Dat)conf.Get("user");
+                    //        var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
+                    //        MailBox = new MailBox(logger, datUser, dir);
+                    //        break;
+                    //    }
+                    //}
                 }
 
             }
@@ -341,7 +351,8 @@ namespace Bjd
             {
                 _logger.Set(LogKind.Error, null, 9000030, "");
             }
-            else {
+            else
+            {
                 ListServer.Start();
             }
         }

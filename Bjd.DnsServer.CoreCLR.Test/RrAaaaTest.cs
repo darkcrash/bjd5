@@ -19,7 +19,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ip;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

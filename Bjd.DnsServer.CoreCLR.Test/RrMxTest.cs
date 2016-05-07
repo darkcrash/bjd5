@@ -22,7 +22,7 @@ public class RrMxTest {
 		//exercise
 		ushort actual = sut.Preference;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -33,7 +33,7 @@ public class RrMxTest {
 		//exercise
 		string actual = sut.MailExchangeHost;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -44,7 +44,7 @@ public class RrMxTest {
 		//exercise
 		var actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -56,7 +56,7 @@ public class RrMxTest {
 		//exercise
 		var actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 	
 	[Fact]
@@ -67,7 +67,7 @@ public class RrMxTest {
 		//exercise
 		string actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 }
 }

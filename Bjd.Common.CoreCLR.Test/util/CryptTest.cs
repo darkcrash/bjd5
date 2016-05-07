@@ -21,7 +21,7 @@ namespace BjdTest.util
             //exercise
             var actual = Crypt.Decrypt(Crypt.Encrypt(str));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]

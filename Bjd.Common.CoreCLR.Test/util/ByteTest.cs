@@ -47,7 +47,7 @@ namespace BjdTest.util
             //exercise
             var actual = data[offset];
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -64,7 +64,7 @@ namespace BjdTest.util
             //exercise
             var actual = Bytes.IndexOf(data, offset, src);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

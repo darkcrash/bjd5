@@ -35,7 +35,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.IsLocal(domainList.ToList());
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]

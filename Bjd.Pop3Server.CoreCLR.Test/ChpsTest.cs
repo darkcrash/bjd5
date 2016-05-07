@@ -56,7 +56,7 @@ namespace Pop3ServerTest
             //exercise
             var actual = Chps.Change(user, pass, _mailBox, _conf);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -70,7 +70,7 @@ namespace Pop3ServerTest
             //exercise
             var actual = _mailBox.Auth(user, pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -85,7 +85,7 @@ namespace Pop3ServerTest
             //exercise
             var actual = Chps.Change(user, pass, _mailBox, _conf);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 

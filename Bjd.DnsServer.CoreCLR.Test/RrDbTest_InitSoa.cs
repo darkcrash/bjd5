@@ -20,7 +20,7 @@ namespace DnsServerTest{
             //exercise
             bool actual = RrDbTest.InitSoa(sut, "aaa.com.", "mail.", 1, 2, 3, 4, 5);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace DnsServerTest{
             //exercise
             bool actual = RrDbTest.InitSoa(sut, "aaa.com.", "mail.", 1, 2, 3, 4, 5);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace DnsServerTest{
             //exercise
             bool actual = RrDbTest.InitSoa(sut, "aaa.com.", "mail.", 1, 2, 3, 4, 5);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace DnsServerTest{
             //exercise
             bool actual = RrDbTest.InitSoa(sut, "aaa.com.", "mail.", 1, 2, 3, 4, 5);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

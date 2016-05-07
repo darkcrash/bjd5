@@ -52,7 +52,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Status;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -66,7 +66,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.IsUser(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -78,7 +78,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.GetPass(user);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -93,7 +93,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Auth(user,pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -108,7 +108,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, new Ip(ip));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -120,7 +120,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, new Ip(ip));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -133,7 +133,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, ip); //２回目のログイン
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.Login(user, ip); //２回目のログイン
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -172,7 +172,7 @@ namespace BjdTest.mail {
             var dt = sut.LastLogin(ip);//ログイン後の時間計測
             var actual = (dt.Ticks - now.Ticks) < 1000000; //10ミリ秒以下の誤差
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -187,7 +187,7 @@ namespace BjdTest.mail {
             //exercise
             var actual = sut.LastLogin(ip).Ticks;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

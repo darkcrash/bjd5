@@ -37,7 +37,7 @@ namespace BjdTest.mail
             var actual = sut.GetHeader(tag);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace BjdTest.mail
             var actual = sut.GetHeader(tag);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         //TODO まだ、全部のテストを実装できていない

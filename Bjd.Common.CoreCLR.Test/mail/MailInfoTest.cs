@@ -47,7 +47,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.GetType().GetProperty(tag).GetValue(sut, null).ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -61,7 +61,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.IsProcess(threadSpan, _dfFile);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -97,7 +97,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
     }

@@ -18,7 +18,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.GetData();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //以下の、UnCompressでもう一度元に戻してみる
             //exercise
@@ -38,7 +38,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.GetData();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //以下の、UnCompressでもう一度元に戻してみる
             //exercise

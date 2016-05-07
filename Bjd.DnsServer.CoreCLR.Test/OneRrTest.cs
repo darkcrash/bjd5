@@ -33,7 +33,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.IsEffective(now);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.IsEffective(now + 10); //10秒後
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.IsEffective(now + 11); //11秒後
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(null);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -189,7 +189,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(new RrA("name", 10, new Ip("192.168.0.2")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -201,7 +201,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(new RrA("other", 10, new Ip("192.168.0.1")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -213,7 +213,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(new RrAaaa("name", 10, new Ip("::1")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -225,7 +225,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(new RrA("name", 20, new Ip("0.0.0.1")));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -237,7 +237,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Equals(new RrTest("name", DnsType.A, 10, "12"));
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

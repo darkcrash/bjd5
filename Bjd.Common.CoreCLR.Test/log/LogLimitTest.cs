@@ -34,7 +34,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("AAA");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("表示A");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("表A123");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("123");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("12アイウ");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -120,7 +120,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("AAA");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("表示A");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("表A123");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -173,7 +173,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("123");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace BjdTest.log
             var actual = sut.IsDisplay("12アイウ");
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -227,7 +227,7 @@ namespace BjdTest.log
         private static void Check(LogLimit logLimit, String str, bool expected)
         {
             var actual = logLimit.IsDisplay(str);
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

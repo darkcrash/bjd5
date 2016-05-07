@@ -22,7 +22,7 @@ namespace BjdTest.plugin
             //exercise
             var actual = sut.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

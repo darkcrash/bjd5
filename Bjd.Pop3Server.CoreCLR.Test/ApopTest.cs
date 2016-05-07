@@ -35,7 +35,7 @@ namespace Pop3ServerTest{
             //パラメータのpassはクライアントからの入力と仮定する
             var actual = APop.Auth(user, user,challengeStr, sb.ToString());
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

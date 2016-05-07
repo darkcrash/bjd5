@@ -47,7 +47,7 @@ namespace DnsServerTest
             RrDbTest.AddNamedCaLine(sut, "", "; formerly NS.INTERNIC.NET");
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace DnsServerTest
             RrDbTest.AddNamedCaLine(sut, "", "");
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -197,7 +197,7 @@ namespace DnsServerTest
             var expected = "example.com.";
             var actual = RrDbTest.AddNamedCaLine(sut, "", "@      3600000      A     198.41.0.4");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -209,7 +209,7 @@ namespace DnsServerTest
             var expected = "www.example.com.";
             var actual = RrDbTest.AddNamedCaLine(sut, "", "www      3600000      A     198.41.0.4");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -221,7 +221,7 @@ namespace DnsServerTest
             var expected = "before.aaa.com.";
             var actual = RrDbTest.AddNamedCaLine(sut, "before.aaa.com.", "     3600000      A     198.41.0.4");
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

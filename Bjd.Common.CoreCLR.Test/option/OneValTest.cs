@@ -45,7 +45,7 @@ namespace BjdTest.option
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -82,7 +82,7 @@ namespace BjdTest.option
             //exercise
             String actual = sut.ToReg(isSecret);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -125,7 +125,7 @@ namespace BjdTest.option
             //exercise
             var actual = sut.FromReg(str);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -141,7 +141,7 @@ namespace BjdTest.option
             //exercise
             String actual = sut.ToReg(isDebug);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -173,7 +173,7 @@ namespace BjdTest.option
             //exercise
             var actual = sut.Value;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 

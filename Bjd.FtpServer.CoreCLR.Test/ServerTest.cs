@@ -131,7 +131,7 @@ namespace FtpServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 56);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -145,7 +145,7 @@ namespace FtpServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 50);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

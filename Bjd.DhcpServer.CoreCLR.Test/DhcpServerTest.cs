@@ -92,7 +92,7 @@ namespace DhcpServerTest
             //exercise
             var actual = _sv.ToString().Substring(0, 56);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

@@ -48,7 +48,7 @@ namespace BjdTest.acl
             //exercise
             AclKind actual = sut.Check(ip);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -87,7 +87,7 @@ namespace BjdTest.acl
             //exercise
             AclKind actual = sut.Check(ip);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
     }
