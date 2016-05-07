@@ -47,7 +47,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyFtpServer.CoreCLR"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DhcpServer.CoreCLR", "Bjd.DhcpServer.CoreCLR\Bjd.DhcpServer.CoreCLR.xproj", "{CD1276EE-55F6-4AE8-97B8-5FE3222EE63A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.CoreCLR.xunit.Test", "Bjd.CoreCLR.xunit.Test\Bjd.CoreCLR.xunit.Test.xproj", "{115D72BB-5ADF-49A9-A273-59068B5819DF}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Common.CoreCLR.Test", "Bjd.CoreCLR.xunit.Test\Bjd.Common.CoreCLR.Test.xproj", "{115D72BB-5ADF-49A9-A273-59068B5819DF}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DhcpServer.CoreCLR.Test", "Bjd.DhcpServer.CoreCLR.Test\Bjd.DhcpServer.CoreCLR.Test.xproj", "{83CA1BE5-58AB-48F9-91D6-9B4C22322F3A}"
 EndProject

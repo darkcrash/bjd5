@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "NUnitLite": {
-      "commandName": "NUnitLite",
-      "workingDirectory": "..\\Bjd.CoreCLR.Test"
-    }
-  }
-}
