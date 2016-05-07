@@ -1,7 +1,8 @@
 namespace Bjd.SmtpServer
 {
     //投稿者への定型メール
-    enum MlDocKind {
+    public enum MlDocKind
+    {
         Deny = 0,//無効な投稿者
         Guide = 1,//ガイド
         Welcome = 2,//登録完了

@@ -3,7 +3,7 @@ using Xunit;
 using System;
 using System.Text;
 
-namespace BjdTest.util
+namespace Bjd.Common.Test.util
 {
     public class InetTest
     {

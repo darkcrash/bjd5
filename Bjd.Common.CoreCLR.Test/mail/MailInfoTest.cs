@@ -5,7 +5,7 @@ using Xunit;
 using System.IO;
 using System.Reflection;
 
-namespace BjdTest.mail
+namespace Bjd.Common.Test.mail
 {
 
     public class MailInfoTest : IDisposable

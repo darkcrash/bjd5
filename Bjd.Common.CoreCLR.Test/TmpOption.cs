@@ -2,7 +2,7 @@
 using System.IO;
 using Bjd.util;
 
-namespace BjdTest.test
+namespace Bjd.Common.Test
 {
 
     public class TmpOption : IDisposable

@@ -2,19 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-//using System.Windows.Forms;
 using Bjd.ctrl;
 using Bjd.log;
 using Bjd.mail;
 using Bjd.net;
 using Bjd.option;
-using BjdTest.test;
 using Xunit;
 using Bjd;
 using System.Security.Cryptography;
 using System.Threading;
 
-namespace BjdTest.mail {
+namespace Bjd.Common.Test.mail {
 
     public class MailBoxTest : IDisposable{
         

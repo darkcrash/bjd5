@@ -8,7 +8,7 @@ using Bjd.util;
 using Xunit;
 
 
-namespace BjdTest.option
+namespace Bjd.Common.Test.option
 {
 
     public class OneValTest

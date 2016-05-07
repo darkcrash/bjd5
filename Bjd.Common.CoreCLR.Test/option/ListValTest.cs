@@ -6,7 +6,7 @@ using Bjd.option;
 using Bjd.util;
 using Xunit;
 
-namespace BjdTest.option
+namespace Bjd.Common.Test.option
 {
     //テストでは、リソースの開放（dispose）を省略する
     public class ListValTest

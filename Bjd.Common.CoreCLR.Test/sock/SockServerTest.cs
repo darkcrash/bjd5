@@ -5,7 +5,7 @@ using Bjd.net;
 using Bjd.sock;
 using Xunit;
 
-namespace BjdTest.sock
+namespace Bjd.Common.Test.sock
 {
     public class SockServerTest
     {

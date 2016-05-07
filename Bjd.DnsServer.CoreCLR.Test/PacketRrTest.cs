@@ -1,5 +1,5 @@
 ﻿using System;
-using BjdTest.test;
+using Bjd.Common.Test;
 using Bjd.DnsServer;
 using Xunit;
 

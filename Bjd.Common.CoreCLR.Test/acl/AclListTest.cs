@@ -3,12 +3,11 @@ using Bjd.ctrl;
 using Bjd.log;
 using Bjd.net;
 using Bjd.option;
-using BjdTest.test;
 using Xunit;
 using Bjd;
 
 
-namespace BjdTest.acl
+namespace Bjd.Common.Test.acl
 {
 
     public class AclListTest

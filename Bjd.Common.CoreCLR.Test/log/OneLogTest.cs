@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.log;
 using Xunit;
 
-namespace BjdTest.log
+namespace Bjd.Common.Test.log
 {
     public class OneLogTest
     {

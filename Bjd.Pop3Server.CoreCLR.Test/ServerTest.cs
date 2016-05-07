@@ -8,10 +8,9 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.sock;
 using Bjd.util;
-using BjdTest.test;
+using Bjd.Common.Test;
 using Xunit;
 using Bjd.Pop3Server;
-using Bjd.Common.CoreCLR.Test;
 using System.Collections.Generic;
 
 namespace Pop3ServerTest

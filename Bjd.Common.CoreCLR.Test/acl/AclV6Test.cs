@@ -3,7 +3,7 @@ using Bjd.net;
 using Xunit;
 using Bjd;
 
-namespace BjdTest.acl {
+namespace Bjd.Common.Test.acl {
 
     public class AclV6Test {
 

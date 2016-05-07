@@ -1,7 +1,7 @@
 ﻿using Bjd.packet;
 using Xunit;
 
-namespace BjdTest.packet
+namespace Bjd.Common.Test.packet
 {
 
 

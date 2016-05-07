@@ -3,7 +3,7 @@ using System.Text;
 using Bjd.util;
 using Xunit;
 
-namespace BjdTest.util
+namespace Bjd.Common.Test.util
 {
 
     /**

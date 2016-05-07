@@ -6,7 +6,7 @@ using Bjd.log;
 using Bjd.mail;
 using Xunit;
 
-namespace BjdTest.mail
+namespace Bjd.Common.Test.mail
 {
 
     public class MailTest : IDisposable

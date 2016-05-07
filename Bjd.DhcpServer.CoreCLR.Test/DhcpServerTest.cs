@@ -4,10 +4,10 @@ using System.Net.Sockets;
 using Bjd.net;
 using Bjd.option;
 using Bjd.sock;
-using BjdTest.test;
 using Xunit;
 using Bjd.DhcpServer;
 using Bjd;
+using Bjd.Common.Test;
 using System.Net;
 using Microsoft.Extensions.PlatformAbstractions;
 

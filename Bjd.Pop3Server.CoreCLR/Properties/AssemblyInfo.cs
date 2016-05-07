@@ -23,8 +23,6 @@ using System.Runtime.InteropServices;
 [assembly: Guid("699daad6-af4b-4bec-9a8d-476da30da3d4")]
 
 
-
-
 [assembly: InternalsVisibleTo("Bjd.Pop3Server.CoreCLR.Test")]
 [assembly: InternalsVisibleTo("Bjd.SmtpServer.CoreCLR.Test")]
 [assembly: InternalsVisibleTo("Bjd.ProxyPop3Server.CoreCLR.Test")]

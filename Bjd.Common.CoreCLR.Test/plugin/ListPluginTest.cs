@@ -4,7 +4,7 @@ using Bjd.option;
 using Bjd.plugin;
 using Xunit;
 
-namespace BjdTest.plugin
+namespace Bjd.Common.Test.plugin
 {
 
     public class ListPluginTest

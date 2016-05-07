@@ -3,7 +3,8 @@ namespace Bjd.SmtpServer
     //***************************************************************
     //
     //***************************************************************
-    enum MlCmdKind {
+    public enum MlCmdKind
+    {
         Exit,
         Quit,
         Guide,

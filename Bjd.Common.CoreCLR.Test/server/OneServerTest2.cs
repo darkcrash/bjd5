@@ -6,10 +6,9 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
-using BjdTest.test;
 using Xunit;
 
-namespace BjdTest.server
+namespace Bjd.Common.Test.server
 {
 
     public class OneServerTest2 : ILife

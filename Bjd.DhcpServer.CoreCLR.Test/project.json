@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
   "description": "Bjd.DhcpServer.CoreCLR.Test Class Library",
-  "authors": [ "y.m" ],
+  "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
     "type": "git",

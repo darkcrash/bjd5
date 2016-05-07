@@ -3,10 +3,9 @@ using Bjd;
 using Bjd.log;
 using Bjd.mail;
 using Bjd.option;
-using BjdTest.test;
 using Xunit;
 
-namespace BjdTest.mail
+namespace Bjd.Common.Test.mail
 {
 
     public class MailBoxTest2 : IDisposable

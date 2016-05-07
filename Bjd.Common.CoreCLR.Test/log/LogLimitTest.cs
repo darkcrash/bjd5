@@ -5,7 +5,7 @@ using Bjd.option;
 using Xunit;
 
 
-namespace BjdTest.log
+namespace Bjd.Common.Test.log
 {
     public class LogLimitTest
     {

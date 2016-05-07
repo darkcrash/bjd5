@@ -8,11 +8,10 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.server;
 using Bjd.sock;
-using BjdTest.test;
 using Xunit;
 using Bjd.ctrl;
 
-namespace BjdTest.server
+namespace Bjd.Common.Test.server
 {
 
     public class OneServerTest

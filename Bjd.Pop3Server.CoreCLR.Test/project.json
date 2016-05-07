@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
   "description": "Bjd.Pop3Server.CoreCLR.Test Class Library",
-  "authors": [ "yasuaki.matsuda" ],
+  "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "tags": [ "" ],
   "repository": {
     "type": "git",

@@ -4,7 +4,7 @@ using Bjd.net;
 
 namespace Bjd.SmtpServer
 {
-    class MlEnvelope {
+    internal class MlEnvelope {
         public MailAddress From { get;private set; }
         public MailAddress To { get; private set; }
         public string Host { get; private set; }

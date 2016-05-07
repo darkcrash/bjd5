@@ -3,7 +3,7 @@ using Bjd.util;
 using Xunit;
 using Bjd;
 
-namespace BjdTest
+namespace Bjd.Common.Test
 {
     public class HeaderTest
     {

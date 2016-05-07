@@ -3,10 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Bjd.log;
-using BjdTest.test;
 using Xunit;
 
-namespace BjdTest.log
+namespace Bjd.Common.Test.log
 {
     public class LogFileTest
     {

@@ -3,7 +3,7 @@ using Bjd.ctrl;
 using Bjd.option;
 using Xunit;
 
-namespace BjdTest.option
+namespace Bjd.Common.Test.option
 {
 
     public class DatTest

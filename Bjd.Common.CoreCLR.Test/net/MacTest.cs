@@ -1,7 +1,7 @@
 ﻿using Bjd.net;
 using Xunit;
 
-namespace BjdTest.net
+namespace Bjd.Common.Test.net
 {
     public class MacTest
     {

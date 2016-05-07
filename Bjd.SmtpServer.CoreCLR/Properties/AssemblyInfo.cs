@@ -21,3 +21,6 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("fe47ee07-a4f0-45d7-a20f-3cc4c59ed09e")]
+
+
+[assembly: InternalsVisibleTo("Bjd.SmtpServer.CoreCLR.Test")]

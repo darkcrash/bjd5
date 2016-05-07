@@ -9,7 +9,7 @@ using Bjd.net;
 using Bjd.option;
 using Bjd.sock;
 using Bjd.util;
-using BjdTest.test;
+using Bjd.Common.Test;
 using Bjd.DnsServer;
 using Xunit;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Bjd.Common.CoreCLR.Test
+namespace Bjd.Common.Test
 {
     public class TestDefine
     {

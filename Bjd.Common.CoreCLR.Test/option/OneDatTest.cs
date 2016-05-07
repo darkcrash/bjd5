@@ -4,7 +4,7 @@ using Xunit;
 
 
 
-namespace BjdTest.option
+namespace Bjd.Common.Test.option
 {
 
     public class OneDatTest

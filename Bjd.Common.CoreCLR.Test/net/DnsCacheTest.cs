@@ -2,10 +2,9 @@
 using System.Linq;
 using Bjd.log;
 using Bjd.net;
-using BjdTest.test;
 using Xunit;
 
-namespace BjdTest.net
+namespace Bjd.Common.Test.net
 {
     public class DnsCacheTest
     {

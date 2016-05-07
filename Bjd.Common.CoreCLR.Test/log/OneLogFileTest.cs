@@ -2,10 +2,9 @@
 using System.IO;
 using System.Linq;
 using Bjd.log;
-using BjdTest.test;
 using Xunit;
 
-namespace BjdTest.log
+namespace Bjd.Common.Test.log
 {
     public class OneLogFileTest : IDisposable
     {

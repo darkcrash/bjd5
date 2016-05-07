@@ -2,7 +2,7 @@
 using Bjd.mail;
 using Xunit;
 
-namespace BjdTest.mail
+namespace Bjd.Common.Test.mail
 {
 
     public class MailAddressTest

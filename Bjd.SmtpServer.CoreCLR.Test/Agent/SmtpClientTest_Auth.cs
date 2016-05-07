@@ -1,0 +1,109 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using Bjd;
+using Bjd.mail;
+using Bjd.net;
+using Bjd.option;
+using Bjd.Common.Test;
+using Xunit;
+using Bjd.SmtpServer;
+
+namespace Bjd.SmtpServer.Test.Agent
+{
+    public class SmtpClientTest_Auth : ILife, IDisposable
+    {
+
+        private TestServer _testServer;
+
+        public  SmtpClientTest_Auth()
+        {
+            _testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest_Auth.ini");
+        }
+
+        public void Dispose()
+        {
+            _testServer.Dispose();
+        }
+
+        private SmtpClient CreateSmtpClient(InetKind inetKind)
+        {
+            if (inetKind == InetKind.V4)
+            {
+                return new SmtpClient(new Ip(IpKind.V4Localhost), 9025, 3, this);
+            }
+            return new SmtpClient(new Ip(IpKind.V6Localhost), 9025, 3, this);
+        }
+
+        [Theory]
+        [InlineData(InetKind.V4, SmtpClientAuthKind.Login)]
+        [InlineData(InetKind.V4, SmtpClientAuthKind.CramMd5)]
+        [InlineData(InetKind.V4, SmtpClientAuthKind.Plain)]
+        public void 正常系(InetKind inetKind, SmtpClientAuthKind kind)
+        {
+            //setUp
+            var sut = CreateSmtpClient(inetKind);
+
+            //exercise
+            Assert.Equal(sut.Connect(), true);
+            Assert.Equal(sut.Helo(), true);
+            Assert.Equal(sut.Auth(kind, "user1", "user1"), true);
+            Assert.Equal(sut.Mail("1@1"), true);
+            Assert.Equal(sut.Rcpt("user1@example.com"), true);
+            Assert.Equal(sut.Data(new Mail()), true);
+
+            Assert.Equal(sut.Quit(), true);
+
+            //tearDown
+            sut.Dispose();
+        }
+
+        [Theory]
+        [InlineData(InetKind.V4)]
+        public void 認証前にMAILコマンド(InetKind inetKind)
+        {
+            //setUp
+            var sut = CreateSmtpClient(inetKind);
+
+            //exercise
+            Assert.Equal(sut.Connect(), true);
+            Assert.Equal(sut.Helo(), true);
+            Assert.Equal(sut.Mail("1@1"), false);
+
+            var expected = "530 Authentication required.\r\n";
+            var actual = sut.GetLastError();
+            Assert.Equal(actual, expected);
+
+            //tearDown
+            sut.Dispose();
+        }
+
+        [InlineData(InetKind.V4)]
+        public void HELOの前にMAILコマンド(InetKind inetKind)
+        {
+            //setUp
+            var sut = CreateSmtpClient(inetKind);
+
+            //exercise
+            Assert.Equal(sut.Connect(), true);
+            //Assert.Equal(sut.Helo(), true);
+            Assert.Equal(sut.Mail("1@1"), false);
+
+            var expected = "Mail() Status != Transaction";
+            var actual = sut.GetLastError();
+            Assert.Equal(actual, expected);
+
+            //tearDown
+            sut.Dispose();
+        }
+
+
+        public bool IsLife()
+        {
+            return true;
+        }
+    }
+}
