@@ -7,30 +7,42 @@ using Bjd.SmtpServer;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class OneFetchJobTest : ILife, IDisposable
+    public class OneFetchJobTest : ILife, IDisposable, IClassFixture<OneFetchJobTest.ServerFixture>
     {
 
-        private TestServer _testServer;
+        public class ServerFixture : TestServer, IDisposable
+        {
+            public ServerFixture() : base(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini")
+            {
+                //usrr2のメールボックスへの２通のメールをセット
+                SetMail("user2", "00635026511425888292");
+                SetMail("user2", "00635026511765086924");
+
+            }
+            public void Dispose()
+            {
+                //fetchDbの削除
+                File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
+                File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
+
+            }
+
+        }
+
+        private ServerFixture _testServer;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public OneFetchJobTest()
+        public OneFetchJobTest(ServerFixture fixture)
         {
+            _testServer = fixture;
 
-            _testServer = new TestServer(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini");
-
-            //usrr2のメールボックスへの２通のメールをセット
-            _testServer.SetMail("user2", "00635026511425888292");
-            _testServer.SetMail("user2", "00635026511765086924");
 
         }
 
 
         public void Dispose()
         {
-            _testServer.Dispose();
-            //fetchDbの削除
-            File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
-            File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
+            //_testServer.Dispose();
         }
 
 
