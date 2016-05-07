@@ -12,7 +12,7 @@
   "licenseUrl": "",
   "dependencies": {
     "Bjd.Common.CoreCLR": "1.0.0-*",
-    "Bjd.CoreCLR.xunit.Test": "1.0.0-*",
+    "Bjd.Common.CoreCLR.Test": "1.0.0-*",
     "Bjd.DhcpServer.CoreCLR": "1.0.0-*",
     "xunit": "2.1.0",
     "xunit.runner.dnx": "2.1.0-rc1-build204",
