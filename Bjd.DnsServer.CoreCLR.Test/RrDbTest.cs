@@ -109,7 +109,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetDomainName();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetDomainName();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace DnsServerTest
             //exercise
             int actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.GetList("www.example.com.", DnsType.A).Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace DnsServerTest
             sut.GetList("www.example.com.", DnsType.A);
             var actual = RrDbTest.Size(sut); //DBのサイズは0になっている
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             TestUtil.WaitDisp(null);
         }
@@ -194,7 +194,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Find("www.example.com.", DnsType.A);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace DnsServerTest
             //exercise
             var actual = sut.Find("www.example.com.", DnsType.A);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -228,7 +228,7 @@ namespace DnsServerTest
             //exercise
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -245,7 +245,7 @@ namespace DnsServerTest
             //exercise
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace DnsServerTest
             //exercise
             int actual = Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

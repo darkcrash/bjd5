@@ -18,7 +18,7 @@ namespace BjdTest.net{
             var actual = sut.RemoteStr();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

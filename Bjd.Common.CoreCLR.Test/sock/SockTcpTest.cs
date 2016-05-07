@@ -108,7 +108,7 @@ namespace BjdTest.sock
             var actual = sut.Length();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Close();
@@ -184,7 +184,7 @@ namespace BjdTest.sock
             var actual = sut.StringRecv("UTF-8", 1, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Close();
@@ -211,7 +211,7 @@ namespace BjdTest.sock
             var actual = Encoding.UTF8.GetString(bytes);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             sut.Close();

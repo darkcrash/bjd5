@@ -22,7 +22,7 @@ public class RrSoaTest {
 		//exercise
 		string actual = sut.NameServer;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -33,7 +33,7 @@ public class RrSoaTest {
 		//exercise
 		string actual = sut.PostMaster;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -44,7 +44,7 @@ public class RrSoaTest {
 		//exercise
 		uint actual = sut.Serial;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -55,7 +55,7 @@ public class RrSoaTest {
 		//exercise
 		uint actual = sut.Refresh;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -66,7 +66,7 @@ public class RrSoaTest {
 		//exercise
 		uint actual = sut.Retry;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -77,7 +77,7 @@ public class RrSoaTest {
 		//exercise
 		uint actual = sut.Expire;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -88,7 +88,7 @@ public class RrSoaTest {
 		//exercise
 		uint actual = sut.Minimum;
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -99,7 +99,7 @@ public class RrSoaTest {
 		//exercise
 		var actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -111,7 +111,7 @@ public class RrSoaTest {
 		//exercise
 		var actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 
 	[Fact]
@@ -122,7 +122,7 @@ public class RrSoaTest {
 		//exercise
 		var actual = sut.ToString();
 		//verify
-		Assert.Equal(actual, expected);
+		Assert.Equal(expected, actual);
 	}
 }
 }

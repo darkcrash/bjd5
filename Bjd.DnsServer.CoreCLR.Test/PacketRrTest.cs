@@ -20,7 +20,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Cls;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DnsType;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Ttl;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DLen;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Data;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.Cls;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace DnsServerTest{
             //exercise
             var actual = sut.DnsType;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

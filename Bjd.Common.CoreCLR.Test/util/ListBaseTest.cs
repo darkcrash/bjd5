@@ -58,7 +58,7 @@ namespace BjdTest.util
             var actual = sut.Count;
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace BjdTest.util
             }
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         //	[Test] これはC#では未実装
@@ -124,7 +124,7 @@ namespace BjdTest.util
             var actual = sb.ToString();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace BjdTest.util
             var actual = sb.ToString();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

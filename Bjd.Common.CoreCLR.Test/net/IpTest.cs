@@ -31,7 +31,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -55,7 +55,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.IPAddress.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -130,7 +130,7 @@ namespace BjdTest.net
             //exercise
             var actual = (sut == target);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -146,7 +146,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -163,7 +163,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -192,7 +192,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.AddrV4;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]

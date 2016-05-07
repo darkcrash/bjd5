@@ -17,7 +17,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -32,7 +32,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -44,7 +44,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.ToString();
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -78,7 +78,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.Equals(target);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -97,7 +97,7 @@ namespace BjdTest.net
             //exercise
             var actual = sut.CheckCompetition(target);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -116,7 +116,7 @@ namespace BjdTest.net
             var ar = sut.CreateOneBind(protocolKind);
             var actual = ar.Length;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -138,7 +138,7 @@ namespace BjdTest.net
             var actual = ar[0].ToString();
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 

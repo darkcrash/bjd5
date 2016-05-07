@@ -89,7 +89,7 @@ namespace BjdTest.option
             var actual = ArrayToString(sut.GetList(null));
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace BjdTest.option
             var actual = ArrayToString(sut.GetList(null));
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

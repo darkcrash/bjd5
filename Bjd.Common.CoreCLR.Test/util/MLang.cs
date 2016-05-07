@@ -48,7 +48,7 @@ namespace BjdTest.util
             //exercise
             string actual = sut.WebName;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             File.Delete(tempFile);
         }

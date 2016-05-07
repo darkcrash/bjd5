@@ -41,7 +41,7 @@ namespace BjdTest.packet
             //exercise
             var actual = sut.GetUShort(20);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace BjdTest.packet
             //exercise
             var actual = sut.GetUInt(20);
             //verify
-            Assert.Equal<uint>(actual, expected);
+            Assert.Equal<uint>(expected, actual);
 
         }
 
@@ -68,7 +68,7 @@ namespace BjdTest.packet
             //exercise
             var actual = sut.GetByte(20, 1);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace BjdTest.packet
             //exercise
             var actual = sut.GetULong(20);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace BjdTest.packet
             //exercise
             var actual = sut.GetBytes(20, Max - 20);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace BjdTest.mail
             //exercise
             var actual = sut.Auth(user, pass);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 

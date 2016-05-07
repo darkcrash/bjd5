@@ -15,7 +15,7 @@ namespace DnsServerTest{
             RrDbTest.InitLocalHost(sut);
             var actual = RrDbTest.Size(sut);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

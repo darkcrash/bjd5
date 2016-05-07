@@ -11,6 +11,8 @@ using Bjd.util;
 using BjdTest.test;
 using Xunit;
 using Bjd.Pop3Server;
+using Bjd.Common.CoreCLR.Test;
+using System.Collections.Generic;
 
 namespace Pop3ServerTest
 {
@@ -33,6 +35,8 @@ namespace Pop3ServerTest
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
 
+            private string mailboxPath;
+
             //[TestFixtureSetUp]
             public InternalFixture()
             {
@@ -44,30 +48,55 @@ namespace Pop3ServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.Pop3Server.CoreCLR.Test", "Pop3ServerTest.ini");
 
-                Bjd.service.Service.ServiceTest();
+                try
+                {
+                    Bjd.service.Service.ServiceTest();
 
-                var kernel = new Kernel();
-                var option = kernel.ListOption.Get("Pop3");
-                var conf = new Conf(option);
+                    var kernel = new Kernel();
+                    var option = kernel.ListOption.Get("Pop3");
+                    var conf = new Conf(option);
 
-                //サーバ起動
-                _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
-                _v4Sv.Start();
+                    //サーバ起動
+                    _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                    _v4Sv.Start();
 
-                _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
-                _v6Sv.Start();
+                    _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                    _v6Sv.Start();
 
-                //メールボックスへのデータセット
-                //var srcDir = @"c:\tmp2\bjd5\Pop3ServerTest\";
-                var srcDir = AppContext.BaseDirectory;
-                var dstDir = @"c:\tmp2\bjd5\Pop3ServerTest\mailbox\user2\";
-                File.Copy(srcDir + "DF_00635026511425888292", dstDir + "DF_00635026511425888292", true);
-                File.Copy(srcDir + "DF_00635026511765086924", dstDir + "DF_00635026511765086924", true);
-                File.Copy(srcDir + "MF_00635026511425888292", dstDir + "MF_00635026511425888292", true);
-                File.Copy(srcDir + "MF_00635026511765086924", dstDir + "MF_00635026511765086924", true);
+                    //メールボックスへのデータセット
+                    //var srcDir = @"c:\tmp2\bjd5\Pop3ServerTest\";
+                    //var dstDir = @"c:\tmp2\bjd5\Pop3ServerTest\mailbox\user2\";
+                    //File.Copy(srcDir + "DF_00635026511425888292", dstDir + "DF_00635026511425888292", true);
+                    //File.Copy(srcDir + "DF_00635026511765086924", dstDir + "DF_00635026511765086924", true);
+                    //File.Copy(srcDir + "MF_00635026511425888292", dstDir + "MF_00635026511425888292", true);
+                    //File.Copy(srcDir + "MF_00635026511765086924", dstDir + "MF_00635026511765086924", true);
 
-                Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+                    var srcDir = AppContext.BaseDirectory;
+                    var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
+                    System.IO.Directory.CreateDirectory(dstDir);
+                    mailboxPath = dstDir;
 
+                    var testFiles = new List<string>();
+                    testFiles.Add("DF_00635026511425888292");
+                    testFiles.Add("DF_00635026511765086924");
+                    testFiles.Add("MF_00635026511425888292");
+                    testFiles.Add("MF_00635026511765086924");
+
+                    foreach (var f in testFiles)
+                    {
+                        var srcFile = System.IO.Path.Combine(srcDir, f);
+                        var dstFile = System.IO.Path.Combine(dstDir, f);
+                        File.Copy(srcFile, dstFile, true);
+                    }
+
+                    Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+
+                }
+                catch
+                {
+                    _op.Dispose();
+                    throw;
+                }
 
             }
 
@@ -87,7 +116,8 @@ namespace Pop3ServerTest
                 _op.Dispose();
 
                 //メールボックスの削除
-                Directory.Delete(@"c:\tmp2\bjd5\Pop3ServerTest\mailbox", true);
+                //Directory.Delete(@"c:\tmp2\bjd5\Pop3ServerTest\mailbox", true);
+                Directory.Delete(mailboxPath, true);
 
             }
 
@@ -157,7 +187,7 @@ namespace Pop3ServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 58);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -172,7 +202,7 @@ namespace Pop3ServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 52);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -216,7 +246,7 @@ namespace Pop3ServerTest
             var actual = cl2.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl1.StringSend("QUIT");
@@ -246,7 +276,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             clDmy.StringSend("QUIT");
@@ -270,7 +300,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -316,7 +346,7 @@ namespace Pop3ServerTest
 
             //verify
             //パスワードに誤りがある場合、ブルートフォース対策のためしばらくレスポンスが無い
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
 
 
@@ -339,7 +369,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //tearDown
             cl.StringSend("QUIT");
             cl.Close();
@@ -370,7 +400,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
 
 
@@ -404,7 +434,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -426,7 +456,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -448,7 +478,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
 
             //tearDown
@@ -518,7 +548,7 @@ namespace Pop3ServerTest
             cl.StringSend("LIST 1");
             var actual = cl.StringRecv(3, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -540,7 +570,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -584,7 +614,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -606,7 +636,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -628,7 +658,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -650,7 +680,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -672,7 +702,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -694,7 +724,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -716,7 +746,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -763,7 +793,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -785,7 +815,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -807,7 +837,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -829,7 +859,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -851,7 +881,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -873,7 +903,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -895,7 +925,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -919,7 +949,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -945,7 +975,7 @@ namespace Pop3ServerTest
             var actual = cl.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.StringSend("QUIT");
