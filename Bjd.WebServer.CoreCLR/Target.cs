@@ -9,7 +9,7 @@ using Bjd.util;
 namespace Bjd.WebServer
 {
     /*******************************************************/
-    //�Ώہi�t�@�C���j�Ɋւ���e��̏���܂Ƃ߂Ĉ����N���X
+    //対象（ファイル）に関する各種の情報をまとめて扱うクラス
     /*******************************************************/
     class Target
     {
@@ -28,7 +28,7 @@ namespace Bjd.WebServer
             if (!Directory.Exists(DocumentRoot))
             {
                 System.Diagnostics.Trace.TraceInformation($"Target..ctor DocumentRoot not exists ");
-                DocumentRoot = null;//�h�L�������g���[�g����
+                DocumentRoot = null;//ドキュメントルート無効
             }
             FullPath = "";
             TargetKind = TargetKind.Non;
@@ -37,29 +37,29 @@ namespace Bjd.WebServer
             CgiCmd = "";
             Uri = null;
         }
-        public string DocumentRoot { get; private set; }//�h�L�������g���[�g
+        public string DocumentRoot { get; private set; }//ドキュメントルート
         public string FullPath { get; private set; }
         public TargetKind TargetKind { get; private set; }
         public WebDavKind WebDavKind { get; private set; }//Ver5.1.x
-        public FileAttributes Attr { get; private set; }//�t�@�C���̃A�g���r���[�g
-        public FileInfo FileInfo { get; private set; }//�t�@�C���C���t�H���[�V����
-        public string CgiCmd { get; private set; }//CGI���s�v���O����
+        public FileAttributes Attr { get; private set; }//ファイルのアトリビュート
+        public FileInfo FileInfo { get; private set; }//ファイルインフォメーション
+        public string CgiCmd { get; private set; }//CGI実行プログラム
         public string Uri { get; private set; }
         /*************************************************/
-        // ������
+        // 初期化
         /*************************************************/
-        //uri�ɂ�鏉����
+        //uriによる初期化
         public void InitFromUri(string uri)
         {
             System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri {uri}");
             Init(uri);
             System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri TargetKind {TargetKind} WebDavKind {WebDavKind}");
         }
-        //filename�ɂ�鏉����
+        //filenameによる初期化
         public void InitFromFile(string file)
         {
 
-            var tmp = file.ToLower();// fullPath����uri�𐶐�����
+            var tmp = file.ToLower();// fullPathからuriを生成する
             var root = DocumentRoot.ToLower();
             if (tmp.IndexOf(root) != 0)
                 return;
@@ -69,7 +69,7 @@ namespace Bjd.WebServer
 
             Init(uri);
         }
-        //�R�}���h�ɂ�鏉����
+        //コマンドによる初期化
         public void InitFromCmd(string fullPath)
         {
             TargetKind = TargetKind.Cgi;
@@ -81,12 +81,12 @@ namespace Bjd.WebServer
 
             Uri = uri;
 
-            TargetKind = TargetKind.File;//�ʏ�t�@�C���ł���Ɖ��u������
-            var enableCgiPath = false;//�t�H���_��CGI���s�\���ǂ���
-            WebDavKind = WebDavKind.Non;//Ver5.1.x WebDAV�ΏۊO�ł��邱�Ƃ���u������
+            TargetKind = TargetKind.File;//通常ファイルであると仮置きする
+            var enableCgiPath = false;//フォルダがCGI実行可能かどうか
+            WebDavKind = WebDavKind.Non;//Ver5.1.x WebDAV対象外であることを仮置きする
 
             //****************************************************************
-            //WebDav�p�X�Ƀq�b�g�����ꍇ�Auri�y�уh�L�������g���[�g��C������
+            //WebDavパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
             if ((bool)_conf.Get("useWebDav"))
             {
@@ -96,7 +96,7 @@ namespace Bjd.WebServer
                     if (o.Enable)
                     {
                         var name = o.StrList[0];
-                        var write = Convert.ToBoolean(o.StrList[1]);//�������݋���
+                        var write = Convert.ToBoolean(o.StrList[1]);//書き込み許可
                         var dir = o.StrList[2];
                         if (uri.ToUpper().IndexOf(name.ToUpper()) == 0)
                         {
@@ -104,18 +104,19 @@ namespace Bjd.WebServer
                             {
                                 uri = uri.Substring(name.Length - 1);
                             }
-                            else {
+                            else
+                            {
                                 uri = "/";
                             }
                             DocumentRoot = dir;
-                            //WevDav�p�X��`�Ƀq�b�g�����ꍇ
+                            //WevDavパス定義にヒットした場合
                             WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
                             break;
                         }
                     }
                 }
 
-                // �Ōオ/�Ŗ����ꍇ�́A�ۊǂ��ăq�b�g���邩�ǂ�����m�F����
+                // 最後が/で無い場合は、保管してヒットするかどうかを確認する
                 if (uri[uri.Length - 1] != '/')
                 {
                     var exUri = uri + "/";
@@ -124,7 +125,7 @@ namespace Bjd.WebServer
                         if (o.Enable)
                         {
                             var name = o.StrList[0];
-                            var write = Convert.ToBoolean(o.StrList[1]);//�������݋���
+                            var write = Convert.ToBoolean(o.StrList[1]);//書き込み許可
                             var dir = o.StrList[2];
                             if (exUri.ToUpper().IndexOf(name.ToUpper()) == 0)
                             {
@@ -132,12 +133,13 @@ namespace Bjd.WebServer
                                 {
                                     uri = exUri.Substring(name.Length - 1);
                                 }
-                                else {
+                                else
+                                {
                                     uri = "/";
                                 }
-                                Uri = exUri;//���N�G�X�g�Ɋ���/���t���Ă����悤�ɓ��삳����
+                                Uri = exUri;//リクエストに既に/が付いていたように動作させる
                                 DocumentRoot = dir;
-                                //WevDav�p�X��`�Ƀq�b�g�����ꍇ
+                                //WevDavパス定義にヒットした場合
                                 WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
                                 break;
                             }
@@ -149,9 +151,9 @@ namespace Bjd.WebServer
             }
 
             //****************************************************************
-            //CGI�p�X�Ƀq�b�g�����ꍇ�Auri�y�уh�L�������g���[�g��C������
+            //CGIパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
-            bool useCgiPath = false;//CGI�p�X��`�����݂��邩�ǂ����̃t���O
+            bool useCgiPath = false;//CGIパス定義が存在するかどうかのフラグ
             if (WebDavKind == WebDavKind.Non)
             {
 
@@ -161,7 +163,7 @@ namespace Bjd.WebServer
                     {
                         if (o.Enable)
                         {
-                            useCgiPath = true;//�L����CGI�p�X�̒�`�����݂���
+                            useCgiPath = true;//有効なCGIパスの定義が存在する
                             var name = o.StrList[0];
                             var dir = o.StrList[1];
                             if (uri.ToUpper().IndexOf(name.ToUpper()) == 0)
@@ -170,26 +172,27 @@ namespace Bjd.WebServer
                                 {
                                     uri = uri.Substring(name.Length - 1);
                                 }
-                                else {
+                                else
+                                {
                                     uri = "/";
                                 }
                                 DocumentRoot = dir;
-                                //CGI�p�X��`�Ƀq�b�g�����ꍇ
-                                enableCgiPath = true;//CGI���s���\�ȃt�H���_�ł���
+                                //CGIパス定義にヒットした場合
+                                enableCgiPath = true;//CGI実行が可能なフォルダである
                                 break;
                             }
                         }
                     }
                     if (!useCgiPath)
-                    {//�L����CGI�p�X��`�������ꍇ�́A
-                        enableCgiPath = true;//CGI���s���\�ȃt�H���_�ł���
+                    {//有効なCGIパス定義が無い場合は、
+                        enableCgiPath = true;//CGI実行が可能なフォルダである
                     }
                 }
             }
 
 
             //****************************************************************
-            //�ʖ��Ƀq�b�g�����ꍇ�Auri�y�уh�L�������g���[�g��C������
+            //別名にヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
             if (WebDavKind == WebDavKind.Non && !useCgiPath)
             {
@@ -204,7 +207,7 @@ namespace Bjd.WebServer
                         {
                             if (uri.ToUpper() + "/" == name.ToUpper())
                             {
-                                //�t�@�C���w�肳�ꂽ�^�[�Q�b�g���t�@�C���ł͂Ȃ��f�B���N�g���̏ꍇ
+                                //ファイル指定されたターゲットがファイルではなくディレクトリの場合
                                 TargetKind = TargetKind.Move;
                                 return;
                             }
@@ -214,7 +217,8 @@ namespace Bjd.WebServer
                                 {
                                     uri = uri.Substring(name.Length - 1);
                                 }
-                                else {
+                                else
+                                {
                                     uri = "/";
                                 }
                                 DocumentRoot = dir;
@@ -226,14 +230,14 @@ namespace Bjd.WebServer
             }
 
             /*************************************************/
-            // uri���畨���I�ȃp�X���𐶐�����
+            // uriから物理的なパス名を生成する
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
             FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, DocumentRoot + uri);
             System.Diagnostics.Trace.TraceInformation($"Target.Init {FullPath}");
 
             /*************************************************/
-            //�t�@�C���w�肳�ꂽ�^�[�Q�b�g���t�@�C���ł͂Ȃ��f�B���N�g���̏ꍇ
+            //ファイル指定されたターゲットがファイルではなくディレクトリの場合
             /*************************************************/
             if (WebDavKind == WebDavKind.Non)
             {
@@ -261,10 +265,10 @@ namespace Bjd.WebServer
             }
 
             /*************************************************/
-            // welcome�t�@�C���̃Z�b�g
+            // welcomeファイルのセット
             /*************************************************/
-            //Uri�Ńt�@�C�������w�肳��Ă��Ȃ��ꍇ�ŁA���Y�f�B���N�g����welcomeFileName�����݂���ꍇ
-            //�t�@�C�����Ƃ��Ďg�p����
+            //Uriでファイル名が指定されていない場合で、当該ディレクトリにwelcomeFileNameが存在する場合
+            //ファイル名として使用する
             if (WebDavKind == WebDavKind.Non)
             {
                 //Ver5.1.3
@@ -295,11 +299,11 @@ namespace Bjd.WebServer
 
             }
             /*************************************************/
-            //�^�[�Q�b�g�̓t�@�C���Ƃ��đ��݂��邩
+            //ターゲットはファイルとして存在するか
             /*************************************************/
             if (!File.Exists(FullPath))
             {
-                //�f�B���N�g��t�Ƃ��đ��݂���̂�
+                //ディレクトリtとして存在するのか
                 if (Directory.Exists(FullPath))
                 {
                     if ((bool)_conf.Get("useDirectoryEnum"))
@@ -311,14 +315,14 @@ namespace Bjd.WebServer
                         }
                     }
                 }
-                TargetKind = TargetKind.Non;//���݂��Ȃ�
+                TargetKind = TargetKind.Non;//存在しない
                 return;
             }
 
             /*************************************************/
-            // �g���q���f
+            // 拡張子判断
             /*************************************************/
-            // �uCGI���s���\�ȃt�H���_�̏ꍇ�@�g���q���q�b�g����΃^�[�Q�b�g��CGI�ł���
+            // 「CGI実行が可能なフォルダの場合　拡張子がヒットすればターゲットはCGIである
             if (WebDavKind == WebDavKind.Non)
             {
                 if (enableCgiPath)
@@ -335,7 +339,7 @@ namespace Bjd.WebServer
                                 var cgiCmd = o.StrList[1];
                                 if (cgiExt.ToUpper() == ext.ToUpper())
                                 {
-                                    TargetKind = TargetKind.Cgi;//CGI�ł���
+                                    TargetKind = TargetKind.Cgi;//CGIである
                                     CgiCmd = cgiCmd;
                                 }
                             }
@@ -345,23 +349,23 @@ namespace Bjd.WebServer
             }
 
             /*************************************************/
-            // �^�[�Q�b�g��SSI���ǂ����̔��f
+            // ターゲットがSSIかどうかの判断
             /*************************************************/
             if (WebDavKind == WebDavKind.Non)
             {
                 if (TargetKind == TargetKind.File)
                 {
-                    //�uSSI��g�p����v�ꍇ
+                    //「SSIを使用する」場合
                     if ((bool)_conf.Get("useSsi"))
                     {
-                        // SSI�w��g���q���ǂ����̔��f
+                        // SSI指定拡張子かどうかの判断
                         var cgiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
                         var ext = Path.GetExtension(FullPath);
                         if (ext != null && 1 <= ext.Length)
                         {
                             if (0 <= cgiExtList.IndexOf(ext.Substring(1)))
                             {
-                                //�^�[�Q�b�g�t�@�C���ɃL�[���[�h���܂܂�Ă��邩�ǂ����̊m�F
+                                //ターゲットファイルにキーワードが含まれているかどうかの確認
                                 if (0 <= Util.IndexOf(FullPath, "<!--#"))
                                 {
                                     TargetKind = TargetKind.Ssi;
@@ -372,23 +376,23 @@ namespace Bjd.WebServer
                 }
             }
             /*************************************************/
-            // �A�g���r���[�g�y�уC���t�H���[�V�����̎擾
+            // アトリビュート及びインフォメーションの取得
             /*************************************************/
             if (TargetKind == TargetKind.File || TargetKind == TargetKind.Ssi)
             {
-                //�t�@�C���A�g���r���[�g�̎擾
+                //ファイルアトリビュートの取得
                 Attr = File.GetAttributes(FullPath);
-                //�t�@�C���C���t�H���[�V�����̎擾
+                //ファイルインフォメーションの取得
                 FileInfo = new FileInfo(FullPath);
             }
 
         }
 
-        //���X�g�Ƀq�b�g�����ꍇ�Auri�y�уh�L�������g���[�g�����������
-        //Ver5.0.0-a13�C��
+        //リストにヒットした場合、uri及びドキュメントルートを書き換える
+        //Ver5.0.0-a13修正
         /*
          * bool Aliase(Dat2 db) {
-            int index = uri.Substring(1).IndexOf('/');//�擪��'/'�ȍ~�ōŏ��Ɍ����'/'���������
+            int index = uri.Substring(1).IndexOf('/');//先頭の'/'以降で最初に現れる'/'を検索する
             if (0 < index) {
                 string topDir = uri.Substring(1, index);
                 foreach (OneLine oneLine in db.Lines) {
@@ -398,7 +402,7 @@ namespace Bjd.WebServer
                         if (name.ToLower() == topDir.ToLower()) {
                             DocumentRoot = dir;
                             uri = uri.Substring(index);
-                            return true;//�ϊ��i�q�b�g�j����
+                            return true;//変換（ヒット）した
                         }
                     }
                 }

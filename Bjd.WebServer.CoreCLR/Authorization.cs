@@ -23,7 +23,7 @@ namespace Bjd.WebServer
 
         }
 
-        //���M����Ă����F�؏��i���[�U�{�p�X���[�h�j�̎擾
+        //送信されてきた認証情報（ユーザ＋パスワード）の取得
         bool CheckHeader(string authorization, ref string user, ref string pass)
         {
 
@@ -55,26 +55,26 @@ namespace Bjd.WebServer
         public bool Check(string uri, string authorization, ref string authName)
         {
             System.Diagnostics.Trace.TraceInformation($"Authorization.Check {uri}");
-            //�F�؃��X�g
+            //認証リスト
             var authList = new AuthList((Dat)_conf.Get("authList"));
 
-            //�F�؃��X�g�Ƀq�b�g���Ă��邩�ǂ����̊m�F
+            //認証リストにヒットしているかどうかの確認
             var oneAuth = authList.Search(uri);
             if (oneAuth == null)
-                return true;//�F�؃��X�g�Ƀq�b�g�Ȃ�
+                return true;//認証リストにヒットなし
 
-            //���M����Ă����F�؏��i���[�U�{�p�X���[�h�j�̎擾
+            //送信されてきた認証情報（ユーザ＋パスワード）の取得
             var user = "";
             var pass = "";
             if (!CheckHeader(authorization, ref user, ref pass))
                 goto err;
 
-            //�F�؃��X�g�iAuthList�j�ɓ��Y���[�U�̒�`�����݂��邩�ǂ���
+            //認証リスト（AuthList）に当該ユーザの定義が存在するかどうか
             if (!oneAuth.Seartch(user))
             {
-                var find = false;//�O���[�v���X�g���烆�[�U�������ł��邩�ǂ���
-                //�F�؃��X�g�Œ��ڃ��[�U����������Ȃ������ꍇ�A�O���[�v���X�g���������
-                //�O���[�v���X�g
+                var find = false;//グループリストからユーザが検索できるかどうか
+                //認証リストで直接ユーザ名を見つけられなかった場合、グループリストを検索する
+                //グループリスト
                 var groupList = new GroupList((Dat)_conf.Get("groupList"));
                 foreach (OneGroup o in groupList)
                 {
@@ -82,7 +82,7 @@ namespace Bjd.WebServer
                         continue;
                     if (!o.Seartch(user))
                         continue;
-                    find = true;//�ꉞ���[�U�Ƃ��ĔF�߂��Ă���
+                    find = true;//一応ユーザとして認められている
                     break;
                 }
                 if (!find)
@@ -91,34 +91,34 @@ namespace Bjd.WebServer
                     goto err;
                 }
             }
-            //�p�X���[�h�̊m�F
+            //パスワードの確認
             var userList = new UserList((Dat)_conf.Get("userList"));
             var oneUser = userList.Search(user);
             if (oneUser == null)
             {
-                //���[�U���X�g�ɏ�񂪑��݂��Ȃ�
+                //ユーザリストに情報が存在しない
                 _logger.Set(LogKind.Secure, null, 7, string.Format("user:{0} pass:{1}", user, pass));//�F�؃G���[�i���[�U���X�g�ɓ��Y���[�U�̏�񂪂���܂���j";
             }
             else {
                 if (oneUser.Pass == pass)
-                {//�p�X���[�h��v
+                {//パスワード一致
                     _logger.Set(LogKind.Detail, null, 8, string.Format("Authrization success user:{0} pass:{1}", user, pass));//�F�ؐ���
                     return true;
                 }
-                //�p�X���[�h�s��v
+                //パスワード不一致
                 _logger.Set(LogKind.Secure, null, 9, string.Format("user:{0} pass:{1}", user, pass));//�F�؃G���[�i�p�X���[�h���Ⴂ�܂��j";
             }
             err:
             authName = oneAuth.AuthName;
-            return false;//�F�؃G���[����
+            return false;//認証エラー発生
         }
 
         /***********************************************************/
-        // �F�؃��X�g
+        // 認証リスト
         /***********************************************************/
         class OneAuth
         {
-            readonly List<string> _requireList = new List<string>();//���[�U���ƃO���[�v���̃��X�g
+            readonly List<string> _requireList = new List<string>();//ユーザ名とグループ名のリスト
             public OneAuth(string uri, string authName, string requires)
             {
 
@@ -132,7 +132,7 @@ namespace Bjd.WebServer
             }
             public string Uri { get; private set; }
             public string AuthName { get; private set; }
-            //���[�U�B�O���[�v�̃��X�g�Ƀq�b�g���L�邩�ǂ����̌���
+            //ユーザ。グループのリストにヒットが有るかどうかの検索
             public bool Seartch(string user)
             {
                 if (_requireList.IndexOf(user) != -1)
@@ -158,7 +158,7 @@ namespace Bjd.WebServer
                 }
             }
 
-            //�F�؃��X�g�Ƀq�b�g���L�邩�ǂ����̌���
+            //認証リストにヒットが有るかどうかの検索
             public OneAuth Search(string uri)
             {
                 var sUri = uri.ToLower();
@@ -193,7 +193,7 @@ namespace Bjd.WebServer
 
 
         /***********************************************************/
-        // ���[�U���X�g
+        // ユーザリスト
         /***********************************************************/
         class OneUser
         {
@@ -222,14 +222,14 @@ namespace Bjd.WebServer
                     _ar.Add(new OneUser(user, pass));
                 }
             }
-            //���[�U���X�g�Ƀq�b�g���L�邩�ǂ����̌���
+            //ユーザリストにヒットが有るかどうかの検索
             public OneUser Search(string user)
             {
                 return _ar.FirstOrDefault(o => o.User == user);
             }
         }
         /***********************************************************/
-        // �O���[�v���X�g
+        // グループリスト
         /***********************************************************/
         class OneGroup
         {
@@ -244,7 +244,7 @@ namespace Bjd.WebServer
             }
             public string Group { get; private set; }
 
-            //���[�U���X�g�Ƀq�b�g���L�邩�ǂ����̌���
+            //ユーザリストにヒットが有るかどうかの検索
             public bool Seartch(string user)
             {
                 return _userList.IndexOf(user) != -1;
@@ -267,7 +267,7 @@ namespace Bjd.WebServer
                     _ar.Add(new OneGroup(group, users));
                 }
             }
-            //�C�e���[�^
+            //イテレータ
             public IEnumerator GetEnumerator()
             {
                 return _ar.GetEnumerator();

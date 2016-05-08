@@ -4,15 +4,18 @@ using Bjd.net;
 
 namespace Bjd.DhcpServer
 {
-    public class OneLease {
-        public OneLease(Ip ip) {
+    public class OneLease
+    {
+        public OneLease(Ip ip)
+        {
             MacAppointment = false;//MAC指定なし
             Init();
 
             Ip = ip;
         }
 
-        public OneLease(Ip ip, Mac mac) {
+        public OneLease(Ip ip, Mac mac)
+        {
             MacAppointment = true;//MAC指定あり
             Init();
 
@@ -30,7 +33,8 @@ namespace Bjd.DhcpServer
         public Mac Mac { get; private set; }//MACアドレス （macAppointment==trueの時変更不可）
         public DhcpDbStatus DbStatus { get; private set; }
 
-        void Init() {
+        void Init()
+        {
             DbStatus = DhcpDbStatus.Unused;
             Id = 0;
             Dt = new DateTime(0);
@@ -39,12 +43,14 @@ namespace Bjd.DhcpServer
         }
 
         //UNUSEDの設定
-        public void SetUnuse() {
+        public void SetUnuse()
+        {
             Init();
         }
 
         //USEDの設定
-        public void SetUsed(uint id, Mac mac, DateTime dt) {
+        public void SetUsed(uint id, Mac mac, DateTime dt)
+        {
             DbStatus = DhcpDbStatus.Used;
             Id = id;
             Mac = mac;
@@ -52,7 +58,8 @@ namespace Bjd.DhcpServer
         }
 
         //RESERVEの設定
-        public void SetReserve(uint id, Mac mac) {
+        public void SetReserve(uint id, Mac mac)
+        {
             DbStatus = DhcpDbStatus.Reserve;
             Id = id;
             Dt = DateTime.Now.AddSeconds(5);//５秒間有効
@@ -60,18 +67,23 @@ namespace Bjd.DhcpServer
         }
 
         //有効時刻を過したものはクリアする
-        public void Refresh() {
-            if (DbStatus != DhcpDbStatus.Unused) {
-                if (Dt.Ticks < DateTime.Now.Ticks) {
+        public void Refresh()
+        {
+            if (DbStatus != DhcpDbStatus.Unused)
+            {
+                if (Dt.Ticks < DateTime.Now.Ticks)
+                {
                     Init();
                 }
             }
         }
 
         //ToString()を戻すためのコンストラクタ
-        public OneLease(string str) {
+        public OneLease(string str)
+        {
             string[] tmp = str.Split('\t');
-            if (tmp.Length != 5) {
+            if (tmp.Length != 5)
+            {
                 Init();
                 return;
             }
@@ -83,7 +95,8 @@ namespace Bjd.DhcpServer
             MacAppointment = Convert.ToBoolean(tmp[4]);
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}\t{1}\t{2}\t{3}\t{4}",
                 Ip//IPアドレス（変更不可）
                                  ,

@@ -7,7 +7,7 @@ namespace Bjd.WebServer
 {
     public class OptionVirtualHost : OneOption
     {
-        //public override string JpMenu { get { return "Web�̒ǉ��ƍ폜"; } }
+        //public override string JpMenu { get { return "Webの追加と削除"; } }
         //public override string EnMenu { get { return "Add or Remove VirtualHost"; } }
         public override char Mnemonic { get { return 'A'; } }
 
@@ -33,7 +33,7 @@ namespace Bjd.WebServer
             Add(new OneVal("groupHttps", new Dat(list2), Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)

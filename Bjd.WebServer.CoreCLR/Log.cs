@@ -1,15 +1,16 @@
 ﻿
 namespace Bjd.WebServer
 {
-    partial class Server {
-        //BJD.Lang.txt�ɕK�v�Ȓ�`�������Ă��邩�ǂ����̊m�F
+    partial class Server
+    {
+        //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()
         {
             for (var n = 0; n <= 2; n++)
             {
                 Lang.Value(n);
             }
-            for (var n =5; n <= 11; n++)
+            for (var n = 5; n <= 11; n++)
             {
                 Lang.Value(n);
             }
@@ -23,14 +24,16 @@ namespace Bjd.WebServer
             }
         }
 
-        public override string GetMsg(int messageNo) {
-            switch (messageNo) {
-                case 0: 
-                case 1: 
+        public override string GetMsg(int messageNo)
+        {
+            switch (messageNo)
+            {
+                case 0:
+                case 1:
                 case 2:
                     return Lang.Value(messageNo);
-                case 3:  return "request";//�ڍ׃��O�p
-                case 4:  return "response";//�ڍ׃��O�p
+                case 3: return "request";//詳細ログ用
+                case 4: return "response";//詳細ログ用
 
                 case 5:
                 case 6:
@@ -42,17 +45,17 @@ namespace Bjd.WebServer
                     return Lang.Value(messageNo);
 
                 //case 12: return "";
-                
+
                 case 13:
                 case 14:
                 case 15:
                 case 16:
                     return Lang.Value(messageNo);
 
-                
+
                 case 17: return "exec SSI";
                 case 18: return "execute";
-                
+
                 case 20:
                 case 21:
                 case 22:
@@ -72,7 +75,7 @@ namespace Bjd.WebServer
                 case 36:
                 case 37:
                     return Lang.Value(messageNo);
-                
+
                 case 38: return "POST data recved";
                 case 39: return "POST data recved";
                 case 40: return "faild POST data recve.";

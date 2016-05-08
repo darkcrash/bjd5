@@ -30,14 +30,14 @@ namespace Bjd.RemoteServer
             Add(new OneVal("tab", null, Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);
 
-            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, 10001, 60, 1)); //�T�[�o��{�ݒ�
+            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, 10001, 60, 1)); //サーバ基本設定
             //var key = "password";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlHidden(Lang.Value(key), 20)));
 

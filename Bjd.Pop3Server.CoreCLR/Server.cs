@@ -23,9 +23,9 @@ namespace Bjd.Pop3Server
 
     partial class Server : OneServer
     {
-        private readonly AttackDb _attackDb; //��������
+        private readonly AttackDb _attackDb; //自動拒否
 
-        //�R���X�g���N�^
+        //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
@@ -33,22 +33,22 @@ namespace Bjd.Pop3Server
             //Ver5.8.9
             if (kernel.RunMode == RunMode.Service)
             {
-                //���[���{�b�N�X�̏�������Ԋm�F
+                //メールボックスの初期化状態確認
                 if (kernel.MailBox == null || !kernel.MailBox.Status)
                 {
                     Logger.Set(LogKind.Error, null, 4, "");
                 }
             }
 
-            var useAutoAcl = (bool)Conf.Get("useAutoAcl"); // ACL���ۃ��X�g�֎����ǉ�����
+            var useAutoAcl = (bool)Conf.Get("useAutoAcl"); // ACL拒否リストへ自動追加する
             if (!useAutoAcl)
                 return;
-            var max = (int)Conf.Get("autoAclMax"); // �F�؎��s���i��j
-            var sec = (int)Conf.Get("autoAclSec"); // �Ώۊ���(�b)
+            var max = (int)Conf.Get("autoAclMax"); // 認証失敗数（回）
+            var sec = (int)Conf.Get("autoAclSec"); // 対象期間(秒)
             _attackDb = new AttackDb(sec, max);
         }
 
-        //�����[�g����i�f�[�^�̎擾�j
+        //リモート操作（データの取得）
         public override string Cmd(string cmdStr)
         {
             return "";
@@ -56,10 +56,9 @@ namespace Bjd.Pop3Server
 
         private enum Pop3LoginState
         {
-            User = 0, //USER/APOP�҂����
-            Pass = 1, //�p�X���[�h�҂����
-            Login = 2 //���O�C����
-
+            User = 0, //USER/APOP待ち状態
+            Pass = 1, //パスワード待ち状態
+            Login = 2 //ログイン中
         }
 
         protected override bool OnStartServer()
@@ -71,7 +70,7 @@ namespace Bjd.Pop3Server
         {
         }
 
-        //�ڑ��P�ʂ̏���
+        //接続単位の処理
         protected override void OnSubThread(SockObj sockObj)
         {
 
@@ -79,16 +78,16 @@ namespace Bjd.Pop3Server
 
             var pop3LoginState = Pop3LoginState.User;
 
-            var authType = (int)Conf.Get("authType"); // 0=USER/PASS 1=APOP 2=����
-            var useChps = (bool)Conf.Get("useChps"); //�p�X���[�h�ύX[CPHS]�̎g�p�E���g�p
+            var authType = (int)Conf.Get("authType"); // 0=USER/PASS 1=APOP 2=両方
+            var useChps = (bool)Conf.Get("useChps"); //パスワード変更[CPHS]の使用・未使用
 
 
             string user = null;
 
-            //�O���[�e�B���O���b�Z�[�W�̕\��
+            //グリーティングメッセージの表示
             var bannerMessage = Kernel.ChangeTag((string)Conf.Get("bannerMessage"));
 
-            var authStr = ""; //APOP�p�̔F�ؕ�����
+            var authStr = ""; //APOP用の認証文字列
             if (authType == 0)
             {
                 //USER/PASS
@@ -102,16 +101,16 @@ namespace Bjd.Pop3Server
 
             }
 
-            //���[���{�b�N�X�Ƀ��O�C�����āA���̎��_�̃��[�����X�g��擾����
-            //���ۂ̃��[���̍폜�́AQUIT��M���ɁAmailList.Update()�ŏ�������
+            //メールボックスにログインして、その時点のメールリストを取得する
+            //実際のメールの削除は、QUIT受信時に、mailList.Update()で処理する
             MessageList messageList = null;
 
             while (IsLife())
             {
-                //���̃��[�v�͍ŏ��ɃN���C�A���g����̃R�}���h��P�s��M���A�Ō�ɁA
-                //sockCtrl.LineSend(resStr)�Ń��X�|���X������s��
-                //continue��w�肵���ꍇ�́A���X�|���X��Ԃ����Ɏ��̃R�}���h��M�ɓ���i��O�����p�j
-                //break��w�肵���ꍇ�́A�R�l�N�V�����̏I����Ӗ�����iQUIT ABORT �y�уG���[�̏ꍇ�j
+                //このループは最初にクライアントからのコマンドを１行受信し、最後に、
+                //sockCtrl.LineSend(resStr)でレスポンス処理を行う
+                //continueを指定した場合は、レスポンスを返さずに次のコマンド受信に入る（例外処理用）
+                //breakを指定した場合は、コネクションの終了を意味する（QUIT ABORT 及びエラーの場合）
 
                 Thread.Sleep(0);
 
@@ -122,15 +121,15 @@ namespace Bjd.Pop3Server
 
                 var paramStr2 = "";
                 if (!RecvCmd(sockTcp, ref str, ref cmdStr, ref paramStr2))
-                    break; //�ؒf���ꂽ
+                    break; //切断された
 
                 if (str == "waiting")
                 {
-                    Thread.Sleep(100); //��M�ҋ@��
+                    Thread.Sleep(100); //受信待機中
                     continue;
                 }
 
-                //�R�}���h������̉��
+                //コマンド文字列の解釈
                 var cmd = Pop3Cmd.Unknown;
                 foreach (Pop3Cmd n in Enum.GetValues(typeof(Pop3Cmd)))
                 {
@@ -142,11 +141,11 @@ namespace Bjd.Pop3Server
                 }
                 if (cmd == Pop3Cmd.Unknown)
                 {
-                    //�����R�}���h
+                    //無効コマンド
                     goto UNKNOWN;
                 }
 
-                //�p�����[�^����
+                //パラメータ分離
                 var paramList = new List<string>();
                 if (paramStr2 != null)
                 {
@@ -154,12 +153,12 @@ namespace Bjd.Pop3Server
                         paramStr2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim(' ')));
                 }
 
-                //���ł�󂯕t����
+                //いつでも受け付ける
                 if (cmd == Pop3Cmd.Quit)
                 {
                     if (messageList != null)
                     {
-                        messageList.Update(); //�����ō폜���������s�����
+                        messageList.Update(); //ここで削除処理が実行される
                     }
                     goto END;
                 }
@@ -186,10 +185,10 @@ namespace Bjd.Pop3Server
                         }
                         user = paramList[0];
 
-                        //�F��(APOP�Ή�)
+                        //認証(APOP対応)
                         var success = APop.Auth(user, Kernel.MailBox.GetPass(user), authStr, paramList[1]);
                         //var success = APopAuth(user, authStr, paramList[1]);
-                        AutoDeny(success, remoteIp); //�u���[�g�t�H�[�X�΍�
+                        AutoDeny(success, remoteIp); //ブルートフォース対策
                         if (success)
                         {
                             if (
@@ -221,11 +220,11 @@ namespace Bjd.Pop3Server
                     }
                     string pass = paramList[0];
 
-                    var success = Kernel.MailBox.Auth(user, pass); //�F��
-                    AutoDeny(success, remoteIp); //�u���[�g�t�H�[�X�΍�
+                    var success = Kernel.MailBox.Auth(user, pass); //認証
+                    AutoDeny(success, remoteIp); //ブルートフォース対策
                     if (success)
                     {
-                        //�F��
+                        //認証
                         if (
                             !Login(sockTcp, ref pop3LoginState, ref messageList, user,
                                    new Ip(sockObj.RemoteAddress.Address.ToString())))
@@ -251,7 +250,7 @@ namespace Bjd.Pop3Server
                             goto FEW;
                     }
 
-                    int index = -1; //���[���A��
+                    int index = -1; //メール連番
                     if (cmd != Pop3Cmd.Chps && 1 <= paramList.Count)
                     {
                         try
@@ -271,7 +270,7 @@ namespace Bjd.Pop3Server
                             continue;
                         }
                     }
-                    int count = -1; //TOP �s��
+                    int count = -1; //TOP 行数
                     if (cmd != Pop3Cmd.Chps && 2 <= paramList.Count)
                     {
                         try
@@ -350,7 +349,7 @@ namespace Bjd.Pop3Server
                         sockTcp.AsciiSend(string.Format("+OK {0} octets", messageList[index].Size));
                         if (!messageList[index].Send(sockTcp, count))
                         {
-                            //���[���̑��M
+                            //メールの送信
                             break;
                         }
                         MailInfo mailInfo = messageList[index].GetMailInfo();
@@ -369,14 +368,14 @@ namespace Bjd.Pop3Server
 
                         var password = paramList[0];
 
-                        //�Œᕶ����
+                        //最低文字数
                         var minimumLength = (int)Conf.Get("minimumLength");
                         if (password.Length < minimumLength)
                         {
                             sockTcp.AsciiSend("-ERR The number of letter is not enough.");
                             continue;
                         }
-                        //���[�U���Ɠ���̃p�X���[�h������Ȃ�
+                        //ユーザ名と同一のパスワードを許可しない
                         if ((bool)Conf.Get("disableJoe"))
                         {
                             if (user.ToUpper() == password.ToUpper())
@@ -386,7 +385,7 @@ namespace Bjd.Pop3Server
                             }
                         }
 
-                        //�K���܂܂Ȃ���΂Ȃ�Ȃ������̃`�F�b�N
+                        //必ず含まなければならない文字のチェック
                         bool checkNum = false;
                         bool checkSmall = false;
                         bool checkLarge = false;
@@ -452,9 +451,9 @@ namespace Bjd.Pop3Server
             }
             //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
             var folder = Path.Combine(Kernel.MailBox.Dir, user);
-            messageList = new MessageList(folder);//������
+            messageList = new MessageList(folder);//初期化
 
-            //if (kernel.MailBox.Login(user, addr)) {//POP before SMTP�̂��߂ɁA�Ō�̃��O�C���A�h���X��ۑ�����
+            //if (kernel.MailBox.Login(user, addr)) {//POP before SMTPのために、最後のログインアドレスを保存する
             mode = Pop3LoginState.Login;
             Logger.Set(LogKind.Normal, sockTcp, 2, string.Format("User {0} from {1}[{2}]", user, sockTcp.RemoteHostname, sockTcp.RemoteAddress.Address));
 
@@ -467,7 +466,7 @@ namespace Bjd.Pop3Server
         {
 
             Logger.Set(LogKind.Secure, sockTcp, 3, string.Format("user={0} pass={1}", user, pass));
-            // �F�؂̃G���[�͂����ɕԓ���Ԃ��Ȃ�
+            // 認証のエラーはすぐに返答を返さない
             var authTimeout = (int)Conf.Get("authTimeout");
             for (int i = 0; i < (authTimeout * 10) && IsLife(); i++)
             {
@@ -480,13 +479,13 @@ namespace Bjd.Pop3Server
         {
             if (_attackDb == null)
                 return;
-            //�f�[�^�x�[�X�ւ̓o�^
+            //データベースへの登録
             if (!_attackDb.IsInjustice(success, remoteIp))
                 return;
-            //�u���[�g�t�H�[�X�A�^�b�N
+            //ブルートフォースアタック
             if (!AclList.Append(remoteIp))
-                return; //ACL�������ېݒ�(�u������v�ɐݒ肳��Ă���ꍇ�A�@�\���Ȃ�)
-            //�ǉ��ɐ��������ꍇ�A�I�v�V���������������
+                return; //ACL自動拒否設定(「許可する」に設定されている場合、機能しない)
+            //追加に成功した場合、オプションを書き換える
             var d = (Dat)Conf.Get("acl");
             var name = string.Format("AutoDeny-{0}", DateTime.Now);
             var ipStr = remoteIp.ToString();
@@ -497,7 +496,7 @@ namespace Bjd.Pop3Server
             //OneOption.Save(OptionIni.GetInstance());
             Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));
         }
-        //RemoteServer�ł̂ݎg�p�����
+        //RemoteServerでのみ使用される
         public override void Append(OneLog oneLog)
         {
 

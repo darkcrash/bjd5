@@ -26,47 +26,48 @@ namespace Bjd.DhcpServer
             this.leaseTime = leaseTime;
             uint start = startIp.AddrV4;
             uint end = endIp.AddrV4;
-            int count = 2048;//�ő�ێ���
+            int count = 2048;//最大保持数
 
             for (uint i = start; i <= end && count > 0; i++)
             {
                 Ip ip = new Ip(i);
-                ar.Add(new OneLease(ip));//MAC�w��Ȃ�
+                ar.Add(new OneLease(ip));//MAC指定なし
                 count--;
             }
 
             foreach (var o in macAcl)
             {
                 if (o.Enable)
-                {//�L���ȃf�[�^������Ώۂɂ���
-                    string macStr = o.StrList[0];//MAC�A�h���X(99-99-99-99-99-99)
+                {//有効なデータだけを対象にする
+                    string macStr = o.StrList[0];//MACアドレス(99-99-99-99-99-99)
                     Mac mac = new Mac(macStr);
-                    Ip ip = new Ip(o.StrList[1]);//IP�A�h���X
+                    Ip ip = new Ip(o.StrList[1]);//IPアドレス
                     if (ip.ToString() == "255.255.255.255")
                     {
-                        ar.Add(new OneLease(ip, mac));//MAC�w�肠��őS���ǉ�
+                        ar.Add(new OneLease(ip, mac));//MAC指定ありで全部追加
                     }
-                    else {
+                    else
+                    {
 
-                        // ��{�ݒ�͈̔͂̃e�[�u�������
+                        // 基本設定の範囲のテーブルを検索
                         bool find = false;
                         for (int i = 0; i < ar.Count; i++)
                         {
                             if (ar[i].Ip == ip)
                             {
-                                ar[i] = new OneLease(ip, mac);//MAC�w�肠��ɕύX
+                                ar[i] = new OneLease(ip, mac);//MAC指定ありに変更
                                 find = true;
                                 break;
                             }
                         }
                         if (!find)
-                        { // ��{�ݒ�͈̔͊O�̏ꍇ
-                            ar.Add(new OneLease(ip, mac));//MAC�w�肠��Ƃ��Ēǉ�
+                        { // 基本設定の範囲外の場合
+                            ar.Add(new OneLease(ip, mac));//MAC指定ありとして追加
                         }
                     }
                 }
             }
-            // ���[�X���f�[�^�̓ǂݍ���
+            // リース中データの読み込み
             Read();
         }
 
@@ -76,9 +77,9 @@ namespace Bjd.DhcpServer
             {
                 ar[i].Refresh();
             }
-            Save();// ���[�X���̃f�[�^��ۑ�
+            Save();// リース中のデータを保存
         }
-        //MAC�w��݂̂̏ꍇ�A�f�[�^�x�[�X�ɑ��݂��邩�ǂ�����m�F����
+        //MAC指定のみの場合、データベースに存在するかどうかを確認する
         public bool SearchMac(Mac mac)
         {
             for (int i = 0; i < ar.Count; i++)
@@ -89,36 +90,36 @@ namespace Bjd.DhcpServer
             return false;
         }
 
-        //RELEASE����
+        //RELEASE処理
         public Ip Release(Mac mac)
         {
-            // ���Y�f�[�^�x�[�X�̌���
+            // 当該データベースの検索
             for (int i = 0; i < ar.Count; i++)
             {
                 if (ar[i].Mac == mac)
                 {
                     ar[i].SetUnuse();
-                    Save();// ���[�X���̃f�[�^��ۑ�
+                    Save();// リース中のデータを保存
                     return ar[i].Ip;
                 }
             }
             return null;
         }
 
-        //DISCOVER����
+        //DISCOVER処理
         public Ip Discover(Ip requestIp, uint id, Mac mac)
         {
             int i = SearchDiscover(requestIp, id, mac);
             if (i != -1)
             {
                 ar[i].SetReserve(id, mac);
-                // ���N�G�X�g���ꂽIP�ȊO���������ꂽ�ꍇ�����
+                // リクエストされたIP以外が検索された場合もある
                 return ar[i].Ip;
             }
             return null;
         }
 
-        //REQUEST����
+        //REQUEST処理
         public Ip Request(Ip requestIp, uint id, Mac mac)
         {
 
@@ -127,7 +128,7 @@ namespace Bjd.DhcpServer
             if (i != -1)
             {
 
-                //����MAC�ł��łɎg�p���̂�̂�����Δj������
+                //同一MACですでに使用中のものがあれば破棄する
                 for (int n = 0; n < ar.Count; n++)
                 {
                     if (n == i)
@@ -138,9 +139,9 @@ namespace Bjd.DhcpServer
 
 
                 ar[i].SetUsed(id, mac, DateTime.Now.AddSeconds(leaseTime));
-                Save();// ���[�X���̃f�[�^��ۑ�
+                Save();// リース中のデータを保存
 
-                // ���N�G�X�g���ꂽIP�ȊO���������ꂽ�ꍇ�����
+                // リクエストされたIP以外が検索された場合もある
                 return ar[i].Ip;
             }
             return null;
@@ -167,7 +168,7 @@ namespace Bjd.DhcpServer
         int SearchDiscover(Ip ip, uint id, Mac mac)
         {
 
-            //���ł�DISCOVER��󂯂ă��U�[�u��Ԃ̃f�[�^������ꍇ�́A����������Ԃ�
+            //すでにDISCOVERを受けてリザーブ状態のデータがある場合は、同じ答えを返す
             for (int i = 0; i < ar.Count; i++)
             {
                 if (ar[i].DbStatus == DhcpDbStatus.Reserve && ar[i].Id == id)
@@ -176,7 +177,7 @@ namespace Bjd.DhcpServer
                 }
             }
 
-            //MAC�w��̃f�[�^��D�悵�Č�������
+            //MAC指定のデータを優先して検索する
             for (int i = 0; i < ar.Count; i++)
             {
                 if (ar[i].MacAppointment && ar[i].Mac == mac)
@@ -189,16 +190,16 @@ namespace Bjd.DhcpServer
                 }
             }
 
-            // ����MAC�̃f�[�^������΁A�����̃f�[�^��j�����ă��[�X�ΏۂƂ���
+            // 同一MACのデータがあれば、既存のデータを破棄してリース対象とする
             for (int i = 0; i < ar.Count; i++)
             {
                 if (ar[i].Mac == mac)
                 {
-                    ar[i].SetUnuse();// �ˑ��f�[�^��N���A
+                    ar[i].SetUnuse();// 依存データをクリア
                     return i;
                 }
             }
-            //�v���h�o�������Ă���ꍇ�́A���[�X�Ώۂɂ���
+            //要求ＩＰがあいている場合は、リース対象にする
             for (int i = 0; i < ar.Count; i++)
             {
                 if (!ar[i].MacAppointment && ar[i].DbStatus == DhcpDbStatus.Unused && ar[i].Ip == ip)
@@ -207,10 +208,10 @@ namespace Bjd.DhcpServer
                 }
             }
             next:
-            //IP�͂Ȃ�ł�����̂ŋ󂢂Ă����̂�Ώۂɂ���
+            //IPはなんでもいいので空いているものを対象にする
             for (int i = 0; i < ar.Count; i++)
             {
-                ar[i].Refresh();//���Ԓ��߂��Ă���f�[�^�͏���������
+                ar[i].Refresh();//時間超過しているデータは初期化する
                 if (!ar[i].MacAppointment && ar[i].DbStatus == DhcpDbStatus.Unused)
                 {
                     return i;
@@ -218,7 +219,7 @@ namespace Bjd.DhcpServer
             }
             return -1;
         }
-        // ���[�X���̃f�[�^�̕ۑ�
+        // リース中のデータの保存
         void Save()
         {
             using (FileStream bs = new FileStream(fileName, FileMode.Create))
@@ -241,7 +242,7 @@ namespace Bjd.DhcpServer
                 sw.Dispose();
             }
         }
-        // ���[�X���̃f�[�^�̓ǂݍ���
+        // リース中のデータの読み込み
         void Read()
         {
             if (!File.Exists(fileName))
@@ -293,7 +294,7 @@ namespace Bjd.DhcpServer
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < ar.Count; i++)
             {
-                ar[i].Refresh();//���Ԓ��߂��Ă���f�[�^�͏���������
+                ar[i].Refresh();//時間超過しているデータは初期化する
                 sb.Append(ar[i].ToString() + "\b");
             }
             return sb.ToString();

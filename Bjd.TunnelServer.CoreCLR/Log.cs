@@ -1,7 +1,7 @@
 ﻿
 namespace Bjd.TunnelServer {
     partial class Server {
-        //BJD.Lang.txt�ɕK�v�Ȓ�`�������Ă��邩�ǂ����̊m�F
+        //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()
         {
             Lang.Value(1);

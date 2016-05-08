@@ -21,7 +21,7 @@ namespace Bjd.RemoteServer
     {
         readonly Queue<OneRemoteData> _queue = new Queue<OneRemoteData>();
 
-        //�R���X�g���N�^
+        //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
@@ -29,26 +29,26 @@ namespace Bjd.RemoteServer
         }
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
-        //�ڑ��P�ʂ̏���
-        SockTcp _sockTcp;//�����Ő錾����ꍇ�A�}���`�X���b�h�ł͎g�p�ł��Ȃ�
+        //接続単位の処理
+        SockTcp _sockTcp;//ここで宣言する場合、マルチスレッドでは使用できない
         override protected void OnSubThread(SockObj sockObj)
         {
             _sockTcp = (SockTcp)sockObj;
 
             //*************************************************************
-            // �p�X���[�h�F��
+            // パスワード認証
             //*************************************************************
             var password = (string)Conf.Get("password");
             if (password == "")
             {
                 Logger.Set(LogKind.Normal, _sockTcp, 5, "");
             }
-            else {//�p�X���[�h�F�؂��K�v�ȏꍇ
-                var challengeStr = Inet.ChallengeStr(10);//�`�������W������̐���
+            else {//パスワード認証が必要な場合
+                var challengeStr = Inet.ChallengeStr(10);//チャレンジ文字列の生成
 
                 RemoteData.Send(_sockTcp, RemoteDataKind.DatAuth, challengeStr);
 
-                //�p�X���[�h�̉����҂�
+                //パスワードの応答待ち
                 var success = false;//Ver5.0.0-b14
                 while (IsLife() && _sockTcp.SockState == Bjd.sock.SockState.Connect)
                 {
@@ -58,17 +58,17 @@ namespace Bjd.RemoteServer
                         if (o.Kind == RemoteDataKind.CmdAuth)
                         {
 
-                            //�n�b�V��������̍쐬�iMD5�j
+                            //ハッシュ文字列の作成（MD5）
                             var md5Str = Inet.Md5Str(password + challengeStr);
                             if (md5Str != o.Str)
                             {
                                 Logger.Set(LogKind.Secure, _sockTcp, 4, "");
 
-                                //DOS�΍� 3�b�Ԃ͎��̐ڑ���󂯕t���Ȃ�
+                                //DOS対策 3秒間は次の接続を受け付けない
                                 //for (int i = 0; i < 30 && life; i++) {
                                 //    Thread.Sleep(100);
                                 //}
-                                //tcpObj.Close();//���̐ڑ��͔j�������
+                                //tcpObj.Close();//この接続は破棄される
                                 //return;
                             }
                             else {
@@ -84,30 +84,30 @@ namespace Bjd.RemoteServer
                 //Ver5.0.0-b14
                 if (!success)
                 {
-                    //�F�؎��s�i�p�X���[�h�L�����Z���E�p�X���[�h�Ⴂ�E�����ؒf�j
-                    //DOS�΍� 3�b�Ԃ͎��̐ڑ���󂯕t���Ȃ�
+                    //認証失敗（パスワードキャンセル・パスワード違い・強制切断）
+                    //DOS対策 3秒間は次の接続を受け付けない
                     for (var i = 0; i < 30 && IsLife(); i++)
                     {
                         Thread.Sleep(100);
                     }
-                    _sockTcp.Close();//���̐ڑ��͔j�������
+                    _sockTcp.Close();//この接続は破棄される
                     return;
                 }
             }
 
             //*************************************************************
-            // �F�؊���
+            // 認証完了
             //*************************************************************
 
             Logger.Set(LogKind.Normal, _sockTcp, 1, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
 
-            //�o�[�W����/���O�C�������̑��M
+            //バージョン/ログイン完了の送信
             RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Define.ProductVersion);
 
-            //kernel.LocalAddress��Remote���Ő�������
+            //kernel.LocalAddressをRemote側で生成する
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLocaladdress, LocalAddress.GetInstance().RemoteStr());
 
-            //�I�v�V�����̑��M
+            //オプションの送信
             //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
             var optionFileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
             string optionStr;
@@ -119,15 +119,15 @@ namespace Bjd.RemoteServer
                 sr.Dispose();
             }
             RemoteData.Send(_sockTcp, RemoteDataKind.DatOption, optionStr);
-            Kernel.RemoteConnect = new Bjd.remote.RemoteConnect(_sockTcp);//�����[�g�N���C�A���g�ڑ��J�n
-            //Kernel.View.SetColor();//�E�C���h�F�̏�����
+            Kernel.RemoteConnect = new Bjd.remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
+            //Kernel.View.SetColor();//ウインド色の初期化
 
             while (IsLife() && _sockTcp.SockState == Bjd.sock.SockState.Connect)
             {
                 var o = RemoteData.Recv(_sockTcp, this);
                 if (o == null)
                     continue;
-                //�R�}���h�́A���ׂăL���[�Ɋi�[����
+                //コマンドは、すべてキューに格納する
                 _queue.Enqueue(o);
                 if (_queue.Count == 0)
                 {
@@ -139,10 +139,10 @@ namespace Bjd.RemoteServer
                 }
             }
 
-            Kernel.RemoteConnect = null;//�����[�g�N���C�A���g�ڑ��I��
+            Kernel.RemoteConnect = null;//リモートクライアント接続終了
 
             Logger.Set(LogKind.Normal, _sockTcp, 2, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
-            //Kernel.View.SetColor();//�E�C���h�F�̏�����
+            //Kernel.View.SetColor();//ウインド色の初期化
 
             _sockTcp.Close();
 
@@ -150,14 +150,14 @@ namespace Bjd.RemoteServer
 
         void Cmd(OneRemoteData o)
         {
-            //�T�[�r�X����Ăяo���ꂽ�ꍇ�́A�R���g���[�������͂Ȃ��̂�Invoke�͂��Ȃ�
+            //サービスから呼び出された場合は、コントロール処理はないのでInvokeはしない
             //if (mainForm != null && mainForm.InvokeRequired) {
             //    mainForm.Invoke(new MethodInvoker(() => Cmd(remoteObj)));
             //} else {
             switch (o.Kind)
             {
                 case RemoteDataKind.CmdRestart:
-                    //�������g�i�X���b�h�j���~���邽�ߔ񓯊��Ŏ��s����
+                    //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Restart", false/*synchro*/);
                     Bjd.service.Service.Restart();
                     break;
@@ -172,13 +172,13 @@ namespace Bjd.RemoteServer
 
                         if (nameTag == "BJD")
                         {
-                            buffer = Kernel.Cmd(cmdStr);//�����[�g����i�f�[�^�擾�j
+                            buffer = Kernel.Cmd(cmdStr);//リモート操作（データ取得）
                         }
                         else {
                             var server = Kernel.ListServer.Get(nameTag);
                             if (server != null)
                             {
-                                buffer = server.Cmd(cmdStr);//�����[�g����i�f�[�^�擾�j
+                                buffer = server.Cmd(cmdStr);//リモート操作（データ取得）
                             }
                         }
                         RemoteData.Send(_sockTcp, RemoteDataKind.DatTool, cmdStr + "\t" + buffer);
@@ -190,12 +190,11 @@ namespace Bjd.RemoteServer
                     break;
                 case RemoteDataKind.CmdOption:
                     //string optionStr = remoteObj.STR;
-                    //Option.ini��㏑������
+                    //Option.iniを上書きする
 
-                    //�N���C�A���g�ŃI�v�V������ύX���ăT�[�o���֑����Ă��邪���f����Ă��Ȃ��l�q
-                    //c:\out�ŃN���C�A���g�𗧂��グ�A�uFTP�T�[�o�g�p����v�ɂ��ĕύX���đ����Ă݂�
-                    //    �ύX���ꂽ��e���A�����ɓ������Ă��邩�ǂ�����m�F����
-
+                    //クライアントでオプションを変更してサーバ側へ送っているが反映されていない様子
+                    //c:\outでクライアントを立ち上げ、「FTPサーバ使用する」にして変更して送ってみて
+                    //    変更された内容が、ここに到着しているかどうかを確認する
 
                     //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
                     var optionFileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
@@ -206,12 +205,12 @@ namespace Bjd.RemoteServer
                         //sw.Close();
                         sw.Dispose();
                     }
-                    Kernel.ListInitialize();//Option.ini��ǂݍ���
+                    Kernel.ListInitialize();//Option.iniを読み込む
 
-                    //Ver5.8.6 Java fix �V����Def����ǂݍ��񂾃I�v�V�������������ꍇ�ɁA���̃I�v�V������ۑ����邽��
+                    //Ver5.8.6 Java fix 新しくDefから読み込んだオプションがあった場合に、そのオプションを保存するため
                     Kernel.ListOption.Save(Kernel.IniDb);
 
-                    //�������g�i�X���b�h�j���~���邽�ߔ񓯊��Ŏ��s����
+                    //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);
                     Bjd.service.Service.Restart();
                     break;
@@ -223,7 +222,7 @@ namespace Bjd.RemoteServer
         }
 
 
-        //���O��Append�C�x���g�Ń����[�g�N���C�A���g�փ��O�𑗐M����
+        //ログのAppendイベントでリモートクライアントへログを送信する
         public override void Append(OneLog oneLog)
         {
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLog, oneLog.ToString());

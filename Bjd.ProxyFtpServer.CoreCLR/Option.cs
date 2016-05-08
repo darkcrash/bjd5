@@ -33,14 +33,14 @@ namespace Bjd.ProxyFtpServer
             Add(new OneVal("tab", null, Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);
 
-            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, 8021, 60, 10)); //�T�[�o��{�ݒ�
+            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, 8021, 60, 10)); //サーバ基本設定
 
             //var key = "idleTime";
             //onePage.Add(new OneVal(key, 1, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));

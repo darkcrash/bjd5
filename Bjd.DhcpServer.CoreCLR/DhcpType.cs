@@ -1,6 +1,7 @@
 ﻿namespace Bjd.DhcpServer
 {
-    public enum DhcpType {
+    public enum DhcpType
+    {
         Unknown = 0,
         Discover = 1,
         Offer = 2,

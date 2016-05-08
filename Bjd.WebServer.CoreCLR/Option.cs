@@ -18,7 +18,7 @@ namespace Bjd.WebServer
 
         public override char Mnemonic { get { return '0'; } }
 
-        private Kernel _kernel; //����Web�̏d������o���邽�ߕK�v�ƂȂ�
+        private Kernel _kernel; //仮装Webの重複を検出するため必要となる
 
         public Option(Kernel kernel, string path, string nameTag)
             : base(kernel.IsJp(), path, nameTag)
@@ -27,7 +27,7 @@ namespace Bjd.WebServer
             _kernel = kernel;
 
             var protocol = 0;//HTTP
-            //nameTag����|�[�g�ԍ���擾���Z�b�g����i�ύX�s�j
+            //nameTagからポート番号を取得しセットする（変更不可）
             var tmp = NameTag.Split(':');
             if (tmp.Length == 2)
             {
@@ -51,7 +51,7 @@ namespace Bjd.WebServer
             pageList.Add(PageAcl());
             Add(new OneVal("tab", null, Crlf.Nextline));
 
-            Read(_kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(_kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel, int protocol)
@@ -62,13 +62,13 @@ namespace Bjd.WebServer
             Add(new OneVal("protocol", protocol, Crlf.Nextline));
 
             var port = 80;
-            //nameTag����|�[�g�ԍ���擾���Z�b�g����i�ύX�s�j
+            //nameTagからポート番号を取得しセットする（変更不可）
             var tmp = NameTag.Split(':');
             if (tmp.Length == 2)
             {
                 port = Convert.ToInt32(tmp[1]);
             }
-            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, port, 3, 10)); //�T�[�o��{�ݒ�
+            //onePage.Add(CreateServerOption(ProtocolKind.Tcp, port, 3, 10)); //サーバ基本設定
             CreateServerOption(ProtocolKind.Tcp, port, 3, 10);
 
             //onePage.Add(new OneVal("documentRoot", "", Crlf.Nextline));

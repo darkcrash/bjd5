@@ -36,14 +36,14 @@ namespace Bjd.TunnelServer
             pageList.Add(PageAcl());
             Add(new OneVal("tab", null, Crlf.Nextline));
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);
 
-            //nameTag����|�[�g�ԍ���擾���Z�b�g����i�ύX�s�j
+            //nameTagからポート番号を取得しセットする（変更不可）
             var tmp = NameTag.Split(':');
             var protocolKind = ProtocolKind.Tcp;
             var port = 0;
@@ -51,13 +51,13 @@ namespace Bjd.TunnelServer
             var targetPort = 0;
             if (tmp.Length == 4)
             {
-                //�l������I�ɐݒ�
+                //値を強制的に設定
                 protocolKind = (tmp[0] == "Tunnel-TCP") ? ProtocolKind.Tcp : ProtocolKind.Udp;
                 port = Convert.ToInt32(tmp[1]);
                 targetServer = tmp[2];
                 targetPort = Convert.ToInt32(tmp[3]);
             }
-            //onePage.Add(CreateServerOption(protocolKind, port, 60, 10)); //�T�[�o��{�ݒ�
+            //onePage.Add(CreateServerOption(protocolKind, port, 60, 10)); //サーバ基本設定
             CreateServerOption(protocolKind, port, 60, 10);
 
             //var key = "targetPort";

@@ -32,14 +32,14 @@ namespace Bjd.DhcpServer
             Add(new OneVal("tab", null, Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)
         {
             var onePage = new OnePage(name, title);
 
-            //onePage.Add(CreateServerOption(ProtocolKind.Udp, 67, 10, 10)); //�T�[�o��{�ݒ�
+            //onePage.Add(CreateServerOption(ProtocolKind.Udp, 67, 10, 10)); //サーバ基本設定
 
             //var key = "leaseTime";
             //onePage.Add(new OneVal(key, 18000, Crlf.Nextline, new CtrlInt(Lang.Value(key), 8)));

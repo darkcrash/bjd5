@@ -13,14 +13,14 @@ namespace Bjd.TunnelServer
     partial class Server : OneServer
     {
 
-        //�ʏ��ServerThread�̎q�N���X�ƈႢ�A�I�v�V�����̓��X�g�Ŏ󂯎��
-        //�e�N���X�́A���̃��X�g��0�Ԗڂ̃I�u�W�F�N�g�ŏ���������
+        //通常のServerThreadの子クラスと違い、オプションはリストで受け取る
+        //親クラスは、そのリストの0番目のオブジェクトで初期化する
         readonly string _targetServer;
         readonly int _targetPort;
         readonly ProtocolKind _protocolKind;
 
 
-        //�R���X�g���N�^
+        //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
@@ -43,7 +43,7 @@ namespace Bjd.TunnelServer
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
 
-        //�ڑ��P�ʂ̏���
+        //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
 
@@ -63,7 +63,7 @@ namespace Bjd.TunnelServer
             SockTcp server = null;
 
             //***************************************************************
-            // �T�[�o�Ƃ̐ڑ�
+            // サーバとの接続
             //***************************************************************
             {
                 var port = _targetPort;
@@ -97,7 +97,7 @@ namespace Bjd.TunnelServer
             Logger.Set(LogKind.Normal, server, 6, string.Format("TCP {0}:{1} - {2}:{3}", client.RemoteHostname, client.RemoteAddress.Port, _targetServer, _targetPort));
 
             //***************************************************************
-            // �p�C�v
+            // パイプ
             //***************************************************************
             var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), Timeout);
             tunnel.Pipe(server, client, this);
@@ -115,7 +115,7 @@ namespace Bjd.TunnelServer
             sock[CS.Server] = null;
 
             //***************************************************************
-            // �T�[�o�Ƃ̐ڑ�
+            // サーバとの接続
             //***************************************************************
             {
                 int port = _targetPort;
@@ -127,7 +127,7 @@ namespace Bjd.TunnelServer
                 //            goto end;
                 //        }
                 //        ip = new Ip(iphe.AddressList[0].ToString());
-                //    } catch {//���O�Ɏ��s�����ꍇ
+                //    } catch {//名前に失敗した場合
                 //        Logger.Set(LogKind.Normal,null, 4, string.Format("{0}:{1}", _targetServer, _targetPort));
                 //        goto end;
                 //    }
@@ -151,7 +151,7 @@ namespace Bjd.TunnelServer
                         ip = new Ip(iphe.AddressList[0].ToString());
                     }
                     catch
-                    {//���O�Ɏ��s�����ꍇ
+                    {//名前に失敗した場合
                         Logger.Set(LogKind.Normal, null, 4, string.Format("{0}:{1}", _targetServer, _targetPort));
                         goto end;
                     }
@@ -162,17 +162,17 @@ namespace Bjd.TunnelServer
                 if (sock[CS.Server].SockState == Bjd.sock.SockState.Error)
                     goto end;
             }
-            sock[CS.Server].Send(sock[CS.Client].RecvBuf);//�T�[�o�֑��M
-            //if (sock[CS.Server].Recv(Timeout)) {//�T�[�o����̎�M
+            sock[CS.Server].Send(sock[CS.Client].RecvBuf);//サーバへ送信
+            //if (sock[CS.Server].Recv(Timeout)) {//サーバからの受信
             var buf = sock[CS.Server].Recv(Timeout);
             if (buf.Length == 0)
             {
-                sock[CS.Client].Send(buf);//�N���C�A���g�֑��M
+                sock[CS.Client].Send(buf);//クライアントへ送信
             }
             Logger.Set(LogKind.Normal, sock[CS.Server], 7, string.Format("UDP {0}:{1} - {2}:{3} {4}byte", sock[CS.Client].RemoteHostname, sock[CS.Client].RemoteAddress.Port, _targetServer, _targetPort, buf.Length));
 
             end:
-            //udpObj.Close();UDP�\�P�b�g(udpObj)�̓N���[���Ȃ̂ŃN���[�Y���Ă�A��������Ȃ���Close()��Ăяo���Ă���͂Ȃ�
+            //udpObj.Close();UDPソケット(udpObj)はクローンなのでクローズしても、処理されない※Close()を呼び出しても問題はない
             if (sock[CS.Client] != null)
                 sock[CS.Client].Close();
             if (sock[CS.Server] != null)
@@ -180,7 +180,7 @@ namespace Bjd.TunnelServer
 
         }
 
-        //RemoteServer�ł̂ݎg�p�����
+        //RemoteServerでのみ使用される
         public override void Append(OneLog oneLog)
         {
 

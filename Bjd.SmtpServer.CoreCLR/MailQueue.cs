@@ -13,15 +13,15 @@ namespace Bjd.SmtpServer
     {
         readonly object _lockObj = new Object();
 
-        public bool Status { get; private set; }//��������� false�̏ꍇ�́A�������Ɏ��s���Ă���̂Ŏg�p�ł��Ȃ�
+        public bool Status { get; private set; }//初期化状態 falseの場合は、初期化に失敗しているので使用できない
         public string Dir { get; private set; }
 
         public MailQueue(string currentDirectory)
         {
 
-            Status = true;//��������� false�̏ꍇ�́A�������Ɏ��s���Ă���̂Ŏg�p�ł��Ȃ�
+            Status = true;//初期化状態 falseの場合は、初期化に失敗しているので使用できない
 
-            //���N���X��string dir�̏�����
+            //基底クラスのstring dirの初期化
             //Dir = string.Format("{0}\\MailQueue", currentDirectory);
             Dir = $"{currentDirectory}{Path.DirectorySeparatorChar}MailQueue";
             if (Directory.Exists(Dir))
@@ -32,12 +32,12 @@ namespace Bjd.SmtpServer
             }
             catch
             {
-                Status = false;//���������s
+                Status = false;//初期化失敗
                 Dir = null;
             }
         }
 
-        //�d�����Ȃ��t�@�C������擾����
+        //重複しないファイル名を取得する
         protected string CreateName()
         {
             while (true)
@@ -53,21 +53,21 @@ namespace Bjd.SmtpServer
             }
         }
 
-        //sec:�Ō��GetList���Ă���sec���Ԍo�߂��Ȃ���͎̂擾�̑ΏۊO�Ƃ���
+        //sec:最後にGetListしてからsec時間経過しないものは取得の対象外とする
         public List<OneQueue> GetList(int max, int sec)
         {
 
             var queueList = new List<OneQueue>();
 
             lock (_lockObj)
-            {//�r������
+            {//排他制御
                 foreach (var fileName in Directory.GetFiles(Dir, "DF_*"))
                 {
                     if (queueList.Count == max)
                         break;
                     var mailInfo = new MailInfo(fileName);
 
-                    //�����Ώۂ��ǂ����̊m�F
+                    //処理対象かどうかの確認
                     if (mailInfo.IsProcess(sec, fileName))
                     {
                         var fname = Path.GetFileName(fileName);
@@ -80,7 +80,7 @@ namespace Bjd.SmtpServer
         public void Delete(string fname)
         {
             lock (_lockObj)
-            {//�r������
+            {//排他制御
                 //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
                 var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
                 File.Delete(fileName);
@@ -93,7 +93,7 @@ namespace Bjd.SmtpServer
         {
 
             lock (_lockObj)
-            {//�r������
+            {//排他制御
                 var fname = CreateName();
                 //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
                 var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
@@ -110,7 +110,7 @@ namespace Bjd.SmtpServer
         public bool Read(string fname, ref Mail mail)
         {
             lock (_lockObj)
-            {//�r������
+            {//排他制御
                 //var fileName = string.Format("{0}\\MF_{1}", Dir, fname);
                 var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{fname}";
                 return mail.Read(fileName);

@@ -19,24 +19,24 @@ namespace Bjd.SmtpServer{
             }
         }
 
-        //�e�X�g�p logger��null�ł��
+        //テスト用 loggerはnullでも可
         public void Add(String name, String alias, Logger logger){
             System.Diagnostics.Debug.Assert(logger != null, "logger != null");
-            
-            //alias�̕�����ɖ������Ȃ����ǂ�����m�F����
+
+            //aliasの文字列に矛盾がないかどうかを確認する
             var tmp = alias.Split(',');
             var sb = new StringBuilder();
             foreach (var str in tmp){
                 if (str.IndexOf('@') != -1){
-                    //�O���[�o���A�h���X�̒ǉ�
+                    //グローバルアドレスの追加
                     sb.Append(str);
                     sb.Append(',');
                 }else if (str.IndexOf('/') == 0){
-                    //���[�J���t�@�C���̏ꍇ
+                    //ローカルファイルの場合
                     sb.Append(str);
                     sb.Append(',');
                 }else if (str.IndexOf('$') == 0){
-                    //��`�̏ꍇ
+                    //定義の場合
                     if (str == "$ALL"){
                         if (_mailBox != null){
                             foreach (string user in _mailBox.UserList) {
@@ -45,7 +45,7 @@ namespace Bjd.SmtpServer{
                             }
                         }
                     }else if (str == "$USER"){
-                        //Ver5.4.3 $USER�ǉ�
+                        //Ver5.4.3 $USER追加
                         sb.Append(string.Format("{0}@{1}", name, _domainList[0]));
                         sb.Append(',');
                     }else{
@@ -53,7 +53,7 @@ namespace Bjd.SmtpServer{
                     }
                 }else{
                     if (_mailBox==null || !_mailBox.IsUser(str)){
-                        //���[�U���͗L�����H
+                        //ユーザ名は有効か？
                         logger.Set(LogKind.Error, null, 19, string.Format("name:{0} alias:{1}", name, alias));
                     }else{
                         sb.Append(string.Format("{0}@{1}", str, _domainList[0]));
@@ -69,15 +69,15 @@ namespace Bjd.SmtpServer{
             }
         }
 
-        //�ݒ肳��Ă��郆�[�U�����ǂ���
+        //設定されているユーザ名かどうか
         public bool IsUser(string user) {
             string buffer;
             return _ar.TryGetValue(user, out buffer);
         }
 
 
-        //���惊�X�g�̕ϊ�
-        //�e�X�g�p logger��null�ł��
+        //宛先リストの変換
+        //テスト用 loggerはnullでも可
         /*public RcptList Reflection(RcptList rcptList, Logger logger) {
             var ret = new RcptList();
             foreach(var mailAddress in rcptList){

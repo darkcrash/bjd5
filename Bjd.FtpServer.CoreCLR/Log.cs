@@ -3,7 +3,7 @@ namespace Bjd.FtpServer
 {
     partial class Server {
 
-        //BJD.Lang.txt�ɕK�v�Ȓ�`�������Ă��邩�ǂ����̊m�F
+        //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()
         {
             for (var n = 1; n <= 3; n++){
