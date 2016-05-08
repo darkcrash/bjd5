@@ -17,7 +17,7 @@ namespace Bjd.WebServer
     //********************************************************
     class Document
     {
-        //readonly Kernel kernel;
+        readonly Kernel kernel;
         readonly Logger _logger;
         //readonly OneOption _oneOption;
         readonly Conf _conf;
@@ -35,7 +35,7 @@ namespace Bjd.WebServer
         public Document(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, ContentType contentType)
         {
             System.Diagnostics.Trace.TraceInformation($"Document..ctor");
-            //this.kernel = kernel;
+            this.kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;
             _conf = conf;
@@ -46,7 +46,7 @@ namespace Bjd.WebServer
 
             //送信ヘッダ初期化
             _sendHeader = new Header();
-            _sendHeader.Replace("Server", Util.SwapStr("$v", Define.ProductVersion, (string)_conf.Get("serverHeader")));
+            _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.ProductVersion, (string)_conf.Get("serverHeader")));
             _sendHeader.Replace("MIME-Version", "1.0");
             _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
 
@@ -258,7 +258,7 @@ namespace Bjd.WebServer
                 string str = line;
                 str = Util.SwapStr("$MSG", request.StatusMessage(responseCode), str);
                 str = Util.SwapStr("$CODE", responseCode.ToString(), str);
-                str = Util.SwapStr("$SERVER", Define.ApplicationName(), str);
+                str = Util.SwapStr("$SERVER", kernel.ApplicationName, str);
                 str = Util.SwapStr("$VER", request.Ver, str);
                 str = Util.SwapStr("$URI", uri, str);
                 sb.Append(str + "\r\n");
@@ -340,7 +340,7 @@ namespace Bjd.WebServer
                 else
                 {//一覧行以外の処理
                     str = Util.SwapStr("$URI", uri, str);
-                    str = Util.SwapStr("$SERVER", Define.ApplicationName(), str);
+                    str = Util.SwapStr("$SERVER", kernel.ApplicationName, str);
                     str = Util.SwapStr("$VER", request.Ver, str);
                     sb.Append(str + "\r\n");
                 }

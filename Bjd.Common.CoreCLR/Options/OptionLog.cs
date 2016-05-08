@@ -9,7 +9,7 @@ namespace Bjd.Options
 
         public override char Mnemonic { get { return 'L'; } }
 
-        public OptionLog(Kernel kernel, string path) : base(kernel.IsJp(), path, "Log")
+        public OptionLog(Kernel kernel, string path) : base(kernel.IsJp, path, "Log")
         {
             //var pageList = new List<OnePage>();
 

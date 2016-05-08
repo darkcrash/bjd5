@@ -13,7 +13,7 @@ namespace Bjd.Common.Test.server{
     public class OneServerTest3 : ILife{
         public OneServerTest3 ()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         private class EchoServer : OneServer{

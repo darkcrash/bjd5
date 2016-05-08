@@ -12,6 +12,7 @@ namespace Bjd.SmtpServer
         //******************************************************************
         //メール配達クラス　生成して送信する
         //******************************************************************
+        readonly Kernel _kernel;
         readonly MlUserList _mlUserList;
         readonly MlAddr _mlAddr;
         readonly Logger _logger;
@@ -21,7 +22,8 @@ namespace Bjd.SmtpServer
         readonly List<string> _docs;
         readonly int _maxGet;
         
-        public MlDelivery(MailSave mailSave, Logger logger, MlUserList mlUserList, MlAddr mlAddr, MlMailDb mlDb, MlSubject mlSubject,List<string>docs,int maxGet) {
+        public MlDelivery(Kernel kernel, MailSave mailSave, Logger logger, MlUserList mlUserList, MlAddr mlAddr, MlMailDb mlDb, MlSubject mlSubject,List<string>docs,int maxGet) {
+            _kernel = kernel;
             _mlUserList = mlUserList;
             _mlAddr = mlAddr;
             _logger = logger;
@@ -165,7 +167,7 @@ namespace Bjd.SmtpServer
             //List-Id:の追加　
             mail.ConvertHeader("List-Id", string.Format("{0}.{1}", _mlAddr.Name, _mlAddr.DomainList[0]));
             //List-Software:の追加　
-            mail.ConvertHeader("List-Software", string.Format("{0}", Define.ApplicationName()));
+            mail.ConvertHeader("List-Software", string.Format("{0}", _kernel.ApplicationName));
             //List-Post:の追加　
             mail.ConvertHeader("List-Post", string.Format("<mailto:{0}>", _mlAddr.Post));
             //List-Owner:の追加　

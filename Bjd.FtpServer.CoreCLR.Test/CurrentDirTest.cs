@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Bjd.FtpServer;
+using Bjd.Services;
 using Bjd;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace FtpServerTest
 
         public CurrentDirTest()
         {
-            Define.TestInitalize();
+            Service.ServiceTest();
         }
 
 

@@ -35,7 +35,7 @@ namespace Bjd.SmtpServer
         {
             Debug.Assert(logger != null, "logger != null");
 
-            var fetchDb = new FetchDb(Define.ExecutableDirectory, _oneFetch.Name);
+            var fetchDb = new FetchDb(_kernel.ExecutableDirectory, _oneFetch.Name);
             var remoteUidList = new List<String>();
             var getList = new List<int>();//取得するメールのリスト
             var delList = new List<int>();//削除するメールのリスト

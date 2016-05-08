@@ -15,7 +15,7 @@ namespace Bjd.Common.Test.server
     {
         public OneServerTest2()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         private class EchoServer : OneServer

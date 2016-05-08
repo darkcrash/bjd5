@@ -21,7 +21,7 @@ namespace Bjd.WebServer
         private Kernel _kernel; //仮装Webの重複を検出するため必要となる
 
         public Option(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp(), path, nameTag)
+            : base(kernel.IsJp, path, nameTag)
         {
 
             _kernel = kernel;

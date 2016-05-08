@@ -39,7 +39,7 @@ namespace Bjd.Common.Test.sock
         {
             public Execute()
             {
-                Define.Initialize(null);
+                Services.Service.ServiceTest();
             }
 
             public void startStop(String title, ProtocolKind protocolKind)

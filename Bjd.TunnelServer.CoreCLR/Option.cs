@@ -18,7 +18,7 @@ namespace Bjd.TunnelServer
         public override char Mnemonic { get { return '0'; } }
 
         public Option(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp(), path, nameTag)
+            : base(kernel.IsJp, path, nameTag)
         {
 
             //var key = "useServer";

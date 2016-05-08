@@ -14,7 +14,7 @@ namespace Bjd.Common.Test.sock{
 
         public SockUdpTest()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         private class EchoServer : ThreadBase{

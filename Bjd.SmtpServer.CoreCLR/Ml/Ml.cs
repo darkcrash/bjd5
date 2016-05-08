@@ -42,7 +42,7 @@ namespace Bjd.SmtpServer
             _mlUserList = new MlUserList(mlOption.MemberList);
             _mlSender = new MlSender(mailSave, logger);
             var mlSubject = new MlSubject(mlOption.TitleKind, mlName);
-            _mlDevivery = new MlDelivery(mailSave, logger,_mlUserList, _mlAddr, _mlMailDb, mlSubject, mlOption.Docs,mlOption.MaxGet);
+            _mlDevivery = new MlDelivery(kernel, mailSave, logger,_mlUserList, _mlAddr, _mlMailDb, mlSubject, mlOption.Docs,mlOption.MaxGet);
             _mlCreator2 = new MlCreator(_mlAddr,mlOption.Docs);
             _autoRegistration = mlOption.AutoRegistration;
             const double effectiveMsec = 120 * 1000; //有効時間120秒
@@ -171,20 +171,20 @@ namespace Bjd.SmtpServer
                     case MlCmdKind.Bye:
                     case MlCmdKind.Unsubscribe:
                         if (oneCmd.MlOneUser.IsManager) {
-                            errStr = _kernel.IsJp() ? "管理者は、このコマンドを使用できません" : "cannot use a manager";
+                            errStr = _kernel.IsJp ? "管理者は、このコマンドを使用できません" : "cannot use a manager";
                         }
                         break;
                     case MlCmdKind.Subscribe:
                     case MlCmdKind.Confirm:
                         if (mlOneUser != null){
-                            errStr = _kernel.IsJp() ? "このコマンドはメンバー以外しか使用できません" : "cannot use a memeber";
+                            errStr = _kernel.IsJp ? "このコマンドはメンバー以外しか使用できません" : "cannot use a memeber";
                         }
                         break;
                     case MlCmdKind.Password:
                     case MlCmdKind.Add:
                     case MlCmdKind.Del:
                         if (!oneCmd.MlOneUser.IsManager) {//管理者しか使用できない
-                            errStr = _kernel.IsJp() ? "このコマンドは管理者しか使用できません" : "net administrator";
+                            errStr = _kernel.IsJp ? "このコマンドは管理者しか使用できません" : "net administrator";
                         }
                         break;
                 }
@@ -215,7 +215,7 @@ namespace Bjd.SmtpServer
                     case MlCmdKind.Subject:
                         mlParamSpan = new MlParamSpan(oneCmd.ParamStr, _mlMailDb.Count());
                         if (mlParamSpan.Start == -1) {
-                            errStr = _kernel.IsJp() ? "パラメータに矛盾がありあます" : "Appointment includes contradiction";
+                            errStr = _kernel.IsJp ? "パラメータに矛盾がありあます" : "Appointment includes contradiction";
                             _logger.Set(LogKind.Error, null, 51, errStr);
                             log.Append(errStr + "\r\n");
                             
@@ -233,7 +233,7 @@ namespace Bjd.SmtpServer
                         //メンバーの削除
                         using (var dat = _mlUserList.Del(mlEnvelope.From)){
                             if (dat == null){
-                                errStr = _kernel.IsJp() ? "メンバーの削除に失敗しました" : "Failed in delete of a member";
+                                errStr = _kernel.IsJp ? "メンバーの削除に失敗しました" : "Failed in delete of a member";
                             } else{
                                 UpdateMemberList(dat);//memberListの更新
                             }
@@ -243,7 +243,7 @@ namespace Bjd.SmtpServer
                         if (mlOneUser.Psssword == oneCmd.ParamStr) {
                             adminLogin = true;//管理者として認証
                         } else {
-                            errStr = _kernel.IsJp() ? "パスワードが違います" : "A password is different";
+                            errStr = _kernel.IsJp ? "パスワードが違います" : "A password is different";
                         }
                         break;
                     case MlCmdKind.Del:
@@ -253,7 +253,7 @@ namespace Bjd.SmtpServer
                         //メンバーの削除
                         using (var dat = _mlUserList.Del(mailAddress)){
                             if (dat == null){
-                                errStr = _kernel.IsJp() ? "メンバーの削除に失敗しました" : "Failed in addition of a member";
+                                errStr = _kernel.IsJp ? "メンバーの削除に失敗しました" : "Failed in addition of a member";
                             } else{
                                 UpdateMemberList(dat);//memberListの更新
                             }
@@ -268,11 +268,11 @@ namespace Bjd.SmtpServer
                             name = tmp2[1];
                         }
                         if (null != _mlUserList.Search(mailAddress2)) {
-                            errStr = _kernel.IsJp() ? "既にメンバーが登録されています" : "There is already a member";
+                            errStr = _kernel.IsJp ? "既にメンバーが登録されています" : "There is already a member";
                         } else {
                             using(var dat = _mlUserList.Add(mailAddress2, name)){
                                 if (dat == null){
-                                    errStr = _kernel.IsJp() ? "メンバーの追加に失敗しました" : "Failed in addition of a member";
+                                    errStr = _kernel.IsJp ? "メンバーの追加に失敗しました" : "Failed in addition of a member";
                                 } else{
                                     UpdateMemberList(dat);//memberListの更新
                                 }

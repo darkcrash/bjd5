@@ -47,7 +47,7 @@ namespace Bjd.DhcpServer
 
             //DB生成
             //string fileName = string.Format("{0}\\lease.db", kernel.ProgDir());
-            string fileName = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}lease.db";
+            string fileName = $"{Kernel.ExecutableDirectory}{Path.DirectorySeparatorChar}lease.db";
             var startIp = (Ip)Conf.Get("startIp");
             var endIp = (Ip)Conf.Get("endIp");
             _macAcl = (Dat)Conf.Get("macAcl");
@@ -72,7 +72,7 @@ namespace Bjd.DhcpServer
             _lease = new Lease(fileName, startIp, endIp, _leaseTime, _macAcl);
 
             //サーバアドレスの初期化
-            _serverAddress = Define.ServerAddress();
+            _serverAddress = Kernel.ServerAddress;
 
         }
 

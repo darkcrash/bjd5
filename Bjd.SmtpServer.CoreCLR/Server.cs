@@ -41,17 +41,12 @@ namespace Bjd.SmtpServer
             : base(kernel, conf, oneBind)
         {
 
-            //Ver5.8.9
-            if (kernel.RunMode == RunMode.Service)
+            //メールボックスの初期化状態確認
+            if (kernel.MailBox == null || !kernel.MailBox.Status)
             {
-                //メールボックスの初期化状態確認
-                if (kernel.MailBox == null || !kernel.MailBox.Status)
-                {
-                    Logger.Set(LogKind.Error, null, 4, "");
-                    return; //初期化失敗(サーバは機能しない)
-                }
+                Logger.Set(LogKind.Error, null, 4, "");
+                return; //初期化失敗(サーバは機能しない)
             }
-
 
             //ドメイン名のリスト整備
             DomainList = new List<string>();
@@ -81,7 +76,7 @@ namespace Bjd.SmtpServer
             }
 
             //メールキューの初期化
-            _mailQueue = new MailQueue(Define.ExecutableDirectory);
+            _mailQueue = new MailQueue(Kernel.ExecutableDirectory);
 
             //SaveMail初期化
             var receivedHeader = new ReceivedHeader(kernel, (string)Conf.Get("receivedHeader"));
@@ -415,7 +410,8 @@ namespace Bjd.SmtpServer
                         }
                         sockTcp.AsciiSend("250 HELP");
                     }
-                    else {
+                    else
+                    {
                         sockTcp.AsciiSend(string.Format("250 {0} Helo {1}[{2}], Pleased to meet you.", Kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
                     }
                     continue;
@@ -487,7 +483,8 @@ namespace Bjd.SmtpServer
                             }
                         }
                     }
-                    else {//中継（リレー）が許可されているかどうかのチェック
+                    else
+                    {//中継（リレー）が許可されているかどうかのチェック
                         if (!_popBeforeSmtp.Auth(sockObj.RemoteIp))
                         {
                             //Allow及びDenyリストで中継（リレー）が許可されているかどうかのチェック
@@ -584,7 +581,8 @@ namespace Bjd.SmtpServer
                 var mlEnvelope = new MlEnvelope(from, to, host, addr);
                 return _mlList.Job(mlEnvelope, mail);
             }
-            else {
+            else
+            {
                 //#endif
                 return _mailSave.Save(from, to, mail, host, addr);
                 //#if ML_SERVER

@@ -154,7 +154,7 @@ namespace Bjd.SmtpServer
                 //List-Owner: <mailto:1ban-admin@example.com>
                 var orgMail = _oneQueue.Mail(_mailQueue);
                 var listSoftware = orgMail.GetHeader("List-Software");
-                if (listSoftware != null && listSoftware.IndexOf(Define.ApplicationName()) == 0)
+                if (listSoftware != null && listSoftware.IndexOf(_kernel.ApplicationName) == 0)
                 {
                     var listOwner = orgMail.GetHeader("List-Owner");
                     if (listOwner != null)

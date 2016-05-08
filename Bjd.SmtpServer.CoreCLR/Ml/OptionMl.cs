@@ -11,7 +11,7 @@ namespace Bjd.SmtpServer
         public override char Mnemonic { get { return 'A'; } }
 
         public OptionMl(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp(), path, nameTag){
+            : base(kernel.IsJp, path, nameTag){
 
             var pageList = new List<OnePage>();
             //var key = "Mailing List";

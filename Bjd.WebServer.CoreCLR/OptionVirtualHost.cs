@@ -12,7 +12,7 @@ namespace Bjd.WebServer
         public override char Mnemonic { get { return 'A'; } }
 
         public OptionVirtualHost(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp(), path, nameTag)
+            : base(kernel.IsJp, path, nameTag)
         {
 
             //var pageList = new List<OnePage>();

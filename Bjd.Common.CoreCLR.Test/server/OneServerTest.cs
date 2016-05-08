@@ -18,7 +18,7 @@ namespace Bjd.Common.Test.server
     {
         public OneServerTest()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         private class MyServer : OneServer

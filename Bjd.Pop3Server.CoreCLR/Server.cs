@@ -30,14 +30,10 @@ namespace Bjd.Pop3Server
             : base(kernel, conf, oneBind)
         {
 
-            //Ver5.8.9
-            if (kernel.RunMode == RunMode.Service)
+            //メールボックスの初期化状態確認
+            if (kernel.MailBox == null || !kernel.MailBox.Status)
             {
-                //メールボックスの初期化状態確認
-                if (kernel.MailBox == null || !kernel.MailBox.Status)
-                {
-                    Logger.Set(LogKind.Error, null, 4, "");
-                }
+                Logger.Set(LogKind.Error, null, 4, "");
             }
 
             var useAutoAcl = (bool)Conf.Get("useAutoAcl"); // ACL拒否リストへ自動追加する

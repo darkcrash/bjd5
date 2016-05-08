@@ -15,7 +15,7 @@ namespace Bjd.Options
 
 
         public OptionSample(Kernel kernel, String path)
-            : base(kernel.IsJp(), path, "Sample")
+            : base(kernel.IsJp, path, "Sample")
         {
 
             var pageList = new List<OnePage>();

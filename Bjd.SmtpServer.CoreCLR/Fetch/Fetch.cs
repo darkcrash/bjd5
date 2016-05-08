@@ -48,13 +48,13 @@ namespace Bjd.SmtpServer
         public override string GetMsg(int messageNo) {
             switch (messageNo) {
                 case 0: return "Failed in　nslookup";
-                case 1: return _kernel.IsJp() ? "自動受信" : "The automatic reception";
-                case 2: return _kernel.IsJp() ? "ホスト名に問題あるため処理を中止しました" : "Because host name included a problem, I canceled processing";
-                case 3: return _kernel.IsJp() ? "サーバへの接続に失敗しました" : "Connection failure to a server";
-                case 4: return _kernel.IsJp() ? "ログインに失敗しました" : "Failed in login";
-                case 5: return _kernel.IsJp() ? "QUIT送信に失敗しました" : "Failed in send QUIT";
-                case 6: return _kernel.IsJp() ? "RETRコマンドでエラーが発生しました" : "Failed in send RETR";
-                case 7: return _kernel.IsJp() ? "メールの保存に失敗しました" : "Failed in a save of an email";
+                case 1: return _kernel.IsJp ? "自動受信" : "The automatic reception";
+                case 2: return _kernel.IsJp ? "ホスト名に問題あるため処理を中止しました" : "Because host name included a problem, I canceled processing";
+                case 3: return _kernel.IsJp ? "サーバへの接続に失敗しました" : "Connection failure to a server";
+                case 4: return _kernel.IsJp ? "ログインに失敗しました" : "Failed in login";
+                case 5: return _kernel.IsJp ? "QUIT送信に失敗しました" : "Failed in send QUIT";
+                case 6: return _kernel.IsJp ? "RETRコマンドでエラーが発生しました" : "Failed in send RETR";
+                case 7: return _kernel.IsJp ? "メールの保存に失敗しました" : "Failed in a save of an email";
 
             }
             return "unknown";

@@ -163,10 +163,10 @@ namespace Bjd.ProxyPop3Server
         {
             switch (messageNo)
             {
-                case 1: return Kernel.IsJp() ? "接続先サーバが指定されていません" : "Connection ahead server is not appointed";
-                case 2: return Kernel.IsJp() ? "接続先ポートが指定されていません" : "Connection ahead port is not appointed";
-                case 3: return Kernel.IsJp() ? "特別なユーザにヒットしました" : "made a hit in a special user";
-                case 4: return Kernel.IsJp() ? "メールストリームをトンネルしました" : "I do a tunnel of a Mail stream";
+                case 1: return Kernel.IsJp ? "接続先サーバが指定されていません" : "Connection ahead server is not appointed";
+                case 2: return Kernel.IsJp ? "接続先ポートが指定されていません" : "Connection ahead port is not appointed";
+                case 3: return Kernel.IsJp ? "特別なユーザにヒットしました" : "made a hit in a special user";
+                case 4: return Kernel.IsJp ? "メールストリームをトンネルしました" : "I do a tunnel of a Mail stream";
             }
             return "unknown";
         }

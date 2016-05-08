@@ -13,7 +13,7 @@ namespace Bjd.Common.Test.sock
     {
         public SockTcpTest()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         //テスト用のEchoサーバ

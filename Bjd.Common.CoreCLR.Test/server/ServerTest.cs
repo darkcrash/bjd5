@@ -14,7 +14,7 @@ namespace Bjd.Common.Test.server{
 
         public ServerTest ()
         {
-            Define.Initialize(null);
+            Services.Service.ServiceTest();
         }
 
         //サーバ動作確認用

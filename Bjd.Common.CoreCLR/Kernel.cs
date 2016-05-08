@@ -23,7 +23,6 @@ namespace Bjd
     {
 
         //プロセス起動時に初期化される変数 
-        public RunMode RunMode { get; set; } //通常起動;
         public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
         public DnsCache DnsCache { get; private set; }
         public MailBox MailBox { get; private set; }
@@ -32,7 +31,7 @@ namespace Bjd
         public ListOption ListOption { get; private set; }
         public ListServer ListServer { get; private set; }
         public LogFile LogFile { get; private set; }
-        private bool _isJp = true;
+        public bool IsJp { get; private set; } = true;
         private Logger _logger;
 
         //Ver5.9.6
@@ -44,9 +43,13 @@ namespace Bjd
         private CancellationTokenSource CancelTokenSource { get; set; }
         public CancellationToken CancelToken { get; private set; }
 
-        public bool IsJp()
+
+        public string ExecutableDirectory
         {
-            return _isJp;
+            get
+            {
+                return Define.ExecutableDirectory;
+            }
         }
 
         public string ServerName
@@ -59,6 +62,46 @@ namespace Bjd
                     return (String)oneOption.GetValue("serverName");
                 }
                 return "";
+            }
+        }
+
+        public string ServerAddress
+        {
+            get
+            {
+                return Define.ServerAddress();
+            }
+        }
+
+        public string OperatingSystem
+        {
+            get
+            {
+                return Define.OperatingSystem;
+            }
+        }
+
+        public string ApplicationName
+        {
+            get
+            {
+                return Define.ApplicationName;
+            }
+        }
+
+        public string Copyright
+        {
+            get
+            {
+                return Define.Copyright;
+            }
+        }
+
+        public string ProductVersion
+        {
+            get
+            {
+                return Define.ProductVersion;
             }
         }
 
@@ -79,25 +122,6 @@ namespace Bjd
             Trace.TraceInformation("Kernel..ctor End");
         }
 
-        //テスト用コンストラクタ(MailBoxのみ初期化)
-        [Obsolete]
-        public Kernel(String option)
-        {
-            Trace.TraceInformation("Kernel..ctor Start");
-            DefaultInitialize();
-
-            if (option.IndexOf("MailBox") != -1)
-            {
-                var op = ListOption.Get("MailBox");
-                var conf = new Conf(op);
-                var dir = ReplaceOptionEnv((String)conf.Get("dir"));
-                var datUser = (Dat)conf.Get("user");
-                MailBox = new MailBox(null, datUser, dir);
-            }
-            Trace.TraceInformation("Kernel..ctor End");
-        }
-
-
         //起動時に、コンストラクタから呼び出される初期化
         private void DefaultInitialize()
         {
@@ -107,14 +131,10 @@ namespace Bjd
             this.CancelToken = this.CancelTokenSource.Token;
             this.CancelToken.Register(this.OnCancel);
 
-            RunMode = RunMode.Service;
             RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
 
             //プロセス起動時に初期化される
             DnsCache = new DnsCache();
-
-            //RunMode
-            RunMode = RunMode.Service;
 
             IniDb = new IniDb(Define.ExecutableDirectory, "Option");
 
@@ -125,15 +145,6 @@ namespace Bjd
             //ウインドサイズの復元
             //var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
             var path = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
-
-            switch (RunMode)
-            {
-                case RunMode.Service:
-                    break;
-                default:
-                    Util.RuntimeException("Kernel.defaultInitialize() not implement (RunMode)");
-                    break;
-            }
 
             Trace.TraceInformation("Kernel.DefaultInitialize End");
         }
@@ -175,7 +186,7 @@ namespace Bjd
                 tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
             }
 
-            _isJp = IniDb.IsJp();
+            IsJp = IniDb.IsJp();
 
             ListOption = new ListOption(this, listPlugin);
 
@@ -185,69 +196,53 @@ namespace Bjd
             //OptionLog
             var confOption = new Conf(ListOption.Get("Log"));
 
-            if (RunMode == RunMode.Service)
+            //LogFileの初期化
+            var saveDirectory = (String)confOption.Get("saveDirectory");
+            saveDirectory = ReplaceOptionEnv(saveDirectory);
+            var normalLogKind = (int)confOption.Get("normalLogKind");
+            var secureLogKind = (int)confOption.Get("secureLogKind");
+            var saveDays = (int)confOption.Get("saveDays");
+        
+            //Ver6.0.7
+            var useLogFile = (bool)confOption.Get("useLogFile");
+            var useLogClear = (bool)confOption.Get("useLogClear");
+            if (!useLogClear)
             {
-                //LogFileの初期化
-                var saveDirectory = (String)confOption.Get("saveDirectory");
-                saveDirectory = ReplaceOptionEnv(saveDirectory);
-                var normalLogKind = (int)confOption.Get("normalLogKind");
-                var secureLogKind = (int)confOption.Get("secureLogKind");
-                var saveDays = (int)confOption.Get("saveDays");
-                //Ver6.0.7
-                var useLogFile = (bool)confOption.Get("useLogFile");
-                var useLogClear = (bool)confOption.Get("useLogClear");
-                if (!useLogClear)
-                {
-                    saveDays = 0; //ログの自動削除が無効な場合、saveDaysに0をセットする
-                }
-                if (saveDirectory == "")
-                {
-                    tmpLogger.Set(LogKind.Error, null, 9000045, "It is not appointed");
-                }
-                else
-                {
-                    tmpLogger.Set(LogKind.Detail, null, 9000032, saveDirectory);
-                    try
-                    {
-                        LogFile = new LogFile(saveDirectory, normalLogKind, secureLogKind, saveDays, useLogFile);
-                    }
-                    catch (IOException e)
-                    {
-                        LogFile = null;
-                        tmpLogger.Set(LogKind.Error, null, 9000031, e.Message);
-                    }
-                }
-
-                //Ver5.8.7 Java fix
-                //mailBox初期化
-                var useMailBoxTag = new[] { "Smtp", "Pop3" };
-                foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
-                {
-                    //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
-                    var op = ListOption.Get("MailBox");
-                    var conf = new Conf(op);
-                    var dir = ReplaceOptionEnv((String)conf.Get("dir"));
-                    var datUser = (Dat)conf.Get("user");
-                    var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
-                    MailBox = new MailBox(logger, datUser, dir);
-                    break;
-
-                    ////SmtpServer�Ⴕ���́APop3Server���g�p�����ꍇ�̂݃��[���{�b�N�X�����������                
-                    //if (o.NameTag == "Smtp" || o.NameTag == "Pop3")
-                    //{
-                    //    if (o.UseServer)
-                    //    {
-                    //        var conf = new Conf(ListOption.Get("MailBox"));
-                    //        var dir = ReplaceOptionEnv((String)conf.Get("dir"));
-                    //        var datUser = (Dat)conf.Get("user");
-                    //        var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
-                    //        MailBox = new MailBox(logger, datUser, dir);
-                    //        break;
-                    //    }
-                    //}
-                }
-
+                saveDays = 0; //ログの自動削除が無効な場合、saveDaysに0をセットする
             }
+            if (saveDirectory == "")
+            {
+                tmpLogger.Set(LogKind.Error, null, 9000045, "It is not appointed");
+            }
+            else
+            {
+                tmpLogger.Set(LogKind.Detail, null, 9000032, saveDirectory);
+                try
+                {
+                    LogFile = new LogFile(saveDirectory, normalLogKind, secureLogKind, saveDays, useLogFile);
+                }
+                catch (IOException e)
+                {
+                    LogFile = null;
+                    tmpLogger.Set(LogKind.Error, null, 9000031, e.Message);
+                }
+            }
+
+            //Ver5.8.7 Java fix
+            //mailBox初期化
+            var useMailBoxTag = new[] { "Smtp", "Pop3" };
+            foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
+            {
+                //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
+                var op = ListOption.Get("MailBox");
+                var conf = new Conf(op);
+                var dir = ReplaceOptionEnv((String)conf.Get("dir"));
+                var datUser = (Dat)conf.Get("user");
+                var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
+                MailBox = new MailBox(logger, datUser, dir);
+                break;
+            }
+
             _logger = CreateLogger("kernel", true, null);
             tmpLogger.Release(_logger);
 
@@ -309,7 +304,7 @@ namespace Bjd
                 var logLimit = new LogLimit(dat, isDisplay);
 
                 var useLimitString = (bool)conf.Get("useLimitString");
-                return new Logger(this, logLimit, LogFile, _isJp, nameTag, useDetailsLog, useLimitString, logger);
+                return new Logger(this, logLimit, LogFile, IsJp, nameTag, useDetailsLog, useLimitString, logger);
             }
             catch (Exception)
             {
@@ -372,7 +367,7 @@ namespace Bjd
             var sb = new StringBuilder();
 
 
-            sb.Append(IsJp() ? "(1) サービス状態" : "(1) Service Status");
+            sb.Append(IsJp ? "(1) サービス状態" : "(1) Service Status");
             sb.Append("\b");
 
             foreach (var sv in ListServer)
@@ -382,9 +377,9 @@ namespace Bjd
             }
             sb.Append(" \b");
 
-            sb.Append(IsJp() ? "(2) ローカルアドレス" : "(2) Local address");
+            sb.Append(IsJp ? "(2) ローカルアドレス" : "(2) Local address");
             sb.Append("\b");
-            foreach (string addr in Define.ServerAddressList())
+            foreach (string addr in Define.ServerAddressList)
             {
                 sb.Append(string.Format("  {0}", addr));
                 sb.Append("\b");
@@ -415,13 +410,13 @@ namespace Bjd
                             tmp2 = serverName == "" ? "localhost" : serverName;
                             break;
                         case "$v":
-                            tmp2 = Define.ProductVersion;
+                            tmp2 = this.ProductVersion;
                             break;
                         case "$p":
-                            tmp2 = Define.ApplicationName();
+                            tmp2 = this.ApplicationName;
                             break;
                         case "$d":
-                            tmp2 = Define.Date();
+                            tmp2 = DateTime.Now.ToDateTimeString();
                             break;
                         case "$a":
                             var localAddress = LocalAddress.GetInstance();

@@ -88,7 +88,7 @@ namespace Bjd.Servers
             NameTag = conf.NameTag;
             Conf = conf;
             _oneBind = oneBind;
-            IsJp = kernel.IsJp();
+            IsJp = kernel.IsJp;
 
             // タスクのキャンセルにサーバー停止イベントを登録
             kernel.CancelToken.Register(() => this.StopLife());

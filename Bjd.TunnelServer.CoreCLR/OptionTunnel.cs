@@ -11,7 +11,7 @@ namespace Bjd.TunnelServer
         public override char Mnemonic { get { return 'A'; } }
 
         public OptionTunnel(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp(), path, nameTag)
+            : base(kernel.IsJp, path, nameTag)
         {
 
             var pageList = new List<OnePage>();
