@@ -23,7 +23,7 @@ namespace Bjd.ProxySmtpServer
             //挨拶文をサーバに変わって送出する
             client.AsciiSend("220 SMTP-Proxy");
             while(clientBuf.Count<5) {
-                var buf = client.LineRecv(Timeout,this);
+                var buf = client.LineRecv(TimeoutSec,this);
                 if(buf == null)
                     return null;//タイムアウト
 
@@ -55,7 +55,7 @@ namespace Bjd.ProxySmtpServer
         protected override string ConnectJob(SockTcp client, SockTcp server,List<byte[]> clientBuf) {
 
             //最初のグリーティングメッセージ取得
-            var buf = server.LineRecv(Timeout, this);
+            var buf = server.LineRecv(TimeoutSec, this);
             if (buf == null)
                 return null;//タイムアウト
             
@@ -66,7 +66,7 @@ namespace Bjd.ProxySmtpServer
             //「250 OK」が返るまで読み飛ばす
             while (IsLife()) {
 
-                buf = server.LineRecv(Timeout, this);
+                buf = server.LineRecv(TimeoutSec, this);
                 if (buf == null)
                     return null;//タイムアウト
                 var str = Inet.TrimCrlf(Encoding.ASCII.GetString(buf));

@@ -139,13 +139,15 @@ namespace Bjd.Common.Test.server
 
             for (var i = 0; i < 5; i++)
             {
+                // Start
                 myServer.Start();
+                Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                Assert.Equal(SockState.Bind, myServer.SockState);
 
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
-                Assert.Equal(myServer.SockState, SockState.Bind);
+                // Stop
                 myServer.Stop();
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
-                Assert.Equal(myServer.SockState, SockState.Error);
+                Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                Assert.Equal(SockState.Error, myServer.SockState);
 
             }
 
@@ -272,7 +274,7 @@ namespace Bjd.Common.Test.server
             Thread.Sleep(100);
 
             //multiple以上は接続できない
-            Assert.Equal(myServer.Count(), multiple);
+            Assert.Equal(multiple, myServer.Count());
 
             myServer.Stop();
             myServer.Dispose();

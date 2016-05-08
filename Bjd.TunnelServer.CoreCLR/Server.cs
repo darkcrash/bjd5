@@ -84,7 +84,7 @@ namespace Bjd.TunnelServer
                 }
                 foreach (var ip in ipList)
                 {
-                    server = Inet.Connect(Kernel, ip, port, Timeout, null);
+                    server = Inet.Connect(Kernel, ip, port, TimeoutSec, null);
                     if (server != null)
                         break;
                 }
@@ -99,7 +99,7 @@ namespace Bjd.TunnelServer
             //***************************************************************
             // パイプ
             //***************************************************************
-            var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), Timeout);
+            var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), TimeoutSec);
             tunnel.Pipe(server, client, this);
             end:
             if (client != null)
@@ -164,7 +164,7 @@ namespace Bjd.TunnelServer
             }
             sock[CS.Server].Send(sock[CS.Client].RecvBuf);//サーバへ送信
             //if (sock[CS.Server].Recv(Timeout)) {//サーバからの受信
-            var buf = sock[CS.Server].Recv(Timeout);
+            var buf = sock[CS.Server].Recv(TimeoutSec);
             if (buf.Length == 0)
             {
                 sock[CS.Client].Send(buf);//クライアントへ送信

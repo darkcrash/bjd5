@@ -110,7 +110,7 @@ namespace Bjd.ProxySmtpServer {
                 }
 
                 foreach(var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip,port,Timeout,null);
+                    server = Inet.Connect(Kernel,ip,port,TimeoutSec,null);
                     if(server != null)
                         break;
                 }
@@ -140,7 +140,7 @@ namespace Bjd.ProxySmtpServer {
             //***************************************************************
             // パイプ
             //***************************************************************
-            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),Timeout);
+            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),TimeoutSec);
             tunnel.Pipe(server,client,this);
         end:
             if(client != null)

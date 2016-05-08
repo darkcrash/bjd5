@@ -121,7 +121,7 @@ namespace Bjd.ProxyPop3Server
 
                 foreach (var ip in ipList)
                 {
-                    server = Inet.Connect(Kernel, ip, port, Timeout, null);
+                    server = Inet.Connect(Kernel, ip, port, TimeoutSec, null);
                     if (server != null)
                         break;
                 }
@@ -140,7 +140,7 @@ namespace Bjd.ProxyPop3Server
             foreach (var buf in clientBuf)
             {
                 //byte[] serverBuf = server.LineRecv(timeout, OperateCrlf.No, ref life);
-                server.LineRecv(Timeout, this);
+                server.LineRecv(TimeoutSec, this);
                 //クライアントからの受信分を送信する
                 //Ver5.8.4
                 //server.LineSend(buf);
@@ -150,7 +150,7 @@ namespace Bjd.ProxyPop3Server
             //***************************************************************
             // パイプ
             //***************************************************************
-            var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), Timeout);
+            var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), TimeoutSec);
             tunnel.Pipe(server, client, this);
             end:
             if (client != null)

@@ -185,7 +185,7 @@ namespace Bjd.WebServer
                 //***************************************************************
                 //リクエスト取得
                 //ここのタイムアウト値は、大きすぎるとブラウザの切断を取得できないでブロックしてしまう
-                var requestStr = sockTcp.AsciiRecv(Timeout, this);
+                var requestStr = sockTcp.AsciiRecv(TimeoutSec, this);
                 if (requestStr == null)
                     break;
                 //\r\nの削除

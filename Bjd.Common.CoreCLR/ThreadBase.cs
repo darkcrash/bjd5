@@ -37,7 +37,6 @@ namespace Bjd
         protected void StopLife()
         {
             _life = false;
-
         }
 
         //終了処理
@@ -109,6 +108,7 @@ namespace Bjd
         }
 
         protected abstract void OnRunThread();
+
         void Loop()
         {
             //[Java] 現在、Javaでは、ここでThreadBaseKindをRunnigにしている
@@ -121,6 +121,7 @@ namespace Bjd
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceError(ex.Message);
                 if (_logger != null)
                 {
                     _logger.Set(LogKind.Error, null, 1, ex.Message);
@@ -133,5 +134,6 @@ namespace Bjd
         }
 
         public abstract string GetMsg(int no);
+
     }
 }

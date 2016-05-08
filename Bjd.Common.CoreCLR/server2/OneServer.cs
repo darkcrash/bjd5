@@ -23,8 +23,8 @@ namespace Bjd.server
 
         protected Conf Conf;
         protected bool IsJp;
-        protected int Timeout;//sec
-     
+        protected int TimeoutSec;//sec
+
         //Ver5.9.2 Java fix
         protected Ssl ssl = null;
         protected Kernel Kernel; //SockObjのTraceのため
@@ -33,12 +33,15 @@ namespace Bjd.server
         private SockServerTcp _sockServerTcp;
         private SockServerUdp _sockServerUdp;
 
-        //子スレッド管理
-        private readonly object SyncObj = new object(); //排他制御オブジェクト
-        private readonly List<Task> _childThreads = new List<Task>();
-        private readonly int _multiple; //同時接続数
-        private readonly OneBind _oneBind;
+        // 子スレッド管理 - 排他制御オブジェクト
+        private readonly object SyncObj = new object();
 
+        // 子スレッドコレクション
+        private readonly List<Task> _childThreads = new List<Task>();
+
+        // 同時接続数
+        private readonly int _multiple; 
+        private readonly OneBind _oneBind;
 
         //ステータス表示用
         public override String ToString()
@@ -46,7 +49,7 @@ namespace Bjd.server
             var stat = IsJp ? "+ サービス中 " : "+ In execution ";
             if (ThreadBaseKind != ThreadBaseKind.Running)
             {
-                stat = IsJp ? "- ��~ " : "- Initialization failure ";
+                stat = IsJp ? "- 停止 " : "- Initialization failure ";
             }
             return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)Conf.Get("port"), Count(), _multiple);
         }
@@ -124,7 +127,7 @@ namespace Bjd.server
                 AclList = new AclList(acl, (int)Conf.Get("enableAcl"), Logger);
             }
 
-            Timeout = (int)Conf.Get("timeOut");
+            TimeoutSec = (int)Conf.Get("timeOut");
 
         }
 
@@ -168,7 +171,7 @@ namespace Bjd.server
             // 全部の子スレッドが終了するのを待つ
             while (Count() > 0)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(200);
             }
             _sockServerTcp = null;
 
@@ -262,26 +265,30 @@ namespace Bjd.server
                 return;
             }
 
+            // 生存してる限り実行し続ける
             while (IsLife())
             {
                 var child = _sockServerTcp.Select(this);
+
+                // Nullが返されたときは終了する
                 if (child == null)
-                {
                     break;
+
+                // 同時接続数チェック
+                if (Count() >= _multiple)
+                {
+                    // 同時接続数を超えたのでリクエストをキャンセルします
+                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count()}/multiple:{_multiple}");
+                    Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                    child.Close();
+                    child.Dispose();
+                    continue;
                 }
 
+                // 子タスクで処理させる
                 var t = new Task(
                     () =>
                     {
-                        if (Count() >= _multiple)
-                        {
-                            Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
-                            //同時接続数を超えたのでリクエストをキャンセルします
-                            child.Close();
-                            child.Dispose();
-                            return;
-                        }
-
                         // ACL制限のチェック
                         if (AclCheck(child) == AclKind.Deny)
                         {
@@ -289,13 +296,11 @@ namespace Bjd.server
                             child.Dispose();
                             return;
                         }
-
+                        // 各実装へ
                         this.SubThread(child);
                     }, Kernel.CancelToken);
 
-                t.ContinueWith(this.RemoveTask);
-                this.AddTask(t);
-                t.Start();
+                this.StartTask(t);
             }
 
         }
@@ -317,29 +322,36 @@ namespace Bjd.server
             while (IsLife())
             {
                 var child = _sockServerUdp.Select(this);
+
+                //Selectで例外が発生した場合は、そのコネクションを捨てて、次の待ち受けに入る
                 if (child == null)
-                {
-                    //Selectで例外が発生した場合は、そのコネクションを捨てて、次の待ち受けに入る
                     continue;
-                }
+
+                // 同時接続数チェック
                 if (Count() >= _multiple)
                 {
+                    // 同時接続数を超えたのでリクエストをキャンセルします
+                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count()}/multiple:{_multiple}");
                     Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
-                    //同時接続数を超えたのでリクエストをキャンセルします
                     child.Close();
                     continue;
                 }
 
-                // ACL制限のチェック
-                if (AclCheck(child) == AclKind.Deny)
-                {
-                    child.Close();
-                    continue;
-                }
-                var t = new Task(() => this.SubThread(child));
-                t.ContinueWith(this.RemoveTask);
-                this.AddTask(t);
-                t.Start();
+                // 子タスクで処理させる
+                var t = new Task(
+                    () =>
+                    {
+                        // ACL制限のチェック
+                        if (AclCheck(child) == AclKind.Deny)
+                        {
+                            child.Close();
+                            return;
+                        }
+                        // 各実装へ
+                        this.SubThread(child);
+                    }, Kernel.CancelToken);
+
+                this.StartTask(t);
             }
 
         }
@@ -350,12 +362,14 @@ namespace Bjd.server
                 _childThreads.Remove(t);
             }
         }
-        private void AddTask(Task t)
+        private void StartTask(Task t)
         {
             lock (SyncObj)
             {
                 _childThreads.Add(t);
             }
+            t.ContinueWith(this.RemoveTask);
+            t.Start();
         }
 
         //ACL制限のチェック
@@ -368,7 +382,6 @@ namespace Bjd.server
                 var ip = new Ip(sockObj.RemoteAddress.Address.ToString());
                 aclKind = AclList.Check(ip);
             }
-
             return aclKind;
         }
 
@@ -417,7 +430,7 @@ namespace Bjd.server
         //1行読込待機
         public Cmd WaitLine(SockTcp sockTcp)
         {
-            var tout = new util.Timeout(Timeout);
+            var tout = new util.Timeout(TimeoutSec);
 
             while (IsLife())
             {
@@ -449,7 +462,7 @@ namespace Bjd.server
                 //切断されている
                 return null;
             }
-            var recvbuf = sockTcp.LineRecv(Timeout, this);
+            var recvbuf = sockTcp.LineRecv(TimeoutSec, this);
             //切断された場合
             if (recvbuf == null)
             {

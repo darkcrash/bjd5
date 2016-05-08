@@ -73,7 +73,7 @@ namespace Bjd.ProxyTelnetServer
                 var ego = false;
                  var sb = new StringBuilder();
                 while (IsLife()){
-                    var b = client.Recv(1, Timeout, this); //timeout=60sec
+                    var b = client.Recv(1, TimeoutSec, this); //timeout=60sec
                     if (b == null)
                         break;
                     var d = Convert.ToChar(b[0]);
@@ -125,7 +125,7 @@ namespace Bjd.ProxyTelnetServer
             // ���݂̔j��
             while (IsLife() && client.Length()>0)
             {
-                var b = client.Recv(1, Timeout, this); //timeout=60sec
+                var b = client.Recv(1, TimeoutSec, this); //timeout=60sec
             }
            
 
@@ -148,7 +148,7 @@ namespace Bjd.ProxyTelnetServer
                     goto end;
                 }
                 foreach (var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip,port,Timeout,null);
+                    server = Inet.Connect(Kernel,ip,port,TimeoutSec,null);
                     if (server != null)
                         break;
                 }
@@ -170,7 +170,7 @@ namespace Bjd.ProxyTelnetServer
             //***************************************************************
             // �p�C�v
             //***************************************************************
-            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),Timeout);
+            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),TimeoutSec);
             tunnel.Pipe(server,client,this);
         end:
             client.Close();

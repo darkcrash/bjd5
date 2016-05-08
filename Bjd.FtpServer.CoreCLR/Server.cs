@@ -602,7 +602,7 @@ namespace Bjd.FtpServer
             {
 
                 Thread.Sleep(10);
-                var sockData = Inet.Connect(Kernel, ip, port, Timeout, null);
+                var sockData = Inet.Connect(Kernel, ip, port, TimeoutSec, null);
                 if (sockData != null)
                 {
                     resStr = string.Format("200 {0} command successful.", ftpCmd.ToString().ToUpper());

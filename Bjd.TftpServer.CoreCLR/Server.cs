@@ -211,9 +211,9 @@ namespace Bjd.TftpServer
                 
                 // ACK待ち
                 //if (!childObj.Recv(Timeout)) {
-                var buf = childObj.Recv(Timeout);
+                var buf = childObj.Recv(TimeoutSec);
                 if (buf.Length==0) {
-                    Logger.Set(LogKind.Error,childObj,7,string.Format("{0}sec",Timeout));
+                    Logger.Set(LogKind.Error,childObj,7,string.Format("{0}sec",TimeoutSec));
                     break;
                 }
                 if ((Opcode)(buf[1]) != Opcode.Ack) 
@@ -279,9 +279,9 @@ namespace Bjd.TftpServer
             while (true) {
                 //受信
 //                if (!childObj.Recv(Timeout)) {
-                var buf = childObj.Recv(Timeout);
+                var buf = childObj.Recv(TimeoutSec);
                 if (buf.Length==0) {
-                    Logger.Set(LogKind.Error,childObj,7,string.Format("{0}sec",Timeout));
+                    Logger.Set(LogKind.Error,childObj,7,string.Format("{0}sec",TimeoutSec));
                     break;
                 }
                 if ((Opcode)(buf[1]) != Opcode.Data) {

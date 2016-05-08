@@ -29,7 +29,7 @@ namespace Bjd.ProxyPop3Server
             //USER コマンドを受け付けるまでループ(最大５回)する
             for (var i = 0; i < 5; i++)
             {
-                var buf = client.LineRecv(Timeout, this);
+                var buf = client.LineRecv(TimeoutSec, this);
                 if (buf != null)
                 {
                     var str = Inet.TrimCrlf(Encoding.ASCII.GetString(buf));

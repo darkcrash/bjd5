@@ -102,7 +102,7 @@ namespace Bjd.ProxyFtpServer
                 Ssl ssl = null;
 
                 foreach (var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip, port,Timeout, ssl);
+                    server = Inet.Connect(Kernel,ip, port,TimeoutSec, ssl);
                     if (server != null)
                         break;
                 }

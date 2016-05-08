@@ -133,7 +133,7 @@ namespace Bjd.ProxyHttpServer {
                 (bool)Conf.Get("upperProxyUseAuth"),
                 (string)Conf.Get("upperProxyAuthName"),
                 (string)Conf.Get("upperProxyAuthPass"));
-            var proxy = new Proxy(Kernel,Logger, (SockTcp)sockObj, Timeout, upperProxy);//プロキシ接続情報
+            var proxy = new Proxy(Kernel,Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
             ProxyObj proxyObj = null;
             OneObj oneObj = null;
 
