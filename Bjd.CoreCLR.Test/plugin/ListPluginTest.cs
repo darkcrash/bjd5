@@ -14,6 +14,8 @@ namespace Bjd.Common.Test.plugin
         public void Pluginsフォルダの中のdllファイルを列挙()
         {
             //setUp
+            Bjd.service.Service.ServiceTest();
+
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
             //var sut = new ListPlugin(currentDir);
@@ -28,17 +30,18 @@ namespace Bjd.Common.Test.plugin
         [Fact]
         public void Option及びServerインスタンスの生成()
         {
+            //setUp
+            Bjd.service.Service.ServiceTest();
 
             var kernel = new Kernel();
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
-
 
             //var sut = new ListPlugin(string.Format("{0}\\bin\\plugins", currentDir));
             var sut = new ListPlugin();
             foreach (var onePlugin in sut)
             {
                 //Optionインスタンス生成
-                var oneOption = onePlugin.CreateOption(kernel, "Option", "nameTag");
+                var oneOption = onePlugin.CreateOption(kernel, "Option", onePlugin.Name);
                 Assert.NotNull(oneOption);
 
                 //Serverインスタンス生成
