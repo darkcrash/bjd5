@@ -14,8 +14,8 @@ using Bjd.Acls;
 using Bjd.Logs;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Option;
-using Bjd.Server;
+using Bjd.Options;
+using Bjd.Servers;
 using Bjd.Sockets;
 
 namespace Bjd.Pop3Server

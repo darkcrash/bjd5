@@ -4,7 +4,7 @@ using System.Linq;
 using Bjd.Utils;
 using System.Diagnostics;
 
-namespace Bjd.Plugin
+namespace Bjd.Plugins
 {
     //プラグインフォルダ内のjarファイルを列挙するクラス
     public class ListPlugin : ListBase<OnePlugin>

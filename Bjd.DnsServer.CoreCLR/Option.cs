@@ -1,9 +1,9 @@
 ﻿
 using System.Collections.Generic;
 using Bjd;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 
 namespace Bjd.DnsServer
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 
 namespace Bjd.FtpServer

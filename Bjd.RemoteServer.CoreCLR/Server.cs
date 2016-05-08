@@ -7,12 +7,12 @@ using System.IO;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Remote;
-using Bjd.Server;
+using Bjd.Servers;
 using Bjd.Sockets;
 using Bjd.Utils;
-
+using Bjd.Services;
 
 namespace Bjd.RemoteServer
 {
@@ -159,7 +159,7 @@ namespace Bjd.RemoteServer
                 case RemoteDataKind.CmdRestart:
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Restart", false/*synchro*/);
-                    Bjd.Service.Service.Restart();
+                    Service.Restart();
                     break;
                 case RemoteDataKind.CmdTool:
                     var tmp = (o.Str).Split(new[] { '-' }, 2);
@@ -212,7 +212,7 @@ namespace Bjd.RemoteServer
 
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);
-                    Bjd.Service.Service.Restart();
+                    Service.Restart();
                     break;
                 case RemoteDataKind.CmdTrace:
                     Kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");

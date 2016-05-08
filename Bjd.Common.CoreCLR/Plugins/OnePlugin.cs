@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using Bjd.Net;
-using Bjd.Option;
-using Bjd.Server;
+using Bjd.Options;
+using Bjd.Servers;
 using Bjd.Utils;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace Bjd.Plugin
+namespace Bjd.Plugins
 {
     public class OnePlugin : IDisposable
     {

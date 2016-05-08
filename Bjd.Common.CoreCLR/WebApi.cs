@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.Server;
+using Bjd.Servers;
 
 namespace Bjd
 {

@@ -3,13 +3,14 @@ using System.Linq;
 using System.Text;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using System.Globalization;
 using System.IO;
 using Bjd.WebServer;
+using Bjd.Services;
 
 namespace WebServerTest
 {
@@ -28,7 +29,7 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                Bjd.Service.Service.ServiceTest();
+                Service.ServiceTest();
 
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("Web-localhost:88");

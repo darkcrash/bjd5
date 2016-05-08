@@ -2,7 +2,7 @@
 using System.Threading;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Option;
+using Bjd.Options;
 
 namespace Bjd.SmtpServer
 {

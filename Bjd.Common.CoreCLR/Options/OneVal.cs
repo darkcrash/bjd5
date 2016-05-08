@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Text;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
 using Bjd.Utils;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     //1つの値を表現するクラス<br>
     //ListValと共に再帰処理が可能になっている<br>

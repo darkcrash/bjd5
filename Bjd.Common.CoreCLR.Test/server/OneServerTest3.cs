@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using Bjd;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
-using Bjd.Server;
+using Bjd.Options;
+using Bjd.Servers;
 using Bjd.Sockets;
 using Xunit;
 

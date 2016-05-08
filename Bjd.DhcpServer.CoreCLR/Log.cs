@@ -1,6 +1,6 @@
 ﻿
 using Bjd;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 
 namespace Bjd.DhcpServer

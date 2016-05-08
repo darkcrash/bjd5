@@ -1,9 +1,9 @@
 ﻿using System;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
 using Bjd.Utils;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     abstract public class OneOption : IDisposable
     {

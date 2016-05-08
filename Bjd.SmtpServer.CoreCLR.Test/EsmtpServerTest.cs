@@ -3,13 +3,14 @@ using System.IO;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SmtpServer;
 using System.Collections.Generic;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -32,7 +33,7 @@ namespace Bjd.SmtpServer.Test
                 //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
                 _op = new TmpOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
 
-                Service.Service.ServiceTest();
+                Service.ServiceTest();
 
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("Smtp");

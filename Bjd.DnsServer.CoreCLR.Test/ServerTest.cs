@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;

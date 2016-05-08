@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;

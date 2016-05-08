@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 
 namespace Bjd.Mails

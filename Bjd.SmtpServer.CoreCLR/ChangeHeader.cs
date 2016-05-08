@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 
 namespace Bjd.SmtpServer
 {

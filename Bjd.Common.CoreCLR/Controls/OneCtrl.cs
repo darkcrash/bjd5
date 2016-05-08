@@ -1,7 +1,7 @@
 ﻿using System;
 using Bjd.Utils;
 
-namespace Bjd.Ctrl
+namespace Bjd.Controls
 {
     public abstract class OneCtrl
     {

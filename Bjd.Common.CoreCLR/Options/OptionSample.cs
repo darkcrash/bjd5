@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     public class OptionSample : OneOption
     {

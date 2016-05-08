@@ -3,7 +3,7 @@ using System.Text;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 

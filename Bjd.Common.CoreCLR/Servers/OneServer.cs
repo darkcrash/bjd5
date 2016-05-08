@@ -4,14 +4,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bjd.Acls;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 
-namespace Bjd.Server
+namespace Bjd.Servers
 {
 
     //OneServer １つのバインドアドレス：ポートごとにサーバを表現するクラス<br>

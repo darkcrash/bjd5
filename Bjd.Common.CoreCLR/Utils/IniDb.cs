@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Bjd.Ctrl;
-using Bjd.Option;
+using Bjd.Controls;
+using Bjd.Options;
 
 namespace Bjd.Utils
 {

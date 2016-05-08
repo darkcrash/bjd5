@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bjd.Utils;
-using Bjd.Ctrl;
+using Bjd.Controls;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     public class Conf
     {

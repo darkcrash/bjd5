@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 
 namespace Bjd.ProxyHttpServer {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 
 namespace Bjd.SmtpServer

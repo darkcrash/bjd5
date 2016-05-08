@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 
-namespace Bjd.Service
+namespace Bjd.Services
 {
     public class Service
     {

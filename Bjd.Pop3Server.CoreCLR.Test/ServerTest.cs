@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.Pop3Server;
 using System.Collections.Generic;
+using Bjd.Services;
 
 namespace Pop3ServerTest
 {
@@ -49,7 +50,7 @@ namespace Pop3ServerTest
 
                 try
                 {
-                    Bjd.Service.Service.ServiceTest();
+                    Service.ServiceTest();
 
                     var kernel = new Kernel();
                     var option = kernel.ListOption.Get("Pop3");

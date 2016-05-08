@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.Service;
+using Bjd.Services;
 using System.Diagnostics;
 
 namespace Bjd.Common
@@ -20,7 +20,7 @@ namespace Bjd.Common
             try
             {
 
-                Bjd.Service.Service.ServiceMain(_serviceProvider);
+                Service.ServiceMain(_serviceProvider);
 
             }
             catch (Exception ex)

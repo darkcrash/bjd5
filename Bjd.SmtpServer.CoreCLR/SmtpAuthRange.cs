@@ -6,7 +6,7 @@ using Bjd;
 using Bjd.Acls;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 
 namespace Bjd.SmtpServer
 {

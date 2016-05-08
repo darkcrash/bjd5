@@ -5,7 +5,7 @@ using System.IO;
 
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 
 namespace Bjd.DhcpServer
 {

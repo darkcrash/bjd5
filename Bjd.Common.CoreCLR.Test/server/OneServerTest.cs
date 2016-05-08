@@ -5,11 +5,11 @@ using System.Threading;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Option;
-using Bjd.Server;
+using Bjd.Options;
+using Bjd.Servers;
 using Bjd.Sockets;
 using Xunit;
-using Bjd.Ctrl;
+using Bjd.Controls;
 
 namespace Bjd.Common.Test.server
 {

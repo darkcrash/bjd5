@@ -1,5 +1,5 @@
-﻿using Bjd.Ctrl;
-using Bjd.Option;
+﻿using Bjd.Controls;
+using Bjd.Options;
 using Xunit;
 using Bjd.ProxyHttpServer;
 

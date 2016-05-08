@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Bjd.Net;
-using Bjd.Option;
-using Bjd.Plugin;
+using Bjd.Options;
+using Bjd.Plugins;
 using Bjd.Utils;
 
-namespace Bjd.Server
+namespace Bjd.Servers
 {
     public class ListServer : ListBase<OneServer>, IDisposable
     {

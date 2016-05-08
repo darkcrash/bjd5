@@ -1,9 +1,9 @@
 ﻿using System;
 
 using Bjd;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using System.Collections.Generic;
 
 namespace Bjd.TunnelServer

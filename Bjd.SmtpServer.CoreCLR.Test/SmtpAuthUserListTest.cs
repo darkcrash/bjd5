@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 using Xunit;
 using Bjd.SmtpServer;
 

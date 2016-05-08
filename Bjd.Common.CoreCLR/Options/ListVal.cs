@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Utils;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     //OneValのリストを表現するクラス<br>
     //OneValと共に再帰処理が可能になっている<br>

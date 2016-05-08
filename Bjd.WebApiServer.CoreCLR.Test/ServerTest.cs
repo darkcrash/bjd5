@@ -2,12 +2,13 @@
 using System.Text;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.WebApiServer;
+using Bjd.Services;
 
 namespace WebApiServerTest
 {
@@ -29,7 +30,7 @@ namespace WebApiServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
-                Bjd.Service.Service.ServiceTest();
+                Service.ServiceTest();
 
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("WebApi");

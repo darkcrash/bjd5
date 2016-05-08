@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.ProxyHttpServer;
+using Bjd.Services;
 
 namespace ProxyHttpServerTest
 {
@@ -29,7 +30,7 @@ namespace ProxyHttpServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
 
-                Bjd.Service.Service.ServiceTest();
+                Service.ServiceTest();
 
                 Kernel kernel = new Kernel();
                 var option = kernel.ListOption.Get("ProxyHttp");

@@ -5,13 +5,12 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
-
-
+using Bjd.Services;
 
 namespace ProxyPop3ServerTest
 {
@@ -51,7 +50,7 @@ namespace ProxyPop3ServerTest
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.ProxyPop3Server.CoreCLR.Test", "ProxyPop3ServerTest.ini");
 
-            Bjd.Service.Service.ServiceTest();
+            Service.ServiceTest();
 
             var kernel = new Kernel();
             var option = kernel.ListOption.Get("ProxyPop3");

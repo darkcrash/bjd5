@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.Option;
+using Bjd.Options;
 
-namespace Bjd.Ctrl
+namespace Bjd.Controls
 {
     // オプションダイアログに表示するタブの１ページを表現するクラス
     public class OnePage

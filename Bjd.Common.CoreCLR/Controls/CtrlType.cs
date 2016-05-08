@@ -1,4 +1,4 @@
-﻿namespace Bjd.Ctrl
+﻿namespace Bjd.Controls
 {
     public enum CtrlType
     {

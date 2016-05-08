@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
 using Bjd.Utils;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using System.Collections.Generic;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     public class Dat : ListBase<OneDat>
     {

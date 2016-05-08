@@ -7,7 +7,7 @@ using System.Threading;
 using Bjd;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SmtpServer;

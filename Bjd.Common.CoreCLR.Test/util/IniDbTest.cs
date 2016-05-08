@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
 

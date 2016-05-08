@@ -1,5 +1,5 @@
 ﻿using Bjd;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Bjd.DnsServer;
 using Xunit;

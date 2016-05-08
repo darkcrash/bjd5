@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.Ctrl;
-using Bjd.Option;
+using Bjd.Controls;
+using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;

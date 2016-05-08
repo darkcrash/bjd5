@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     public class OneDat : ValidObj, IDisposable
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Utils;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     public class OptionLog : OneOption
     {

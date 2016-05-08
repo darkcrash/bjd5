@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bjd.Server
+namespace Bjd.Servers
 {
     //受信したコマンドを表現するクラス
     //内部データは、nullの場合、""で初期化される

@@ -1,5 +1,5 @@
 ﻿using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 
 namespace Bjd.Pop3Server

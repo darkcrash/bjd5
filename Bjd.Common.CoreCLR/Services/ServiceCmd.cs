@@ -1,4 +1,4 @@
-﻿namespace Bjd.Service
+﻿namespace Bjd.Services
 {
     enum ServiceCmd
     {

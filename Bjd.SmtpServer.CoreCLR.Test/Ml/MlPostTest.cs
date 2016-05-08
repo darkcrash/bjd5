@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SmtpServer;

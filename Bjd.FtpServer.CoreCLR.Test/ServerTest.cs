@@ -2,12 +2,13 @@
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Bjd.Utils;
 using Bjd.Common.Test;
 using Bjd.FtpServer;
 using Xunit;
+using Bjd.Services;
 
 namespace FtpServerTest
 {
@@ -29,7 +30,7 @@ namespace FtpServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
 
-                Bjd.Service.Service.ServiceTest();
+                Service.ServiceTest();
 
                 Kernel kernel = new Kernel();
                 var option = kernel.ListOption.Get("Ftp");

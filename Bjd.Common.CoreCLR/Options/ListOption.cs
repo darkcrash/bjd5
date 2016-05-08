@@ -1,8 +1,8 @@
 ﻿using System;
-using Bjd.Plugin;
+using Bjd.Plugins;
 using Bjd.Utils;
 
-namespace Bjd.Option
+namespace Bjd.Options
 {
     //オプションのリストを表現するクラス
     //Kernelの中で使用される

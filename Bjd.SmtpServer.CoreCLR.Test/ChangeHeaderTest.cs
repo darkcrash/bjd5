@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using Bjd.Ctrl;
+using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;

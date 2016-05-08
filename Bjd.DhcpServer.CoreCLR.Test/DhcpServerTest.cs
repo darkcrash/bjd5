@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net.Sockets;
 using Bjd.Net;
-using Bjd.Option;
+using Bjd.Options;
 using Bjd.Sockets;
 using Xunit;
 using Bjd.DhcpServer;
