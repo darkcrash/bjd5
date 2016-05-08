@@ -1,5 +1,5 @@
 ﻿namespace Bjd.option {
-    //�R���g���[����\������ۂɐV���ȍs�Ɉȍ~�i���s�j���邩�ǂ���
+    //コントロールを表示する際に新たな行に以降（改行）するかどうか
     public enum Crlf {
         Nextline,
         Contonie

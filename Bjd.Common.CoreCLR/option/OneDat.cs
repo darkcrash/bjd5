@@ -54,7 +54,8 @@ namespace Bjd.option
                 { // シークレットカラム
                     sb.Append("***");
                 }
-                else {
+                else
+                {
                     sb.Append(StrList[i]);
                 }
             }

@@ -1,5 +1,7 @@
-﻿namespace Bjd {
-    public interface ILife {
+﻿namespace Bjd
+{
+    public interface ILife
+    {
         bool IsLife();
     }
 }

@@ -81,7 +81,8 @@ namespace Bjd.log
                     message = _logger.GetMsg(messageNo); //デリゲートを使用した継承によるメッセージ取得
                 }
             }
-            else {
+            else
+            {
                 //(9000000以上)共通番号の場合の処理
                 switch (messageNo)
                 {
@@ -344,7 +345,8 @@ namespace Bjd.log
                         _logFile.Append(oneLog);
                     }
                 }
-                else {
+                else
+                {
                     //表示制限が無効な場合は、すべて保存される
                     _logFile.Append(oneLog);
                 }
@@ -377,7 +379,8 @@ namespace Bjd.log
                     {
                         Set(LogKind.Error, sockObj, messageNo, lines[i]);
                     }
-                    else {
+                    else
+                    {
                         Set(LogKind.Error, sockObj, messageNo, "   -" + lines[i]);
                     }
                 }

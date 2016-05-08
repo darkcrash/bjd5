@@ -1,15 +1,17 @@
 ﻿using System;
 
-namespace Bjd.sock{
+namespace Bjd.sock
+{
     //SockTcpで使用されるデータキュー
-    public class SockQueue{
+    public class SockQueue
+    {
         byte[] _db = new byte[0]; //現在のバッファの内容
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
         //TODO modifyの動作に不安あり（これ必要なのか？） 
         bool _modify; //バッファに追加があった場合にtrueに変更される
 
-        public int Max{ get { return max; } }
+        public int Max { get { return max; } }
 
         //空いているスペース
         public int Space { get { return max - _db.Length; } }
@@ -18,17 +20,21 @@ namespace Bjd.sock{
         public int Length { get { return _db.Length; } }
 
         //キューへの追加
-        public int Enqueue(byte[] buf, int len){
-            
-            if (Space == 0){
+        public int Enqueue(byte[] buf, int len)
+        {
+
+            if (Space == 0)
+            {
                 return 0;
             }
             //空きスペースを越える場合は失敗する 0が返される
-            if (Space < len){
+            if (Space < len)
+            {
                 return 0;
             }
 
-            lock (this){
+            lock (this)
+            {
                 var tmpBuf = new byte[_db.Length + len]; //テンポラリバッファ
                 Buffer.BlockCopy(_db, 0, tmpBuf, 0, _db.Length);//現有DBのデータをテンポラリ前部へコピー
                 Buffer.BlockCopy(buf, 0, tmpBuf, _db.Length, len);//追加のデータをテンポラリ後部へコピー
@@ -40,14 +46,18 @@ namespace Bjd.sock{
         }
 
         //キューからのデータ取得
-        public byte[] Dequeue(int len){
-            if (_db.Length == 0 || len == 0 || !_modify){
+        public byte[] Dequeue(int len)
+        {
+            if (_db.Length == 0 || len == 0 || !_modify)
+            {
                 return new byte[0];
             }
 
-            lock (this){
+            lock (this)
+            {
                 //要求サイズが現有数を超える場合はカットする
-                if (_db.Length < len){
+                if (_db.Length < len)
+                {
                     len = _db.Length;
                 }
                 var retBuf = new byte[len]; //出力用バッファ
@@ -55,7 +65,8 @@ namespace Bjd.sock{
                 Buffer.BlockCopy(_db, 0, retBuf, 0, len);//現有DBから出力用バッファへコピー
                 Buffer.BlockCopy(_db, len, tmpBuf, 0, _db.Length - len);//残りのデータをテンポラリへ
                 _db = tmpBuf; //テンポラリを現用DBへ変更
-                if (_db.Length == 0){
+                if (_db.Length == 0)
+                {
                     _modify = false; //次に何か受信するまで処理の必要はない
                 }
 
@@ -64,13 +75,18 @@ namespace Bjd.sock{
         }
 
         //キューからの１行取り出し(\r\nを削除しない)
-        public byte[] DequeueLine(){
-            if (!_modify){
+        public byte[] DequeueLine()
+        {
+            if (!_modify)
+            {
                 return new byte[0];
             }
-            lock (this){
-                for (var i = 0; i < _db.Length; i++){
-                    if (_db[i] != '\n'){
+            lock (this)
+            {
+                for (var i = 0; i < _db.Length; i++)
+                {
+                    if (_db[i] != '\n')
+                    {
                         continue;
                     }
                     var retBuf = new byte[i + 1]; //\r\nを削除しない

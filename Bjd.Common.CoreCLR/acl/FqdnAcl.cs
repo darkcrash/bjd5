@@ -2,25 +2,31 @@
 using System.Text.RegularExpressions;
 using Bjd.net;
 
-namespace Bjd.acl {
-    internal class FqdnAcl : Acl{
+namespace Bjd.acl
+{
+    internal class FqdnAcl : Acl
+    {
         private Regex _fqdn;
 
-        public FqdnAcl(string name, string fqdnStr) : base(name){
+        public FqdnAcl(string name, string fqdnStr) : base(name)
+        {
             var s = fqdnStr.Replace(".", "\\.");
             s = s.Replace("*", ".*");
             _fqdn = new Regex(s);
 
         }
 
-        protected override void Init(){
+        protected override void Init()
+        {
         }
 
-        public override bool IsHit(Ip ip){
+        public override bool IsHit(Ip ip)
+        {
             throw new System.NotImplementedException();
         }
 
-        public bool IsHit(Ip ip,string hostName){
+        public bool IsHit(Ip ip, string hostName)
+        {
             return _fqdn.IsMatch(hostName);
         }
 

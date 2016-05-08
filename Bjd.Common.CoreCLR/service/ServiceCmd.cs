@@ -1,5 +1,7 @@
-﻿namespace Bjd.service {
-    enum ServiceCmd {
+﻿namespace Bjd.service
+{
+    enum ServiceCmd
+    {
         Install = 0,
         Uninstall = 1,
         Start = 2,

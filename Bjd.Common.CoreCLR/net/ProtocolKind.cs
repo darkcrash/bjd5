@@ -1,5 +1,7 @@
-﻿namespace Bjd.net {
-    public enum ProtocolKind {
+﻿namespace Bjd.net
+{
+    public enum ProtocolKind
+    {
         Tcp,
         Udp
     }

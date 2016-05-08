@@ -20,7 +20,7 @@ namespace Bjd.option
 
             var pageList = new List<OnePage>();
             var key = "Basic";
-            pageList.Add(Page1(key,Lang.Value(key)));
+            pageList.Add(Page1(key, Lang.Value(key)));
             pageList.Add(PageAcl());
             Add(new OneVal("tab", null, Crlf.Nextline));
 

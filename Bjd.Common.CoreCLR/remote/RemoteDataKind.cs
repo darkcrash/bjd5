@@ -1,5 +1,7 @@
-namespace Bjd.remote {
-    public enum RemoteDataKind : byte {
+namespace Bjd.remote
+{
+    public enum RemoteDataKind : byte
+    {
         DatAuth = 0,       //S->C (接続時)認証情報(SJIS)
         DatVer = 1,        //S->C (接続時)バージョン/ログイン完了(SJIS)
         DatLocaladdress = 2, //S->C (接続時)LocalAddressの初期化

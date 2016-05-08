@@ -266,7 +266,8 @@ namespace Bjd.util
                                 {
                                     // ～～Serverの設定を削除
                                 }
-                                else {
+                                else
+                                {
                                     lines.Add(s);
                                 }
 

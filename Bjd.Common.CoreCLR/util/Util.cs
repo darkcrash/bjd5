@@ -15,7 +15,7 @@ namespace Bjd.util
     public static class Util
     {
 
-        //private Util(){}//�f�t�H���g�R���X�g���N�^�̉B��
+        //private Util(){}//デフォルトコンストラクタの隠蔽
 
         //***********************************************
         // htons()
@@ -41,7 +41,7 @@ namespace Bjd.util
                  (i & 0x00000000000000ff) << 56);
         }
 
-        //string str�̒��̕��� before �𕶎� after�ɒu��������
+        //string strの中の文字 before を文字 afterに置き換える
         public static string SwapChar(char before, char after, string str)
         {
             if (before == after)
@@ -51,24 +51,25 @@ namespace Bjd.util
                 int index = str.IndexOf(before);
                 if (index < 0)
                     break;
-                //\b���w�肳�ꂽ�ꍇ�A�u�����N�ɂ���
+                //\bが指定された場合、ブランクにする
                 if (after == '\b')
                 {
                     str = str.Substring(0, index) + str.Substring(index + 1);
                 }
-                else {
+                else
+                {
                     str = str.Substring(0, index) + after + str.Substring(index + 1);
                 }
             }
             return str;
         }
 
-        //string str�̒��̕��� beforeStr �� afterStr�ɒu��������
+        //string strの中の文字 beforeStr を afterStrに置き換える
         public static string SwapStr(string beforeStr, string afterStr, string str)
         {
             if (beforeStr == afterStr)
                 return str;
-            var offset = 0; //�����ςݕ����ʒu
+            var offset = 0; //処理済み文字位置
             while (true)
             {
                 var index = str.Substring(offset).IndexOf(beforeStr);
@@ -81,7 +82,7 @@ namespace Bjd.util
             return str;
         }
 
-        //string str�̒��̕��� c�������A�����Ă���ꍇ1�ɂ��� 
+        //string strの中の文字 c文字が連続している場合1つにする 
         public static string MargeChar(char c, string str)
         {
             var buf = new char[] { c, c };
@@ -117,10 +118,10 @@ namespace Bjd.util
                                  dt.Year);
         }
 
-        //�w��t�@�C���̒��ōŏ���tag�����񂪏o������ʒu��Ԃ�
+        //指定ファイルの中で最初にtag文字列が出現する位置を返す
         public static int IndexOf(string fileName, string tag)
         {
-            int len = 0; //�J�E���^
+            int len = 0; //カウンタ
             if (File.Exists(fileName))
             {
                 using (var bs = new FileStream(fileName, FileMode.Open))
@@ -137,7 +138,7 @@ namespace Bjd.util
                             //sr.Close();
                             return len + index;
                         }
-                        len += str.Length + 2; //�P�s���̕������ŃJ�E���^��A�b�v����
+                        len += str.Length + 2; //１行分の文字数でカウンタをアップする
                     }
                     //sr.Close();
                 }
@@ -306,7 +307,7 @@ namespace Bjd.util
             return null;
         }
 
-        //��O�𔭐������v���O�������~����i�݌v��̖��j
+        //例外を発生させプログラムを停止する（設計上の問題）
         public static void RuntimeException(string msg)
         {
             //Msg.Show(MsgKind.Error, msg);
@@ -318,7 +319,7 @@ namespace Bjd.util
             throw new Exception("RuntimeException" + msg);
         }
 
-        //�e���|�����f�B���N�g���̍쐬
+        //テンポラリディレクトリの作成
         public static string CreateTempDirectory()
         {
             var path = Path.GetTempFileName();
@@ -328,9 +329,9 @@ namespace Bjd.util
         }
 
 
-        //�t�@�C���Ⴕ���̓f�B���N�g�������݂��邩�ǂ���
-        //path==null �̏ꍇ�AExistsKind.None�ƂȂ�
-        //path �����Ώۂ̃p�X
+        //ファイル若しくはディレクトリが存在するかどうか
+        //path==null の場合、ExistsKind.Noneとなる
+        //path 検査対象のパス
         public static ExistsKind Exists(string path)
         {
             if (path != null)
@@ -347,7 +348,7 @@ namespace Bjd.util
             return ExistsKind.None;
         }
 
-        //Ver5.7.x�ȑO��ini�t�@�C����Ver5.8�p�ɏC������
+        //Ver5.7.x以前のiniファイルをVer5.8用に修正する
         public static String ConvValStr(String src)
         {
 
@@ -358,14 +359,14 @@ namespace Bjd.util
             }
             try
             {
-                //���t�@�C�����ǂ����̔��f
+                //旧ファイルかどうかの判断
                 if (t[0][0] == '\t')
                 {
-                    return src; //�V�t�@�C��
+                    return src; //新ファイル
                 }
                 if (t[0][0] == '#' && t[0][1] == '\t')
                 {
-                    return src; //�V�t�@�C��
+                    return src; //新ファイル
                 }
             }
             catch (Exception)
@@ -379,7 +380,8 @@ namespace Bjd.util
                 {
                     ar.Add("#\t" + l.Substring(1));
                 }
-                else {
+                else
+                {
                     ar.Add("\t" + l.Substring(0));
                 }
             }
@@ -395,7 +397,7 @@ namespace Bjd.util
             return sb.ToString();
         }
 
-        //�f�B���N�g���̃R�s�[
+        //ディレクトリのコピー
         public static bool CopyDirectory(string srcPath, string dstPath)
         {
             Directory.CreateDirectory(dstPath);

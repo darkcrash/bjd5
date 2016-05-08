@@ -121,7 +121,8 @@ namespace Bjd.log
                 {
                     _normalLog = new OneLogFile(fileName);
                 }
-                else {
+                else
+                {
                     _normalLog = null;
                 }
             }
@@ -154,7 +155,8 @@ namespace Bjd.log
                 {
                     _secureLog = new OneLogFile(fileName);
                 }
-                else {
+                else
+                {
                     _secureLog = null;
                 }
             }
@@ -264,7 +266,8 @@ namespace Bjd.log
                         {
                             lines.Add(str);
                         }
-                        else {
+                        else
+                        {
                             var tmp = str.Split('\t');
                             if (tmp.Length > 1)
                             {

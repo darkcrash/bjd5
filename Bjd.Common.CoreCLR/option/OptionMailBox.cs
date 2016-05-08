@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using Bjd.ctrl;
 
-namespace Bjd.option {
-    public class OptionMailBox : OneOption {
+namespace Bjd.option
+{
+    public class OptionMailBox : OneOption
+    {
         public override char Mnemonic { get { return 'B'; } }
-       
+
         public OptionMailBox(Kernel kernel, string path)
-            : base(kernel.IsJp(), path, "MailBox"){
+            : base(kernel.IsJp(), path, "MailBox")
+        {
             var pageList = new List<OnePage>();
             //var key = "Basic";
             //pageList.Add(Page1(key, Lang.Value(key),kernel));
@@ -21,7 +24,8 @@ namespace Bjd.option {
             Read(kernel.IniDb); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title,Kernel kernel){
+        private OnePage Page1(string name, string title, Kernel kernel)
+        {
             var onePage = new OnePage(name, title);
             //var key = "dir";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline));
@@ -34,7 +38,8 @@ namespace Bjd.option {
             return onePage;
         }
 
-        private OnePage Page2(string name, string title){
+        private OnePage Page2(string name, string title)
+        {
             var onePage = new OnePage(name, title);
             //var listVal = new ListVal();
             //var key = "userName";

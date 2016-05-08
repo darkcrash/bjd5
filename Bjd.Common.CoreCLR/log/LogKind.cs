@@ -1,5 +1,7 @@
-﻿namespace Bjd.log {
-    public enum LogKind {
+﻿namespace Bjd.log
+{
+    public enum LogKind
+    {
         Normal = 0,
         Detail = 1,
         Error = 2,

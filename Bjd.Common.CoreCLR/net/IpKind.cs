@@ -1,5 +1,7 @@
-﻿namespace Bjd.net {
-    public enum IpKind {
+﻿namespace Bjd.net
+{
+    public enum IpKind
+    {
         InAddrAny,
         In6AddrAnyInit,
         V4_0,

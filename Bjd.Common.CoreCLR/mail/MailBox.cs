@@ -16,9 +16,9 @@ namespace Bjd.mail
         private readonly List<OneMailBox> _ar = new List<OneMailBox>();
         private Log _log;
 
-        public string Dir { get; private set; } //���[���{�b�N�X�̃t�H���_
-        public bool Status { get; private set; } //���������ۂ̊m�F
-        //���[�U�ꗗ
+        public string Dir { get; private set; } //メールボックスのフォルダ
+        public bool Status { get; private set; } //初期化成否の確認
+        //ユーザ一覧
         public List<string> UserList
         {
             get
@@ -29,11 +29,11 @@ namespace Bjd.mail
 
         public MailBox(Logger logger, Dat datUser, String dir)
         {
-            Status = true; //��������� false�̏ꍇ�́A�������Ɏ��s���Ă���̂Ŏg�p�ł��Ȃ�
+            Status = true; //初期化状態 falseの場合は、初期化に失敗しているので使用できない
 
             _log = new Log(logger);
 
-            //MailBox��z�u����t�H���_
+            //MailBoxを配置するフォルダ
             Dir = dir;
             try
             {
@@ -49,13 +49,13 @@ namespace Bjd.mail
                 _log.Set(LogKind.Error, null, 9000029, string.Format("dir="));
                 Status = false;
                 Dir = null;
-                return; //�ȍ~�̏�������������Ȃ�
+                return; //以降の初期化を処理しない
             }
-            //���[�U���X�g�̏�����
+            //ユーザリストの初期化
             Init(datUser);
         }
 
-        //���[�U���X�g�̏�����
+        //ユーザリストの初期化
         private void Init(IEnumerable<OneDat> datUser)
         {
             _ar.Clear();
@@ -64,7 +64,7 @@ namespace Bjd.mail
                 foreach (var o in datUser)
                 {
                     if (!o.Enable)
-                        continue; //�L���ȃf�[�^������Ώۂɂ���
+                        continue; //有効なデータだけを対象にする
                     var name = o.StrList[0];
                     var pass = Crypt.Decrypt(o.StrList[1]);
                     _ar.Add(new OneMailBox(name, pass));
@@ -85,7 +85,7 @@ namespace Bjd.mail
                 while (true)
                 {
                     var str = string.Format("{0:D20}", DateTime.Now.Ticks);
-                    //�X���b�h�Z�[�t�̊m��(�E�G�C�g��DateTIme.Now�̏d��������)
+                    //スレッドセーフの確保(ウエイトでDateTIme.Nowの重複を避ける)
                     Thread.Sleep(1);
                     //var fileName = string.Format("{0}\\MF_{1}", Dir, str);
                     var fileName = $"{Dir}{Path.DirectorySeparatorChar}MF_{str}";
@@ -106,7 +106,7 @@ namespace Bjd.mail
                 return false;
             }
 
-            //�t�H���_�쐬
+            //フォルダ作成
             //var folder = string.Format("{0}\\{1}", Dir, user);
             var folder = $"{Dir}{Path.DirectorySeparatorChar}{user}";
             if (!Directory.Exists(folder))
@@ -114,15 +114,14 @@ namespace Bjd.mail
                 Directory.CreateDirectory(folder);
             }
 
-            //�t�@�C��������
+            //ファイル名生成
             var name = CreateFileName();
             //var mfName = string.Format("{0}\\MF_{1}", folder, name);
             //var dfName = string.Format("{0}\\DF_{1}", folder, name);
             var mfName = $"{folder}{Path.DirectorySeparatorChar}MF_{name}";
             var dfName = $"{folder}{Path.DirectorySeparatorChar}DF_{name}";
 
-
-            //�t�@�C���ۑ�
+            //ファイル保存
             var success = false;
             try
             {
@@ -141,7 +140,7 @@ namespace Bjd.mail
             {
                 ;
             }
-            //���s�����ꍇ�́A�쐬�r���̃t�@�C����S���폜
+            //失敗した場合は、作成途中のファイルを全部削除
             if (!success)
             {
                 if (File.Exists(mfName))
@@ -159,13 +158,13 @@ namespace Bjd.mail
             return true;
         }
 
-        //���[�U�����݂��邩�ǂ���
+        //ユーザが存在するかどうか
         public bool IsUser(string user)
         {
             return _ar.Any(o => o.User == user);
         }
 
-        //�Ō�Ƀ��O�C���ɐ������������̎擾 (PopBeforeSMTP�p�j
+        //最後にログインに成功した時刻の取得 (PopBeforeSMTP用）
         public DateTime LastLogin(Ip addr)
         {
             foreach (var oneMailBox in _ar.Where(oneMailBox => oneMailBox.Addr == addr.ToString()))
@@ -175,7 +174,7 @@ namespace Bjd.mail
             return new DateTime(0);
         }
 
-        //�F�؁i�p�X���[�h�m�F) ���p�X���[�h�̖������[�U�����݂���?
+        //認証（パスワード確認) ※パスワードの無いユーザが存在する?
         public bool Auth(string user, string pass)
         {
             foreach (var o in _ar)
@@ -188,7 +187,7 @@ namespace Bjd.mail
             return false;
         }
 
-        //�p�X���[�h�擾
+        //パスワード取得
         public string GetPass(string user)
         {
             foreach (var oneUser in _ar)
@@ -200,7 +199,7 @@ namespace Bjd.mail
             }
             return null;
         }
-        //�p�X���[�h�ύX pop3Server.Chps����g�p�����
+        //パスワード変更 pop3Server.Chpsから使用される
         public bool SetPass(string user, string pass)
         {
             foreach (var oneUser in _ar)

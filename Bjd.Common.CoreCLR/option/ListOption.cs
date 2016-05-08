@@ -132,7 +132,8 @@ namespace Bjd.option
                         }
                     }
                 }
-                else {
+                else
+                {
                     Add(oneOption);
 
                     //DnsServerのプラグイン固有オプションの生成

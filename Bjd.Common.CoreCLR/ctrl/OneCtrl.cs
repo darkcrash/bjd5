@@ -18,7 +18,8 @@ namespace Bjd.ctrl
             {
                 Help = "";
             }
-            else {
+            else
+            {
                 Help = help;
             }
         }

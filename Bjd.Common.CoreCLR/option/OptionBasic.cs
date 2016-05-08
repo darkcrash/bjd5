@@ -2,13 +2,16 @@
 using Bjd.ctrl;
 using Bjd.util;
 
-namespace Bjd.option {
-    public class OptionBasic : OneOption{
+namespace Bjd.option
+{
+    public class OptionBasic : OneOption
+    {
         public override char Mnemonic { get { return 'O'; } }
 
 
         public OptionBasic(Kernel kernel, string path)
-            : base(kernel.IsJp(), path, "Basic") {
+            : base(kernel.IsJp(), path, "Basic")
+        {
             //var pageList = new List<OnePage>();
 
 

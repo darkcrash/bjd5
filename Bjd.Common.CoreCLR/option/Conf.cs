@@ -63,7 +63,8 @@ namespace Bjd.option
             {
                 _ar.Add(name, value);
             }
-            else {
+            else
+            {
                 _ar[name] = value;
             }
         }

@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace Bjd.trace
 {
+    /// <summary>
+    /// Write Console Feature
+    /// </summary>
     public class ConsoleTraceListner : System.Diagnostics.TraceListener
     {
+
+        #region fields
+
         SequentialTaskScheduler sts = new SequentialTaskScheduler();
+
+        #endregion
+
+
         public ConsoleTraceListner()
         {
 

@@ -1,6 +1,7 @@
-﻿namespace Bjd {
-//    public enum OperateCrlf {
-//        No = 0,
-//        Yes = 1
-//    }
+﻿namespace Bjd
+{
+    //    public enum OperateCrlf {
+    //        No = 0,
+    //        Yes = 1
+    //    }
 }

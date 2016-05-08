@@ -12,14 +12,14 @@ namespace Bjd.net
         readonly SslStream _stream;
 
         //クライアント接続
-        public OneSsl( Socket socket, string targetServer)
+        public OneSsl(Socket socket, string targetServer)
         {
             _stream = new SslStream(new NetworkStream(socket));
             _stream.AuthenticateAsClient(targetServer);
         }
 
         //サーバ接続
-        public OneSsl( Socket socket, X509Certificate2 x509Certificate2)
+        public OneSsl(Socket socket, X509Certificate2 x509Certificate2)
         {
             _stream = new SslStream(new NetworkStream(socket));
             try

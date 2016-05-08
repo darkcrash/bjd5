@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Bjd.mail {
+namespace Bjd.mail
+{
     //クラスMailBoxの内部で使用するデータ構造
-    class OneMailBox {
+    class OneMailBox
+    {
 
         bool _isLogin;//ログイン中かどうかのフラグ
 
-        public OneMailBox(string user, string pass) {
+        public OneMailBox(string user, string pass)
+        {
             User = user;
             Pass = pass;
             Addr = "";//最後にログインしたアドレス
@@ -21,7 +24,8 @@ namespace Bjd.mail {
         public string Pass { get; private set; }
         public string Addr { get; private set; }
         public DateTime Dt { get; private set; }
-        public bool Login(string addr) {
+        public bool Login(string addr)
+        {
             if (_isLogin)
                 return false;
 
@@ -34,10 +38,12 @@ namespace Bjd.mail {
             Thread.Sleep(1);//これが無いと、PopBeforeSmtpが失敗する場合がある
             return true;
         }
-        public void Logout() {
+        public void Logout()
+        {
             _isLogin = false;
         }
-        public void SetPass(string pass){
+        public void SetPass(string pass)
+        {
             Pass = pass;
         }
     }

@@ -1,5 +1,7 @@
-﻿namespace Bjd.Browse {
-    enum BrowseKind {
+﻿namespace Bjd.Browse
+{
+    enum BrowseKind
+    {
         Unknown = 0,
         DriveFixed = 1,
         DriveCdrom = 2,

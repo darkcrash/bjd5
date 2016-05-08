@@ -1,5 +1,7 @@
-﻿namespace Bjd.ctrl {
-    public enum CtrlType {
+﻿namespace Bjd.ctrl
+{
+    public enum CtrlType
+    {
         CheckBox = 0,
         TextBox = 1,
         AddressV4 = 2,

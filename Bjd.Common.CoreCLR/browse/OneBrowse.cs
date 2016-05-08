@@ -1,14 +1,17 @@
 using System;
 
-namespace Bjd.Browse {
-    internal class OneBrowse {
+namespace Bjd.Browse
+{
+    internal class OneBrowse
+    {
         public string Name { get; private set; }
         public long Size { get; private set; }
         public BrowseKind BrowseKind { get; private set; }
         public DateTime Dt { get; private set; }
 
         //RemoteServerでのデータ生成
-        public OneBrowse(BrowseKind browseKind, string name, long size, DateTime dt) {
+        public OneBrowse(BrowseKind browseKind, string name, long size, DateTime dt)
+        {
             BrowseKind = browseKind;
             Name = name;
             Size = size;
@@ -16,7 +19,8 @@ namespace Bjd.Browse {
         }
 
         //RemoteClientでの復元
-        public OneBrowse(string str) {
+        public OneBrowse(string str)
+        {
             Name = "";
             if (str == null)
                 return;
@@ -30,7 +34,8 @@ namespace Bjd.Browse {
         }
 
         //RemoteServerでの送信データ作成
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}\b{1}\b{2}\b{3}", BrowseKind, Name, Size, Dt);
         }
     }

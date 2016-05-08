@@ -5,12 +5,15 @@ using Bjd.option;
 using Bjd.plugin;
 using Bjd.util;
 
-namespace Bjd.server{
-    public class ListServer : ListBase<OneServer>, IDisposable{
+namespace Bjd.server
+{
+    public class ListServer : ListBase<OneServer>, IDisposable
+    {
 
         private Kernel kernel;
 
-        public ListServer(Kernel kernel, ListPlugin listPlugin){
+        public ListServer(Kernel kernel, ListPlugin listPlugin)
+        {
             System.Diagnostics.Trace.TraceInformation($"ListServer..ctor {listPlugin.GetType().Name} Start");
             try
             {
@@ -30,9 +33,12 @@ namespace Bjd.server{
 
         //名前によるサーバオブジェクト(OneServer)の検索
         //一覧に存在しない名前で検索を行った場合、設計上の問題として処理される
-        public OneServer Get(String nameTag){
-            foreach (OneServer oneServer in Ar){
-                if (oneServer.NameTag == nameTag){
+        public OneServer Get(String nameTag)
+        {
+            foreach (OneServer oneServer in Ar)
+            {
+                if (oneServer.NameTag == nameTag)
+                {
                     return oneServer;
                 }
             }
@@ -41,12 +47,15 @@ namespace Bjd.server{
         }
 
         // 初期化
-        private void Initialize(ListPlugin listPlugin){
+        private void Initialize(ListPlugin listPlugin)
+        {
             Ar.Clear();
 
-            foreach (OneOption op in kernel.ListOption){
+            foreach (OneOption op in kernel.ListOption)
+            {
 
-                if (!op.UseServer){
+                if (!op.UseServer)
+                {
                     //サーバオプション以外は対象外にする
                     continue;
                 }
@@ -58,20 +67,26 @@ namespace Bjd.server{
                 //				Util.RuntimeException(string.Format("ListServer.initialize() listPlugin.get(%s)==null", op.getNameTag()));
                 //			}
 
-                if (op.NameTag.IndexOf("Web-") == 0){
+                if (op.NameTag.IndexOf("Web-") == 0)
+                {
 
                     //既に同一ポートで仮想サーバがリストされている場合はサーバの生成は行わない
                     bool find = false;
-                    int port = (int) op.GetValue("port");
-                    BindAddr bindAddr = (BindAddr) op.GetValue("bindAddress2");
-                    foreach (OneServer sv in Ar){
-                        if (sv.NameTag.IndexOf("Web-") == 0){
+                    int port = (int)op.GetValue("port");
+                    BindAddr bindAddr = (BindAddr)op.GetValue("bindAddress2");
+                    foreach (OneServer sv in Ar)
+                    {
+                        if (sv.NameTag.IndexOf("Web-") == 0)
+                        {
                             OneOption o = kernel.ListOption.Get(sv.NameTag);
-                            if (o != null){
+                            if (o != null)
+                            {
                                 //同一ポートの設定が既にリストされているかどうか
-                                if (port == (int) o.GetValue("port")){
+                                if (port == (int)o.GetValue("port"))
+                                {
                                     // バインドアドレスが競合しているかどうか
-                                    if (bindAddr.CheckCompetition((BindAddr) o.GetValue("bindAddress2"))){
+                                    if (bindAddr.CheckCompetition((BindAddr)o.GetValue("bindAddress2")))
+                                    {
                                         find = true;
                                         break;
                                     }
@@ -79,45 +94,55 @@ namespace Bjd.server{
                             }
                         }
                     }
-                    if (!find){
+                    if (!find)
+                    {
                         AddServer(new Conf(op), onePlugin); //サーバ（OneServer）生成
                     }
                 }
-                else{
+                else
+                {
                     AddServer(new Conf(op), onePlugin); //サーバ（OneServer）生成
                 }
             }
         }
 
         //サーバ（OneServer）の生成
-        private void AddServer(Conf conf, OnePlugin onePlugin){
+        private void AddServer(Conf conf, OnePlugin onePlugin)
+        {
 
             var protocol = (ProtocolKind)conf.Get("protocolKind");
             //ProtocolKind protocol = ProtocolKind.ValueOf((int) conf.Get("protocolKind"));
 
-            BindAddr bindAddr = (BindAddr) conf.Get("bindAddress2");
+            BindAddr bindAddr = (BindAddr)conf.Get("bindAddress2");
 
-            if (bindAddr.BindStyle != BindStyle.V4Only){
+            if (bindAddr.BindStyle != BindStyle.V4Only)
+            {
                 var oneBind = new OneBind(bindAddr.IpV6, protocol);
                 var o = onePlugin.CreateServer(kernel, conf, oneBind);
-                if (o != null){
-                    Ar.Add((OneServer) o);
+                if (o != null)
+                {
+                    Ar.Add((OneServer)o);
                 }
             }
-            if (bindAddr.BindStyle != BindStyle.V6Only){
+            if (bindAddr.BindStyle != BindStyle.V6Only)
+            {
                 var oneBind = new OneBind(bindAddr.IpV4, protocol);
                 var o = onePlugin.CreateServer(kernel, conf, oneBind);
-                if (o != null){
-                    Ar.Add((OneServer) o);
+                if (o != null)
+                {
+                    Ar.Add((OneServer)o);
                 }
             }
         }
 
         //１つでも起動中かどうか
-        public bool IsRunnig(){
+        public bool IsRunnig()
+        {
             //全スレッドの状態確認
-            foreach (var sv in Ar){
-                if (sv.ThreadBaseKind==ThreadBaseKind.Running){
+            foreach (var sv in Ar)
+            {
+                if (sv.ThreadBaseKind == ThreadBaseKind.Running)
+                {
                     return true;
                 }
             }
@@ -125,9 +150,11 @@ namespace Bjd.server{
         }
 
         //サーバ停止処理
-        public void Stop(){
+        public void Stop()
+        {
             //全スレッド停止 
-            foreach (OneServer sv in Ar) {
+            foreach (OneServer sv in Ar)
+            {
                 sv.Stop();
             }
             //Java fix Ver5.9.0
@@ -136,12 +163,15 @@ namespace Bjd.server{
 
 
         //サーバ開始処理
-        public void Start(){
-            if (IsRunnig()){
+        public void Start()
+        {
+            if (IsRunnig())
+            {
                 return;
             }
             //全スレッドスタート
-            foreach (var sv in Ar){
+            foreach (var sv in Ar)
+            {
                 sv.Start();
             }
             //Java fix Ver5.9.0

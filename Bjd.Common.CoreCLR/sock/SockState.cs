@@ -1,6 +1,8 @@
-﻿namespace Bjd.sock{
+﻿namespace Bjd.sock
+{
     //ソケットオブジェクト（SockObj）の状態
-    public enum SockState{
+    public enum SockState
+    {
         //TODO 移植完了後　リファクタリングで大文字に変更
         //初期状態
         Idle,

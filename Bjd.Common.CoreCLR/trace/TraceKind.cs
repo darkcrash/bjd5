@@ -1,5 +1,7 @@
-﻿namespace Bjd.trace {
-    public enum TraceKind {
+﻿namespace Bjd.trace
+{
+    public enum TraceKind
+    {
         Send,
         Recv
     }

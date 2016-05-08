@@ -12,9 +12,9 @@ namespace Bjd
     public class Lookup
     {
 
-        private Lookup() { }//�f�t�H���g�R���X�g���N�^�̉B��
+        private Lookup() { }//デフォルトコンストラクタの隠蔽
 
-        // DNS�T�[�o�A�h���X��擾����(�ݒ�l�擾)
+        // DNSサーバアドレスを取得する(設定値取得)
         static public List<string> DnsServer()
         {
             var list = new List<string>();
@@ -71,7 +71,7 @@ namespace Bjd
 
             var s = domainName.Split('.');
 
-            //���M�o�b�t�@�̒���
+            //送信バッファの長さ
             var len = 16;
             foreach (var ss in s)
             {
@@ -79,11 +79,11 @@ namespace Bjd
                 len++;
             }
             len++;
-            //���M�p�o�b�t�@��p�ӂ���
+            //送信用バッファを用意する
             var buffer = new byte[len];
 
 
-            //���ʎq�̐���
+            //識別子の生成
             var id = new byte[2];
 
             // HACK:RNG
@@ -104,7 +104,7 @@ namespace Bjd
             //buffer[10] = 0x00;
             //buffer[11] = 0x00;
 
-            //����Z�N�V�����̏�����
+            //質問セクションの初期化
             var p = 12;
             foreach (var tmp in s)
             {
@@ -118,7 +118,7 @@ namespace Bjd
             buffer[p++] = 0x00;
             buffer[p++] = 0x01;
 
-            //�N�G���[�̑��M
+            //クエリーの送信
 
 
             //UdpClient udpClient = new UdpClient();
@@ -134,27 +134,27 @@ namespace Bjd
             {
                 var client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 var endPoint = new IPEndPoint(IPAddress.Parse(dnsServer), 53);
-                //3�b�Ń^�C���A�E�g
+                //3秒でタイムアウト
                 //client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 3000);
 
                 //byte[] q = Encoding.ASCII.GetBytes(query);
-                //client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
-                client.SendTo(buffer, p, SocketFlags.None, endPoint);//���M
-                                                                     //IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+                //client.SendTo(buffer, p, SocketFlags.None, endPoint);//送信
+                client.SendTo(buffer, p, SocketFlags.None, endPoint);//送信
+                //IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
 
                 var senderEP = (EndPoint)endPoint;
                 try
                 {
                     var data = new byte[1024];
                     client.ReceiveTimeout = 2000;
-                    var recv = client.ReceiveFrom(data, ref senderEP);//��M
+                    var recv = client.ReceiveFrom(data, ref senderEP);//受信
                     buffer = new byte[recv];
                     Buffer.BlockCopy(data, 0, buffer, 0, recv);
                     client.Dispose();
                     break;
                 }
                 catch
-                {//�^�C���A�E�g
+                {//タイムアウト
                     client.Dispose();
                     if (i <= 5)
                         continue;
@@ -163,7 +163,7 @@ namespace Bjd
             }
 
 
-            //���ʎq�̊m�F
+            //識別子の確認
             if (buffer[0] != id[0] || buffer[1] != id[1])
                 return hostList;
 
@@ -181,14 +181,14 @@ namespace Bjd
 
 
             p = 12;
-            //Question��W�����v����
+            //Questionをジャンプする
             while (buffer[p] != 0x00)
                 p++;
             p += 5;
 
             for (int i = 0; i < acount; i++)
             {
-                //NAME��X�L�b�v
+                //NAMEをスキップ
                 while (true)
                 {
                     if (buffer[p] >= 0xC0)
@@ -204,35 +204,36 @@ namespace Bjd
                     p++;
                 }
 
-                p += 8; //TYPE(2),CLASS(2),TTL(4) ���v8�o�C�g
+                p += 8; //TYPE(2),CLASS(2),TTL(4) 合計8バイト
 
-                //���\�[�X�̒���
+                //リソースの長さ
                 var rlen = (short)Util.htons(BitConverter.ToUInt16(buffer, p));
                 p += 2;
-                int offset = p;//���\�[�X�̐擪�ʒu
-                //���t�@�����X���擾
+                int offset = p;//リソースの先頭位置
+                //リファレンス数取得
                 var preference = (short)Util.htons(BitConverter.ToUInt16(buffer, offset));
                 offset += 2;
-                //�z�X�g���擾
+                //ホスト名取得
                 var host = "";
                 while (true)
                 {
                     if (buffer[offset] == 0x00)
                         break;
                     if (buffer[offset] >= 0xC0)
-                    {//���k�`��
+                    {//圧縮形式
                         //offset = (int)Util.htons(Bytes.ReadUInt16(buffer,offset));
                         offset = Util.htons(BitConverter.ToUInt16(buffer, offset));
                         offset = offset & 0x3FFF;
                     }
-                    else {
+                    else
+                    {
                         int nlen = buffer[offset++];
                         host += Encoding.ASCII.GetString(buffer, offset, nlen);
                         host += ".";
                         offset += nlen;
                     }
                 }
-                //���t�@�����X���̏�������̂���X�g�̍ŏ��ɓ����
+                //リファレンス数の小さいものをリストの最初に入れる
                 var set = false;
                 for (int n = 0; n < noList.Count; n++)
                 {
@@ -249,7 +250,7 @@ namespace Bjd
                     hostList.Add(host);
                     noList.Add(preference);
                 }
-                p += rlen; //���̃��R�[�h�ʒu�փW�����v
+                p += rlen; //次のレコード位置へジャンプ
             }
             return hostList;
         }

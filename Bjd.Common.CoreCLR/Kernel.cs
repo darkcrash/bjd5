@@ -24,11 +24,11 @@ namespace Bjd
 
         //プロセス起動時に初期化される変数 
         public RunMode RunMode { get; set; } //通常起動;
-        public RemoteConnect RemoteConnect { get; set; } //�����[�g����Őڑ�����Ă��鎞���������������
+        public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
         public DnsCache DnsCache { get; private set; }
         public MailBox MailBox { get; private set; }
 
-        //�T�[�o�N�����ɍŏ����������ϐ�
+        //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
         public ListServer ListServer { get; private set; }
         public LogFile LogFile { get; private set; }
@@ -71,7 +71,7 @@ namespace Bjd
             this.Cancel(this, EventArgs.Empty);
         }
 
-        //�e�X�g�p�R���X�g���N�^
+        //* 通常使用されるコンストラクタ
         public Kernel()
         {
             Trace.TraceInformation("Kernel..ctor Start");
@@ -79,7 +79,8 @@ namespace Bjd
             Trace.TraceInformation("Kernel..ctor End");
         }
 
-        //�e�X�g�p�R���X�g���N�^(MailBox�̂ݏ�����)
+        //テスト用コンストラクタ(MailBoxのみ初期化)
+        [Obsolete]
         public Kernel(String option)
         {
             Trace.TraceInformation("Kernel..ctor Start");
@@ -97,7 +98,7 @@ namespace Bjd
         }
 
 
-        //�N�����ɁA�R���X�g���N�^����Ăяo����鏉����
+        //起動時に、コンストラクタから呼び出される初期化
         private void DefaultInitialize()
         {
             Trace.TraceInformation("Kernel.DefaultInitialize Start");
@@ -107,9 +108,9 @@ namespace Bjd
             this.CancelToken.Register(this.OnCancel);
 
             RunMode = RunMode.Service;
-            RemoteConnect = null;//�����[�g����Őڑ�����Ă��鎞���������������
+            RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
 
-            //�v���Z�X�N�����ɏ����������
+            //プロセス起動時に初期化される
             DnsCache = new DnsCache();
 
             //RunMode
@@ -119,9 +120,9 @@ namespace Bjd
 
             MailBox = null;
 
-            ListInitialize(); //�T�[�o�ċN���ŁA�ēx���s����鏉���� 
+            ListInitialize(); //サーバ再起動で、再度実行される初期化 
 
-            //�E�C���h�T�C�Y�̕���
+            //ウインドサイズの復元
             //var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
             var path = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
 
@@ -137,15 +138,15 @@ namespace Bjd
             Trace.TraceInformation("Kernel.DefaultInitialize End");
         }
 
-        //�T�[�o�ċN���ŁA�ēx���s����鏉����
+        //サーバ再起動で、再度実行される初期化
         public void ListInitialize()
         {
             Trace.TraceInformation("Kernel.ListInitialize Start");
-            //Logger���g�p�ł��Ȃ��Ԃ̃��O�́A������ɕۑ����āA���Logger�ɑ���
+            //Loggerが使用できない間のログは、こちらに保存して、後でLoggerに送る
             var tmpLogger = new TmpLogger();
 
             //************************************************************
-            // �j��
+            // 破棄
             //************************************************************
             if (ListOption != null)
             {
@@ -186,7 +187,7 @@ namespace Bjd
 
             if (RunMode == RunMode.Service)
             {
-                //LogFile�̏�����
+                //LogFileの初期化
                 var saveDirectory = (String)confOption.Get("saveDirectory");
                 saveDirectory = ReplaceOptionEnv(saveDirectory);
                 var normalLogKind = (int)confOption.Get("normalLogKind");
@@ -197,7 +198,7 @@ namespace Bjd
                 var useLogClear = (bool)confOption.Get("useLogClear");
                 if (!useLogClear)
                 {
-                    saveDays = 0; //���O�̎����폜�������ȏꍇ�AsaveDays��0��Z�b�g����
+                    saveDays = 0; //ログの自動削除が無効な場合、saveDaysに0をセットする
                 }
                 if (saveDirectory == "")
                 {
@@ -218,10 +219,11 @@ namespace Bjd
                 }
 
                 //Ver5.8.7 Java fix
-                //mailBox������
+                //mailBox初期化
                 var useMailBoxTag = new[] { "Smtp", "Pop3" };
                 foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
                 {
+                    //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
                     var op = ListOption.Get("MailBox");
                     var conf = new Conf(op);
                     var dir = ReplaceOptionEnv((String)conf.Get("dir"));
@@ -259,8 +261,8 @@ namespace Bjd
             Trace.TraceInformation("Kernel.ListInitialize End");
         }
 
-        //Conf�̐���
-        //���O��ListOption������������Ă���K�v������
+        //Confの生成
+        //事前にListOptionが初期化されている必要がある
         public Conf CreateConf(String nameTag)
         {
             Trace.TraceInformation($"Kernel.CreateConf {nameTag}");
@@ -284,8 +286,8 @@ namespace Bjd
             }
         }
 
-        //Logger�̐���
-        //���O��ListOption������������Ă���K�v������
+        //Loggerの生成
+        //事前にListOptionが初期化されている必要がある
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
         {
             Trace.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
@@ -298,7 +300,7 @@ namespace Bjd
                 var conf = CreateConf("Log");
                 if (conf == null)
                 {
-                    //CreateLogger��g�p����ۂɁAOptionLog�������ł��Ȃ��̂́A�݌v��̖�肪����
+                    //CreateLoggerを使用する際に、OptionLogが検索できないのは、設計上の問題がある
                     Util.RuntimeException("CreateLogger() conf==null");
                     return null;
                 }
@@ -315,16 +317,16 @@ namespace Bjd
             }
         }
 
-        //�I������
+        //終了処理
         public void Dispose()
         {
             Trace.TraceInformation("Kernel.Dispose Start");
             try
             {
                 //**********************************************
-                // �j��
+                // 破棄
                 //**********************************************
-                ListServer.Dispose(); //�e�T�[�o�͒�~�����
+                ListServer.Dispose(); //各サーバは停止される
                 ListOption.Dispose();
                 MailBox = null;
 
@@ -335,7 +337,7 @@ namespace Bjd
             }
         }
 
-        //�I�v�V�����Ŏw�肳���ϐ���u���ς���
+        //オプションで指定される変数を置き変える
 
         public String ReplaceOptionEnv(String str)
         {
@@ -364,13 +366,13 @@ namespace Bjd
             ListServer.Stop();
         }
 
-        //�����[�g����(�f�[�^�̎擾)
+        //リモート操作(データの取得)
         public string Cmd(string cmdStr)
         {
             var sb = new StringBuilder();
 
 
-            sb.Append(IsJp() ? "(1) �T�[�r�X���" : "(1) Service Status");
+            sb.Append(IsJp() ? "(1) サービス状態" : "(1) Service Status");
             sb.Append("\b");
 
             foreach (var sv in ListServer)
@@ -380,7 +382,7 @@ namespace Bjd
             }
             sb.Append(" \b");
 
-            sb.Append(IsJp() ? "(2) ���[�J���A�h���X" : "(2) Local address");
+            sb.Append(IsJp() ? "(2) ローカルアドレス" : "(2) Local address");
             sb.Append("\b");
             foreach (string addr in Define.ServerAddressList())
             {
@@ -440,7 +442,7 @@ namespace Bjd
             return src;
         }
 
-        //IP�A�h���X�̈ꗗ�擾
+        //IPアドレスの一覧取得
         public List<Ip> GetIpList(String hostName)
         {
             var ar = new List<Ip>();
@@ -476,8 +478,8 @@ namespace Bjd
                         var info = new DirectoryInfo(s);
                         const long size = 0;
                         var dt = info.LastWriteTime;
-                        var p = new OneBrowse(BrowseKind.Dir, name, size, dt); //�P�f�[�^����
-                        sb.Append(p + "\t"); //���M�����񐶐�
+                        var p = new OneBrowse(BrowseKind.Dir, name, size, dt); //１データ生成
+                        sb.Append(p + "\t"); //送信文字列生成
                     }
                     var files = Directory.GetFiles(path);
                     Array.Sort(files);
@@ -487,8 +489,8 @@ namespace Bjd
                         var info = new FileInfo(s);
                         var size = info.Length;
                         var dt = info.LastWriteTime;
-                        var p = new OneBrowse(BrowseKind.File, name, size, dt); //�P�f�[�^����
-                        sb.Append(p + "\t"); //���M�����񐶐�
+                        var p = new OneBrowse(BrowseKind.File, name, size, dt); //１データ生成
+                        sb.Append(p + "\t"); //送信文字列生成
                     }
                 }
             }

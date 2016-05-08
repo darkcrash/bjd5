@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 namespace Bjd.util {
     public class Crypt {
 
-        private Crypt() {}//�f�t�H���g�R���X�g���N�^�̉B��
+        private Crypt() { }//デフォルトコンストラクタの隠蔽
 
         static byte[] _key;
         static byte[] _iv;

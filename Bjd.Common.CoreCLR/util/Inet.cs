@@ -12,11 +12,11 @@ namespace Bjd.util
 {
     public class Inet
     {
-        private Inet() { }//�f�t�H���g�R���X�g���N�^�̉B��
+        private Inet() { }//デフォルトコンストラクタの隠蔽
 
 
         //**************************************************************************
-        //�o�C�i��-������ϊ�(�o�C�i���f�[�^��e�L�X�g�����đ���M���邽�ߎg�p����)
+        //バイナリ-文字列変換(バイナリデータをテキスト化して送受信するため使用する)
         //**************************************************************************
         static public byte[] ToBytes(string str)
         {
@@ -36,14 +36,14 @@ namespace Bjd.util
         }
         //**************************************************************************
 
-        //Ver5.0.0-a11 ������
-        //�e�L�X�g�����N���X�@string��\r\n��List<string>�ɕ�������
+        //Ver5.0.0-a11 高速化
+        //テキスト処理クラス　stringを\r\nでList<string>に分割する
         static public List<string> GetLines(string str)
         {
             return str.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
         }
 
-        //�s�P�ʂł̐؂�o��(\r\n�͍폜���Ȃ�)
+        //行単位での切り出し(\r\nは削除しない)
         static public List<byte[]> GetLines(byte[] buf)
         {
             var lines = new List<byte[]>();
@@ -59,8 +59,8 @@ namespace Bjd.util
                 {
                     if (1 <= end && buf[end - 1] == '\r')
                     {
-                        var tmp = new byte[end - start + 1];//\r\n��폜���Ȃ�
-                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\r\n��폜���Ȃ�
+                        var tmp = new byte[end - start + 1];//\r\nを削除しない
+                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\r\nを削除しない
                         lines.Add(tmp);
                         //string str = Encoding.ASCII.GetString(tmp);
                         //ar.Add(str);
@@ -69,14 +69,15 @@ namespace Bjd.util
                     }
                     else if (2 <= end && end + 1 < buf.Length && buf[end + 1] == '\0' && buf[end - 1] == '\0' && buf[end - 2] == '\r')
                     {
-                        var tmp = new byte[end - start + 2];//\r\n��폜���Ȃ�
-                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 2);//\r\n��폜���Ȃ�
+                        var tmp = new byte[end - start + 2];//\r\nを削除しない
+                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 2);//\r\nを削除しない
                         lines.Add(tmp);
                         start = end + 2;
                     }
-                    else {//\n�̂�
-                        var tmp = new byte[end - start + 1];//\n��폜���Ȃ�
-                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\n��폜���Ȃ�
+                    else
+                    {//\nのみ
+                        var tmp = new byte[end - start + 1];//\nを削除しない
+                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\nを削除しない
                         lines.Add(tmp);
                         start = end + 1;
                     }
@@ -85,8 +86,8 @@ namespace Bjd.util
                 {
                     if (0 < (end - start + 1))
                     {
-                        var tmp = new byte[end - start + 1];//\r\n��폜���Ȃ�
-                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\r\n��폜���Ȃ�
+                        var tmp = new byte[end - start + 1];//\r\nを削除しない
+                        Buffer.BlockCopy(buf, start, tmp, 0, end - start + 1);//\r\nを削除しない
                         lines.Add(tmp);
                     }
                     break;
@@ -94,7 +95,7 @@ namespace Bjd.util
             }
             return lines;
         }
-        //\r\n�̍폜
+        //\r\nの削除
         static public byte[] TrimCrlf(byte[] buf)
         {
             if (buf.Length >= 1 && buf[buf.Length - 1] == '\n')
@@ -110,7 +111,7 @@ namespace Bjd.util
             }
             return buf;
         }
-        //\r\n�̍폜
+        //\r\nの削除
         static public string TrimCrlf(string str)
         {
             if (str.Length >= 1 && str[str.Length - 1] == '\n')
@@ -125,7 +126,7 @@ namespace Bjd.util
             return str;
         }
 
-        //�T�j�^�C�Y����(�P�s�Ή�)
+        //サニタイズ処理(１行対応)
         public static string Sanitize(string str)
         {
             str = Util.SwapStr("&", "&amp;", str);
@@ -137,13 +138,13 @@ namespace Bjd.util
 
         }
 
-        //�b��
+        //暫定
         static public SockTcp Connect(Kernel kernel, Ip ip, int port, int timeout, Ssl ssl)
         {
             return new SockTcp(kernel, ip, port, timeout, ssl);
         }
 
-        //�w�肵�������̃����_���������擾����i�`�������W������p�j
+        //指定した長さのランダム文字列を取得する（チャレンジ文字列用）
         static public string ChallengeStr(int len)
         {
             const string val = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -153,7 +154,7 @@ namespace Bjd.util
             var rngcsp = RandomNumberGenerator.Create();
             rngcsp.GetBytes(bytes);
 
-            // �������ƂɎg�p������g�ݍ��킹��
+            // 乱数をもとに使用文字を組み合わせる
             var str = String.Empty;
             foreach (var b in bytes)
             {
@@ -163,7 +164,8 @@ namespace Bjd.util
             }
             return str;
         }
-        //�n�b�V��������̍쐬�iMD5�j
+  
+        //ハッシュ文字列の作成（MD5）
         static public string Md5Str(string str)
         {
             if (str == null)
@@ -179,7 +181,7 @@ namespace Bjd.util
             return BitConverter.ToString(encodedStringBytes);
         }
 
-        //���N�G�X�g�s��URL�G���R�[�h����Ă���ꍇ�́A���̕����R�[�h��擾����
+        //リクエスト行がURLエンコードされている場合は、その文字コードを取得する
         static public Encoding GetUrlEncoding(string str)
         {
             var tmp = str.Split(' ');
@@ -199,7 +201,8 @@ namespace Bjd.util
                     buf[len++] = (byte)n;
                     i += 2;
                 }
-                else {
+                else
+                {
                     buf[len++] = (byte)str[i];
                 }
             }
