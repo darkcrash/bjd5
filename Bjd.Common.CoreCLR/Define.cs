@@ -204,7 +204,7 @@ namespace Bjd
         }
         public static string HostName()
         {
-            InitLocalInformation();//�����o�ϐ��ulocalAddress�v�̏�����
+            InitLocalInformation();//メンバ変数「localAddress」の初期化
             return _localName;
         }
         public static string ApplicationName()
@@ -259,14 +259,14 @@ namespace Bjd
         }
         public static string ServerAddress()
         {
-            InitLocalInformation();//�����o�ϐ��ulocalAddress�v�̏�����
+            InitLocalInformation();//メンバ変数「localAddress」の初期化
             if (_localAddress.Count > 0)
                 return _localAddress[0];
             return "127.0.0.1";
         }
         public static List<string> ServerAddressList()
         {
-            InitLocalInformation();//�����o�ϐ��ulocalAddress�v�̏�����
+            InitLocalInformation();//メンバ変数「localAddress」の初期化
             return _localAddress;
         }
         public static string WebHome()
@@ -283,12 +283,12 @@ namespace Bjd
         }
 
 
-        static List<string> _localAddress;//�A�h���X
-        static string _localName;//�z�X�g��
+        static List<string> _localAddress;//アドレス
+        static string _localName;//ホスト名
         static void InitLocalInformation()
         {
             if (_localAddress == null)
-            {//�v���O�����N�����珉�߂ČĂяo���ꂽ�Ƃ��A�P�x�������s�����
+            {//プログラム起動から初めて呼び出されたとき、１度だけ実行される
                 _localAddress = new List<string>();
                 NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
                 foreach (NetworkInterface nic in nics)
