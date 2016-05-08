@@ -5,13 +5,13 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.SmtpServer
 {

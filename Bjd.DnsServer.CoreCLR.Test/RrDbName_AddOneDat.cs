@@ -1,6 +1,6 @@
 ﻿using Bjd;
-using Bjd.option;
-using Bjd.util;
+using Bjd.Option;
+using Bjd.Utils;
 using Bjd.DnsServer;
 using Xunit;
 

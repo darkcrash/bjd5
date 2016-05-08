@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.service;
+using Bjd.Service;
 using System.Diagnostics;
 
 namespace Bjd.Common
@@ -20,13 +20,13 @@ namespace Bjd.Common
             try
             {
 
-                Service.ServiceMain(_serviceProvider);
+                Bjd.Service.Service.ServiceMain(_serviceProvider);
 
             }
             catch (Exception ex)
             {
-                Trace.TraceError(ex.Message);
-                Trace.TraceError(ex.StackTrace);
+                System.Diagnostics.Trace.TraceError(ex.Message);
+                System.Diagnostics.Trace.TraceError(ex.StackTrace);
             }
         }
     }

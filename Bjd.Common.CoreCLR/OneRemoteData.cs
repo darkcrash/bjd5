@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using Bjd.net;
-using Bjd.remote;
-using Bjd.sock;
+using Bjd.Net;
+using Bjd.Remote;
+using Bjd.Sockets;
 
 namespace Bjd
 {

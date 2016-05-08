@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net.Sockets;
-using Bjd.net;
-using Bjd.option;
-using Bjd.sock;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Sockets;
 using Xunit;
 using Bjd.DhcpServer;
 using Bjd;

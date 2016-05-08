@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.ProxyTelnetServer
 {
@@ -159,7 +159,7 @@ namespace Bjd.ProxyTelnetServer
                 }
                 
                 //Ver6.0.6
-                if (server.SockState != Bjd.sock.SockState.Connect){
+                if (server.SockState != SockState.Connect){
                     Logger.Set(LogKind.Normal, null, 3, string.Format("open>{0}", hostName));
                     goto end;
                 }

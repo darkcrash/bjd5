@@ -1,4 +1,4 @@
-﻿using Bjd.util;
+﻿using Bjd.Utils;
 using Bjd.Common.Test;
 using Bjd.DnsServer;
 using Xunit;

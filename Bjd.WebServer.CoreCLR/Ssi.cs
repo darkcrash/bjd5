@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.log;
-using Bjd.option;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Option;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.WebServer
 {

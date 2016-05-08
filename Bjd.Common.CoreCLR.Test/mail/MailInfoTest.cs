@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Bjd.mail;
+using Bjd.Mails;
 using Xunit;
 using System.IO;
 using System.Reflection;

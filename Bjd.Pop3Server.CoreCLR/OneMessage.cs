@@ -1,6 +1,6 @@
 using System.IO;
-using Bjd.mail;
-using Bjd.sock;
+using Bjd.Mails;
+using Bjd.Sockets;
 
 namespace Bjd.Pop3Server
 {

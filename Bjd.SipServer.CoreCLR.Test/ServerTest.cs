@@ -1,7 +1,7 @@
 ﻿using System;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Net;
+using Bjd.Option;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SipServer;

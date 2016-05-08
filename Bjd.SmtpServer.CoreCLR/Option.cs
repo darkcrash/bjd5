@@ -2,9 +2,9 @@
 
 
 using Bjd;
-using Bjd.ctrl;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Ctrl;
+using Bjd.Net;
+using Bjd.Option;
 
 namespace Bjd.SmtpServer
 {

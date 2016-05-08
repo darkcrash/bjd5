@@ -4,8 +4,8 @@ using System.Text;
 using System.IO;
 
 using Bjd;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Net;
+using Bjd.Option;
 
 namespace Bjd.DhcpServer
 {

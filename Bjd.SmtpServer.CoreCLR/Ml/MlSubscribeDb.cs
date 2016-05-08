@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Bjd;
-using Bjd.mail;
+using Bjd.Mails;
 
 namespace Bjd.SmtpServer
 {

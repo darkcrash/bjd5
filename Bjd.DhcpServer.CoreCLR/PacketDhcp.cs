@@ -2,8 +2,8 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using Bjd;
-using Bjd.net;
-using Bjd.util;
+using Bjd.Net;
+using Bjd.Utils;
 
 namespace Bjd.DhcpServer
 {

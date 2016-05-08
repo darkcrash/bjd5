@@ -10,13 +10,13 @@ using System.Runtime.InteropServices;
 
 
 using Bjd;
-using Bjd.acl;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
+using Bjd.Acls;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
 
 namespace Bjd.Pop3Server
 {

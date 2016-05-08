@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd
 {

@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using Bjd;
-using Bjd.ctrl;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
+using Bjd.Ctrl;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
 using Xunit;
 
 namespace Bjd.Common.Test.server
@@ -55,7 +55,7 @@ namespace Bjd.Common.Test.server
 
             private void Tcp(SockTcp sockTcp)
             {
-                while (IsLife() && sockTcp.SockState == Bjd.sock.SockState.Connect)
+                while (IsLife() && sockTcp.SockState == SockState.Connect)
                 {
                     Thread.Sleep(0); //これが無いと、別スレッドでlifeをfalseにできない
                     var len = sockTcp.Length();

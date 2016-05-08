@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Bjd.ctrl;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Ctrl;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Option;
 using Xunit;
 using Bjd;
 using System.Security.Cryptography;

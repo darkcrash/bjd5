@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Net;
+using Bjd.Option;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.WebServer;
@@ -25,7 +25,7 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                Bjd.service.Service.ServiceTest();
+                Bjd.Service.Service.ServiceTest();
 
                 Kernel kernel = new Kernel();
                 option = kernel.ListOption.Get("Web-localhost:88");

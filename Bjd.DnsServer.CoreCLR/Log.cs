@@ -1,7 +1,7 @@
 ﻿using Bjd;
-using Bjd.option;
-using Bjd.server;
-using Bjd.util;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Utils;
 
 namespace Bjd.DnsServer
 {

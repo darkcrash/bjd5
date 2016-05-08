@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.mail;
+using Bjd.Mails;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SmtpServer;

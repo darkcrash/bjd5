@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Bjd;
-using Bjd.log;
+using Bjd.Logs;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Common.Test;

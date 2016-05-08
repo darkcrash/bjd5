@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.log;
-using Bjd.mail;
+using Bjd.Logs;
+using Bjd.Mails;
 using Xunit;
 
 namespace Bjd.Common.Test.mail

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
 using Xunit;
-using Bjd.ctrl;
+using Bjd.Ctrl;
 
 namespace Bjd.Common.Test.server
 {
@@ -48,7 +48,7 @@ namespace Bjd.Common.Test.server
                 {
                     Thread.Sleep(0); //これが無いと、別スレッドでlifeをfalseにできない
 
-                    if (sockObj.SockState != Bjd.sock.SockState.Connect)
+                    if (sockObj.SockState != SockState.Connect)
                     {
                         Console.WriteLine(@">>>>>sockAccept.getSockState()!=SockState.CONNECT");
                         break;

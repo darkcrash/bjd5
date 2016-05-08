@@ -1,4 +1,4 @@
-﻿using Bjd.packet;
+﻿using Bjd.Packets;
 using Xunit;
 
 namespace Bjd.Common.Test.packet

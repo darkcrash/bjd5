@@ -1,5 +1,5 @@
 using Bjd;
-using Bjd.net;
+using Bjd.Net;
 
 namespace Bjd.SmtpServer
 {

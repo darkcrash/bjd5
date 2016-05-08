@@ -1,5 +1,5 @@
 ﻿using Bjd;
-using Bjd.net;
+using Bjd.Net;
 using Xunit;
 
 namespace Bjd.Common.Test.net

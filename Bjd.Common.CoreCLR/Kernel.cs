@@ -6,16 +6,16 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using Bjd.Browse;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.net;
-using Bjd.option;
-using Bjd.plugin;
-using Bjd.remote;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.trace;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Plugin;
+using Bjd.Remote;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Traces;
+using Bjd.Utils;
 
 namespace Bjd
 {

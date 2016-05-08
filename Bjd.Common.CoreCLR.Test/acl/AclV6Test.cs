@@ -1,5 +1,5 @@
-﻿using Bjd.acl;
-using Bjd.net;
+﻿using Bjd.Acls;
+using Bjd.Net;
 using Xunit;
 using Bjd;
 

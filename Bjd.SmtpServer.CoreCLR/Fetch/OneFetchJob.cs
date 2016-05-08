@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Bjd;
-using Bjd.log;
-using Bjd.mail;
+using Bjd.Logs;
+using Bjd.Mails;
 using Debug = System.Diagnostics.Debug;
 
 namespace Bjd.SmtpServer

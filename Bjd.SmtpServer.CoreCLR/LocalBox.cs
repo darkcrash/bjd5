@@ -1,6 +1,6 @@
 ﻿using System;
-using Bjd.log;
-using Bjd.mail;
+using Bjd.Logs;
+using Bjd.Mails;
 
 namespace Bjd.SmtpServer
 {

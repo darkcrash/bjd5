@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Option;
 
 namespace Bjd.SmtpServer
 {

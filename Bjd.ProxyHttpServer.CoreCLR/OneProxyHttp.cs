@@ -5,10 +5,10 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.ProxyHttpServer {
     class OneProxyHttp : IDisposable {
@@ -348,7 +348,7 @@ namespace Bjd.ProxyHttpServer {
                     Thread.Sleep(1);
                 }
             }
-            if (_proxy.Sock(CS.Server).SockState == Bjd.sock.SockState.Error && _proxy.Sock(CS.Server).Length() == 0) {
+            if (_proxy.Sock(CS.Server).SockState == SockState.Error && _proxy.Sock(CS.Server).Length() == 0) {
                 //サーバ側が切断されており、取得できるデータが残っていないときは、常に受信完了とする
                 _sideState[CS.Server] = HttpSideState.ServerSideRecvBody;//受信完了
             }

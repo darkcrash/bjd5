@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd.Common.Test
 {

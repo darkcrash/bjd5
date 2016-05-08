@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.net;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Net;
 using Xunit;
 using Bjd.SmtpServer;
 

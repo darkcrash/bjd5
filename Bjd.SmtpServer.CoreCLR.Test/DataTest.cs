@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Sockets;
+using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;
 

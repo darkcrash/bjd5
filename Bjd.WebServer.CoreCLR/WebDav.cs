@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Bjd.log;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Utils;
 
 namespace Bjd.WebServer
 {

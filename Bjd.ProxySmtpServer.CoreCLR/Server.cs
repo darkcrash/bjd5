@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.ProxySmtpServer
 {

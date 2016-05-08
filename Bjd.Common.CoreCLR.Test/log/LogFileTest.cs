@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Bjd.log;
+using Bjd.Logs;
 using Xunit;
 
 namespace Bjd.Common.Test.log

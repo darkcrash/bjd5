@@ -1,8 +1,8 @@
-﻿using Bjd.acl;
-using Bjd.ctrl;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
+﻿using Bjd.Acls;
+using Bjd.Ctrl;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
 using Xunit;
 using Bjd;
 

@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.log;
-using Bjd.option;
-using Bjd.sock;
+using Bjd.Logs;
+using Bjd.Option;
+using Bjd.Sockets;
 
 namespace Bjd.ProxyHttpServer {
     class ProxyHttp : ProxyObj {

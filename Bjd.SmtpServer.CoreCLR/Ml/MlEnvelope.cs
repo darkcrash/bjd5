@@ -1,6 +1,6 @@
 ﻿using Bjd;
-using Bjd.mail;
-using Bjd.net;
+using Bjd.Mails;
+using Bjd.Net;
 
 namespace Bjd.SmtpServer
 {

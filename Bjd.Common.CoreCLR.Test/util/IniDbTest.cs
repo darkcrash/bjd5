@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.ctrl;
-using Bjd.net;
-using Bjd.option;
-using Bjd.util;
+using Bjd.Ctrl;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Utils;
 using Xunit;
 
 namespace Bjd.Common.Test.util

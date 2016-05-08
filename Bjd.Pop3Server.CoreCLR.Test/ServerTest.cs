@@ -4,10 +4,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Sockets;
+using Bjd.Utils;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.Pop3Server;
@@ -49,7 +49,7 @@ namespace Pop3ServerTest
 
                 try
                 {
-                    Bjd.service.Service.ServiceTest();
+                    Bjd.Service.Service.ServiceTest();
 
                     var kernel = new Kernel();
                     var option = kernel.ListOption.Get("Pop3");

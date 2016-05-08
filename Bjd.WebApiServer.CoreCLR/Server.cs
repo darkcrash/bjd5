@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
 using Newtonsoft.Json;
 
 namespace Bjd.WebApiServer
@@ -100,7 +100,7 @@ namespace Bjd.WebApiServer
         }
 
         //RemoteServerでのみ使用される
-        public override void Append(Bjd.log.OneLog oneLog) {
+        public override void Append(Bjd.Logs.OneLog oneLog) {
 
         }
 

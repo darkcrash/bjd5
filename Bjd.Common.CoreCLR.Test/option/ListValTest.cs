@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Bjd.ctrl;
-using Bjd.option;
-using Bjd.util;
+using Bjd.Ctrl;
+using Bjd.Option;
+using Bjd.Utils;
 using Xunit;
 
 namespace Bjd.Common.Test.option

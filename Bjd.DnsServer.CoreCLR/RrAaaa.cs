@@ -1,5 +1,5 @@
-﻿using Bjd.net;
-using Bjd.packet;
+﻿using Bjd.Net;
+using Bjd.Packets;
 
 namespace Bjd.DnsServer
 {

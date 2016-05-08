@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
-using Bjd.util;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Utils;
 using Xunit;
 
 namespace Bjd.Common.Test

@@ -1,4 +1,4 @@
-﻿using Bjd.util;
+﻿using Bjd.Utils;
 using Xunit;
 
 namespace Bjd.Common.Test.util

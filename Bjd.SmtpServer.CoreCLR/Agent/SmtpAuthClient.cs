@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Bjd;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd.SmtpServer
 {

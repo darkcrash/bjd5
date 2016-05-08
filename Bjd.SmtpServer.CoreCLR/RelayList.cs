@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.acl;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Acls;
+using Bjd.Option;
 
 namespace Bjd.SmtpServer
 {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using Bjd;
-using Bjd.net;
-using Bjd.sock;
+using Bjd.Net;
+using Bjd.Sockets;
 using Xunit;
 
 namespace Bjd.Common.Test.sock{

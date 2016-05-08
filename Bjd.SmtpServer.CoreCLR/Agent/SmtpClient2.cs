@@ -4,10 +4,10 @@ using System.Text;
 using System.Threading;
 
 using Bjd;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.SmtpServer
 {

@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
 
 namespace Bjd.DnsServer
 {

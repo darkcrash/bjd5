@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Bjd.util;
+using Bjd.Utils;
 using Xunit;
 using Bjd;
 

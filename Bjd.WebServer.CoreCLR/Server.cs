@@ -7,13 +7,13 @@ using System.Threading;
 using System.Globalization;
 
 using Bjd;
-using Bjd.acl;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Acls;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.WebServer
 {

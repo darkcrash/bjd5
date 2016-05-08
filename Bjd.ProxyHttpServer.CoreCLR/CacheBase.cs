@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Bjd;
-using Bjd.log;
+using Bjd.Logs;
 
 namespace Bjd.ProxyHttpServer {
     //*****************************************************************

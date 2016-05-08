@@ -1,7 +1,7 @@
 ﻿using System;
-using Bjd.ctrl;
-using Bjd.log;
-using Bjd.option;
+using Bjd.Ctrl;
+using Bjd.Logs;
+using Bjd.Option;
 using Xunit;
 
 

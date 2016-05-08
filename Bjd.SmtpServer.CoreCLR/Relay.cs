@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
 
 namespace Bjd.SmtpServer
 {

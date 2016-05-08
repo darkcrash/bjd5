@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Bjd;
-using Bjd.mail;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
 using Bjd.Common.Test;
 
 namespace Bjd.SmtpServer.Test
@@ -33,7 +33,7 @@ namespace Bjd.SmtpServer.Test
             //設定ファイルの退避と上書き
             _op = new TmpOption(iniSubDir, iniFileName);
 
-            service.Service.ServiceTest();
+            Service.Service.ServiceTest();
 
             var kernel = new Kernel();
             var option = kernel.ListOption.Get(confName);

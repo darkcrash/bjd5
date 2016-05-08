@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.net;
+using Bjd.Net;
 using Xunit;
 using Bjd.SipServer;
 using Bjd;

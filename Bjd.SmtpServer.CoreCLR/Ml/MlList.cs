@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bjd;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Option;
 
 namespace Bjd.SmtpServer
 {

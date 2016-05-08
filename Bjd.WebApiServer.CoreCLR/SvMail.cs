@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Dynamic;
 using Bjd;
-using Bjd.mail;
+using Bjd.Mails;
 using Newtonsoft.Json;
 
 namespace Bjd.WebApiServer

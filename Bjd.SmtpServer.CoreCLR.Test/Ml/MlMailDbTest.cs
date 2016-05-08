@@ -1,5 +1,5 @@
-﻿using Bjd.log;
-using Bjd.mail;
+﻿using Bjd.Logs;
+using Bjd.Mails;
 using Bjd.Common.Test;
 using Xunit;
 using Bjd.SmtpServer;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd.DnsServer
 {

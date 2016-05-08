@@ -5,13 +5,13 @@ using System.Threading;
 using System.IO;
 
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.remote;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Remote;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 
 namespace Bjd.RemoteServer
@@ -50,7 +50,7 @@ namespace Bjd.RemoteServer
 
                 //パスワードの応答待ち
                 var success = false;//Ver5.0.0-b14
-                while (IsLife() && _sockTcp.SockState == Bjd.sock.SockState.Connect)
+                while (IsLife() && _sockTcp.SockState == SockState.Connect)
                 {
                     var o = RemoteData.Recv(_sockTcp, this);
                     if (o != null)
@@ -119,10 +119,10 @@ namespace Bjd.RemoteServer
                 sr.Dispose();
             }
             RemoteData.Send(_sockTcp, RemoteDataKind.DatOption, optionStr);
-            Kernel.RemoteConnect = new Bjd.remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
+            Kernel.RemoteConnect = new Bjd.Remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
             //Kernel.View.SetColor();//ウインド色の初期化
 
-            while (IsLife() && _sockTcp.SockState == Bjd.sock.SockState.Connect)
+            while (IsLife() && _sockTcp.SockState == SockState.Connect)
             {
                 var o = RemoteData.Recv(_sockTcp, this);
                 if (o == null)
@@ -159,7 +159,7 @@ namespace Bjd.RemoteServer
                 case RemoteDataKind.CmdRestart:
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Restart", false/*synchro*/);
-                    Bjd.service.Service.Restart();
+                    Bjd.Service.Service.Restart();
                     break;
                 case RemoteDataKind.CmdTool:
                     var tmp = (o.Str).Split(new[] { '-' }, 2);
@@ -212,7 +212,7 @@ namespace Bjd.RemoteServer
 
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);
-                    Bjd.service.Service.Restart();
+                    Bjd.Service.Service.Restart();
                     break;
                 case RemoteDataKind.CmdTrace:
                     Kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");

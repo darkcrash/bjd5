@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.ctrl;
-using Bjd.net;
-using Bjd.option;
+using Bjd.Ctrl;
+using Bjd.Net;
+using Bjd.Option;
 using Xunit;
 using Bjd.SmtpServer;
 

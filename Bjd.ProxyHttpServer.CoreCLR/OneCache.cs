@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using Bjd;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd.ProxyHttpServer {
     public class OneCache {

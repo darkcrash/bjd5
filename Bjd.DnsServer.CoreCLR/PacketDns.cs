@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Bjd.packet;
-using Bjd.util;
+using Bjd.Packets;
+using Bjd.Utils;
 
 namespace Bjd.DnsServer
 {

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.ProxyFtpServer {
     class DataThread : IDisposable, ILife{

@@ -1,6 +1,6 @@
-﻿using Bjd.mail;
-using Bjd.option;
-using Bjd.util;
+﻿using Bjd.Mails;
+using Bjd.Option;
+using Bjd.Utils;
 
 namespace Bjd.Pop3Server
 {

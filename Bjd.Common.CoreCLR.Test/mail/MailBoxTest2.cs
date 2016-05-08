@@ -1,8 +1,8 @@
 ﻿using System;
 using Bjd;
-using Bjd.log;
-using Bjd.mail;
-using Bjd.option;
+using Bjd.Logs;
+using Bjd.Mails;
+using Bjd.Option;
 using Xunit;
 
 namespace Bjd.Common.Test.mail

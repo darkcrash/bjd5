@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Bjd.log;
+using Bjd.Logs;
 
 namespace Bjd
 {

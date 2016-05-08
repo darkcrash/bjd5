@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Utils;
 
 namespace Bjd.ProxyHttpServer {
     //*****************************************************************

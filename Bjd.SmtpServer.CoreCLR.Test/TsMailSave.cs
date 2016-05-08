@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Bjd;
-using Bjd.mail;
-using Bjd.net;
+using Bjd.Mails;
+using Bjd.Net;
 using Bjd.SmtpServer;
 
 namespace Bjd.SmtpServer.Test

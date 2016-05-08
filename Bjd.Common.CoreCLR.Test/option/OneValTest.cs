@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bjd;
-using Bjd.net;
-using Bjd.option;
-using Bjd.ctrl;
-using Bjd.util;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Ctrl;
+using Bjd.Utils;
 using Xunit;
 
 

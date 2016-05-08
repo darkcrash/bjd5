@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Bjd.util;
+using Bjd.Utils;
 
 namespace Bjd.FtpServer
 {

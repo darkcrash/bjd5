@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Bjd.log;
-using Bjd.mail;
+using Bjd.Logs;
+using Bjd.Mails;
 
 namespace Bjd.SmtpServer{
     public class Alias{

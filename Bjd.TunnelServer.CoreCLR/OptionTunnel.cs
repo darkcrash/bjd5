@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
 using Bjd;
-using Bjd.ctrl;
-using Bjd.option;
+using Bjd.Ctrl;
+using Bjd.Option;
 
 namespace Bjd.TunnelServer
 {

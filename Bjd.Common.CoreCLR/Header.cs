@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Bjd.net;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Net;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd
 {

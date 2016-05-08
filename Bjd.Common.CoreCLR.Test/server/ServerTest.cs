@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using Bjd;
-using Bjd.ctrl;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
+using Bjd.Ctrl;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
 using Xunit;
 
 namespace Bjd.Common.Test.server{
@@ -35,7 +35,7 @@ namespace Bjd.Common.Test.server{
 
             protected override void OnSubThread(SockObj sockObj){
                 for (var i = 3; i >= 0 && IsLife(); i--){
-                    if (sockObj.SockState != Bjd.sock.SockState.Connect){
+                    if (sockObj.SockState != SockState.Connect){
                         //TestUtil.prompt(String.format("接続中...sockAccept.getSockState!=Connect"));
                         break;
                     }

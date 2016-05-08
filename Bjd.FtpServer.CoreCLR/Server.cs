@@ -3,12 +3,12 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.log;
-using Bjd.net;
-using Bjd.option;
-using Bjd.server;
-using Bjd.sock;
-using Bjd.util;
+using Bjd.Logs;
+using Bjd.Net;
+using Bjd.Option;
+using Bjd.Server;
+using Bjd.Sockets;
+using Bjd.Utils;
 
 namespace Bjd.FtpServer
 {
@@ -195,7 +195,7 @@ namespace Bjd.FtpServer
                     // データコネクションが無いとエラーとなるコマンド
                     if (ftpCmd == FtpCmd.Nlst || ftpCmd == FtpCmd.List || ftpCmd == FtpCmd.Stor || ftpCmd == FtpCmd.Retr)
                     {
-                        if (session.SockData == null || session.SockData.SockState != Bjd.sock.SockState.Connect)
+                        if (session.SockData == null || session.SockData.SockState != SockState.Connect)
                         {
                             session.StringSend("226 data connection close.");
                             continue;
@@ -650,7 +650,7 @@ namespace Bjd.FtpServer
                         //接続失敗
                         return false;
                     }
-                    if (sockData.SockState != Bjd.sock.SockState.Error)
+                    if (sockData.SockState != SockState.Error)
                     {
                         //セッション情報の保存
                         session.Port = port;
@@ -853,7 +853,7 @@ namespace Bjd.FtpServer
                 }
                 if (len == 0)
                 {
-                    if (sockTcp.SockState != Bjd.sock.SockState.Connect)
+                    if (sockTcp.SockState != SockState.Connect)
                     {
                         break;
                     }

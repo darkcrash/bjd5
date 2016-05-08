@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Bjd.log;
-using Bjd.net;
+using Bjd.Logs;
+using Bjd.Net;
 using Xunit;
 
 namespace Bjd.Common.Test.net

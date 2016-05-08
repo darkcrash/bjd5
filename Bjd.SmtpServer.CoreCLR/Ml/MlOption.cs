@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.IO;
-using Bjd.option;
-using Bjd.ctrl;
+using Bjd.Option;
+using Bjd.Ctrl;
 using Bjd;
 
 namespace Bjd.SmtpServer
