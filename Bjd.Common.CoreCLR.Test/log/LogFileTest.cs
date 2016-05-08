@@ -175,7 +175,8 @@ namespace Bjd.Common.Test.log
             //setUp
             var dir = TestUtil.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            var path = string.Format("{0}\\BlackJumboDog.Log", dir);
+            //var path = string.Format("{0}\\BlackJumboDog.Log", dir);
+            var path = Path.Combine(dir, "BlackJumboDog.Log");
 
             //2012/09/01~7日分のログを準備
             //最初は、保存期間指定なしで起動する
