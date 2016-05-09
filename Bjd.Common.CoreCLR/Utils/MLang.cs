@@ -110,7 +110,8 @@ namespace Bjd.Utils
                 }
             }
             if (isJis)
-                return Encoding.GetEncoding(50220);
+                //return Encoding.GetEncoding(50220);
+                return CodePagesEncodingProvider.Instance.GetEncoding(50220);
 
             //【ASCIIコードかどうかの判定】
             //bool isAscii=true;
@@ -264,17 +265,17 @@ namespace Bjd.Utils
             if (isSjis)
             {
                 if (sjis > euc && sjis > utf8)
-                    return Encoding.GetEncoding(932);
+                    return CodePagesEncodingProvider.Instance.GetEncoding(932);
             }
             if (isEuc)
             {
                 if (euc > sjis && euc > utf8)
-                    return Encoding.GetEncoding(51932);
+                    return CodePagesEncodingProvider.Instance.GetEncoding(51932);
             }
             if (isUtf8)
             {
                 if (utf8 > sjis && utf8 > euc)
-                    return Encoding.GetEncoding(65001);
+                    return Encoding.UTF8;
             }
             return null;
 

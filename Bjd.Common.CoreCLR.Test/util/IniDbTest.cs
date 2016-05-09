@@ -35,7 +35,8 @@ namespace Bjd.Common.Test.util
             string fileName = "iniDbTestTmp"; //テンポラリファイル名
             //string progDir = new File(".").getAbsoluteFile().getParent(); //カレントディレクトリ
             string progDir = Directory.GetCurrentDirectory();
-            string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            string path = Path.Combine(progDir, fileName + ".ini");
             IniDb sut = new IniDb(progDir, fileName);
 
             ListVal listVal = new ListVal();
@@ -70,7 +71,8 @@ namespace Bjd.Common.Test.util
             string fileName = "iniDbTestTmp"; //テンポラリファイル名
             //string progDir = new File(".").getAbsoluteFile().getParent();
             string progDir = Directory.GetCurrentDirectory();
-            string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            string path = Path.Combine(progDir, fileName + ".ini");
 
 
             IniDb sut = new IniDb(progDir, fileName);
@@ -101,11 +103,11 @@ namespace Bjd.Common.Test.util
         [Fact]
         public void データの無いDATの保存()
         {
-
             //setUp
             string fileName = "iniDbTestTmp"; //テンポラリファイル名
             string progDir = Directory.GetCurrentDirectory();
-            string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+            string path = Path.Combine(progDir, fileName + ".ini");
             IniDb sut = new IniDb(progDir, fileName);
 
             ListVal listVal = new ListVal();
@@ -125,7 +127,7 @@ namespace Bjd.Common.Test.util
             var lines = File.ReadAllLines(path);
             string actual = lines[0];
             //verify
-            Assert.Equal(actual, "DAT=Basic\bmime=");
+            Assert.Equal("DAT=Basic\bmime=", actual);
             //tearDown
             sut.Delete();
 
@@ -139,6 +141,8 @@ namespace Bjd.Common.Test.util
             //デフォルト値(nullを設定した場合、適切な値を自動でセットする)
             public static OneVal createOneVal(CtrlType ctrlType, Object val)
             {
+                Services.Service.ServiceTest();
+
                 Kernel kernel = new Kernel();
                 //string help = "help";
                 //OneCtrl oneCtrl = null;

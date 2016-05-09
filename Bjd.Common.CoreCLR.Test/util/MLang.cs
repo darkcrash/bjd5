@@ -18,16 +18,20 @@ namespace Bjd.Common.Test.util
             //setUp
             string str = "あいうえお";
             string[] charsetList = new[] { "utf-8", "euc-jp", "iso-2022-jp", "shift_jis" };
-
-            var enc = System.Text.CodePagesEncodingProvider.Instance;
+            //var charsetList = new[] { 65001, 51932, 50220, 932 };
 
             //verify
-            foreach (string charset in charsetList)
+            foreach (var charset in charsetList)
             {
                 // fix coreclr
                 //byte[] bytes = Encoding.GetEncoding(charset).GetBytes(str);
-                byte[] bytes = enc.GetEncoding(charset).GetBytes(str);
-                Assert.Equal(MLang.GetEncoding(bytes).WebName, charset);
+                Encoding enc;
+                if ( charset == "utf-8")
+                    enc = Encoding.UTF8;
+                else
+                    enc = CodePagesEncodingProvider.Instance.GetEncoding(charset);
+                byte[] bytes = enc.GetBytes(str);
+                Assert.Equal(MLang.GetEncoding(bytes).WebName, charset.ToString());
                 Assert.Equal(MLang.GetString(bytes), str);
             }
         }

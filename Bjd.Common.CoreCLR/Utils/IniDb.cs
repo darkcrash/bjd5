@@ -286,7 +286,8 @@ namespace Bjd.Utils
                     var ctrlStr = string.Empty;
                     lines.Add(string.Format("{0}={1}\b{2}={3}", ctrlStr, nameTag, o.Name, o.ToReg(isSecret)));
                 }
-                File.WriteAllLines(target, lines.ToArray(), Encoding.GetEncoding(932));
+                var enc = System.Text.CodePagesEncodingProvider.Instance;
+                File.WriteAllLines(target, lines.ToArray(), enc.GetEncoding(932));
             }
         }
 

@@ -18,7 +18,7 @@ namespace Bjd.Common.Test.mail
         public MailBoxTest2()
         {
             //設定ファイルの退避と上書き
-            _op = new TmpOption("Bjd.CoreCLR.Test", "MailBoxTest.ini");
+            _op = new TmpOption("Bjd.Common.CoreCLR.Test", "MailBoxTest.ini");
 
             Service.ServiceTest();
 

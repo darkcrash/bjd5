@@ -254,7 +254,8 @@ namespace Bjd.Logs
             var lines = new List<string>();
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
+                //using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
+                using (var sr = new StreamReader(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
                 {
                     var isNeed = false;
                     while (true)
@@ -294,7 +295,8 @@ namespace Bjd.Logs
             }
             using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
-                using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
+                //using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
+                using (var sw = new StreamWriter(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
                 {
                     foreach (string str in lines)
                     {
