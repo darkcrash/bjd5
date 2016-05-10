@@ -251,6 +251,7 @@ namespace Bjd.Common.Test.option
                         val = "";
                     }
                     //oneCtrl = new CtrlHidden(help, 30);
+                    return new OneVal("name", val, Crlf.Nextline, true);
                     break;
                 case CtrlType.AddressV4:
                     if (val == null)

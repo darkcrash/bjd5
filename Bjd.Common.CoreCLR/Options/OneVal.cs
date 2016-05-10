@@ -107,7 +107,18 @@ namespace Bjd.Options
                 return ((Dat)this.Value).ToReg(isSecret);
             }
 
-            // TODO:isSecretの対応が必要 2016-04-18
+            // isSecretの対応
+            if (this.IsSecret)
+            {
+                if (isSecret)
+                {
+                    return "***";
+                }
+                else
+                {
+                    return Crypt.Encrypt(this.Value.ToString());
+                }
+            }
 
             return this.Value.ToString();
         }
