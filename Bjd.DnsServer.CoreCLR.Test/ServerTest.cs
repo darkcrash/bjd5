@@ -12,6 +12,7 @@ using Bjd.Utils;
 using Bjd.Common.Test;
 using Bjd.DnsServer;
 using Xunit;
+using Bjd.Services;
 
 namespace DnsServerTest
 {
@@ -21,8 +22,8 @@ namespace DnsServerTest
     public class ServerTest : IDisposable
     {
 
-        private static TmpOption _op; //設定ファイルの上書きと退避
-        private static Server _sv; //サーバ
+        private TmpOption _op; //設定ファイルの上書きと退避
+        private Server _sv; //サーバ
 
         //[TestFixtureSetUp]
         public ServerTest()
@@ -30,12 +31,18 @@ namespace DnsServerTest
             TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //named.caのコピー
-            var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
-            var dst = string.Format("{0}\\Bjd.CoreCLR\\named.ca", TestUtil.ProjectDirectory());
+            //var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
+            //var dst = string.Format("{0}\\Bjd.CoreCLR\\named.ca", TestUtil.ProjectDirectory());
+            var src = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.DnsServer.CoreCLR.Test", "named.ca");
+            var dst = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.CoreCLR", "named.ca");
             File.Copy(src, dst, true);
 
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
+
+
+            Service.ServiceTest();
+
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             Kernel kernel = new Kernel();
             var option = kernel.ListOption.Get("Dns");
