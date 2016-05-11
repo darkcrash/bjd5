@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Utils;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Xunit;
 using System.Globalization;
 using System.IO;

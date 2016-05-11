@@ -7,7 +7,7 @@ using Bjd.Sockets;
 using Xunit;
 using Bjd.DhcpServer;
 using Bjd;
-using Bjd.Common.Test;
+using Bjd.Test;
 using System.Net;
 using Microsoft.Extensions.PlatformAbstractions;
 

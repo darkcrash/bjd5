@@ -5,7 +5,7 @@ using System.Text;
 using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Options;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Bjd.SmtpServer;
 using Xunit;
 using Bjd;

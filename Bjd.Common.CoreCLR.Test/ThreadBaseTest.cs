@@ -2,7 +2,7 @@
 using Bjd;
 using Xunit;
 
-namespace Bjd.Common.Test
+namespace Bjd.Test
 {
 
     public class ThreadBaseTest

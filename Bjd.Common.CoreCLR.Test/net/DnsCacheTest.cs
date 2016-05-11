@@ -4,7 +4,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Xunit;
 
-namespace Bjd.Common.Test.net
+namespace Bjd.Test.Net
 {
     public class DnsCacheTest
     {

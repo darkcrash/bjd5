@@ -3,7 +3,7 @@ using System.Text;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Sockets;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd;

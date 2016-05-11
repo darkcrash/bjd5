@@ -3,7 +3,7 @@ using System.IO;
 using Bjd;
 using Bjd.Net;
 using Bjd.Options;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;

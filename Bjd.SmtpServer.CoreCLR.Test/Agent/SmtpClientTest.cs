@@ -6,7 +6,7 @@ using Bjd;
 using Bjd.Mails;
 using Bjd.Net;
 using Xunit;
-using Bjd.Common.Test;
+using Bjd.Test;
 using System.IO;
 
 namespace Bjd.SmtpServer.Test.Agent

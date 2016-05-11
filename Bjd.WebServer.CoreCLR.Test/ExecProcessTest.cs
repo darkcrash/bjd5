@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 

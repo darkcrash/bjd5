@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.Logs;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Common.Test;
+using Bjd.Test;
 
 namespace Bjd.SmtpServer.Test
 {

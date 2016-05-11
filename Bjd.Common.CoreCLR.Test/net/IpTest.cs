@@ -2,7 +2,7 @@
 using Xunit;
 using Bjd;
 
-namespace Bjd.Common.Test.net
+namespace Bjd.Test.Net
 {
     public class IpTest
     {

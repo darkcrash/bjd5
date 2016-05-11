@@ -3,7 +3,7 @@ using Bjd.Net;
 using Xunit;
 using Bjd;
 
-namespace Bjd.Common.Test
+namespace Bjd.Test
 {
     public class AttackDbTest
     {

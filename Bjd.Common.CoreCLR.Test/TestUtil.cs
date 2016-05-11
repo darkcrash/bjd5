@@ -7,7 +7,7 @@ using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
 
-namespace Bjd.Common.Test
+namespace Bjd.Test
 {
 
     public class TestUtil

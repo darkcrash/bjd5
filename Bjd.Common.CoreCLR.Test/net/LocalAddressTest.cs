@@ -2,12 +2,15 @@
 using Bjd.Net;
 using Xunit;
 
-namespace Bjd.Common.Test.net{
+namespace Bjd.Test.Net
+{
 
-    public class LocalAddressTest{
+    public class LocalAddressTest
+    {
 
         [Fact]
-        public void RemoteStrで取得したテキストで改めてLocalAddressを生成して同じかどうかを確認(){
+        public void RemoteStrで取得したテキストで改めてLocalAddressを生成して同じかどうかを確認()
+        {
 
             //setUp
             var localAddress = LocalAddress.GetInstance();
@@ -23,7 +26,8 @@ namespace Bjd.Common.Test.net{
 
         [Fact]
         //[ExpectedException(typeof(ValidObjException))]
-        public void 無効な文字列で初期化すると例外ValidObjExceptionが発生する(){
+        public void 無効な文字列で初期化すると例外ValidObjExceptionが発生する()
+        {
             //exercise
             //new LocalAddress("XXX");
             Assert.Throws<ValidObjException>(() => new LocalAddress("XXX"));

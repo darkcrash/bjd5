@@ -7,7 +7,7 @@ using Bjd.Mails;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
-using Bjd.Common.Test;
+using Bjd.Test;
 using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
