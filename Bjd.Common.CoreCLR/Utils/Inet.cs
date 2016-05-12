@@ -6,7 +6,7 @@ using System.Threading;
 using System.Security.Cryptography;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 
 namespace Bjd.Utils
 {

@@ -8,7 +8,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 namespace Bjd.ProxyTelnetServer

@@ -13,7 +13,7 @@ using Bjd.Options;
 using Bjd.Plugins;
 using Bjd.Remote;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Traces;
 using Bjd.Utils;
 
@@ -157,7 +157,7 @@ namespace Bjd
             var normalLogKind = (int)confOption.Get("normalLogKind");
             var secureLogKind = (int)confOption.Get("secureLogKind");
             var saveDays = (int)confOption.Get("saveDays");
-        
+
             //Ver6.0.7
             var useLogFile = (bool)confOption.Get("useLogFile");
             var useLogClear = (bool)confOption.Get("useLogClear");

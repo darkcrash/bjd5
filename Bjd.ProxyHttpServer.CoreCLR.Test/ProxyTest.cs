@@ -1,6 +1,6 @@
 ﻿using System;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Xunit;
 using Bjd;
 using System.Net.Sockets;

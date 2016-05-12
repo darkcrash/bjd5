@@ -7,7 +7,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Newtonsoft.Json;
 
 namespace Bjd.WebApiServer

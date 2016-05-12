@@ -2,7 +2,7 @@
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 namespace Bjd.ProxyHttpServer {

@@ -8,7 +8,7 @@ using Bjd.Net;
 using Bjd.Traces;
 using Bjd.Utils;
 
-namespace Bjd.Sockets
+namespace Bjd.Net.Sockets
 {
     //SockTcp 及び SockUdp の基底クラス
     public abstract class SockObj : IDisposable

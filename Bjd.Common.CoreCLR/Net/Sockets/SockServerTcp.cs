@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Utils;
 
-namespace Bjd.Sockets
+namespace Bjd.Net.Sockets
 {
     public class SockServerTcp : SockObj
     {

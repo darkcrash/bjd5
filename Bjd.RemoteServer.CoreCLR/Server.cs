@@ -10,7 +10,7 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Remote;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Services;
 

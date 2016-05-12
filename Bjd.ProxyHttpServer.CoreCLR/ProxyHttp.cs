@@ -4,7 +4,7 @@ using System.Text;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Options;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 
 namespace Bjd.ProxyHttpServer {
     class ProxyHttp : ProxyObj {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bjd.Sockets
+namespace Bjd.Net.Sockets
 {
     //SockTcpで使用されるデータキュー
     public class SockQueue

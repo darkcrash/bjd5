@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bjd.Sockets
+namespace Bjd.Net.Sockets
 {
     public enum SockKind
     {

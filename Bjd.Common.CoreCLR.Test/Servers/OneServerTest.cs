@@ -7,7 +7,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Xunit;
 using Bjd.Controls;
 using Bjd.Test.Services;

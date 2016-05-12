@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 

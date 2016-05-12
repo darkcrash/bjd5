@@ -16,7 +16,7 @@ using Bjd.Mails;
 using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 
 namespace Bjd.Pop3Server
 {

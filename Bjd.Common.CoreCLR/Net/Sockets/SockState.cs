@@ -1,4 +1,4 @@
-﻿namespace Bjd.Sockets
+﻿namespace Bjd.Net.Sockets
 {
     //ソケットオブジェクト（SockObj）の状態
     public enum SockState

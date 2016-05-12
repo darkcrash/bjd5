@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Bjd.Net;
 
-namespace Bjd.Sockets
+namespace Bjd.Net.Sockets
 {
     public class SockUdp : SockObj
     {

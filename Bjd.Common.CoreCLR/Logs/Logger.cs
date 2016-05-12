@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 namespace Bjd.Logs

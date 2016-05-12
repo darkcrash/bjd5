@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Xunit;
 using Bjd.Test.Services;
 

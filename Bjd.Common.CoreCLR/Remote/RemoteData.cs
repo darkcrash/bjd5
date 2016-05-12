@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading;
 using Bjd.Logs;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 namespace Bjd.Remote

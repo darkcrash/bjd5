@@ -7,7 +7,7 @@ using System.Threading;
 using Bjd;
 using Bjd.Net;
 using Bjd.Options;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Test;
 using Bjd.DnsServer;

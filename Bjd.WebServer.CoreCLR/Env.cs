@@ -5,7 +5,7 @@ using System.Linq;
 using Bjd;
 using Bjd.Net;
 using Bjd.Options;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 
 namespace Bjd.WebServer
 {

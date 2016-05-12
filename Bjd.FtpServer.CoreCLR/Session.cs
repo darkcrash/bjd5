@@ -1,4 +1,4 @@
-﻿using Bjd.Sockets;
+﻿using Bjd.Net.Sockets;
 using System;
 
 namespace Bjd.FtpServer

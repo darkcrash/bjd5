@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using Bjd.Net;
 using Bjd.Remote;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 
 namespace Bjd
 {

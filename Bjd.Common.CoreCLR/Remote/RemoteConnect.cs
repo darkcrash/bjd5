@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Traces;
 
 namespace Bjd.Remote

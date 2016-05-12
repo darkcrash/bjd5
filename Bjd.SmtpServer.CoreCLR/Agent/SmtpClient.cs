@@ -5,7 +5,7 @@ using System.Text;
 using Bjd;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Sockets;
+using Bjd.Net.Sockets;
 using Bjd.Utils;
 
 namespace Bjd.SmtpServer
