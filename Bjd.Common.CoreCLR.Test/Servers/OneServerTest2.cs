@@ -7,6 +7,7 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Sockets;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Servers
 {
@@ -15,7 +16,7 @@ namespace Bjd.Test.Servers
     {
         public OneServerTest2()
         {
-            Services.Service.ServiceTest();
+            TestService.ServiceTest();
         }
 
         private class EchoServer : OneServer

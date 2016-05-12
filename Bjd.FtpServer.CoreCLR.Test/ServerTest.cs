@@ -9,6 +9,7 @@ using Bjd.Test;
 using Bjd.FtpServer;
 using Xunit;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace FtpServerTest
 {
@@ -30,7 +31,7 @@ namespace FtpServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
 
-                Service.ServiceTest();
+                TestService.ServiceTest();
 
                 Kernel kernel = new Kernel();
                 var option = kernel.ListOption.Get("Ftp");

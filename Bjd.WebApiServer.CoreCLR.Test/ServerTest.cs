@@ -9,6 +9,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebApiServer;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace WebApiServerTest
 {
@@ -30,7 +31,7 @@ namespace WebApiServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
-                Service.ServiceTest();
+                TestService.ServiceTest();
 
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("WebApi");

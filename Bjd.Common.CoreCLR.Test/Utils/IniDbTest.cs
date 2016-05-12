@@ -9,6 +9,7 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Utils
 {
@@ -141,7 +142,7 @@ namespace Bjd.Test.Utils
             //デフォルト値(nullを設定した場合、適切な値を自動でセットする)
             public static OneVal createOneVal(CtrlType ctrlType, Object val)
             {
-                Services.Service.ServiceTest();
+                TestService.ServiceTest();
 
                 Kernel kernel = new Kernel();
                 //string help = "help";

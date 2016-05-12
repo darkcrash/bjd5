@@ -9,6 +9,7 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Test;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -34,7 +35,7 @@ namespace Bjd.SmtpServer.Test
             //設定ファイルの退避と上書き
             _op = new TmpOption(iniSubDir, iniFileName);
 
-            Service.ServiceTest();
+            TestService.ServiceTest();
 
             var kernel = new Kernel();
             var option = kernel.ListOption.Get(confName);

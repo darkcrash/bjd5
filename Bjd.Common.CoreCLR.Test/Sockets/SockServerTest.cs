@@ -4,6 +4,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Sockets;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Sockets
 {
@@ -39,7 +40,7 @@ namespace Bjd.Test.Sockets
         {
             public Execute()
             {
-                Services.Service.ServiceTest();
+                TestService.ServiceTest();
             }
 
             public void startStop(String title, ProtocolKind protocolKind)

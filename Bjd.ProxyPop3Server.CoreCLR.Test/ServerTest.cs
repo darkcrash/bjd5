@@ -11,6 +11,7 @@ using Bjd.Utils;
 using Bjd.Test;
 using Xunit;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace ProxyPop3ServerTest
 {
@@ -50,7 +51,7 @@ namespace ProxyPop3ServerTest
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.ProxyPop3Server.CoreCLR.Test", "ProxyPop3ServerTest.ini");
 
-            Service.ServiceTest();
+            TestService.ServiceTest();
 
             var kernel = new Kernel();
             var option = kernel.ListOption.Get("ProxyPop3");

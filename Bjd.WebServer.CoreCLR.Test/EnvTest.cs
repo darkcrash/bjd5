@@ -9,6 +9,7 @@ using Bjd.WebServer;
 using Bjd;
 using System.Net;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace WebServerTest
 {
@@ -28,7 +29,7 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                Service.ServiceTest();
+                TestService.ServiceTest();
 
                 _kernel = new Kernel();
                 option = _kernel.ListOption.Get("Web-localhost:88");

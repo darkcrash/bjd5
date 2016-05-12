@@ -12,6 +12,7 @@ using Xunit;
 using Newtonsoft.Json;
 using Bjd.WebApiServer;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace WebApiServerTest
 {
@@ -31,7 +32,7 @@ namespace WebApiServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
-                Service.ServiceTest();
+                TestService.ServiceTest();
 
                 //MailBoxのみ初期化する特別なテスト用Kernelコンストラクタ
                 //var kernel = new Kernel("MailBox");

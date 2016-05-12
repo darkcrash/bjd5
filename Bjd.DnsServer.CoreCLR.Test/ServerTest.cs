@@ -13,6 +13,7 @@ using Bjd.Test;
 using Bjd.DnsServer;
 using Xunit;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace DnsServerTest
 {
@@ -41,7 +42,7 @@ namespace DnsServerTest
             _op = new TmpOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
 
 
-            Service.ServiceTest();
+            TestService.ServiceTest();
 
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             Kernel kernel = new Kernel();

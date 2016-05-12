@@ -7,6 +7,7 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Sockets;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Servers
 {
@@ -16,7 +17,7 @@ namespace Bjd.Test.Servers
 
         public ServerTest()
         {
-            Services.Service.ServiceTest();
+            TestService.ServiceTest();
         }
 
         //サーバ動作確認用

@@ -10,6 +10,7 @@ using Bjd.Servers;
 using Bjd.Sockets;
 using Xunit;
 using Bjd.Controls;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Servers
 {
@@ -18,7 +19,7 @@ namespace Bjd.Test.Servers
     {
         public OneServerTest()
         {
-            Services.Service.ServiceTest();
+            TestService.ServiceTest();
         }
 
         private class MyServer : OneServer

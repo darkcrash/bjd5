@@ -11,6 +11,7 @@ using Xunit;
 using Bjd.SmtpServer;
 using System.Collections.Generic;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -33,7 +34,7 @@ namespace Bjd.SmtpServer.Test
                 //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
                 _op = new TmpOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
 
-                Service.ServiceTest();
+                TestService.ServiceTest();
 
                 var kernel = new Kernel();
                 var option = kernel.ListOption.Get("Smtp");

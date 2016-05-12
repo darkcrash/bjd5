@@ -4,6 +4,7 @@ using Bjd.FtpServer;
 using Bjd.Services;
 using Bjd;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace FtpServerTest
 {
@@ -15,7 +16,7 @@ namespace FtpServerTest
 
         public CurrentDirTest()
         {
-            Service.ServiceTest();
+            TestService.ServiceTest();
         }
 
 

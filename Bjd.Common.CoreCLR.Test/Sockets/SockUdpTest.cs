@@ -4,6 +4,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Sockets;
 using Xunit;
+using Bjd.Test.Services;
 
 namespace Bjd.Test.Sockets
 {
@@ -16,7 +17,7 @@ namespace Bjd.Test.Sockets
 
         public SockUdpTest()
         {
-            Services.Service.ServiceTest();
+            TestService.ServiceTest();
         }
 
         private class EchoServer : ThreadBase

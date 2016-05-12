@@ -13,6 +13,7 @@ using Xunit;
 using Bjd.Pop3Server;
 using System.Collections.Generic;
 using Bjd.Services;
+using Bjd.Test.Services;
 
 namespace Pop3ServerTest
 {
@@ -50,7 +51,7 @@ namespace Pop3ServerTest
 
                 try
                 {
-                    Service.ServiceTest();
+                    TestService.ServiceTest();
 
                     var kernel = new Kernel();
                     var option = kernel.ListOption.Get("Pop3");
