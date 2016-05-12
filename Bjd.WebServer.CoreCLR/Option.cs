@@ -51,7 +51,7 @@ namespace Bjd.WebServer
             pageList.Add(PageAcl());
             Add(new OneVal("tab", null, Crlf.Nextline));
 
-            Read(_kernel.IniDb); //　レジストリからの読み込み
+            Read(_kernel.Configuration); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel, int protocol)

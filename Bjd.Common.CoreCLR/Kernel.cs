@@ -21,6 +21,8 @@ namespace Bjd
 {
     public class Kernel : IDisposable
     {
+        public Enviroments Enviroment { get; private set; } = new Enviroments();
+
 
         //プロセス起動時に初期化される変数 
         public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
@@ -38,19 +40,12 @@ namespace Bjd
         public WebApi WebApi { get; private set; }
 
         //Ver5.8.6
-        public IniDb IniDb { get; private set; }
+        public IniDb Configuration { get; private set; }
 
         private CancellationTokenSource CancelTokenSource { get; set; }
+
         public CancellationToken CancelToken { get; private set; }
 
-
-        public string ExecutableDirectory
-        {
-            get
-            {
-                return Define.ExecutableDirectory;
-            }
-        }
 
         public string ServerName
         {
@@ -62,46 +57,6 @@ namespace Bjd
                     return (String)oneOption.GetValue("serverName");
                 }
                 return "";
-            }
-        }
-
-        public string ServerAddress
-        {
-            get
-            {
-                return Define.ServerAddress();
-            }
-        }
-
-        public string OperatingSystem
-        {
-            get
-            {
-                return Define.OperatingSystem;
-            }
-        }
-
-        public string ApplicationName
-        {
-            get
-            {
-                return Define.ApplicationName;
-            }
-        }
-
-        public string Copyright
-        {
-            get
-            {
-                return Define.Copyright;
-            }
-        }
-
-        public string ProductVersion
-        {
-            get
-            {
-                return Define.ProductVersion;
             }
         }
 
@@ -136,7 +91,7 @@ namespace Bjd
             //プロセス起動時に初期化される
             DnsCache = new DnsCache();
 
-            IniDb = new IniDb(Define.ExecutableDirectory, "Option");
+            Configuration = new IniDb(Define.ExecutableDirectory, "Option");
 
             MailBox = null;
 
@@ -186,7 +141,7 @@ namespace Bjd
                 tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
             }
 
-            IsJp = IniDb.IsJp();
+            IsJp = Configuration.IsJp();
 
             ListOption = new ListOption(this, listPlugin);
 
@@ -410,10 +365,10 @@ namespace Bjd
                             tmp2 = serverName == "" ? "localhost" : serverName;
                             break;
                         case "$v":
-                            tmp2 = this.ProductVersion;
+                            tmp2 = this.Enviroment.ProductVersion;
                             break;
                         case "$p":
-                            tmp2 = this.ApplicationName;
+                            tmp2 = this.Enviroment.ApplicationName;
                             break;
                         case "$d":
                             tmp2 = DateTime.Now.ToDateTimeString();

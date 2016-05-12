@@ -20,7 +20,7 @@ namespace Bjd.WebApiServer
             _webApi = kernel.WebApi;
             _mailBox = kernel.MailBox;
             //_mailQueue = Define.ExecutableDirectory + "\\MailQueue";
-            _mailQueue = kernel.ExecutableDirectory + $"{Path.DirectorySeparatorChar}MailQueue";
+            _mailQueue = kernel.Enviroment.ExecutableDirectory + $"{Path.DirectorySeparatorChar}MailQueue";
         }
 
         public string Exec(Method method, string cmd, Dictionary<string, string> param)

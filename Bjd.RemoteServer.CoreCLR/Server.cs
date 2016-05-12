@@ -102,14 +102,14 @@ namespace Bjd.RemoteServer
             Logger.Set(LogKind.Normal, _sockTcp, 1, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
 
             //バージョン/ログイン完了の送信
-            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Kernel.ProductVersion);
+            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Kernel.Enviroment.ProductVersion);
 
             //kernel.LocalAddressをRemote側で生成する
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLocaladdress, LocalAddress.GetInstance().RemoteStr());
 
             //オプションの送信
             //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
-            var optionFileName = $"{Kernel.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
+            var optionFileName = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
             string optionStr;
             using (var bs = new FileStream(optionFileName, FileMode.Open))
             using (var sr = new StreamReader(bs, Encoding.UTF8))
@@ -197,7 +197,7 @@ namespace Bjd.RemoteServer
                     //    変更された内容が、ここに到着しているかどうかを確認する
 
                     //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
-                    var optionFileName = $"{Kernel.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
+                    var optionFileName = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
                     using (var bs = new FileStream(optionFileName, FileMode.Open))
                     using (var sw = new StreamWriter(bs, Encoding.UTF8))
                     {
@@ -208,7 +208,7 @@ namespace Bjd.RemoteServer
                     Kernel.ListInitialize();//Option.iniを読み込む
 
                     //Ver5.8.6 Java fix 新しくDefから読み込んだオプションがあった場合に、そのオプションを保存するため
-                    Kernel.ListOption.Save(Kernel.IniDb);
+                    Kernel.ListOption.Save(Kernel.Configuration);
 
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);

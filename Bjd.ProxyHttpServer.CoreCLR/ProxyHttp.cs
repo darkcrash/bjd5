@@ -63,13 +63,13 @@ namespace Bjd.ProxyHttpServer {
             if (!(bool)_conf.Get("useBrowserHedaer")) {
                 if ((bool)_conf.Get("addHeaderRemoteHost")) {
                     //    oneObj.Header[cs].Append(key,val);
-                    oneObj.Header[CS.Client].Append("Remote-Host-Wp", Encoding.ASCII.GetBytes(_kernel.ServerAddress));
+                    oneObj.Header[CS.Client].Append("Remote-Host-Wp", Encoding.ASCII.GetBytes(_kernel.Enviroment.ServerAddress));
                 }
                 if ((bool)_conf.Get("addHeaderXForwardedFor")) {
-                    oneObj.Header[CS.Client].Append("X-Forwarded-For", Encoding.ASCII.GetBytes(_kernel.ServerAddress));
+                    oneObj.Header[CS.Client].Append("X-Forwarded-For", Encoding.ASCII.GetBytes(_kernel.Enviroment.ServerAddress));
                 }
                 if ((bool)_conf.Get("addHeaderForwarded")) {
-                    string str = string.Format("by {0} (Version {1}) for {2}", _kernel.ApplicationName, _kernel.ProductVersion, _kernel.ServerAddress);
+                    string str = string.Format("by {0} (Version {1}) for {2}", _kernel.Enviroment.ApplicationName, _kernel.Enviroment.ProductVersion, _kernel.Enviroment.ServerAddress);
                     oneObj.Header[CS.Client].Append("Forwarded", Encoding.ASCII.GetBytes(str));
                 }
             }

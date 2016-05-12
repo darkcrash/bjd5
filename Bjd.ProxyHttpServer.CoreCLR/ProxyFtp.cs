@@ -207,7 +207,7 @@ namespace Bjd.ProxyHttpServer {
 
             //クライアントへリプライ及びヘッダを送信する
             var header = new Header();
-            header.Replace("Server", Util.SwapStr("$v", _kernel.ProductVersion,(string)_conf.Get("serverHeader")));
+            header.Replace("Server", Util.SwapStr("$v", _kernel.Enviroment.ProductVersion,(string)_conf.Get("serverHeader")));
 
             header.Replace("MIME-Version","1.0");
             

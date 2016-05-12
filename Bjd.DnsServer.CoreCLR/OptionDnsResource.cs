@@ -28,7 +28,7 @@ namespace Bjd.DnsServer
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             Add(new OneVal("tab", null, Crlf.Nextline));
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)

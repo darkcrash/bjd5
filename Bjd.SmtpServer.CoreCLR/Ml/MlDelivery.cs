@@ -167,7 +167,7 @@ namespace Bjd.SmtpServer
             //List-Id:の追加　
             mail.ConvertHeader("List-Id", string.Format("{0}.{1}", _mlAddr.Name, _mlAddr.DomainList[0]));
             //List-Software:の追加　
-            mail.ConvertHeader("List-Software", string.Format("{0}", _kernel.ApplicationName));
+            mail.ConvertHeader("List-Software", string.Format("{0}", _kernel.Enviroment.ApplicationName));
             //List-Post:の追加　
             mail.ConvertHeader("List-Post", string.Format("<mailto:{0}>", _mlAddr.Post));
             //List-Owner:の追加　

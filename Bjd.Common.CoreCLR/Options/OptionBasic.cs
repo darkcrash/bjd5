@@ -30,7 +30,7 @@ namespace Bjd.Options
 
             Add(new OneVal("tab", null, Crlf.Nextline));
 
-            Read(kernel.IniDb); //　レジストリからの読み込み
+            Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
         private OnePage Page1(string name, string title, Kernel kernel)

@@ -487,7 +487,7 @@ namespace Bjd.Pop3Server
             var ipStr = remoteIp.ToString();
             d.Add(true, string.Format("{0}\t{1}", name, ipStr));
             Conf.Set("acl", d);
-            Conf.Save(Kernel.IniDb);
+            Conf.Save(Kernel.Configuration);
             //OneOption.SetVal("acl", d);
             //OneOption.Save(OptionIni.GetInstance());
             Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));

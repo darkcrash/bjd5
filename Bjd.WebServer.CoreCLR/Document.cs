@@ -46,7 +46,7 @@ namespace Bjd.WebServer
 
             //送信ヘッダ初期化
             _sendHeader = new Header();
-            _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.ProductVersion, (string)_conf.Get("serverHeader")));
+            _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
             _sendHeader.Replace("MIME-Version", "1.0");
             _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
 
@@ -258,7 +258,7 @@ namespace Bjd.WebServer
                 string str = line;
                 str = Util.SwapStr("$MSG", request.StatusMessage(responseCode), str);
                 str = Util.SwapStr("$CODE", responseCode.ToString(), str);
-                str = Util.SwapStr("$SERVER", kernel.ApplicationName, str);
+                str = Util.SwapStr("$SERVER", kernel.Enviroment.ApplicationName, str);
                 str = Util.SwapStr("$VER", request.Ver, str);
                 str = Util.SwapStr("$URI", uri, str);
                 sb.Append(str + "\r\n");
@@ -340,7 +340,7 @@ namespace Bjd.WebServer
                 else
                 {//一覧行以外の処理
                     str = Util.SwapStr("$URI", uri, str);
-                    str = Util.SwapStr("$SERVER", kernel.ApplicationName, str);
+                    str = Util.SwapStr("$SERVER", kernel.Enviroment.ApplicationName, str);
                     str = Util.SwapStr("$VER", request.Ver, str);
                     sb.Append(str + "\r\n");
                 }

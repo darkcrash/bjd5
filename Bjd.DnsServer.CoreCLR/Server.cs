@@ -36,7 +36,7 @@ namespace Bjd.DnsServer
             //ルートキャッシュの初期化
             _rootCache = null;
             //var namedCaPath = string.Format("{0}\\{1}", Define.ExecutableDirectory, Conf.Get("rootCache"));
-            var namedCaPath = $"{Kernel.ExecutableDirectory}{Path.DirectorySeparatorChar}{Conf.Get("rootCache")}";
+            var namedCaPath = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}{Conf.Get("rootCache")}";
             if (File.Exists(namedCaPath)) {
                 try {
                     //named.ca読み込み用コンストラクタ

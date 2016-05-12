@@ -40,7 +40,7 @@ namespace Bjd.ProxyFtpServer
             //�O�����i�ڑ���E���[�U���E�p�X���[�h�̎擾)
             //***************************************************************
             {
-                var str = string.Format("220 {0} {1}", Kernel.ApplicationName, Kernel.Copyright);
+                var str = string.Format("220 {0} {1}", Kernel.Enviroment.ApplicationName, Kernel.Enviroment.Copyright);
                 client.AsciiSend(str);
 
                 var cmdStr = "";

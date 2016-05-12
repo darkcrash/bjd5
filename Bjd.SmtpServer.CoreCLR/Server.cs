@@ -76,7 +76,7 @@ namespace Bjd.SmtpServer
             }
 
             //メールキューの初期化
-            _mailQueue = new MailQueue(Kernel.ExecutableDirectory);
+            _mailQueue = new MailQueue(Kernel.Enviroment.ExecutableDirectory);
 
             //SaveMail初期化
             var receivedHeader = new ReceivedHeader(kernel, (string)Conf.Get("receivedHeader"));
@@ -109,7 +109,7 @@ namespace Bjd.SmtpServer
                     o.StrList.Add("False");
                 }
                 conf.Set("hostList", d);
-                conf.Save(kernel.IniDb);
+                conf.Save(kernel.Configuration);
             }
 
             //#if ML_SERVER

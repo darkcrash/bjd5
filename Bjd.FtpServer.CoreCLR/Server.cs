@@ -245,7 +245,7 @@ namespace Bjd.FtpServer
                     {
                         //var os = Environment.OSVersion;
                         //session.StringSend(string.Format("215 {0}", os.VersionString));
-                        session.StringSend(string.Format("215 {0}", Kernel.OperatingSystem));
+                        session.StringSend(string.Format("215 {0}", Kernel.Enviroment.OperatingSystem));
                     }
                     else if (ftpCmd == FtpCmd.Type)
                     {

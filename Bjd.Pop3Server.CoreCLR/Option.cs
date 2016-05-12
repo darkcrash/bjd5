@@ -39,7 +39,7 @@ namespace Bjd.Pop3Server
             Add(new OneVal("tab", null, Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //�@���W�X�g������̓ǂݍ���
+            Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
 
         private OnePage Page1(string name, string title)

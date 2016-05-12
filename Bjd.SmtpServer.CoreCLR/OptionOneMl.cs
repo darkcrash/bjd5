@@ -41,7 +41,7 @@ namespace Bjd.SmtpServer
             Add(new OneVal("tab", null, Crlf.Nextline));
 
 
-            Read(kernel.IniDb); //　レジストリからの読み込み
+            Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
 

@@ -413,7 +413,7 @@ namespace Bjd.SmtpServer
         void UpdateMemberList(Dat dat){
             var o = _kernel.ListOption.Get(string.Format("Ml-{0}", _mlName));
             //レジストリ保存
-            o.SetVal(_kernel.IniDb, "memberList", dat);
+            o.SetVal(_kernel.Configuration, "memberList", dat);
             //保存されたレジストリからオプションを生成する
             var oneOption = (OneOption)Util.CreateInstance(_kernel, o.Path, "OptionOneMl", new object[] { _kernel, o.Path, o.NameTag });
             //オプションを置き換える
