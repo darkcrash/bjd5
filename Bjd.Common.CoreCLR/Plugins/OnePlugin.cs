@@ -5,13 +5,14 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Utils;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Bjd.Plugins
 {
     public class OnePlugin : IDisposable
     {
         readonly string _path;
-        readonly Library _lib;
+        readonly RuntimeLibrary _lib;
 
         public OnePlugin(string path)
         {
@@ -21,7 +22,7 @@ namespace Bjd.Plugins
             this.Name = this.GetName(str);
 
         }
-        public OnePlugin(Library lib)
+        public OnePlugin(RuntimeLibrary lib)
         {
             _lib = lib;
 
@@ -49,7 +50,8 @@ namespace Bjd.Plugins
         public OneOption CreateOption(Kernel kernel, String className, string nameTag)
         {
             //return (OneOption)Util.CreateInstance(kernel, _path, className, new object[] { kernel, _path, nameTag });
-            return (OneOption)Util.CreateInstance(kernel, _lib, className, new object[] { kernel, _lib.Path, nameTag });
+            //return (OneOption)Util.CreateInstance(kernel, _lib, className, new object[] { kernel, _lib.Path, nameTag });
+            return (OneOption)Util.CreateInstance(kernel, _lib, className, new object[] { kernel, kernel.Enviroment.ExecutableDirectory, nameTag });
         }
 
         public OneServer CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

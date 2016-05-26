@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Bjd
 {
@@ -19,7 +20,7 @@ namespace Bjd
         public static readonly string WebDocument = "http://www.sapporoworks.ne.jp/spw/?page_id=517";
         public static readonly string WebSupport = "http://www.sapporoworks.ne.jp/sbbs/sbbs.cgi?book=bjd";
 
-        public static Library[] Libraries { get; private set; }
+        public static RuntimeLibrary[] Libraries { get; private set; }
         public static string ExecutablePath { get; private set; }
         public static string ExecutableDirectory { get; private set; }
         public static string ProductVersion { get; private set; }
@@ -63,18 +64,19 @@ namespace Bjd
             Trace.TraceInformation("Define.Initialize Start");
 
             // get service
-            var runtimeServices = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeServices>(sb);
-            var compilerOptions = GetService<ICompilerOptions>(sb);
-            var runtimeEnvironment = GetService<Microsoft.Extensions.PlatformAbstractions.IRuntimeEnvironment>(sb);
-            var applicationEnvironment = GetService<IApplicationEnvironment>(sb);
-            var libraryManager = GetService<ILibraryManager>(sb);
+            //var runtimeServices = GetService<Microsoft.Extensions.PlatformAbstractions.PlatformServices>(sb);
+            var runtimeServices = PlatformServices.Default;
+            //var compilerOptions = GetService<ICompilerOptions>(sb);
+            var compilerOptions = CompilationOptions.Default;
+            var runtimeEnvironment = runtimeServices.Runtime;
+            var applicationEnvironment = runtimeServices.Application;
+
+            Define.Libraries = DependencyContext.Default.RuntimeLibraries.ToArray();
 
             if (applicationEnvironment == null)
                 applicationEnvironment = PlatformServices.Default.Application;
             if (runtimeEnvironment == null)
                 runtimeEnvironment = PlatformServices.Default.Runtime;
-            if (libraryManager == null)
-                libraryManager = PlatformServices.Default.LibraryManager;
 
             if (applicationEnvironment != null)
             {
@@ -84,17 +86,17 @@ namespace Bjd
                 Trace.TraceError($"----------------------------------------------------------------");
             }
 
-            // RuntimeServices
-            if (runtimeServices != null)
-            {
-                Trace.TraceInformation($"RuntimeServices");
-                Trace.Indent();
-                foreach (var sv in runtimeServices.Services)
-                {
-                    Trace.TraceInformation($"{(sv.FullName)}");
-                }
-                Trace.Unindent();
-            }
+            //// RuntimeServices
+            //if (runtimeServices != null)
+            //{
+            //    Trace.TraceInformation($"RuntimeServices");
+            //    Trace.Indent();
+            //    foreach (var sv in runtimeServices.Services)
+            //    {
+            //        Trace.TraceInformation($"{(sv.FullName)}");
+            //    }
+            //    Trace.Unindent();
+            //}
 
             // CompilerOptions
             if (compilerOptions != null)
@@ -103,8 +105,18 @@ namespace Bjd
                 Trace.Indent();
                 if (compilerOptions.AllowUnsafe.HasValue)
                     Trace.TraceInformation($"AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
+                if (compilerOptions.DebugType != null)
+                    Trace.TraceInformation($"DebugType:{compilerOptions.DebugType}");
                 if (compilerOptions.DelaySign.HasValue)
                     Trace.TraceInformation($"DelaySign:{compilerOptions.DelaySign}");
+                if (compilerOptions.Defines != null)
+                {
+                    Trace.Indent();
+                    Trace.TraceInformation($"Defines:");
+                    foreach (var def in compilerOptions.Defines.ToArray())
+                        Trace.TraceInformation($"{def}");
+                    Trace.Unindent();
+                }
                 if (compilerOptions.EmitEntryPoint.HasValue)
                     Trace.TraceInformation($"EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
                 if (compilerOptions.KeyFile != null)
@@ -114,8 +126,8 @@ namespace Bjd
                     Trace.TraceInformation($"Optimize:{compilerOptions.Optimize}");
                 if (compilerOptions.Platform != null)
                     Trace.TraceInformation($"Platform:{compilerOptions.Platform}");
-                if (compilerOptions.UseOssSigning.HasValue)
-                    Trace.TraceInformation($"UseOssSigning:{compilerOptions.UseOssSigning}");
+                //if (compilerOptions.UseOssSigning.HasValue)
+                //    Trace.TraceInformation($"UseOssSigning:{compilerOptions.UseOssSigning}");
                 if (compilerOptions.WarningsAsErrors.HasValue)
                     Trace.TraceInformation($"WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
                 Trace.Unindent();
@@ -129,7 +141,7 @@ namespace Bjd
                 Trace.TraceInformation($"OperatingSystem:{(runtimeEnvironment.OperatingSystem)}");
                 Trace.TraceInformation($"OperatingSystemVersion:{(runtimeEnvironment.OperatingSystemVersion)}");
                 Trace.TraceInformation($"RuntimeArchitecture:{(runtimeEnvironment.RuntimeArchitecture)}");
-                Trace.TraceInformation($"RuntimePath:{(runtimeEnvironment.RuntimePath)}");
+                //Trace.TraceInformation($"RuntimePath:{(runtimeEnvironment.RuntimePath)}");
                 Trace.TraceInformation($"RuntimeType:{(runtimeEnvironment.RuntimeType)}");
                 Trace.TraceInformation($"RuntimeVersion:{(runtimeEnvironment.RuntimeVersion)}");
                 Trace.Unindent();
@@ -143,19 +155,18 @@ namespace Bjd
                 Trace.TraceInformation($"ApplicationBasePath:{(applicationEnvironment.ApplicationBasePath)}");
                 Trace.TraceInformation($"ApplicationName:{(applicationEnvironment.ApplicationName)}");
                 Trace.TraceInformation($"ApplicationVersion:{(applicationEnvironment.ApplicationVersion)}");
-                Trace.TraceInformation($"Configuration:{(applicationEnvironment.Configuration)}");
+                //Trace.TraceInformation($"Configuration:{(applicationEnvironment.Configuration)}");
                 Trace.TraceInformation($"RuntimeFramework:{(applicationEnvironment.RuntimeFramework.FullName)}");
                 Trace.TraceInformation($"RuntimeFrameworkIdentifier:{(applicationEnvironment.RuntimeFramework.Identifier)}");
                 Trace.TraceInformation($"RuntimeFrameworkVersion:{applicationEnvironment.RuntimeFramework.Version}");
                 Trace.Unindent();
             }
 
-            // LibraryManager
-            if (libraryManager != null)
+            // Define.Libraries
+            if (Define.Libraries != null)
             {
                 Trace.TraceInformation($"LibraryManager");
                 Trace.Indent();
-                Define.Libraries = libraryManager.GetLibraries().ToArray();
                 foreach (var lib in Define.Libraries)
                 {
                     Trace.TraceInformation($"({lib.Type}) {lib.Name.PadRight(61)} {lib.Version.PadRight(17)} Assemblies({lib.Assemblies.Count().ToString().PadLeft(2)}) Dependencies({ lib.Dependencies.Count().ToString().PadLeft(2)})");

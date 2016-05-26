@@ -37,3 +37,4 @@ mailbox/*
 /BJDTest
 /Bjd.CoreCLR.xunit.Test/iniDbTestTmp.ini
 /Bjd.DhcpServer.CoreCLR.Test/lease.db
+/.vs/restore.dg

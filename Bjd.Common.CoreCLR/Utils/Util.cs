@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq;
 using Bjd.Logs;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Extensions.DependencyModel;
 
 //using System.Collections;
 
@@ -267,11 +268,11 @@ namespace Bjd.Utils
         }
 
 
-        public static Object CreateInstance(Kernel kernel, Library lib, string className, Object[] param)
+        public static Object CreateInstance(Kernel kernel, RuntimeLibrary lib, string className, Object[] param)
         {
             try
             {
-                var assemblies = lib.Assemblies.Select(_ => Assembly.Load(_)).Where(_ => _ != null);
+                var assemblies = lib.Assemblies.Select(_ => Assembly.Load(_.Name)).Where(_ => _ != null);
                 foreach (var asm in assemblies)
                 {
                     //return asm.CreateInstance(dllName + "." + className, true, BindingFlags.Default, null, param,

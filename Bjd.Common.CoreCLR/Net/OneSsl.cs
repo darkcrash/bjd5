@@ -15,7 +15,8 @@ namespace Bjd.Net
         public OneSsl(Socket socket, string targetServer)
         {
             _stream = new SslStream(new NetworkStream(socket));
-            _stream.AuthenticateAsClient(targetServer);
+            var t = _stream.AuthenticateAsClientAsync(targetServer);
+            t.Wait();
         }
 
         //サーバ接続
@@ -24,7 +25,8 @@ namespace Bjd.Net
             _stream = new SslStream(new NetworkStream(socket));
             try
             {
-                _stream.AuthenticateAsServer(x509Certificate2);
+                var t = _stream.AuthenticateAsServerAsync(x509Certificate2);
+                t.Wait();
             }
             catch (Exception)
             {
