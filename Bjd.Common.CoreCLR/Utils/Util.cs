@@ -213,7 +213,7 @@ namespace Bjd.Utils
                     goto next;
                 }
                 return new DateTime(0);
-                next:
+            next:
                 var day = Convert.ToInt32(tmp[1]);
                 var hour = Convert.ToInt32(time[0]);
                 var minute = Convert.ToInt32(time[1]);
@@ -272,20 +272,16 @@ namespace Bjd.Utils
         {
             try
             {
-                var assemblies = lib.Assemblies.Select(_ => Assembly.Load(_.Name)).Where(_ => _ != null);
-                foreach (var asm in assemblies)
-                {
-                    //return asm.CreateInstance(dllName + "." + className, true, BindingFlags.Default, null, param,
-                    //                          null, null);
+                var nm = new AssemblyName(lib.Name);
+                var asm = Assembly.Load(nm);
 
-                    var t = asm.GetTypes().Where(_ => _.Name == className).FirstOrDefault();
-                    if (t == null)
-                        continue;
-                    var c = t.GetConstructor(param.Select(_ => _.GetType()).ToArray());
-                    if (c == null)
-                        continue;
-                    return c.Invoke(param);
-                }
+                var t = asm.GetTypes().Where(_ => _.Name == className).FirstOrDefault();
+                if (t == null)
+                    return null;
+                var c = t.GetConstructor(param.Select(_ => _.GetType()).ToArray());
+                if (c == null)
+                    return null;
+                return c.Invoke(param);
             }
             catch (Exception ex)
             {
@@ -305,7 +301,6 @@ namespace Bjd.Utils
 
                 return null;
             }
-            return null;
         }
 
         //例外を発生させプログラムを停止する（設計上の問題）

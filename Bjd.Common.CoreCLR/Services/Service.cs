@@ -11,7 +11,7 @@ namespace Bjd.Services
         static Service instance = new Service();
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
 
-        public static void ServiceMain(IServiceProvider sb)
+        public static void ServiceMain()
         {
             foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
             {
@@ -24,7 +24,7 @@ namespace Bjd.Services
             Trace.TraceInformation("Service.ServiceMain Start");
 
             // Define Initialize
-            Define.Initialize(sb);
+            Define.Initialize();
 
             // service start
             Service.instance.OnStart();

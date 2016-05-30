@@ -1,23 +1,7 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:56792/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "bjd": {
-      "commandName": "bjd",
-      "sdkVersion": "dnx-coreclr-win-x64.1.0.0-rc1-update1"
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "Hosting:Environment": "Development"
-      }
+    "Bjd": {
+      "commandName": "Project"
     }
   }
 }
