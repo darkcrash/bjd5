@@ -9,7 +9,6 @@ using Bjd.Utils;
 using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Common;
 using Bjd;
 using System.Text;
 

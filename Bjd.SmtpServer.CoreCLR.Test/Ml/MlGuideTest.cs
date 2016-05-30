@@ -7,7 +7,6 @@ using Bjd.Options;
 using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Common;
 using Bjd;
 
 namespace Bjd.SmtpServer.Test
