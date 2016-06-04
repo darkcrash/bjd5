@@ -9,7 +9,6 @@ using Bjd.Test;
 using Bjd.SmtpServer;
 using Xunit;
 using Bjd;
-using Bjd.Common;
 using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
