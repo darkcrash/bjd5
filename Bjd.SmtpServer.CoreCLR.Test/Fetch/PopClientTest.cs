@@ -34,8 +34,8 @@ namespace Bjd.SmtpServer.Test
                 //fetchDbの削除
                 //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
                 //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
-                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
-                File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
+                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
+                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
 
                 base.Dispose();
             }
@@ -305,7 +305,7 @@ namespace Bjd.SmtpServer.Test
         {
             //メールボックス内に蓄積されたファイル数を検証する
             //var path = String.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
-            var path = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            var path = Path.Combine(_testServer._service.MailboxPath, user);
             var di = new DirectoryInfo(path);
 
             //DF_*がn個存在する

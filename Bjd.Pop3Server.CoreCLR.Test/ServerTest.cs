@@ -31,12 +31,11 @@ namespace Pop3ServerTest
 
         public class InternalFixture : IDisposable
         {
-            public TmpOption _op; //設定ファイルの上書きと退避
+            public TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
 
-            private string mailboxPath;
 
             //[TestFixtureSetUp]
             public InternalFixture()
@@ -47,7 +46,7 @@ namespace Pop3ServerTest
                 //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.Pop3Server.CoreCLR.Test", "Pop3ServerTest.ini");
+                _op = new TestOption("Bjd.Pop3Server.CoreCLR.Test", "Pop3ServerTest.ini");
 
                 try
                 {
@@ -72,10 +71,11 @@ namespace Pop3ServerTest
                     //File.Copy(srcDir + "MF_00635026511425888292", dstDir + "MF_00635026511425888292", true);
                     //File.Copy(srcDir + "MF_00635026511765086924", dstDir + "MF_00635026511765086924", true);
 
-                    var srcDir = AppContext.BaseDirectory;
-                    var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
-                    System.IO.Directory.CreateDirectory(dstDir);
-                    mailboxPath = dstDir;
+                    //var srcDir = AppContext.BaseDirectory;
+                    //var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
+                    //System.IO.Directory.CreateDirectory(dstDir);
+                    //mailboxPath = dstDir;
+                    _service.CreateMailbox("user2");
 
                     var testFiles = new List<string>();
                     testFiles.Add("DF_00635026511425888292");
@@ -85,9 +85,10 @@ namespace Pop3ServerTest
 
                     foreach (var f in testFiles)
                     {
-                        var srcFile = System.IO.Path.Combine(srcDir, f);
-                        var dstFile = System.IO.Path.Combine(dstDir, f);
-                        File.Copy(srcFile, dstFile, true);
+                        //var srcFile = System.IO.Path.Combine(srcDir, f);
+                        //var dstFile = System.IO.Path.Combine(dstDir, f);
+                        //File.Copy(srcFile, dstFile, true);
+                        _service.AddMail(f, "user2");
                     }
 
                     Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
@@ -115,10 +116,6 @@ namespace Pop3ServerTest
 
                 //設定ファイルのリストア
                 _op.Dispose();
-
-                //メールボックスの削除
-                //Directory.Delete(@"c:\tmp2\bjd5\Pop3ServerTest\mailbox", true);
-                Directory.Delete(mailboxPath, true);
 
             }
 

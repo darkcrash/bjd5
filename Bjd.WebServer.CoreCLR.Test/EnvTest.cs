@@ -19,7 +19,7 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             internal Kernel _kernel;
-            private TmpOption _op; //設定ファイルの上書きと退避
+            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             internal OneOption option;
 
@@ -27,7 +27,7 @@ namespace WebServerTest
             {
 
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
+                _op = new TestOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
 

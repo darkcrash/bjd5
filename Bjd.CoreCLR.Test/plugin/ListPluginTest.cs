@@ -15,6 +15,7 @@ namespace Bjd.Common.Test.plugin
         public void Pluginsフォルダの中のdllファイルを列挙()
         {
             //setUp
+
             TestService service = TestService.CreateTestService();
 
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";

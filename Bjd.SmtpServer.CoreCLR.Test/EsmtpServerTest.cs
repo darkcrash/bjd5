@@ -19,7 +19,7 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : IDisposable
         {
-            public TmpOption _op; //設定ファイルの上書きと退避
+            public TestOption _op; //設定ファイルの上書きと退避
             public TestService _service;
             public Server _v4Sv; //サーバ
             public Server _v6Sv; //サーバ
@@ -32,7 +32,7 @@ namespace Bjd.SmtpServer.Test
 
                 //設定ファイルの退避と上書き
                 //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
-                _op = new TmpOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
+                _op = new TestOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
 
@@ -66,7 +66,7 @@ namespace Bjd.SmtpServer.Test
 
                 //メールボックスの削除
                 //Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
-                Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
+                //Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
 
             }
 
@@ -89,7 +89,8 @@ namespace Bjd.SmtpServer.Test
         private string[] GetDf(string user)
         {
             //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
-            var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
+            var dir = Path.Combine(_server._service.MailboxPath, user);
             var files = Directory.GetFiles(dir, "DF*");
             return files;
         }

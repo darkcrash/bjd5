@@ -12,13 +12,13 @@ using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
 
-namespace Bjd.SmtpServer.Test.Agent
+namespace Bjd.SmtpServer.Test
 {
-    public class SmtpClientTest_Auth : ILife, IDisposable, IClassFixture<SmtpClientTest_Auth.ServerFixture>
+    public class SmtpClientAuthTest : ILife, IDisposable, IClassFixture<SmtpClientAuthTest.ServerFixture>
     {
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest_Auth.ini")
+            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientAuthTest", "Option.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user1", "00635026511425888292");
@@ -30,7 +30,7 @@ namespace Bjd.SmtpServer.Test.Agent
 
         private ServerFixture _testServer;
 
-        public SmtpClientTest_Auth(ServerFixture fixture)
+        public SmtpClientAuthTest(ServerFixture fixture)
         {
             _testServer = fixture;
         }

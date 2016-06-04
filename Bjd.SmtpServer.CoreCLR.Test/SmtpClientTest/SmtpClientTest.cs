@@ -10,43 +10,23 @@ using Bjd.Test;
 using System.IO;
 using Bjd.Services;
 
-namespace Bjd.SmtpServer.Test.Agent
+namespace Bjd.SmtpServer.Test
 {
     public class SmtpClientTest : ILife, IDisposable, IClassFixture<SmtpClientTest.ServerFixture>
     {
 
         public class ServerFixture : TestServer, IDisposable
         {
-            private string mailboxUser1;
-            private string mailboxUser2;
-
-            public ServerFixture() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test\\Agent", "SmtpClientTest.ini")
+            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientTest", "Option.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
-                //SetMail("user1", "00635026511425888292");
-                //SetMail("user1", "00635026511765086924");
-                mailboxUser1 = Path.Combine(TestDefine.Instance.TestMailboxPath, "user1");
-                mailboxUser2 = Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
-                Directory.CreateDirectory(mailboxUser1);
-                Directory.CreateDirectory(mailboxUser2);
-
+                _service.CreateMailbox("user1");
+                _service.CreateMailbox("user2");
 
             }
 
             public override void Dispose()
             {
-                try
-                {
-                    Directory.Delete(mailboxUser1);
-                }
-                catch { }
-                try
-                {
-                    Directory.Delete(mailboxUser2);
-                }
-                catch { }
-
-
                 base.Dispose();
             }
 

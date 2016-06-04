@@ -22,7 +22,7 @@ namespace DnsServerTest
     public class ServerTest : IDisposable
     {
 
-        private TmpOption _op; //設定ファイルの上書きと退避
+        private TestOption _op; //設定ファイルの上書きと退避
         private TestService _service;
         private Server _sv; //サーバ
 
@@ -39,7 +39,7 @@ namespace DnsServerTest
             File.Copy(src, dst, true);
 
             //設定ファイルの退避と上書き
-            _op = new TmpOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
+            _op = new TestOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
 
             //TestService.ServiceTest();
             _service = TestService.CreateTestService(_op);

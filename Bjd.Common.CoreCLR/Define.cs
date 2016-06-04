@@ -210,8 +210,8 @@ namespace Bjd
         {
             Initialize();
             var parent = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
-            Define.ExecutableDirectory = System.IO.Path.Combine(parent, "Bjd.CoreCLR");
-
+            parent = System.IO.Path.GetDirectoryName(parent);
+            Define.ExecutableDirectory = parent;
         }
 
         protected static void OnChangeOperationSystem()

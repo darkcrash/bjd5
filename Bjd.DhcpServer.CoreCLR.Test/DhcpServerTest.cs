@@ -17,7 +17,7 @@ namespace DhcpServerTest
 
     public class DhcpServerTest : IDisposable
     {
-        private static TmpOption _op; //設定ファイルの上書きと退避
+        private static TestOption _op; //設定ファイルの上書きと退避
         private static TestService _service;
         private static Server _sv; //サーバ
 
@@ -26,7 +26,7 @@ namespace DhcpServerTest
             //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //設定ファイルの退避と上書き
-            _op = new TmpOption("", "DhcpServerTest.ini");
+            _op = new TestOption("", "DhcpServerTest.ini");
             _service = TestService.CreateTestService(_op);
 
 

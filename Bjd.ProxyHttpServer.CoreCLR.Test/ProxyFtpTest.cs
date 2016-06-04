@@ -20,7 +20,7 @@ namespace ProxyHttpServerTest
         public class ServerFixture : IDisposable
         {
             internal TestService _service;
-            private TmpOption _op; //設定ファイルの上書きと退避
+            private TestOption _op; //設定ファイルの上書きと退避
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
 
@@ -29,7 +29,7 @@ namespace ProxyHttpServerTest
                 //srcDir = string.Format("{0}\\ProxyHttpServerTest", TestUtil.ProhjectDirectory());
 
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
+                _op = new TestOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
 

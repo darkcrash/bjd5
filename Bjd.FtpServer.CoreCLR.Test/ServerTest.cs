@@ -19,7 +19,7 @@ namespace FtpServerTest
         public class InternalFixture : IDisposable
         {
             public TestService _service;
-            public TmpOption _op; //設定ファイルの上書きと退避
+            public TestOption _op; //設定ファイルの上書きと退避
             public Server _v6Sv; //サーバ
             public Server _v4Sv; //サーバ
 
@@ -29,7 +29,7 @@ namespace FtpServerTest
                 //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
+                _op = new TestOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
 

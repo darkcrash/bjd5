@@ -16,7 +16,7 @@ namespace ProxyPop3ServerTest
 {
     public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.ServerFixture>
     {
-        private TmpOption _op; //設定ファイルの上書きと退避
+        private TestOption _op; //設定ファイルの上書きと退避
         private TestService _service; 
         private Bjd.ProxyPop3Server.Server _v6Sv; //サーバ
         private Bjd.ProxyPop3Server.Server _v4Sv; //サーバ
@@ -49,7 +49,7 @@ namespace ProxyPop3ServerTest
             //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //設定ファイルの退避と上書き
-            _op = new TmpOption("Bjd.ProxyPop3Server.CoreCLR.Test", "ProxyPop3ServerTest.ini");
+            _op = new TestOption("Bjd.ProxyPop3Server.CoreCLR.Test", "ProxyPop3ServerTest.ini");
 
             _service = TestService.CreateTestService(_op);
 
@@ -77,21 +77,27 @@ namespace ProxyPop3ServerTest
             //メールボックスへのデータセット
             //var srcDir = @"c:\tmp2\bjd5\ProxyPop3ServerTest\";
             //var dstDir = @"c:\tmp2\bjd5\ProxyPop3ServerTest\mailbox\user2\";
-            var srcDir = AppContext.BaseDirectory;
-            var dstDir = Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
-            Directory.CreateDirectory(dstDir);
+            //var srcDir = AppContext.BaseDirectory;
+            //var dstDir = Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
+            //Directory.CreateDirectory(dstDir);
+            _service.CreateMailbox("user2");
 
             //File.Copy(srcDir + "DF_00635026511425888292", dstDir + "DF_00635026511425888292", true);
             //File.Copy(srcDir + "DF_00635026511765086924", dstDir + "DF_00635026511765086924", true);
             //File.Copy(srcDir + "MF_00635026511425888292", dstDir + "MF_00635026511425888292", true);
             //File.Copy(srcDir + "MF_00635026511765086924", dstDir + "MF_00635026511765086924", true);
-            Action<string> copy =
-                (v) => File.Copy(Path.Combine(srcDir, v), Path.Combine(dstDir, v), true);
+            //Action<string> copy =
+            //    (v) => File.Copy(Path.Combine(srcDir, v), Path.Combine(dstDir, v), true);
 
-            copy("DF_00635026511425888292");
-            copy("DF_00635026511765086924");
-            copy("MF_00635026511425888292");
-            copy("MF_00635026511765086924");
+            //copy("DF_00635026511425888292");
+            //copy("DF_00635026511765086924");
+            //copy("MF_00635026511425888292");
+            //copy("MF_00635026511765086924");
+
+            _service.AddMail("DF_00635026511425888292", "user2");
+            _service.AddMail("DF_00635026511765086924", "user2");
+            _service.AddMail("MF_00635026511425888292", "user2");
+            _service.AddMail("MF_00635026511765086924", "user2");
 
 
             Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
@@ -119,7 +125,7 @@ namespace ProxyPop3ServerTest
 
             //メールボックスの削除
             //Directory.Delete(@"c:\tmp2\bjd5\ProxyPop3ServerTest\mailbox", true);
-            Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
+            //Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
 
         }
 

@@ -9,6 +9,7 @@ namespace Bjd.Services
 {
     public class TestService
     {
+        private static Random rd = new Random();
 
         private TestService()
         {
@@ -28,20 +29,33 @@ namespace Bjd.Services
         }
 
         public Kernel Kernel { get; private set; }
+        public string MailboxPath { get; private set; }
+        public string MailQueuePath { get; private set; }
 
-        private TmpOption _op;
+        private TestOption _op;
+
 
         private static TestService CreateTestServiceInternal()
         {
             var instance = new TestService();
 
             // set executable directory
-            var dirName = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}";
+
             var env = new Enviroments();
             var dir = env.ExecutableDirectory;
             env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
             Directory.CreateDirectory(env.ExecutableDirectory);
-            CopyLangTxt(env);
+
+            //BJD.Lang.txtを作業ディレクトリにコピーする
+            Copy(env, "BJD.Lang.txt", "BJD.Lang.txt");
+
+            // メールボックスの生成
+            instance.MailboxPath = System.IO.Path.Combine(env.ExecutableDirectory, "mailbox");
+
+            // メールキューの生成
+            instance.MailQueuePath = System.IO.Path.Combine(env.ExecutableDirectory, "MailQueue");
+
 
             instance.Kernel = new Kernel(env);
 
@@ -55,14 +69,12 @@ namespace Bjd.Services
             Trace.TraceInformation("TestService.ServiceTest Start");
 
             var instance = CreateTestServiceInternal();
-            instance._op = new TmpOption(".", "Option.ini");
-            instance._op.Backup();
 
             Trace.TraceInformation("TestService.ServiceTest End");
             return instance;
         }
 
-        public static TestService CreateTestService(TmpOption option)
+        public static TestService CreateTestService(TestOption option)
         {
             // Add console trace
             //System.Diagnostics.Trace.Listeners.Add(new trace.ConsoleTraceListner());
@@ -70,33 +82,65 @@ namespace Bjd.Services
 
             var instance = CreateTestServiceInternal();
             instance._op = option;
-            instance._op.Backup();
+            instance._op.Copy(instance);
 
             Trace.TraceInformation("TestService.ServiceTest End");
             return instance;
         }
 
+        public void ContentFile(params string[] paths)
+        {
+            var src = Path.Combine(paths);
+            var filename = Path.GetFileName(src);
+            Copy(this.Kernel.Enviroment, src, filename);
+        }
+
+        public void AddMail(string srcFile, string user)
+        {
+            var filename = Path.GetFileName(srcFile);
+            var destFilepath = Path.Combine(this.MailboxPath, user, filename);
+            Copy(this.Kernel.Enviroment, srcFile, destFilepath);
+        }
+
+        public void AddMailQueue(string srcFile)
+        {
+            var filename = Path.GetFileName(srcFile);
+            var destFilepath = Path.Combine(this.MailQueuePath, filename);
+            Copy(this.Kernel.Enviroment, srcFile, destFilepath);
+        }
+
+        public void CreateMailbox(string username)
+        {
+            var boxPath = Path.Combine(this.MailboxPath, username);
+            Directory.CreateDirectory(boxPath);
+        }
+
+
         public static string ProjectDirectory
         {
             get
             {
-                return System.IO.Directory.GetCurrentDirectory();
+                var parent = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
+                parent = System.IO.Path.GetDirectoryName(parent);
+                parent = System.IO.Path.GetDirectoryName(parent);
+                return parent;
             }
         }
 
-        //BJD.Lang.txtを作業ディレクトリにコピーする
-        private static void CopyLangTxt(Enviroments env)
+        private static string Copy(Enviroments env, string contentFile, string destnationFilename)
         {
-            //var src = string.Format("{0}\\BJD.Lang.txt", ProjectDirectory() + "\\Bjd.CoreCLR");
-            //var dst = string.Format("{0}\\BJD.Lang.txt", Directory.GetCurrentDirectory());
-            var src = System.IO.Path.Combine(ProjectDirectory, "BJD.Lang.txt");
-            var dst = System.IO.Path.Combine(env.ExecutableDirectory, "BJD.Lang.txt");
+            var src = System.IO.Path.Combine(ProjectDirectory, contentFile);
+            var dst = System.IO.Path.Combine(env.ExecutableDirectory, destnationFilename);
+            var dir = Path.GetDirectoryName(dst);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             if (File.Exists(src))
             {
                 File.Copy(src, dst, true);
             }
-        }
 
+            return dst;
+        }
 
     }
 

@@ -18,7 +18,7 @@ namespace WebApiServerTest
         public class ServerFixture : IDisposable
         {
 
-            private TmpOption _op; //設定ファイルの上書きと退避
+            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
@@ -29,9 +29,10 @@ namespace WebApiServerTest
 
 
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
+                //_op = new TestOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
+                _service.ContentFile("Option.ini");
 
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("WebApi");

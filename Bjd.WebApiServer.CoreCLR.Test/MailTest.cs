@@ -22,7 +22,7 @@ namespace WebApiServerTest
         public class ServerFixture : IDisposable
         {
 
-            private TmpOption _op; //設定ファイルの上書きと退避
+            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
@@ -30,7 +30,7 @@ namespace WebApiServerTest
             public ServerFixture()
             {
                 //設定ファイルの退避と上書き
-                _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
+                _op = new TestOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
                 _service = TestService.CreateTestService(_op);
 
@@ -40,9 +40,30 @@ namespace WebApiServerTest
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
 
-                //メールボックスの初期化
-                MailBoxBackup();
-                MailBoxSetup();
+                ////メールボックスの初期化
+                //MailBoxBackup();
+                //MailBoxSetup();
+                //Copy(Path.Combine(testDir, "mailbox"), Path.Combine(exeDir, "mailbox"));
+                //Copy(Path.Combine(testDir, "MailQueue"), Path.Combine(exeDir, "MailQueue"));
+
+                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635152494430601419"), "user1");
+                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635152494802760458"), "user1");
+                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635154591705085681"), "user1");
+                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635152494430601419"), "user1");
+                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635152494802760458"), "user1");
+                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635154591705085681"), "user1");
+
+                _service.AddMail(Path.Combine("mailbox", "user2", "DF_00635152496274672823"), "user2");
+                _service.AddMail(Path.Combine("mailbox", "user2", "DF_00635154592194712756"), "user2");
+                _service.AddMail(Path.Combine("mailbox", "user2", "MF_00635152496274672823"), "user2");
+                _service.AddMail(Path.Combine("mailbox", "user2", "MF_00635154592194712756"), "user2");
+
+
+                _service.AddMailQueue(Path.Combine("MailQueue", "DF_00635154591911289944"));
+                _service.AddMailQueue(Path.Combine("MailQueue", "DF_00635154592434080602"));
+                _service.AddMailQueue(Path.Combine("MailQueue", "MF_00635154591911289944"));
+                _service.AddMailQueue(Path.Combine("MailQueue", "MF_00635154592434080602"));
+
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -64,8 +85,8 @@ namespace WebApiServerTest
                 //設定ファイルのリストア
                 _op.Dispose();
 
-                //メールボックスの終了処理
-                MailBoxRestore();
+                ////メールボックスの終了処理
+                //MailBoxRestore();
 
             }
 
@@ -526,23 +547,24 @@ namespace WebApiServerTest
             return true;
         }
 
-        static void MailBoxSetup()
+        private void MailBoxSetup()
         {
             //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
             //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
             var testDir = AppContext.BaseDirectory;
-            var exeDir = TestDefine.Instance.TestDirectory;
+            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
             //テスト用メールボックスをコピーする
             Copy(Path.Combine(testDir, "mailbox"), Path.Combine(exeDir, "mailbox"));
             Copy(Path.Combine(testDir, "MailQueue"), Path.Combine(exeDir, "MailQueue"));
         }
 
-        static void MailBoxBackup()
+        private void MailBoxBackup()
         {
             //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
             //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
             var testDir = AppContext.BaseDirectory;
-            var exeDir = TestDefine.Instance.TestDirectory;
+            //var exeDir = TestDefine.Instance.TestDirectory;
+            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
 
             //メールボックスをバックアップする
             var exeMailbox = Path.Combine(exeDir, "mailbox");
@@ -554,12 +576,14 @@ namespace WebApiServerTest
                 Move(exeMailQueue, Path.Combine(testDir, "MailQueue.bak"));
         }
 
-        private static void MailBoxRestore()
+        private void MailBoxRestore()
         {
             //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
             //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
             var testDir = AppContext.BaseDirectory;
-            var exeDir = TestDefine.Instance.TestDirectory;
+            //var exeDir = TestDefine.Instance.TestDirectory;
+            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
+
 
             //復旧
             var bakMailbox = Path.Combine(testDir, "mailbox.bak");
