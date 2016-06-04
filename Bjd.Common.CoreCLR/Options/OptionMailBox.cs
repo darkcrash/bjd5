@@ -8,7 +8,7 @@ namespace Bjd.Options
         public override char Mnemonic { get { return 'B'; } }
 
         public OptionMailBox(Kernel kernel, string path)
-            : base(kernel.IsJp, path, "MailBox")
+            : base(kernel, path, "MailBox")
         {
             var pageList = new List<OnePage>();
             //var key = "Basic";

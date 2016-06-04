@@ -16,7 +16,6 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             internal OneOption option;
-            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             private Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
@@ -25,9 +24,10 @@ namespace WebServerTest
             public ServerFixture()
             {
                 //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
+                //_op = new TestOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("WebServerTest.ini");
 
                 Kernel kernel = _service.Kernel;
                 option = kernel.ListOption.Get("Web-localhost:88");
@@ -50,9 +50,6 @@ namespace WebServerTest
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
-
-                //設定ファイルのリストア
-                _op.Dispose();
 
             }
 

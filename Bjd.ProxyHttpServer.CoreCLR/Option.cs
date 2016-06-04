@@ -13,7 +13,7 @@ namespace Bjd.ProxyHttpServer
         public override char Mnemonic { get { return 'B'; } }
 
         public Option(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp, path, nameTag)
+            : base(kernel, path, nameTag)
         {
 
             //var key = "useServer";

@@ -23,14 +23,14 @@ namespace Bjd.Options
         //Ver6.1.6
         protected readonly Lang Lang;
 
-        public OneOption(bool isJp, string path, string nameTag)
+        public OneOption(Kernel kernel, string path, string nameTag)
         {
             ListVal = new ListVal();
-            _isJp = isJp;
+            _isJp = kernel.IsJp;
             Path = path;
             NameTag = nameTag;
             //Ver6.1.6
-            Lang = new Lang(isJp ? LangKind.Jp : LangKind.En, "Option" + nameTag);
+            Lang = new Lang(kernel, _isJp ? LangKind.Jp : LangKind.En, "Option" + nameTag);
 
         }
 

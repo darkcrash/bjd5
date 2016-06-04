@@ -16,7 +16,7 @@ namespace Bjd.DnsServer
 
 
         public OptionDnsResource(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp, path, nameTag)
+            : base(kernel, path, nameTag)
         {
 
             var pageList = new List<OnePage>();

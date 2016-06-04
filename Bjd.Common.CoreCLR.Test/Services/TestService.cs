@@ -28,7 +28,18 @@ namespace Bjd.Services
 
         }
 
-        public Kernel Kernel { get; private set; }
+        private Enviroments env;
+
+        private Kernel _kernel;
+        public Kernel Kernel
+        {
+            get
+            {
+                if (_kernel == null)
+                    _kernel = new Kernel(env);
+                return _kernel;
+            }
+        }
         public string MailboxPath { get; private set; }
         public string MailQueuePath { get; private set; }
 
@@ -42,22 +53,21 @@ namespace Bjd.Services
             // set executable directory
             var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}";
 
-            var env = new Enviroments();
-            var dir = env.ExecutableDirectory;
-            env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
-            Directory.CreateDirectory(env.ExecutableDirectory);
+            instance.env = new Enviroments();
+            var dir = instance.env.ExecutableDirectory;
+            instance.env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
+            Directory.CreateDirectory(instance.env.ExecutableDirectory);
 
             //BJD.Lang.txtを作業ディレクトリにコピーする
-            Copy(env, "BJD.Lang.txt", "BJD.Lang.txt");
+            Copy(instance.env, "BJD.Lang.txt", "BJD.Lang.txt");
 
             // メールボックスの生成
-            instance.MailboxPath = System.IO.Path.Combine(env.ExecutableDirectory, "mailbox");
+            instance.MailboxPath = System.IO.Path.Combine(instance.env.ExecutableDirectory, "mailbox");
 
             // メールキューの生成
-            instance.MailQueuePath = System.IO.Path.Combine(env.ExecutableDirectory, "MailQueue");
+            instance.MailQueuePath = System.IO.Path.Combine(instance.env.ExecutableDirectory, "MailQueue");
 
 
-            instance.Kernel = new Kernel(env);
 
             return instance;
         }
@@ -93,6 +103,13 @@ namespace Bjd.Services
             var src = Path.Combine(paths);
             var filename = Path.GetFileName(src);
             Copy(this.Kernel.Enviroment, src, filename);
+        }
+
+        public void SetOption(params string[] paths)
+        {
+            var src = Path.Combine(paths);
+            //var filename = Path.GetFileName(src);
+            Copy(this.Kernel.Enviroment, src, "Option.ini");
         }
 
         public void AddMail(string srcFile, string user)

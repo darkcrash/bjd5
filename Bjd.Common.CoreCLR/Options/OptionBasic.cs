@@ -10,7 +10,7 @@ namespace Bjd.Options
 
 
         public OptionBasic(Kernel kernel, string path)
-            : base(kernel.IsJp, path, "Basic")
+            : base(kernel, path, "Basic")
         {
             //var pageList = new List<OnePage>();
 

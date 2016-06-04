@@ -94,7 +94,7 @@ namespace Bjd.Servers
             kernel.CancelToken.Register(() => this.StopLife());
 
             //Ver6.1.6
-            Lang = new Lang(IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);
+            Lang = new Lang(kernel, IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);
             CheckLang();//定義のテスト
 
             //テスト用

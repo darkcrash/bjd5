@@ -23,7 +23,7 @@ namespace Bjd.Utils
         //private readonly LangKind _langKind;
         public LangKind LangKind { get; private set; }
 
-        public Lang(LangKind langKind, string category)
+        public Lang(Kernel kernel, LangKind langKind, string category)
         {
 
             LangKind = langKind;
@@ -36,7 +36,7 @@ namespace Bjd.Utils
             }
 
             //var path = string.Format("{0}\\{1}", Define.ExecutableDirectory, FileName);
-            var path = Path.Combine(Define.ExecutableDirectory, FileName);
+            var path = Path.Combine(kernel.Enviroment.ExecutableDirectory, FileName);
 
             //Ver6.1.8
             _fileExsists = File.Exists(path);

@@ -11,7 +11,7 @@ namespace Bjd.DnsServer
         public override char Mnemonic { get { return 'A'; } }
 
         public OptionDnsDomain(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp, path, nameTag)
+            : base(kernel, path, nameTag)
         {
 
             var pageList = new List<OnePage>();

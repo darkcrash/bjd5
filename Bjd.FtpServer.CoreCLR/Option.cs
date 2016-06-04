@@ -15,7 +15,7 @@ namespace Bjd.FtpServer
 
 
         public Option(Kernel kernel, string path, string nameTag)
-            : base(kernel.IsJp, path, nameTag)
+            : base(kernel, path, nameTag)
         {
 
             Add(new OneVal("useServer", false, Crlf.Nextline));
