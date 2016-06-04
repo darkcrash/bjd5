@@ -3,7 +3,6 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Plugins;
 using Bjd.Services;
-using Bjd.Test.Services;
 using Xunit;
 
 namespace Bjd.Common.Test.plugin
@@ -16,7 +15,7 @@ namespace Bjd.Common.Test.plugin
         public void Pluginsフォルダの中のdllファイルを列挙()
         {
             //setUp
-            TestService.ServiceTest();
+            TestService service = TestService.CreateTestService();
 
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
@@ -33,9 +32,10 @@ namespace Bjd.Common.Test.plugin
         public void Option及びServerインスタンスの生成()
         {
             //setUp
-            TestService.ServiceTest();
+            TestService service = TestService.CreateTestService();
 
-            var kernel = new Kernel();
+            //var kernel = new Kernel();
+            var kernel = service.Kernel;
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
             //var sut = new ListPlugin(string.Format("{0}\\bin\\plugins", currentDir));

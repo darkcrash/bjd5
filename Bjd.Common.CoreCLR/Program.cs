@@ -20,7 +20,7 @@ namespace Bjd.Common
             try
             {
 
-                Service.ServiceMain(_serviceProvider);
+                DefaultService.ServiceMain(_serviceProvider);
 
             }
             catch (Exception ex)

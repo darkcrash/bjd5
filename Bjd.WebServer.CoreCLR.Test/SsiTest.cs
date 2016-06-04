@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using Bjd.WebServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace WebServerTest
 {
@@ -22,6 +21,7 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             private Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
 
@@ -30,9 +30,9 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                var kernel = new Kernel();
+                var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Web-localhost:88");
                 Conf conf = new Conf(option);
 
@@ -133,7 +133,7 @@ namespace WebServerTest
                 pattern = string.Format("FLASTMOD = {0}", Date2Str(File.GetLastWriteTime(path)));
             }
 
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 88, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
             int sec = 10; //CGI処理待ち時間（これで大丈夫?）
@@ -150,8 +150,8 @@ namespace WebServerTest
         public void IncludeしたファイルがCGIファイルでない場合()
         {
             //SetUp
-
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 88, 10, null);
+            var kernel = _fixture._service.Kernel;
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
@@ -170,8 +170,8 @@ namespace WebServerTest
         public void IncludeしたファイルがCGIファイルの場合()
         {
             //SetUp
-
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 88, 10, null);
+            var kernel = _fixture._service.Kernel;
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));

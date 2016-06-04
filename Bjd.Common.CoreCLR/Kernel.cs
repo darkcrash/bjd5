@@ -19,7 +19,7 @@ using Bjd.Utils;
 
 namespace Bjd
 {
-    public class Kernel : IDisposable
+    public sealed class Kernel : IDisposable
     {
         public Enviroments Enviroment { get; private set; } = new Enviroments();
 
@@ -70,9 +70,10 @@ namespace Bjd
         }
 
         //* 通常使用されるコンストラクタ
-        public Kernel()
+        internal Kernel(Enviroments env)
         {
             Trace.TraceInformation("Kernel..ctor Start");
+            this.Enviroment = env;
             DefaultInitialize();
             Trace.TraceInformation("Kernel..ctor End");
         }
@@ -91,7 +92,7 @@ namespace Bjd
             //プロセス起動時に初期化される
             DnsCache = new DnsCache();
 
-            Configuration = new IniDb(Define.ExecutableDirectory, "Option");
+            Configuration = new IniDb(this.Enviroment.ExecutableDirectory, "Option");
 
             MailBox = null;
 
@@ -99,7 +100,7 @@ namespace Bjd
 
             //ウインドサイズの復元
             //var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
-            var path = $"{Define.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
+            var path = $"{this.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
 
             Trace.TraceInformation("Kernel.DefaultInitialize End");
         }

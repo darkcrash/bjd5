@@ -7,23 +7,25 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Servers
 {
 
     public class OneServerTest2 : ILife
     {
+        TestService _service;
+
         public OneServerTest2()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
         private class EchoServer : OneServer
         {
             private readonly ProtocolKind _protocolKind;
 
-            public EchoServer(Conf conf, OneBind oneBind) : base(new Kernel(), conf, oneBind)
+            public EchoServer(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind)
             {
                 _protocolKind = oneBind.Protocol;
             }
@@ -110,7 +112,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", timeout);
 
-            var echoServer = new EchoServer(conf, oneBind);
+            var echoServer = new EchoServer(_service.Kernel, conf, oneBind);
             echoServer.Start();
 
             //TCPクライアント
@@ -120,7 +122,7 @@ namespace Bjd.Test.Servers
             buf[8] = 100; //CheckData
             for (int i = 0; i < 3; i++)
             {
-                var sockTcp = new SockTcp(new Kernel(), ip, port, timeout, null);
+                var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
                 sockTcp.Send(buf);
 
@@ -169,7 +171,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", timeout);
 
-            var echoServer = new EchoServer(conf, oneBind);
+            var echoServer = new EchoServer(_service.Kernel, conf, oneBind);
             echoServer.Start();
 
             //TCPクライアント
@@ -180,7 +182,7 @@ namespace Bjd.Test.Servers
 
             for (int i = 0; i < 3; i++)
             {
-                var sockUdp = new SockUdp(new Kernel(), ip, port, null, buf);
+                var sockUdp = new SockUdp(_service.Kernel, ip, port, null, buf);
                 var b = sockUdp.Recv(timeout);
                 Assert.Equal(b[8], buf[8]); //CheckData
                 Assert.Equal(max, b.Length);

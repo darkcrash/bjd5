@@ -8,6 +8,7 @@ using Xunit;
 using Bjd.DhcpServer;
 using Bjd;
 using Bjd.Test;
+using Bjd.Services;
 using System.Net;
 using Microsoft.Extensions.PlatformAbstractions;
 
@@ -16,19 +17,22 @@ namespace DhcpServerTest
 
     public class DhcpServerTest : IDisposable
     {
-
         private static TmpOption _op; //設定ファイルの上書きと退避
+        private static TestService _service;
         private static Server _sv; //サーバ
-
 
         public DhcpServerTest()
         {
-            TestUtil.CopyLangTxt();//BJD.Lang.txt
+            //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //設定ファイルの退避と上書き
-            _op = new TmpOption("Bjd.DhcpServer.CoreCLR.Test", "DhcpServerTest.ini");
+            _op = new TmpOption("", "DhcpServerTest.ini");
+            _service = TestService.CreateTestService(_op);
+
+
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
-            Kernel kernel = new Kernel();
+            //Kernel kernel = new Kernel();
+            Kernel kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Dhcp");
             Conf conf = new Conf(option);
 

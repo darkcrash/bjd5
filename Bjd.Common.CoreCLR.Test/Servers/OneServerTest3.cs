@@ -8,22 +8,24 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Servers
 {
     public class OneServerTest3 : ILife
     {
+        TestService _service;
+
         public OneServerTest3()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
         private class EchoServer : OneServer
         {
 
 
-            public EchoServer(Conf conf, OneBind oneBind) : base(new Kernel(), conf, oneBind)
+            public EchoServer(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind)
             {
 
             }
@@ -71,7 +73,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", enableAcl);
             conf.Set("timeOut", timeout);
 
-            var sv = new EchoServer(conf, oneBind);
+            var sv = new EchoServer(_service.Kernel, conf, oneBind);
             sv.Start();
             return sv;
         }
@@ -80,7 +82,7 @@ namespace Bjd.Test.Servers
         {
 
             var ip = TestUtil.CreateIp("127.0.0.1");
-            var cl = new SockTcp(new Kernel(), ip, port, 300, null);
+            var cl = new SockTcp(_service.Kernel, ip, port, 300, null);
             Thread.Sleep(300);
             return cl;
         }

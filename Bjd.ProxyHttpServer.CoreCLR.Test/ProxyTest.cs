@@ -5,6 +5,7 @@ using Xunit;
 using Bjd;
 using System.Net.Sockets;
 using Bjd.ProxyHttpServer;
+using Bjd.Services;
 
 namespace ProxyHttpServerTest
 {
@@ -14,15 +15,17 @@ namespace ProxyHttpServerTest
 
         public class ServerFixture : IDisposable
         {
+            internal TestService _service;
             internal Proxy _proxy;
 
             public ServerFixture()
             {
-                var kernel = new Kernel();
+                _service = TestService.CreateTestService();
+                var kernel = _service.Kernel;
                 var ip = new Ip("127.0.0.1");
                 const int port = 0;
                 Ssl ssl = null;
-                var tcpObj = new SockTcp(new Kernel(), ip, port, 3, ssl);
+                var tcpObj = new SockTcp(kernel, ip, port, 3, ssl);
                 var upperProxy = new UpperProxy(false, "", 0, null, false, "", "");//上位プロキシ未使用
                 const int timeout = 3;
                 _proxy = new Proxy(kernel, null, tcpObj, timeout, upperProxy);

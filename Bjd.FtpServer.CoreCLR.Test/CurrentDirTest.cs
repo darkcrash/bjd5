@@ -4,19 +4,17 @@ using Bjd.FtpServer;
 using Bjd.Services;
 using Bjd;
 using Xunit;
-using Bjd.Test.Services;
 
 namespace FtpServerTest
 {
 
-
     public class CurrentDirTest
     {
-
+        private TestService _service;
 
         public CurrentDirTest()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
 

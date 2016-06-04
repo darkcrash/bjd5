@@ -5,7 +5,6 @@ using Bjd.Mails;
 using Bjd.Options;
 using Xunit;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace Bjd.Test.Mails
 {
@@ -14,6 +13,7 @@ namespace Bjd.Test.Mails
     {
 
         private static TmpOption _op = null; //設定ファイルの上書きと退避
+        private static TestService _service;
         private Conf _conf;
 
         public MailBoxTest2()
@@ -21,9 +21,9 @@ namespace Bjd.Test.Mails
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.Common.CoreCLR.Test", "MailBoxTest.ini");
 
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService(_op);
 
-            var kernel = new Kernel();
+            var kernel = _service.Kernel;
             var oneOption = new OptionMailBox(kernel, "");
             _conf = new Conf(oneOption);
         }

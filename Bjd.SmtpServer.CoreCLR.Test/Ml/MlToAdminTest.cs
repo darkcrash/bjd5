@@ -9,12 +9,14 @@ using Xunit;
 using Bjd.SmtpServer;
 using Bjd;
 using Bjd.Common;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
 
     public class MlToAdminTest : IDisposable
     {
+        private TestService _service;
         private Ml _ml;
         private TsMailSave _tsMailSave;
 
@@ -23,7 +25,8 @@ namespace Bjd.SmtpServer.Test
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
             //var tsDir = new TsDir();
-            var kernel = new Kernel();
+            _service = TestService.CreateTestService();
+            var kernel = _service.Kernel;
             var logger = new Logger();
             var manageDir = TestUtil.GetTmpDir("TestDir");
 

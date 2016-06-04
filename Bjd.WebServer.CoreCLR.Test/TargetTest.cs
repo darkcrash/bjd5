@@ -7,7 +7,6 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace WebServerTest
 {
@@ -18,6 +17,7 @@ namespace WebServerTest
         {
             internal OneOption option;
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             private Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
 
@@ -27,9 +27,9 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                Kernel kernel = new Kernel();
+                Kernel kernel = _service.Kernel;
                 option = kernel.ListOption.Get("Web-localhost:88");
 
                 //サーバ起動

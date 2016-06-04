@@ -5,7 +5,6 @@ using Xunit;
 using Bjd.WebServer;
 using Bjd;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace WebServerTest
 {
@@ -15,6 +14,7 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             internal ContentType _contentType;
 
             public ServerFixture()
@@ -22,9 +22,9 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                Kernel kernel = new Kernel();
+                Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Web-localhost:88");
                 Conf conf = new Conf(option);
 

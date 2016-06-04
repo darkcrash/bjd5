@@ -25,6 +25,9 @@ namespace Bjd.Test
         /// </summary>
         private readonly string _targetName;
 
+        public TmpOption(string fileName) : this("", fileName)
+        {
+        }
 
         public TmpOption(string subDir, string fileName)
         {
@@ -48,6 +51,10 @@ namespace Bjd.Test
                 throw new Exception(string.Format("指定されたファイルが見つかりません。 {0}", _targetName));
             }
 
+        }
+
+        internal void Backup()
+        {
             // バックアップ作成
             if (File.Exists(_originName))
             {

@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Sockets
 {
@@ -38,9 +38,11 @@ namespace Bjd.Test.Sockets
 
         private class Execute
         {
+            TestService _service;
+
             public Execute()
             {
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService();
             }
 
             public void startStop(String title, ProtocolKind protocolKind)
@@ -64,7 +66,7 @@ namespace Bjd.Test.Sockets
                 const int listenMax = 10;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerTcp(new Kernel(), ProtocolKind.Tcp, ssl);
+                var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl);
 
                 Assert.Equal(sockServer.SockState, SockState.Idle);
 
@@ -94,7 +96,7 @@ namespace Bjd.Test.Sockets
                 const int port = 8881;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerUdp(new Kernel(), ProtocolKind.Udp, ssl);
+                var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);
 
                 Assert.Equal(sockServer.SockState, SockState.Idle);
 
@@ -138,7 +140,7 @@ namespace Bjd.Test.Sockets
                 const int listenMax = 10;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerTcp(new Kernel(), ProtocolKind.Tcp, ssl);
+                var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl);
 
                 ThreadStart action = () =>
                 {
@@ -173,7 +175,7 @@ namespace Bjd.Test.Sockets
                 const int port = 9991;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerUdp(new Kernel(), ProtocolKind.Udp, ssl);
+                var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);
 
                 ThreadStart action = () =>
                 {

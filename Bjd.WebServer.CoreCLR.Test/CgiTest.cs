@@ -10,7 +10,6 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace WebServerTest
 {
@@ -21,6 +20,7 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
 
@@ -29,9 +29,9 @@ namespace WebServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                var kernel = new Kernel();
+                var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Web-localhost:88");
                 var conf = new Conf(option);
 
@@ -71,8 +71,8 @@ namespace WebServerTest
         [Fact]
         public void EnvCgiTest()
         {
-
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 88, 10, null);
+            var kernel = _fixture._service.Kernel;
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\nHost: ws00\n\n"));
             int sec = 10; //CGI処理待ち時間（これで大丈夫?）

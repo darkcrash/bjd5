@@ -12,21 +12,25 @@ using Bjd.SmtpServer;
 using Bjd.Common;
 using Bjd;
 using System.Text;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
 
     public class MlGetTest : IDisposable
     {
+        private TestService _service; 
         private Ml _ml;
         private TsMailSave _tsMailSave;
+
 
         public  MlGetTest()
         {
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
             //var tsDir = new TsDir();
-            var kernel = new Kernel();
+            _service = TestService.CreateTestService();
+            var kernel = _service.Kernel;
             var logger = new Logger();
             var manageDir = TestUtil.GetTmpDir("TestDir");
 

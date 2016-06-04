@@ -11,13 +11,13 @@ using Bjd.Utils;
 using Bjd.Test;
 using Xunit;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace ProxyPop3ServerTest
 {
     public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.ServerFixture>
     {
         private TmpOption _op; //設定ファイルの上書きと退避
+        private TestService _service; 
         private Bjd.ProxyPop3Server.Server _v6Sv; //サーバ
         private Bjd.ProxyPop3Server.Server _v4Sv; //サーバ
 
@@ -46,14 +46,14 @@ namespace ProxyPop3ServerTest
             //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
             //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
-            TestUtil.CopyLangTxt();//BJD.Lang.txt
+            //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.ProxyPop3Server.CoreCLR.Test", "ProxyPop3ServerTest.ini");
 
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService(_op);
 
-            var kernel = new Kernel();
+            var kernel = _service.Kernel;
             var option = kernel.ListOption.Get("ProxyPop3");
             var conf = new Conf(option);
 
@@ -129,9 +129,9 @@ namespace ProxyPop3ServerTest
             int port = 8110;
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(_service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(_service.Kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
         }
 

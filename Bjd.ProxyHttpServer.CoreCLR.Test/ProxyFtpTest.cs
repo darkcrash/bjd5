@@ -11,7 +11,6 @@ using Bjd.Test;
 using Xunit;
 using Bjd.ProxyHttpServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace ProxyHttpServerTest
 {
@@ -20,6 +19,7 @@ namespace ProxyHttpServerTest
 
         public class ServerFixture : IDisposable
         {
+            internal TestService _service;
             private TmpOption _op; //設定ファイルの上書きと退避
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
@@ -31,9 +31,9 @@ namespace ProxyHttpServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                Kernel kernel = new Kernel();
+                Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("ProxyHttp");
                 Conf conf = new Conf(option);
 
@@ -83,8 +83,8 @@ namespace ProxyHttpServerTest
 
 
             //setUp
-
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var kernel = _fixture._service.Kernel;
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
 
             //cl.Send(Encoding.ASCII.GetBytes("GET ftp://ftp.iij.ad.jp/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
             cl.Send(Encoding.ASCII.GetBytes("GET ftp://ftp.jaist.ac.jp/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));

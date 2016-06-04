@@ -9,7 +9,6 @@ using Bjd.Test;
 using Bjd.FtpServer;
 using Xunit;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace FtpServerTest
 {
@@ -19,6 +18,7 @@ namespace FtpServerTest
     {
         public class InternalFixture : IDisposable
         {
+            public TestService _service;
             public TmpOption _op; //設定ファイルの上書きと退避
             public Server _v6Sv; //サーバ
             public Server _v4Sv; //サーバ
@@ -26,14 +26,14 @@ namespace FtpServerTest
             //[TestFixtureSetUp]
             public InternalFixture()
             {
-                TestUtil.CopyLangTxt();//BJD.Lang.txt
+                //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                Kernel kernel = new Kernel();
+                Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Ftp");
                 Conf conf = new Conf(option);
 
@@ -76,10 +76,11 @@ namespace FtpServerTest
         public ServerTest(ServerTest.InternalFixture fixture)
         {
             _fixture = fixture;
+            var kernel = _fixture._service.Kernel;
 
             //クライアント起動
-            _v4Cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 21, 10, null);
-            _v6Cl = Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), 21, 10, null);
+            _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 21, 10, null);
+            _v6Cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 21, 10, null);
             //クライアントの接続が完了するまで、少し時間がかかる
             //Thread.Sleep(10);
 
@@ -531,13 +532,14 @@ namespace FtpServerTest
         public void PORTコマンド()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
 
             int port = 256; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("PORT 127,0,0,1,0,256");
-            SockTcp dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            SockTcp dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             dl.Close();
@@ -560,6 +562,7 @@ namespace FtpServerTest
         public void PASVコマンド()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -574,7 +577,7 @@ namespace FtpServerTest
             int port = n * 256 + m;
 
             Thread.Sleep(10);
-            SockTcp dl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+            SockTcp dl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             Assert.Equal(dl.SockState, SockState.Connect);
             dl.Close();
         }
@@ -583,6 +586,7 @@ namespace FtpServerTest
         public void EPSVコマンド()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -592,7 +596,7 @@ namespace FtpServerTest
             //229 Entering Extended Passive Mode. (|||xxxx|)
             var tmp = cl.StringRecv(1, this).Split('|');
             var port = Convert.ToInt32(tmp[3]);
-            var dl = Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            var dl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
             Assert.Equal(dl.SockState, SockState.Connect);
             dl.Close();
         }
@@ -601,13 +605,14 @@ namespace FtpServerTest
         public void EPRTコマンド()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
 
             var port = 252; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("EPRT |2|::1|252|");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V6Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V6Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 EPRT command successful.\r\n");
 
             dl.Close();
@@ -710,6 +715,7 @@ namespace FtpServerTest
         public void RETRコマンド_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -717,7 +723,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -734,6 +740,7 @@ namespace FtpServerTest
         public void RETRコマンド_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -741,7 +748,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -756,6 +763,7 @@ namespace FtpServerTest
         public void STOR_DELEマンド_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -763,7 +771,7 @@ namespace FtpServerTest
             //port
             var port = 249;
             cl.StringSend("PORT 127,0,0,1,0,249");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(2, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -785,6 +793,7 @@ namespace FtpServerTest
         public void STOR_DELEマンド_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -792,7 +801,7 @@ namespace FtpServerTest
             //port
             var port = 249;
             cl.StringSend("PORT 127,0,0,1,0,249");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -815,6 +824,7 @@ namespace FtpServerTest
         public void UPユーザはRETRに失敗する_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user2", cl);
@@ -822,7 +832,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -840,6 +850,7 @@ namespace FtpServerTest
         public void UPユーザはRETRに失敗する_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user2", cl);
@@ -847,7 +858,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -923,6 +934,7 @@ namespace FtpServerTest
         public void DOWNユーザはSTORに失敗する_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user3", cl);
@@ -930,7 +942,7 @@ namespace FtpServerTest
             //port
             var port = 249;
             cl.StringSend("PORT 127,0,0,1,0,249");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -943,6 +955,7 @@ namespace FtpServerTest
         public void DOWNユーザはSTORに失敗する_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user3", cl);
@@ -950,7 +963,7 @@ namespace FtpServerTest
             //port
             var port = 249;
             cl.StringSend("PORT 127,0,0,1,0,249");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -991,6 +1004,7 @@ namespace FtpServerTest
         public void DOWNユーザはRETRに成功する_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user3", cl);
@@ -998,7 +1012,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -1015,6 +1029,7 @@ namespace FtpServerTest
         public void DOWNユーザはRETRに成功する_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user3", cl);
@@ -1022,7 +1037,7 @@ namespace FtpServerTest
             //port
             var port = 250;
             cl.StringSend("PORT 127,0,0,1,0,250");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -1099,6 +1114,7 @@ namespace FtpServerTest
         public void LISTコマンド_V4()
         {
             var cl = _v4Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -1106,7 +1122,7 @@ namespace FtpServerTest
             //port
             var port = 251;
             cl.StringSend("PORT 127,0,0,1,0,251");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //list
@@ -1127,6 +1143,7 @@ namespace FtpServerTest
         public void LISTコマンド_V6()
         {
             var cl = _v6Cl;
+            var kernel = _fixture._service.Kernel;
 
             //共通処理(ログイン成功)
             Login("user1", cl);
@@ -1134,7 +1151,7 @@ namespace FtpServerTest
             //port
             var port = 251;
             cl.StringSend("PORT 127,0,0,1,0,251");
-            var dl = SockServerTcp.CreateConnection(new Kernel(), new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //list

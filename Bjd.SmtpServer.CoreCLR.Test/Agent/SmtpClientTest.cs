@@ -8,6 +8,7 @@ using Bjd.Net;
 using Xunit;
 using Bjd.Test;
 using System.IO;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test.Agent
 {
@@ -68,11 +69,12 @@ namespace Bjd.SmtpServer.Test.Agent
 
         private SmtpClient CreateSmtpClient(InetKind inetKind)
         {
+            var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return new SmtpClient(new Ip(IpKind.V4Localhost), 9025, 3, this);
+                return new SmtpClient(kernel, new Ip(IpKind.V4Localhost), 9025, 3, this);
             }
-            return new SmtpClient(new Ip(IpKind.V6Localhost), 9025, 3, this);
+            return new SmtpClient(kernel, new Ip(IpKind.V6Localhost), 9025, 3, this);
         }
 
         [Theory]

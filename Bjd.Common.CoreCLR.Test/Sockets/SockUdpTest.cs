@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Sockets
 {
@@ -14,10 +14,11 @@ namespace Bjd.Test.Sockets
 
     public class SockUdpTest
     {
+        TestService _service;
 
         public SockUdpTest()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
         private class EchoServer : ThreadBase
@@ -28,10 +29,10 @@ namespace Bjd.Test.Sockets
             private readonly int _port;
             private readonly Ssl _ssl = null;
 
-            public EchoServer(String addr, int port) : base(null)
+            public EchoServer(Kernel kernel, String addr, int port) : base(null)
             {
                 //_sockServer = new SockServer(new Kernel(),ProtocolKind.Udp,_ssl);
-                _sockServer = new SockServerUdp(new Kernel(), ProtocolKind.Udp, _ssl);
+                _sockServer = new SockServerUdp(kernel, ProtocolKind.Udp, _ssl);
                 _addr = addr;
                 _port = port;
             }
@@ -101,7 +102,7 @@ namespace Bjd.Test.Sockets
             //setUp
             const string addr = "127.0.0.1";
             const int port = 53;
-            var echoServer = new EchoServer(addr, port);
+            var echoServer = new EchoServer(_service.Kernel, addr, port);
             echoServer.Start();
 
             const int timeout = 3;
@@ -117,7 +118,7 @@ namespace Bjd.Test.Sockets
             var ip = new Ip(addr);
             for (var i = 0; i < loop; i++)
             {
-                var sockUdp = new SockUdp(new Kernel(), ip, port, null, tmp);
+                var sockUdp = new SockUdp(_service.Kernel, ip, port, null, tmp);
                 //                while (sockUdp.Length() == 0){
                 //                    Thread.Sleep(10);
                 //                }

@@ -19,15 +19,8 @@ namespace Bjd.Test
 
         public static String ProjectDirectory()
         {
+            //return System.IO.Directory.GetParent(AppContext.BaseDirectory).FullName;
             return System.IO.Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).FullName;
-        }
-
-        //BJD.Lang.txtを作業ディレクトリにコピーする
-        public static void CopyLangTxt()
-        {
-            var src = string.Format("{0}\\BJD.Lang.txt", ProjectDirectory() + "\\Bjd.CoreCLR");
-            var dst = string.Format("{0}\\BJD.Lang.txt", Directory.GetCurrentDirectory());
-            File.Copy(src, dst, true);
         }
 
         //テンポラリディレクトリの作成<br>
@@ -71,7 +64,7 @@ namespace Bjd.Test
         //テスト用のダミーのConf生成
         public static Conf CreateConf(String optionName)
         {
-            var kernel = new Kernel();
+            var kernel = new Kernel(new Enviroments());
             if (optionName == "OptionSample")
             {
                 return new Conf(new OptionSample(kernel, ""));

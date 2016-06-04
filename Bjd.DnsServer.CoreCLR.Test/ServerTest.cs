@@ -13,7 +13,6 @@ using Bjd.Test;
 using Bjd.DnsServer;
 using Xunit;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace DnsServerTest
 {
@@ -24,12 +23,13 @@ namespace DnsServerTest
     {
 
         private TmpOption _op; //設定ファイルの上書きと退避
+        private TestService _service;
         private Server _sv; //サーバ
 
         //[TestFixtureSetUp]
         public ServerTest()
         {
-            TestUtil.CopyLangTxt();//BJD.Lang.txt
+            //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             //named.caのコピー
             //var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
@@ -41,11 +41,12 @@ namespace DnsServerTest
             //設定ファイルの退避と上書き
             _op = new TmpOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
 
-
-            TestService.ServiceTest();
+            //TestService.ServiceTest();
+            _service = TestService.CreateTestService(_op);
 
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
-            Kernel kernel = new Kernel();
+            //Kernel kernel = new Kernel();
+            Kernel kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Dns");
             Conf conf = new Conf(option);
 
@@ -75,6 +76,8 @@ namespace DnsServerTest
         // rd = 再帰要求
         private PacketDns lookup(DnsType dnsType, string name, bool rd = false)
         {
+            var kernel = _service.Kernel;
+
             //乱数で識別子生成
             var id = (ushort)(new Random()).Next(100);
             //送信パケット生成
@@ -82,7 +85,7 @@ namespace DnsServerTest
             //質問フィールド追加
             sp.AddRr(RrKind.QD, new RrQuery(name, dnsType));
             //クライアントソケット生成、及び送信
-            var cl = new SockUdp(new Kernel(), new Ip(IpKind.V4Localhost), 53, null, sp.GetBytes());
+            var cl = new SockUdp(kernel, new Ip(IpKind.V4Localhost), 53, null, sp.GetBytes());
             //受信
             //byte[] recvBuf = cl.Recv(1000);
             var recvBuf = cl.Recv(3);

@@ -9,7 +9,6 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Test;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -23,21 +22,22 @@ namespace Bjd.SmtpServer.Test
     {
 
         private readonly TmpOption _op; //設定ファイルの上書きと退避
+        public readonly TestService _service;
         private readonly OneServer _v6Sv; //サーバ
         private readonly OneServer _v4Sv; //サーバ
 
         public TestServer(TestServerType type, String iniSubDir, String iniFileName)
         {
-            TestUtil.CopyLangTxt();//BJD.Lang.txt
+            //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
             var confName = type == TestServerType.Pop ? "Pop3" : "Smtp";
 
             //設定ファイルの退避と上書き
             _op = new TmpOption(iniSubDir, iniFileName);
 
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService(_op);
 
-            var kernel = new Kernel();
+            var kernel = _service.Kernel;
             var option = kernel.ListOption.Get(confName);
             var conf = new Conf(option);
 

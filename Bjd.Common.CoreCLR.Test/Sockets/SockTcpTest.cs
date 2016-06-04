@@ -5,16 +5,17 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Sockets
 {
 
     public class SockTcpTest : ILife
     {
+        TestService _service;
         public SockTcpTest()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
         //テスト用のEchoサーバ
@@ -26,10 +27,10 @@ namespace Bjd.Test.Sockets
             private readonly int _port;
             private readonly Ssl _ssl = null;
 
-            public EchoServer(String addr, int port) : base(null)
+            public EchoServer(Kernel kernel, String addr, int port) : base(null)
             {
                 //_sockServer = new SockServer(new Kernel(),ProtocolKind.Tcp,_ssl);
-                _sockServer = new SockServerTcp(new Kernel(), ProtocolKind.Tcp, _ssl);
+                _sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, _ssl);
                 _addr = addr;
                 _port = port;
             }
@@ -91,10 +92,10 @@ namespace Bjd.Test.Sockets
             //setUp
             const string addr = "127.0.0.1";
             const int port = 9982;
-            var sv = new EchoServer(addr, port);
+            var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
 
-            var sut = new SockTcp(new Kernel(), new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
             const int max = 1000;
             for (int i = 0; i < 3; i++)
             {
@@ -122,7 +123,7 @@ namespace Bjd.Test.Sockets
             const string addr = "127.0.0.1";
             const int port = 9981;
 
-            var echoServer = new EchoServer(addr, port);
+            var echoServer = new EchoServer(_service.Kernel, addr, port);
             echoServer.Start();
 
             const int timeout = 100;
@@ -135,7 +136,7 @@ namespace Bjd.Test.Sockets
             {
                 Assert.False(true, ex.Message);
             }
-            var sockTcp = new SockTcp(new Kernel(), ip, port, timeout, null);
+            var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
             const int max = 1000;
             const int loop = 3;
@@ -173,9 +174,9 @@ namespace Bjd.Test.Sockets
             const string addr = "127.0.0.1";
             const int port = 9993;
 
-            var sv = new EchoServer(addr, port);
+            var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
-            var sut = new SockTcp(new Kernel(), new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
             sut.StringSend("本日は晴天なり", "UTF-8");
             Thread.Sleep(10);
 
@@ -199,9 +200,9 @@ namespace Bjd.Test.Sockets
             const string addr = "127.0.0.1";
             const int port = 9993;
 
-            var sv = new EchoServer(addr, port);
+            var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
-            var sut = new SockTcp(new Kernel(), new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
             sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
             Thread.Sleep(10);
 

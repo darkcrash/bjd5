@@ -5,10 +5,10 @@ using System.Reflection;
 
 namespace Bjd.Services
 {
-    public class Service
+    public class DefaultService
     {
         Kernel _kernel;
-        static Service instance = new Service();
+        static DefaultService instance = new DefaultService();
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
 
         public static void ServiceMain(IServiceProvider sb)
@@ -21,66 +21,66 @@ namespace Bjd.Services
 
             // Add console trace
             System.Diagnostics.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
-            Trace.TraceInformation("Service.ServiceMain Start");
+            Trace.TraceInformation("DefaultService.ServiceMain Start");
 
             // Define Initialize
             Define.Initialize(sb);
 
             // service start
-            Service.instance.OnStart();
+            DefaultService.instance.OnStart();
             Console.CancelKeyPress += Console_CancelKeyPress;
             signal.WaitOne();
-            Trace.TraceInformation("Service.ServiceMain End");
+            Trace.TraceInformation("DefaultService.ServiceMain End");
         }
 
         public static void Restart()
         {
-            Trace.TraceInformation("Service.Restart Start");
+            Trace.TraceInformation("DefaultService.Restart Start");
             instance.OnStop();
             instance.OnStart();
-            Trace.TraceInformation("Service.Restart End");
+            Trace.TraceInformation("DefaultService.Restart End");
         }
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Trace.TraceInformation("Service.ConsoleCancel Start");
+            Trace.TraceInformation("DefaultService.ConsoleCancel Start");
             e.Cancel = true;
-            Service.instance.OnStop();
+            DefaultService.instance.OnStop();
             signal.Set();
-            Trace.TraceInformation("Service.ConsoleCancel End");
+            Trace.TraceInformation("DefaultService.ConsoleCancel End");
         }
 
         protected void OnStart()
         {
-            Trace.TraceInformation("Service.OnStart Start");
-            _kernel = new Kernel();
+            Trace.TraceInformation("DefaultService.OnStart Start");
+            _kernel = new Kernel(new Enviroments());
             _kernel.Start();
             //_kernel.MenuOnClick("StartStop_Start");
-            Trace.TraceInformation("Service.OnStart End");
+            Trace.TraceInformation("DefaultService.OnStart End");
         }
         protected void OnPause()
         {
-            Trace.TraceInformation("Service.OnPause Start");
+            Trace.TraceInformation("DefaultService.OnPause Start");
             //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
-            Trace.TraceInformation("Service.OnPause End");
+            Trace.TraceInformation("DefaultService.OnPause End");
         }
         protected void OnContinue()
         {
-            Trace.TraceInformation("Service.OnContinue Start");
+            Trace.TraceInformation("DefaultService.OnContinue Start");
             //_kernel.MenuOnClick("StartStop_Start");
             _kernel.Start();
-            Trace.TraceInformation("Service.OnContinue End");
+            Trace.TraceInformation("DefaultService.OnContinue End");
         }
 
         protected void OnStop()
         {
-            Trace.TraceInformation("Service.OnStop Start");
+            Trace.TraceInformation("DefaultService.OnStop Start");
             //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
             _kernel.Dispose();
             _kernel = null;
-            Trace.TraceInformation("Service.OnStop End");
+            Trace.TraceInformation("DefaultService.OnStop End");
         }
 
     }

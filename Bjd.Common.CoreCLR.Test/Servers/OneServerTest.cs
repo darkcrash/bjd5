@@ -10,21 +10,24 @@ using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
 using Bjd.Controls;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Servers
 {
 
     public class OneServerTest
     {
+
+        TestService _service;
+
         public OneServerTest()
         {
-            TestService.ServiceTest();
+            this._service = TestService.CreateTestService();
         }
 
         private class MyServer : OneServer
         {
-            public MyServer(Conf conf, OneBind oneBind) : base(new Kernel(), conf, oneBind)
+            public MyServer(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind)
             {
 
             }
@@ -126,6 +129,7 @@ namespace Bjd.Test.Servers
         [Fact]
         public void start_stopの繰り返し_負荷テスト()
         {
+            var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
@@ -136,7 +140,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(conf, oneBind);
+            var myServer = new MyServer(kernel, conf, oneBind);
 
             for (var i = 0; i < 5; i++)
             {
@@ -158,6 +162,7 @@ namespace Bjd.Test.Servers
         [Fact]
         public void start_stopの繰り返し_負荷テスト_UDP()
         {
+            var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
@@ -168,7 +173,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(conf, oneBind);
+            var myServer = new MyServer(kernel, conf, oneBind);
 
             for (var i = 0; i < 5; i++)
             {
@@ -189,6 +194,7 @@ namespace Bjd.Test.Servers
         [Fact]
         public void new及びstart_stop_disposeの繰り返し_負荷テスト()
         {
+            var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
@@ -201,7 +207,7 @@ namespace Bjd.Test.Servers
 
             for (var i = 0; i < 5; i++)
             {
-                var myServer = new MyServer(conf, oneBind);
+                var myServer = new MyServer(kernel, conf, oneBind);
 
                 myServer.Start();
                 Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
@@ -218,6 +224,7 @@ namespace Bjd.Test.Servers
         [Fact]
         public void new及びstart_stop_disposeの繰り返し_負荷テスト_UDP()
         {
+            var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
@@ -230,7 +237,7 @@ namespace Bjd.Test.Servers
 
             for (var i = 0; i < 5; i++)
             {
-                var myServer = new MyServer(conf, oneBind);
+                var myServer = new MyServer(kernel, conf, oneBind);
 
                 myServer.Start();
                 Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
@@ -248,6 +255,7 @@ namespace Bjd.Test.Servers
         [Fact]
         public void multipleを超えたリクエストは破棄される事をcountで確認する()
         {
+            var kernel = _service.Kernel;
 
             const int multiple = 5;
             const int port = 8889;
@@ -261,7 +269,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(conf, oneBind);
+            var myServer = new MyServer(kernel, conf, oneBind);
             myServer.Start();
 
             var ar = new List<MyClient>();

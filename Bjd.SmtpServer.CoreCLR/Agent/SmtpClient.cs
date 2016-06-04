@@ -17,6 +17,8 @@ namespace Bjd.SmtpServer
         private readonly ILife _iLife;
 
         private readonly int _sec; //タイムアウト
+        private readonly Kernel _kernel;
+
         private SockTcp _sockTcp;
 
         
@@ -26,7 +28,8 @@ namespace Bjd.SmtpServer
 
         public SmtpClientStatus Status { get; private set; }
         
-        public SmtpClient(Ip ip, int port, int sec, ILife iLife){
+        public SmtpClient(Kernel kernel, Ip ip, int port, int sec, ILife iLife){
+            _kernel = kernel;
             _ip = ip;
             _port = port;
             _sec = sec;
@@ -43,9 +46,9 @@ namespace Bjd.SmtpServer
                 return false;
             }
             if (_ip.InetKind == InetKind.V4) {
-                _sockTcp = Inet.Connect(new Kernel(), _ip, _port, _sec + 3, null);
+                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec + 3, null);
             } else {
-                _sockTcp = Inet.Connect(new Kernel(), _ip, _port, _sec + 3, null);
+                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec + 3, null);
             }
             if (_sockTcp.SockState == SockState.Connect) {
                 //220受信

@@ -7,23 +7,23 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Test.Services;
+using Bjd.Services;
 
 namespace Bjd.Test.Servers
 {
 
     public class ServerTest
     {
-
+        TestService _service;
         public ServerTest()
         {
-            TestService.ServiceTest();
+            _service = TestService.CreateTestService();
         }
 
         //サーバ動作確認用
         private class MyServer : OneServer
         {
-            public MyServer(Conf conf, OneBind oneBind) : base(new Kernel(), conf, oneBind)
+            public MyServer(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind)
             {
             }
 
@@ -77,7 +77,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(conf, oneBind);
+            var myServer = new MyServer(_service.Kernel, conf, oneBind);
             myServer.Start();
             for (var i = 10; i > 0; i--)
             {

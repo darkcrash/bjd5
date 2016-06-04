@@ -12,7 +12,6 @@ using Xunit;
 using Newtonsoft.Json;
 using Bjd.WebApiServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace WebApiServerTest
 {
@@ -24,6 +23,7 @@ namespace WebApiServerTest
         {
 
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
 
@@ -32,11 +32,11 @@ namespace WebApiServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
                 //MailBoxのみ初期化する特別なテスト用Kernelコンストラクタ
                 //var kernel = new Kernel("MailBox");
-                var kernel = new Kernel();
+                var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
 
@@ -87,11 +87,12 @@ namespace WebApiServerTest
         SockTcp CreateClient(InetKind inetKind)
         {
             var port = 5050;
+            var kernel = _fixture._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
         }
 
         [Theory]

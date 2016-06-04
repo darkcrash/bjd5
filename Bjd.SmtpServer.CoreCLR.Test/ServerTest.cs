@@ -43,11 +43,12 @@ namespace Bjd.SmtpServer.Test
         SockTcp CreateClient(InetKind inetKind)
         {
             const int port = 8825; //ウイルススキャンにかかるため25を避ける
+            var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
         }
 

@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Bjd;
+using Bjd.Net;
+using Bjd.Net.Sockets;
+using Bjd.Options;
+using Bjd.Services;
+using Bjd.SmtpServer;
+using Bjd.Test;
+using Bjd.Utils;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Bjd;
-using Bjd.Net;
-using Bjd.Options;
-using Bjd.Net.Sockets;
-using Bjd.Utils;
-using Bjd.Test;
 using Xunit;
-using Bjd.SmtpServer;
-using System.Collections.Generic;
-using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -21,6 +20,7 @@ namespace Bjd.SmtpServer.Test
         public class ServerFixture : IDisposable
         {
             public TmpOption _op; //設定ファイルの上書きと退避
+            public TestService _service;
             public Server _v4Sv; //サーバ
             public Server _v6Sv; //サーバ
 
@@ -34,9 +34,9 @@ namespace Bjd.SmtpServer.Test
                 //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
                 _op = new TmpOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                var kernel = new Kernel();
+                var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Smtp");
                 var conf = new Conf(option);
 
@@ -100,9 +100,9 @@ namespace Bjd.SmtpServer.Test
             int port = 8825;  //ウイルススキャンにかかるため25を避ける
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(_server._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(_server._service.Kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
         }
 

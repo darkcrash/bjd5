@@ -13,7 +13,6 @@ using Xunit;
 using Bjd.Pop3Server;
 using System.Collections.Generic;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace Pop3ServerTest
 {
@@ -33,6 +32,7 @@ namespace Pop3ServerTest
         public class InternalFixture : IDisposable
         {
             public TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
 
@@ -44,16 +44,16 @@ namespace Pop3ServerTest
                 //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
-                TestUtil.CopyLangTxt();//BJD.Lang.txt
+                //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.Pop3Server.CoreCLR.Test", "Pop3ServerTest.ini");
 
                 try
                 {
-                    TestService.ServiceTest();
+                    _service = TestService.CreateTestService(_op);
 
-                    var kernel = new Kernel();
+                    var kernel = _service.Kernel;
                     var option = kernel.ListOption.Get("Pop3");
                     var conf = new Conf(option);
 
@@ -141,11 +141,12 @@ namespace Pop3ServerTest
         SockTcp CreateClient(InetKind inetKind)
         {
             int port = 9110;
+            var kernel = _fixture._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
         }
 

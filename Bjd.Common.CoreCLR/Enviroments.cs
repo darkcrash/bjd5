@@ -10,14 +10,7 @@ namespace Bjd
     /// </summary>
     public class Enviroments
     {
-        public string ExecutableDirectory
-        {
-            get
-            {
-                return Define.ExecutableDirectory;
-            }
-        }
-
+        public string ExecutableDirectory { get; internal set; } = Define.ExecutableDirectory;
 
         public string ServerAddress
         {

@@ -13,7 +13,6 @@ using System;
 using System.Diagnostics;
 using Bjd.ProxyHttpServer;
 using Bjd.Services;
-using Bjd.Test.Services;
 
 namespace ProxyHttpServerTest
 {
@@ -24,13 +23,14 @@ namespace ProxyHttpServerTest
         public class ServerFixture : IDisposable
         {
             private TmpOption _op; //設定ファイルの上書きと退避
+            internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
             internal string srcDir = "";
 
             public ServerFixture()
             {
-                TestUtil.CopyLangTxt();//BJD.Lang.txt
+                //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //srcDir = string.Format("{0}\\ProxyHttpServerTest", TestUtil.ProjectDirectory());
                 srcDir = AppContext.BaseDirectory;
@@ -38,9 +38,9 @@ namespace ProxyHttpServerTest
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
 
-                TestService.ServiceTest();
+                _service = TestService.CreateTestService(_op);
 
-                Kernel kernel = new Kernel();
+                Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("ProxyHttp");
                 Conf conf = new Conf(option);
 
@@ -120,8 +120,9 @@ namespace ProxyHttpServerTest
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
+            var kernel = _fixture._service.Kernel;
 
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
             cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
@@ -148,16 +149,15 @@ namespace ProxyHttpServerTest
         [Fact]
         public void ConnectTest_V6からV4へのプロキシ()
         {
-
-
             //setUp
             //ダミーWebサーバ
             const int webPort = 778;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
+            var kernel = _fixture._service.Kernel;
 
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V6Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
             cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
@@ -189,9 +189,10 @@ namespace ProxyHttpServerTest
         [InlineData("www.google.co.jp")]
         public void SslTest(string hostname)
         {
+            var kernel = _fixture._service.Kernel;
 
             //setUp
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
             cl.Send(Encoding.ASCII.GetBytes(string.Format("CONNECT {0}:443/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", hostname)));
 
             //exercise
@@ -229,10 +230,11 @@ namespace ProxyHttpServerTest
             File.WriteAllLines(path, buf);
 
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
+            var kernel = _fixture._service.Kernel;
 
             //試験用クライアント
 
-            var cl = Inet.Connect(new Kernel(), new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
 
             //計測
             var sw = new Stopwatch();

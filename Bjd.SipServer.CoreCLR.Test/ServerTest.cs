@@ -5,27 +5,31 @@ using Bjd.Options;
 using Bjd.Test;
 using Xunit;
 using Bjd.SipServer;
+using Bjd.Services;
 
 namespace SipServerTest
 {
-    public class ServerTest: IDisposable, IClassFixture<ServerTest.ServerFixture>
+    public class ServerTest : IDisposable, IClassFixture<ServerTest.ServerFixture>
     {
 
         public class ServerFixture : IDisposable
         {
-            private  TmpOption _op; //設定ファイルの上書きと退避
+            private TmpOption _op; //設定ファイルの上書きと退避
+            private TestService _service;
+
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
-                                         //private SockTcp _v6Cl; //クライアント
-                                         //private SockTcp _v4Cl; //クライアント
+                                   //private SockTcp _v6Cl; //クライアント
+                                   //private SockTcp _v4Cl; //クライアント
 
             public ServerFixture()
             {
-                TestUtil.CopyLangTxt();//BJD.Lang.txt
+                //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
                 //設定ファイルの退避と上書き
                 _op = new TmpOption("Bjd.SipServer.CoreCLR.Test", "SipServerTest.ini");
-                var kernel = new Kernel();
+                _service = TestService.CreateTestService(_op);
+                var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Sip");
                 var conf = new Conf(option);
 
@@ -60,7 +64,7 @@ namespace SipServerTest
 
         }
 
-        public  void Dispose()
+        public void Dispose()
         {
 
 
