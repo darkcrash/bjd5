@@ -8,7 +8,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>83ca1be5-58ab-48f9-91d6-9b4c22322f3a</ProjectGuid>
     <RootNamespace>Bjd.DhcpServer.CoreCLR.Test</RootNamespace>
-    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>

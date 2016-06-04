@@ -3,14 +3,27 @@
   "description": "Bjd.CoreCLR Console Application",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "tftp"
+    ]
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "copyToOutput": [
+      "BJD.Lang.txt",
+      "example.pfx",
+      "named.ca",
+      "Option.def",
+      "Option.ini"
+    ]
+  },
   "dependencies": {
     "Microsoft.NETCore.App": {
       "version": "1.0.0-rc2-3002702",
-      "type": "default"
+      "type": "platform"
     }
-  },
-  "commands": {
-    "bjd": "Bjd.Common.CoreCLR"
   },
   "frameworks": {
     "netcoreapp1.0": {

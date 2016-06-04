@@ -8,7 +8,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>65e3a9c9-debc-40d0-9de0-e3c3aa489db2</ProjectGuid>
     <RootNamespace>Bjd.Pop3Server.CoreCLR.Test</RootNamespace>
-    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>

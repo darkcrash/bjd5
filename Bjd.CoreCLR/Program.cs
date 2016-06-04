@@ -7,11 +7,6 @@ namespace Bjd.Common
     public class Program
     {
 
-        private static IServiceProvider _serviceProvider;
-        public Program(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
@@ -20,7 +15,7 @@ namespace Bjd.Common
             try
             {
 
-                DefaultService.ServiceMain(_serviceProvider);
+                DefaultService.ServiceMain();
 
             }
             catch (Exception ex)
