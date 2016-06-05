@@ -49,6 +49,8 @@ namespace WebServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
+                _service.Dispose();
+
             }
 
         }
@@ -63,14 +65,13 @@ namespace WebServerTest
 
         public void Dispose()
         {
-
         }
 
 
         [Fact]
         public void ステータス情報_ToString_の出力確認_V4()
         {
-
+            System.Threading.Tasks.Task.Delay(200).Wait();
             var sv = _fixture._v4Sv;
             var expected = "+ サービス中 \t    Web-localhost:88\t[127.0.0.1\t:TCP 88]\tThread";
 
@@ -84,6 +85,7 @@ namespace WebServerTest
         [Fact]
         public void ステータス情報_ToString_の出力確認_V6()
         {
+            System.Threading.Tasks.Task.Delay(200).Wait();
 
             var sv = _fixture._v6Sv;
             var expected = "+ サービス中 \t    Web-localhost:88\t[::1\t:TCP 88]\tThread";
@@ -129,7 +131,7 @@ namespace WebServerTest
 
             //exercise
             _v4Cl.Send(Encoding.ASCII.GetBytes("GET / HTTP/1.1\n\n"));
-            var buf = _v4Cl.LineRecv(5, this);
+            var buf = _v4Cl.LineRecv(10, this);
             var actual = Encoding.ASCII.GetString(buf);
             //verify
             Assert.Equal(expected, actual);

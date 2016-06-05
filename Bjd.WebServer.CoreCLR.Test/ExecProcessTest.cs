@@ -19,7 +19,10 @@ namespace WebServerTest
             directory = _service.Kernel.Enviroment.ExecutableDirectory;
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            _service.Dispose();
+        }
 
         [Theory]
         [InlineData(1000000, 1)] //1で1Mbyte

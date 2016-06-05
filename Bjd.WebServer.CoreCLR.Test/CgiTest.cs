@@ -51,6 +51,8 @@ namespace WebServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
+                _service.Dispose();
+
             }
 
         }
