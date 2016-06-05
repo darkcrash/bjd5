@@ -18,25 +18,14 @@ namespace Pop3ServerTest
 {
     public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.InternalFixture>
     {
-
         private ServerTest.InternalFixture _fixture;
+        internal TestService _service;
+        internal Server _v6Sv; //サーバ
+        internal Server _v4Sv; //サーバ
 
-        //        [TestFixtureSetUp]
-        //        public static void BeforeClass() {
-        //        }
-        //
-        //        [TestFixtureTearDown]
-        //        public static void AfterClass() {
-        //        }
 
         public class InternalFixture : IDisposable
         {
-            internal TestService _service;
-            internal Server _v6Sv; //サーバ
-            internal Server _v4Sv; //サーバ
-
-
-            //[TestFixtureSetUp]
             public InternalFixture()
             {
                 //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
@@ -44,49 +33,6 @@ namespace Pop3ServerTest
 
                 try
                 {
-                    _service = TestService.CreateTestService();
-                    _service.SetOption("Pop3ServerTest.ini");
-
-                    var kernel = _service.Kernel;
-                    var option = kernel.ListOption.Get("Pop3");
-                    var conf = new Conf(option);
-
-                    //サーバ起動
-                    _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
-                    _v4Sv.Start();
-
-                    _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
-                    _v6Sv.Start();
-
-                    //メールボックスへのデータセット
-                    //var srcDir = @"c:\tmp2\bjd5\Pop3ServerTest\";
-                    //var dstDir = @"c:\tmp2\bjd5\Pop3ServerTest\mailbox\user2\";
-                    //File.Copy(srcDir + "DF_00635026511425888292", dstDir + "DF_00635026511425888292", true);
-                    //File.Copy(srcDir + "DF_00635026511765086924", dstDir + "DF_00635026511765086924", true);
-                    //File.Copy(srcDir + "MF_00635026511425888292", dstDir + "MF_00635026511425888292", true);
-                    //File.Copy(srcDir + "MF_00635026511765086924", dstDir + "MF_00635026511765086924", true);
-
-                    //var srcDir = AppContext.BaseDirectory;
-                    //var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, "user2");
-                    //System.IO.Directory.CreateDirectory(dstDir);
-                    //mailboxPath = dstDir;
-                    _service.CreateMailbox("user2");
-
-                    var testFiles = new List<string>();
-                    testFiles.Add("DF_00635026511425888292");
-                    testFiles.Add("DF_00635026511765086924");
-                    testFiles.Add("MF_00635026511425888292");
-                    testFiles.Add("MF_00635026511765086924");
-
-                    foreach (var f in testFiles)
-                    {
-                        //var srcFile = System.IO.Path.Combine(srcDir, f);
-                        //var dstFile = System.IO.Path.Combine(dstDir, f);
-                        //File.Copy(srcFile, dstFile, true);
-                        _service.AddMail(f, "user2");
-                    }
-
-                    Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
 
                 }
                 catch
@@ -96,17 +42,9 @@ namespace Pop3ServerTest
 
             }
 
-
-            //[TestFixtureTearDown]
             public void Dispose()
             {
 
-                //サーバ停止
-                _v4Sv.Stop();
-                _v6Sv.Stop();
-
-                _v4Sv.Dispose();
-                _v6Sv.Dispose();
 
             }
 
@@ -116,20 +54,54 @@ namespace Pop3ServerTest
         {
             _fixture = fixture;
 
+
+            _service = TestService.CreateTestService();
+            _service.SetOption("Pop3ServerTest.ini");
+
+            var kernel = _service.Kernel;
+            var option = kernel.ListOption.Get("Pop3");
+            var conf = new Conf(option);
+
+            //サーバ起動
+            _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+            _v4Sv.Start();
+
+            _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+            _v6Sv.Start();
+
+            //メールボックスへのデータセット
+            _service.CreateMailbox("user1");
+            _service.CreateMailbox("user2");
+
+            _service.AddMail("DF_00635026511425888292", "user2");
+            _service.AddMail("DF_00635026511765086924", "user2");
+            _service.AddMail("MF_00635026511425888292", "user2");
+            _service.AddMail("MF_00635026511765086924", "user2");
+
+            Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         //[TearDown]
         public void Dispose()
         {
+            //サーバ停止
+            _v4Sv.Stop();
+            _v6Sv.Stop();
+
+            _v4Sv.Dispose();
+            _v6Sv.Dispose();
+
+            _service.Dispose();
 
         }
 
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            int port = 9110;
-            var kernel = _fixture._service.Kernel;
+            int port = 9210;
+            var kernel = _service.Kernel;
             if (inetKind == InetKind.V4)
             {
                 return Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
@@ -171,8 +143,8 @@ namespace Pop3ServerTest
         public void ステータス情報_ToString_の出力確認_V4()
         {
             //setUp
-            var sv = _fixture._v4Sv;
-            var expected = "+ サービス中 \t                Pop3\t[127.0.0.1\t:TCP 9110]\tThread";
+            var sv = _v4Sv;
+            var expected = "+ サービス中 \t                Pop3\t[127.0.0.1\t:TCP 9210]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 58);
@@ -186,8 +158,8 @@ namespace Pop3ServerTest
         {
 
             //setUp
-            var sv = _fixture._v6Sv;
-            var expected = "+ サービス中 \t                Pop3\t[::1\t:TCP 9110]\tThread";
+            var sv = _v6Sv;
+            var expected = "+ サービス中 \t                Pop3\t[::1\t:TCP 9210]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 52);
@@ -307,7 +279,7 @@ namespace Pop3ServerTest
             //exercise verify
             Login("user1", "user1", 0, 0, cl);
             cl.StringSend("CHPS ABCabc#123"); //パスワード変更
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password changed.\r\n");
+            Assert.Equal(cl.StringRecv(5, this), "+OK Password changed.\r\n");
             cl.StringSend("QUIT"); //コネクション終了
 
             cl = CreateClient(inetKind); //再接続
@@ -387,7 +359,7 @@ namespace Pop3ServerTest
                 sb.Append(string.Format("{0:x2}", result[i]));
             }
             cl.StringSend("APOP user1 " + sb.ToString());
-            var actual = cl.StringRecv(3, this);
+            var actual = cl.StringRecv(5, this);
 
             //verify
             Assert.Equal(expected, actual);
@@ -487,7 +459,7 @@ namespace Pop3ServerTest
             //exercise
             Login("user1", "user1", 0, 0, cl);
             cl.StringSend("LIST");
-            var actual = Inet.RecvLines(cl, 3, this);
+            var actual = Inet.RecvLines(cl, 5, this);
 
             //verify
             Assert.Equal(actual.Count, 2);
@@ -912,7 +884,7 @@ namespace Pop3ServerTest
             //exercise
             Login("user2", "user2", 2, 633, cl);
             cl.StringSend("DELE ABC");
-            var actual = cl.StringRecv(3, this);
+            var actual = cl.StringRecv(5, this);
 
             //verify
             Assert.Equal(expected, actual);
@@ -962,7 +934,7 @@ namespace Pop3ServerTest
             cl.StringSend("RSET");
             cl.StringRecv(3, this);
             cl.StringSend("LIST");
-            var actual = cl.StringRecv(3, this);
+            var actual = cl.StringRecv(5, this);
 
             //verify
             Assert.Equal(expected, actual);
