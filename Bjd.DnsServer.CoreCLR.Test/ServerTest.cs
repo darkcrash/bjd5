@@ -22,30 +22,28 @@ namespace DnsServerTest
     public class ServerTest : IDisposable
     {
 
-        private TestOption _op; //設定ファイルの上書きと退避
         private TestService _service;
         private Server _sv; //サーバ
 
         //[TestFixtureSetUp]
         public ServerTest()
         {
-            //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
             //named.caのコピー
             //var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
             //var dst = string.Format("{0}\\Bjd.CoreCLR\\named.ca", TestUtil.ProjectDirectory());
-            var src = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.DnsServer.CoreCLR.Test", "named.ca");
-            var dst = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.CoreCLR", "named.ca");
-            File.Copy(src, dst, true);
-
-            //設定ファイルの退避と上書き
-            _op = new TestOption("Bjd.DnsServer.CoreCLR.Test", "DnsServerTest.ini");
+            //var src = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.DnsServer.CoreCLR.Test", "named.ca");
+            //var dst = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.CoreCLR", "named.ca");
+            //File.Copy(src, dst, true);
 
             //TestService.ServiceTest();
-            _service = TestService.CreateTestService(_op);
+            _service = TestService.CreateTestService();
+
+            _service.SetOption("DnsServerTest.ini");
+
+            //named.caのコピー
+            _service.ContentFile("named.ca");
 
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
-            //Kernel kernel = new Kernel();
             Kernel kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Dns");
             Conf conf = new Conf(option);
@@ -64,9 +62,6 @@ namespace DnsServerTest
             //サーバ停止
             _sv.Stop();
             _sv.Dispose();
-
-            //設定ファイルのリストア
-            _op.Dispose();
 
         }
 

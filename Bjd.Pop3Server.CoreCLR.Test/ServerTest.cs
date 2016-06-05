@@ -31,7 +31,6 @@ namespace Pop3ServerTest
 
         public class InternalFixture : IDisposable
         {
-            public TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
@@ -43,14 +42,10 @@ namespace Pop3ServerTest
                 //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
-                //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.Pop3Server.CoreCLR.Test", "Pop3ServerTest.ini");
-
                 try
                 {
-                    _service = TestService.CreateTestService(_op);
+                    _service = TestService.CreateTestService();
+                    _service.SetOption("Pop3ServerTest.ini");
 
                     var kernel = _service.Kernel;
                     var option = kernel.ListOption.Get("Pop3");
@@ -96,7 +91,6 @@ namespace Pop3ServerTest
                 }
                 catch
                 {
-                    _op.Dispose();
                     throw;
                 }
 
@@ -113,9 +107,6 @@ namespace Pop3ServerTest
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
-
-                //設定ファイルのリストア
-                _op.Dispose();
 
             }
 

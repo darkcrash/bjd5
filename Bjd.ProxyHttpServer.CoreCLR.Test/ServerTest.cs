@@ -30,19 +30,14 @@ namespace ProxyHttpServerTest
 
             public ServerFixture()
             {
-                //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
-                //srcDir = string.Format("{0}\\ProxyHttpServerTest", TestUtil.ProjectDirectory());
-                srcDir = AppContext.BaseDirectory;
-
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
-
                 _service = TestService.CreateTestService(_op);
+                _service.SetOption("ProxyHttpServerTest.ini");
 
                 Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("ProxyHttp");
                 Conf conf = new Conf(option);
+
+                srcDir = _service.Kernel.Enviroment.ExecutableDirectory;
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));

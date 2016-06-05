@@ -19,19 +19,15 @@ namespace FtpServerTest
         public class InternalFixture : IDisposable
         {
             public TestService _service;
-            public TestOption _op; //設定ファイルの上書きと退避
             public Server _v6Sv; //サーバ
             public Server _v4Sv; //サーバ
 
             //[TestFixtureSetUp]
             public InternalFixture()
             {
-                //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.FtpServer.CoreCLR.Test", "FtpServerTest.ini");
-
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("FtpServerTest.ini");
+                _service.ContentDirectory("TestDir");
 
                 Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Ftp");
@@ -57,9 +53,6 @@ namespace FtpServerTest
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
-
-                //設定ファイルのリストア
-                _op.Dispose();
 
             }
 

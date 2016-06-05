@@ -105,6 +105,20 @@ namespace Bjd.Services
             Copy(this.env, src, filename);
         }
 
+        public void ContentDirectory(params string[] paths)
+        {
+            var src = Path.Combine(paths);
+            CreateDirectory(this.env, src);
+            foreach (var f in Directory.GetFiles(src))
+            {
+                ContentFile(f);
+            }
+            foreach (var d in Directory.GetDirectories(src))
+            {
+                ContentDirectory(d);
+            }
+        }
+
         public void SetOption(params string[] paths)
         {
             var src = Path.Combine(paths);
@@ -155,7 +169,14 @@ namespace Bjd.Services
             {
                 File.Copy(src, dst, true);
             }
+            return dst;
+        }
 
+        private static string CreateDirectory(Enviroments env,  string directoryPath)
+        {
+            var dst = System.IO.Path.Combine(env.ExecutableDirectory, directoryPath);
+            if (!Directory.Exists(dst))
+                Directory.CreateDirectory(dst);
             return dst;
         }
 

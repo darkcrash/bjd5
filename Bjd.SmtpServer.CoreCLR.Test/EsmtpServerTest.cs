@@ -19,7 +19,6 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : IDisposable
         {
-            public TestOption _op; //設定ファイルの上書きと退避
             public TestService _service;
             public Server _v4Sv; //サーバ
             public Server _v6Sv; //サーバ
@@ -30,11 +29,8 @@ namespace Bjd.SmtpServer.Test
                 //MailBoxは、Smtp3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
-                //設定ファイルの退避と上書き
-                //_op = new TmpOption("SmtpServerTest", "EsmtpServerTest.ini");
-                _op = new TestOption("Bjd.SmtpServer.CoreCLR.Test", "EsmtpServerTest.ini");
-
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("EsmtpServerTest.ini");
 
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Smtp");
@@ -60,13 +56,6 @@ namespace Bjd.SmtpServer.Test
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
-
-                //設定ファイルのリストア
-                _op.Dispose();
-
-                //メールボックスの削除
-                //Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
-                //Directory.Delete(TestDefine.Instance.TestMailboxPath, true);
 
             }
 

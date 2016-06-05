@@ -22,17 +22,14 @@ namespace WebApiServerTest
         public class ServerFixture : IDisposable
         {
 
-            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
 
             public ServerFixture()
             {
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
-
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("WebApiServerTest.ini");
 
                 //MailBoxのみ初期化する特別なテスト用Kernelコンストラクタ
                 //var kernel = new Kernel("MailBox");
@@ -81,12 +78,6 @@ namespace WebApiServerTest
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
-
-                //設定ファイルのリストア
-                _op.Dispose();
-
-                ////メールボックスの終了処理
-                //MailBoxRestore();
 
             }
 
