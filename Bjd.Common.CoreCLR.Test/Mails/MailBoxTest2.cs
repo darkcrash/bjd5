@@ -12,27 +12,22 @@ namespace Bjd.Test.Mails
     public class MailBoxTest2 : IDisposable
     {
 
-        private static TestOption _op = null; //設定ファイルの上書きと退避
         private static TestService _service;
         private Conf _conf;
 
         public MailBoxTest2()
         {
-            //設定ファイルの退避と上書き
-            //_op = new TestOption("MailBoxTest.ini");
-
             _service = TestService.CreateTestService();
-            _service.ContentFile("Mails", "Option.ini");
+            _service.SetOption("MailBoxTest2.ini");
 
             var kernel = _service.Kernel;
-            var oneOption = new OptionMailBox(kernel, "");
+            var oneOption = new OptionMailBox(kernel, _service.MailboxPath);
             _conf = new Conf(oneOption);
         }
 
         public void Dispose()
         {
-            //設定ファイルのリストア
-            _op.Dispose();
+            _service.Dispose();
         }
 
         [Theory]
