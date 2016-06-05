@@ -17,7 +17,7 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientTest", "Option.ini")
+            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientTest.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
                 _service.CreateMailbox("user1");
@@ -52,9 +52,9 @@ namespace Bjd.SmtpServer.Test
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return new SmtpClient(kernel, new Ip(IpKind.V4Localhost), 9025, 3, this);
+                return new SmtpClient(kernel, new Ip(IpKind.V4Localhost), 9026, 3, this);
             }
-            return new SmtpClient(kernel, new Ip(IpKind.V6Localhost), 9025, 3, this);
+            return new SmtpClient(kernel, new Ip(IpKind.V6Localhost), 9026, 3, this);
         }
 
         [Theory]

@@ -13,7 +13,7 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Fetch", "PopClientTest.ini")
+            public ServerFixture() : base(TestServerType.Pop, "OneFetchJobTest.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user2", "00635026511425888292");
@@ -22,12 +22,6 @@ namespace Bjd.SmtpServer.Test
             }
             public override void Dispose()
             {
-                //fetchDbの削除
-                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
-                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
-                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
-                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
-
                 base.Dispose();
             }
 
@@ -60,7 +54,7 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9110, "user1", "user1", "localuser", synchronize, keepTime);
+            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user1", "user1", "localuser", synchronize, keepTime);
             //var sut = new OneFetchJob(new Kernel(), mailSave, domainName, oneFetch, 3, 1000);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = true;
@@ -82,7 +76,7 @@ namespace Bjd.SmtpServer.Test
             var synchronize = 0;
             var keepTime = 100;//100分
             //不正ホスト名 xxxxx
-            var oneFetch = new OneFetch(interval, "xxxxx", 9110, "user1", "user1", "localuser", synchronize, keepTime);
+            var oneFetch = new OneFetch(interval, "xxxxx", 9111, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = false;
             //exercise
@@ -103,7 +97,7 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9110, "user1", "user1", "localuser", synchronize, keepTime);
+            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = false;
             //exercise
@@ -126,7 +120,7 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9110, "user2", "user2", "localuser", synchronize, keepTime);
+            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user2", "user2", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = true;
             //exercise

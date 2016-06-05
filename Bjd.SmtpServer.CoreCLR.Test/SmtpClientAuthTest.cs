@@ -18,7 +18,7 @@ namespace Bjd.SmtpServer.Test
     {
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientAuthTest", "Option.ini")
+            public ServerFixture() : base(TestServerType.Smtp, "SmtpClientAuthTest.ini")
             {
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user1", "00635026511425888292");

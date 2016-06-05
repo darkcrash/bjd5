@@ -18,12 +18,8 @@ namespace Bjd.SmtpServer.Test
 
         public class ServerFixture : TestServer, IDisposable
         {
-            public ServerFixture() : base(TestServerType.Pop, "Bjd.SmtpServer.CoreCLR.Test\\Fetch", "PopClientTest.ini")
+            public ServerFixture() : base(TestServerType.Pop, "PopClientTest.ini")
             {
-                ////MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
-                ////また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
-                //_testServer = new TestServer(TestServerType.Pop, "SmtpServerTest\\Fetch", "PopClientTest.ini");
-
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user2", "00635026511425888292");
                 SetMail("user2", "00635026511765086924");
@@ -31,12 +27,6 @@ namespace Bjd.SmtpServer.Test
             }
             public override void Dispose()
             {
-                //fetchDbの削除
-                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user2.localuser.db");
-                //File.Delete(@"c:\tmp2\bjd5\BJD\out\fetch.127.0.0.1.9110.user1.localuser.db");
-                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user2.localuser.db"));
-                //File.Delete(Path.Combine(TestDefine.Instance.TestDirectory, "fetch.127.0.0.1.9110.user1.localuser.db"));
-
                 base.Dispose();
             }
 
@@ -62,17 +52,17 @@ namespace Bjd.SmtpServer.Test
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return new PopClient(kernel, new Ip(IpKind.V4Localhost), 9110, 3, this);
+                return new PopClient(kernel, new Ip(IpKind.V4Localhost), 9112, 3, this);
             }
-            return new PopClient(kernel, new Ip(IpKind.V6Localhost), 9110, 3, this);
+            return new PopClient(kernel, new Ip(IpKind.V6Localhost), 9112, 3, this);
         }
 
 
 
 
         [Theory]
-        [InlineData(InetKind.V4, "127.0.0.1", 9112)]
-        [InlineData(InetKind.V6, "::1", 9112)]
+        [InlineData(InetKind.V4, "127.0.0.1", 9115)]
+        [InlineData(InetKind.V6, "::1", 9115)]
         public void 接続失敗_ポート間違い(InetKind inetKind, String addr, int port)
         {
             var kernel = _testServer._service.Kernel;
@@ -98,7 +88,7 @@ namespace Bjd.SmtpServer.Test
         {
             var kernel = _testServer._service.Kernel;
             //setUp
-            var sut = new PopClient(kernel, new Ip(addr), 9110, 3, this);
+            var sut = new PopClient(kernel, new Ip(addr), 9112, 3, this);
             var expected = false;
 
             //exercise

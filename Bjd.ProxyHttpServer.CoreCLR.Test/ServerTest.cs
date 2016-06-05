@@ -22,7 +22,6 @@ namespace ProxyHttpServerTest
 
         public class ServerFixture : IDisposable
         {
-            private TestOption _op; //設定ファイルの上書きと退避
             internal TestService _service;
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
@@ -30,7 +29,7 @@ namespace ProxyHttpServerTest
 
             public ServerFixture()
             {
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
                 _service.SetOption("ProxyHttpServerTest.ini");
 
                 Kernel kernel = _service.Kernel;
@@ -58,8 +57,7 @@ namespace ProxyHttpServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
-                //設定ファイルのリストア
-                _op.Dispose();
+                _service.Dispose();
 
             }
 

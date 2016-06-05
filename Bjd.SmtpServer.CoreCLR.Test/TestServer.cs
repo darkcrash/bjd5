@@ -20,23 +20,16 @@ namespace Bjd.SmtpServer.Test
 
     public class TestServer : IDisposable
     {
-
-        //private readonly TestOption _op; //設定ファイルの上書きと退避
         public readonly TestService _service;
         private readonly OneServer _v6Sv; //サーバ
         private readonly OneServer _v4Sv; //サーバ
 
-        public TestServer(TestServerType type, String iniSubDir, String iniFileName)
+        public TestServer(TestServerType type, string iniOption)
         {
-            //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
             var confName = type == TestServerType.Pop ? "Pop3" : "Smtp";
 
-            //設定ファイルの退避と上書き
-            //_op = new TestOption(iniSubDir, iniFileName);
-
             _service = TestService.CreateTestService();
-            _service.ContentFile(iniSubDir, iniFileName);
+            _service.SetOption(iniOption);
 
             var kernel = _service.Kernel;
             var option = kernel.ListOption.Get(confName);
@@ -54,6 +47,7 @@ namespace Bjd.SmtpServer.Test
                 _v4Sv = new SmtpServer.Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
                 _v6Sv = new SmtpServer.Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
             }
+
             _v4Sv.Start();
             _v6Sv.Start();
 
@@ -61,7 +55,7 @@ namespace Bjd.SmtpServer.Test
 
         }
 
-        public String ToString(InetKind inetKind)
+        public string ToString(InetKind inetKind)
         {
             if (inetKind == InetKind.V4)
             {
@@ -70,18 +64,9 @@ namespace Bjd.SmtpServer.Test
             return _v6Sv.ToString();
         }
 
-        public void SetMail(String user, String fileName)
+        public void SetMail(string user, string fileName)
         {
             //メールボックスへのデータセット
-            //var srcDir = AppContext.BaseDirectory;
-            //var dstDir = System.IO.Path.Combine(TestDefine.Instance.TestMailboxPath, user);
-            //Directory.CreateDirectory(dstDir);
-            //File.Copy(srcDir + "DF_" + fileName, dstDir + "DF_" + fileName, true);
-            //File.Copy(srcDir + "MF_" + fileName, dstDir + "MF_" + fileName, true);
-            //File.Copy(Path.Combine(srcDir, "DF_" + fileName), Path.Combine(dstDir, "DF_" + fileName), true);
-            //File.Copy(Path.Combine(srcDir, "MF_" + fileName), Path.Combine(dstDir, "MF_" + fileName), true);
-            //_service.ContentFileWithDestnationPath("DF_" + fileName, Path.Combine("mailbox", user, "DF_" + fileName));
-            //_service.ContentFileWithDestnationPath("MF_" + fileName, Path.Combine("mailbox", user, "MF_" + fileName));
             _service.AddMail("DF_" + fileName, user);
             _service.AddMail("MF_" + fileName, user);
 
@@ -90,9 +75,6 @@ namespace Bjd.SmtpServer.Test
         //DFファイルの一覧を取得する
         public string[] GetDf(string user)
         {
-            //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
-            //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
-            //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var dir = Path.Combine(_service.MailboxPath, user);
             if (!Directory.Exists(dir))
                 return new string[] { };
@@ -103,8 +85,6 @@ namespace Bjd.SmtpServer.Test
         //メールの一覧を取得する
         public List<Mail> GetMf(string user)
         {
-            //var dir = String.Format("{0}\\SmtpServerTest\\mailbox\\{1}", TestUtil.ProjectDirectory(), user);
-            //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
             var dir = Path.Combine(_service.MailboxPath, user);
             if (!Directory.Exists(dir))
                 return new List<Mail>();
@@ -128,14 +108,8 @@ namespace Bjd.SmtpServer.Test
             _v4Sv.Dispose();
             _v6Sv.Dispose();
 
-            //設定ファイルのリストア
-            //_op.Dispose();
+            _service.Dispose();
 
-            ////メールボックスの削除
-            ////var path = String.Format("{0}\\SmtpServerTest\\mailbox", TestUtil.ProjectDirectory());
-            //var path = TestDefine.Instance.TestMailboxPath;
-            ////Directory.Delete(@"c:\tmp2\bjd5\SmtpServerTest\mailbox", true);
-            //Directory.Delete(path, true);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Bjd.SmtpServer.Test
 
         public class SmtpTestServer : TestServer
         {
-            public SmtpTestServer() : base(TestServerType.Smtp, "Bjd.SmtpServer.CoreCLR.Test", "ServerTest.ini")
+            public SmtpTestServer() : base(TestServerType.Smtp,  "ServerTest.ini")
             {
             }
         }
@@ -42,7 +42,7 @@ namespace Bjd.SmtpServer.Test
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            const int port = 8825; //ウイルススキャンにかかるため25を避ける
+            const int port = 8826; //ウイルススキャンにかかるため25を避ける
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
@@ -102,7 +102,7 @@ namespace Bjd.SmtpServer.Test
         {
 
             //var sv = _v4Sv;
-            var expected = "+ サービス中 \t                Smtp\t[127.0.0.1\t:TCP 8825]\tThread";
+            var expected = "+ サービス中 \t                Smtp\t[127.0.0.1\t:TCP 8826]\tThread";
 
             //exercise
             var actual = _testServer.ToString(InetKind.V4).Substring(0, 58);
@@ -116,7 +116,7 @@ namespace Bjd.SmtpServer.Test
         {
 
             //var sv = _v6Sv;
-            var expected = "+ サービス中 \t                Smtp\t[::1\t:TCP 8825]\tThread";
+            var expected = "+ サービス中 \t                Smtp\t[::1\t:TCP 8826]\tThread";
 
             //exercise
             var actual = _testServer.ToString(InetKind.V6).Substring(0, 52);

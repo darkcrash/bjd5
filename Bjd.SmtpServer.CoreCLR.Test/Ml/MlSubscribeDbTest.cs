@@ -5,19 +5,26 @@ using Xunit;
 using Bjd.SmtpServer;
 using Bjd;
 using System.Threading;
+using System.IO;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class MlSubscribeDbTest : IDisposable
     {
-
+        TestService _service;
         MlSubscribeDb _mlSubscribeDb;
         private const double EffectiveMsec = 50; //50msec(本来は60秒以上とするが、テストのため50msecで初期化する)
 
         public MlSubscribeDbTest()
         {
+            _service = TestService.CreateTestService();
+            _service.SetOption("MlSubscribeDbTest.ini");
+            _service.ContentDirectory("TestDir");
+
             //var tsDir = new TsDir();
-            var manageDir = TestUtil.GetTmpDir("TestDir");
+            //var manageDir = TestUtil.GetTmpDir("TestDir");
+            var manageDir = Path.Combine(_service.Kernel.Enviroment.ExecutableDirectory, "TestDir");
 
             const string mlName = "1ban";
             _mlSubscribeDb = new MlSubscribeDb(manageDir, mlName, EffectiveMsec);

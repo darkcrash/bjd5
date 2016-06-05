@@ -9,16 +9,20 @@ using Bjd.Mails;
 using Bjd.Net;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class MailQueueTest : IDisposable
     {
         private MailQueue sut;
+        private TestService _service;
 
         public MailQueueTest()
         {
-            sut = new MailQueue("c:\\tmp2\\bjd5\\SmtpServerTest");
+            _service = TestService.CreateTestService();
+            var path = _service.Kernel.Enviroment.ExecutableDirectory;
+            sut = new MailQueue(path);
         }
 
         public void Dispose()
