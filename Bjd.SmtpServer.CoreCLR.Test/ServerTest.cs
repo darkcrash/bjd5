@@ -781,10 +781,12 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend("DATA");
             var l2 = cl.StringRecv(5, this);
 
-            cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
+            //cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
+            cl.StringSend("Received: from localhost (unknown [127.0.0.1]) by");
             cl.StringRecv(5, this);
 
-            cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
+            //cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
+            cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@localhost>;");
             cl.StringRecv(5, this);
 
             cl.StringSend(" Tue, 24 Feb 2015 16:28:44 +0900 (JST)");
@@ -830,10 +832,12 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend("DATA");
             var l2 = cl.StringRecv(5, this);
 
-            cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
+            //cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
+            cl.StringSend("Received: from localhost (unknown [127.0.0.1]) by");
             cl.StringRecv(5, this);
 
-            cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
+            //cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
+            cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@localhost>;");
             cl.StringRecv(5, this);
 
             cl.StringSend(" Tue, 24 Feb 2015 16:28:44 +0900 (JST)");
