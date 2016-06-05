@@ -37,14 +37,13 @@ namespace DnsServerTest
 
             //TestService.ServiceTest();
             _service = TestService.CreateTestService();
-
             _service.SetOption("DnsServerTest.ini");
 
             //named.caのコピー
             _service.ContentFile("named.ca");
 
-            OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             Kernel kernel = _service.Kernel;
+            OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             var option = kernel.ListOption.Get("Dns");
             Conf conf = new Conf(option);
 
@@ -62,6 +61,8 @@ namespace DnsServerTest
             //サーバ停止
             _sv.Stop();
             _sv.Dispose();
+
+            _service.Dispose();
 
         }
 
@@ -83,7 +84,7 @@ namespace DnsServerTest
             var cl = new SockUdp(kernel, new Ip(IpKind.V4Localhost), 53, null, sp.GetBytes());
             //受信
             //byte[] recvBuf = cl.Recv(1000);
-            var recvBuf = cl.Recv(3);
+            var recvBuf = cl.Recv(6);
 
             if (recvBuf.Length == 0)
             {
@@ -146,7 +147,7 @@ namespace DnsServerTest
         [Fact]
         public void ステータス情報_ToString_の出力確認()
         {
-
+            System.Threading.Tasks.Task.Delay(1000).Wait();
             var expected = "+ サービス中 \t                 Dns\t[127.0.0.1\t:UDP 53]\tThread";
 
             //exercise
@@ -176,10 +177,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.AAAA, "localhost");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Aaaa localhost.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Aaaa localhost. TTL=2400 ::1");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns localhost. TTL=2400 localhost.");
+            Assert.Equal("QD=1 AN=1 NS=1 AR=0", Print(p));
+            Assert.Equal("Query AAAA localhost.", Print(p, RrKind.QD, 0));
+            Assert.Equal("AAAA localhost. TTL=2400 ::1", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ns localhost. TTL=2400 localhost.", Print(p, RrKind.NS, 0));
         }
 
         [Fact]
@@ -276,8 +277,8 @@ namespace DnsServerTest
 
             //verify
             Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Aaaa www.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Aaaa www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
+            Assert.Equal(Print(p, RrKind.QD, 0), "Query AAAA www.aaa.com.");
+            Assert.Equal(Print(p, RrKind.AN, 0), "AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
             Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
             Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
         }
@@ -290,7 +291,7 @@ namespace DnsServerTest
 
             //verify
             Assert.Equal(Print(p), "QD=1 AN=0 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Aaaa xxx.aaa.com.");
+            Assert.Equal(Print(p, RrKind.QD, 0), "Query AAAA xxx.aaa.com.");
             Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
             Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
         }
@@ -307,7 +308,7 @@ namespace DnsServerTest
             Assert.Equal(Print(p, RrKind.AN, 0), "Cname www2.aaa.com. TTL=2400 www.aaa.com.");
             Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
             Assert.Equal(Print(p, RrKind.AR, 0), "A www.aaa.com. TTL=2400 192.168.0.10");
-            Assert.Equal(Print(p, RrKind.AR, 1), "Aaaa www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
+            Assert.Equal(Print(p, RrKind.AR, 1), "AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
             Assert.Equal(Print(p, RrKind.AR, 2), "A ns.aaa.com. TTL=2400 192.168.0.1");
         }
 
@@ -363,16 +364,16 @@ namespace DnsServerTest
             for (int i = 0; i < 2; i++)
                 ar.Add(Print(p, RrKind.AN, i));
             ar.Sort();
-            Assert.Equal(ar[0], "A spw02.sakura.ne.jp. TTL=3600 59.106.27.208");
-            Assert.Equal(ar[1], "Cname www.sapporoworks.ne.jp. TTL=3600 spw02.sakura.ne.jp.");
+            Assert.Equal("A spw02.sakura.ne.jp. TTL=3600 59.106.27.208", ar[0]);
+            Assert.Equal("Cname www.sapporoworks.ne.jp. TTL=3600 spw02.sakura.ne.jp.", ar[1]);
 
 
             ar.Clear();
             for (int i = 0; i < 2; i++)
                 ar.Add(Print(p, RrKind.NS, i));
             ar.Sort();
-            Assert.Equal(ar[0], "Ns sapporoworks.ne.jp. TTL=86400 gdns1.interlink.or.jp.");
-            Assert.Equal(ar[1], "Ns sapporoworks.ne.jp. TTL=86400 gdns2.interlink.or.jp.");
+            Assert.Equal("Ns sapporoworks.ne.jp. TTL=86400 gdns1.interlink.or.jp.", ar[0]);
+            Assert.Equal("Ns sapporoworks.ne.jp. TTL=86400 gdns2.interlink.or.jp.", ar[1]);
 
             ar.Clear();
             for (int i = 0; i < 1; i++)
@@ -409,18 +410,44 @@ namespace DnsServerTest
 
             //verify
             //Assert.Equal(Print(p), Is.EqualTo("QD=1 AN=2 NS=5 AR=5"));
-            Assert.Equal(Print(p), "QD=1 AN=2 NS=5 AR=6");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query A www.yahoo.com.");
+            //Assert.Equal("QD=1 AN=3 NS=5 AR=8", Print(p));
 
-            Assert.Equal(Print(p, RrKind.AN, 0), "Cname www.yahoo.com. TTL=300 fd-fp3.wg1.b.yahoo.com.");
-            Assert.Equal(Print(p, RrKind.AN, 1), "A fd-fp3.wg1.b.yahoo.com. TTL=60 106.10.139.246");
-            //Assert.Equal(Print(p, RrKind.AN, 2), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns1.yahoo.com. TTL=172800 68.180.131.16");
-            Assert.Equal(Print(p, RrKind.AR, 1), "A ns5.yahoo.com. TTL=172800 119.160.247.124");
-            Assert.Equal(Print(p, RrKind.AR, 2), "A ns2.yahoo.com. TTL=172800 68.142.255.16");
-            Assert.Equal(Print(p, RrKind.AR, 3), "A ns3.yahoo.com. TTL=172800 203.84.221.53");
-            Assert.Equal(Print(p, RrKind.AR, 4), "Aaaa ns3.yahoo.com. TTL=172800 2406:8600:b8:fe03::1003");
+            Assert.Equal("Query A www.yahoo.com.", Print(p, RrKind.QD, 0));
 
+            var anList = new List<string>();
+            anList.Add("Cname www.yahoo.com. TTL=300 fd-fp3.wg1.b.yahoo.com.");
+            anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
+            anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.45");
+
+            //Assert.Equal(Print(p, RrKind.AN, 0), "Cname www.yahoo.com. TTL=300 fd-fp3.wg1.b.yahoo.com.");
+            //Assert.Equal(Print(p, RrKind.AN, 1), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
+            //Assert.Equal(Print(p, RrKind.AN, 2), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.45");
+            ////Assert.Equal(Print(p, RrKind.AN, 2), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
+            Assert.Contains<string>(Print(p, RrKind.AN, 0), anList);
+            Assert.Contains<string>(Print(p, RrKind.AN, 1), anList);
+            Assert.Contains<string>(Print(p, RrKind.AN, 2), anList);
+
+            var arList = new List<string>();
+            arList.Add("A ns1.yahoo.com. TTL=172800 68.180.131.16");
+            arList.Add("A ns2.yahoo.com. TTL=172800 68.142.255.16");
+            arList.Add("A ns3.yahoo.com. TTL=172800 203.84.221.53");
+            arList.Add("A ns4.yahoo.com. TTL=172800 98.138.11.157");
+            arList.Add("A ns5.yahoo.com. TTL=172800 119.160.247.124");
+            arList.Add("AAAA ns1.yahoo.com. TTL=172800 2001:4998:130::1001");
+            arList.Add("AAAA ns2.yahoo.com. TTL=172800 2001:4998:140::1002");
+            arList.Add("AAAA ns3.yahoo.com. TTL=172800 2406:8600:b8:fe03::1003");
+
+            //Assert.Equal(Print(p, RrKind.AR, 0), "A ns1.yahoo.com. TTL=172800 68.180.131.16");
+            //Assert.Equal(Print(p, RrKind.AR, 1), "A ns5.yahoo.com. TTL=172800 119.160.247.124");
+            //Assert.Equal(Print(p, RrKind.AR, 2), "A ns2.yahoo.com. TTL=172800 68.142.255.16");
+            //Assert.Equal(Print(p, RrKind.AR, 3), "A ns3.yahoo.com. TTL=172800 203.84.221.53");
+            //Assert.Equal(Print(p, RrKind.AR, 4), "AAAA ns3.yahoo.com. TTL=172800 2406:8600:b8:fe03::1003");
+            Assert.Contains<string>(Print(p, RrKind.AR, 0), arList);
+            Assert.Contains<string>(Print(p, RrKind.AR, 1), arList);
+            Assert.Contains<string>(Print(p, RrKind.AR, 2), arList);
+            Assert.Contains<string>(Print(p, RrKind.AR, 3), arList);
+            Assert.Contains<string>(Print(p, RrKind.AR, 4), arList);
+            Assert.Contains<string>(Print(p, RrKind.AR, 5), arList);
 
         }
 
@@ -444,8 +471,9 @@ namespace DnsServerTest
             var p = lookup(DnsType.A, "www.asahi.co.jp", true);
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=2 AR=2");
-            Assert.Equal(Print(p, RrKind.AN, 0), "A www.asahi.co.jp. TTL=600 202.242.245.10");
+            Assert.Equal("QD=1 AN=2 NS=2 AR=2", Print(p));
+            //Assert.Equal("Cname www.asahi.co.jp. TTL=600 202.242.245.10", Print(p, RrKind.AN, 0));
+            Assert.Equal("Cname www.asahi.co.jp. TTL=600 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
         }
 
         [Fact]
