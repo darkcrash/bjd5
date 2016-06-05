@@ -192,7 +192,8 @@ namespace Bjd.Services
                 if (disposing)
                 {
                     // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
-                    this._kernel.Dispose();
+                    if (this._kernel != null)
+                        this._kernel.Dispose();
                     this._kernel = null;
                     Directory.Delete(this.env.ExecutableDirectory, true);
                 }

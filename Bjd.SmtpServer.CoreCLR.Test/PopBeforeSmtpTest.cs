@@ -11,29 +11,29 @@ using Bjd.Net;
 using Bjd.Options;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class PopBeforeSmtpTest : IDisposable
     {
         private MailBox _mailBox;
+        private TestService _service;
+
         public PopBeforeSmtpTest()
         {
+            _service = TestService.CreateTestService();
+            
+
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
-            _mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
+            //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
+            _mailBox = new MailBox(new Logger(), datUser, _service.MailboxPath);
         }
 
         public void Dispose()
         {
-            try
-            {
-                Directory.Delete(_mailBox.Dir);
-            }
-            catch (Exception)
-            {
-                Directory.Delete(_mailBox.Dir, true);
-            }
+            _service.Dispose();
         }
 
         [Fact]

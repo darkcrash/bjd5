@@ -20,9 +20,6 @@ namespace Bjd.SmtpServer.Test
         {
             public ServerFixture() : base(TestServerType.Pop, "PopClientTest.ini")
             {
-                //usrr2のメールボックスへの２通のメールをセット
-                SetMail("user2", "00635026511425888292");
-                SetMail("user2", "00635026511765086924");
 
             }
             public override void Dispose()
@@ -39,6 +36,9 @@ namespace Bjd.SmtpServer.Test
         {
             _testServer = fixture;
 
+            //usrr2のメールボックスへの２通のメールをセット
+            _testServer.SetMail("user2", "00635026511425888292");
+            _testServer.SetMail("user2", "00635026511765086924");
 
         }
 
