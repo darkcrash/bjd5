@@ -54,6 +54,8 @@ namespace FtpServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
+                _service.Dispose();
+
             }
 
 
@@ -72,8 +74,8 @@ namespace FtpServerTest
             var kernel = _fixture._service.Kernel;
 
             //クライアント起動
-            _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 21, 10, null);
-            _v6Cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 21, 10, null);
+            _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 2021, 10, null);
+            _v6Cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 2021, 10, null);
             //クライアントの接続が完了するまで、少し時間がかかる
             //Thread.Sleep(10);
 
@@ -122,10 +124,10 @@ namespace FtpServerTest
         {
 
             var sv = this._fixture._v4Sv;
-            var expected = "+ サービス中 \t                 Ftp\t[127.0.0.1\t:TCP 21]\tThread";
+            var expected = "+ サービス中 \t                 Ftp\t[127.0.0.1\t:TCP 2021]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 56);
+            var actual = sv.ToString().Substring(0, 58);
             //verify
             Assert.Equal(expected, actual);
 
@@ -136,10 +138,10 @@ namespace FtpServerTest
         {
 
             var sv = this._fixture._v6Sv;
-            var expected = "+ サービス中 \t                 Ftp\t[::1\t:TCP 21]\tThread";
+            var expected = "+ サービス中 \t                 Ftp\t[::1\t:TCP 2021]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 50);
+            var actual = sv.ToString().Substring(0, 52);
             //verify
             Assert.Equal(expected, actual);
 
@@ -466,7 +468,8 @@ namespace FtpServerTest
             cl.StringSend("SYST");
 
             // Assert.Equal(cl.StringRecv(1, this), "215 Microsoft Windows NT 6.2.9200.0\r\n");
-            Assert.Equal(cl.StringRecv(1, this).Substring(0, 26), "215 Microsoft Windows NT 6");
+            var actual = cl.StringRecv(1, this);
+            Assert.Equal("215 Windows 10", actual.Substring(0, 14));
 
         }
 
@@ -482,7 +485,8 @@ namespace FtpServerTest
             cl.StringSend("SYST");
 
             // Assert.Equal(cl.StringRecv(1, this), "215 Microsoft Windows NT 6.2.9200.0\r\n");
-            Assert.Equal(cl.StringRecv(1, this).Substring(0, 26), "215 Microsoft Windows NT 6");
+            var actual = cl.StringRecv(1, this);
+            Assert.Equal("215 Windows 10", actual.Substring(0, 14));
 
         }
 
@@ -714,14 +718,14 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20250;
+            cl.StringSend("PORT 127,0,0,1,0,20250");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
             cl.StringSend("RETR 3.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n", cl.StringRecv(1, this));
             Thread.Sleep(10);
             Assert.Equal(dl.Length(), 24);
 
@@ -739,8 +743,8 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20350;
+            cl.StringSend("PORT 127,0,0,1,0,20350");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -762,23 +766,23 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 249;
-            cl.StringSend("PORT 127,0,0,1,0,249");
+            var port = 20249;
+            cl.StringSend("PORT 127,0,0,1,0,20249");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(2, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(2, this));
 
             //stor
             cl.StringSend("STOR 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 0.txt.\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for 0.txt.\r\n", cl.StringRecv(2, this));
 
             dl.Send(new byte[3]);
             dl.Close();
 
-            Assert.Equal(cl.StringRecv(1, this), "226 Transfer complete.\r\n");
+            Assert.Equal("226 Transfer complete.\r\n", cl.StringRecv(1, this));
 
             //dele
             cl.StringSend("DELE 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 Dele command successful.\r\n");
+            Assert.Equal("250 Dele command successful.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -792,8 +796,8 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 249;
-            cl.StringSend("PORT 127,0,0,1,0,249");
+            var port = 20349;
+            cl.StringSend("PORT 127,0,0,1,0,20349");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -823,8 +827,8 @@ namespace FtpServerTest
             Login("user2", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20450;
+            cl.StringSend("PORT 127,0,0,1,0,20450");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -849,8 +853,8 @@ namespace FtpServerTest
             Login("user2", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20451;
+            cl.StringSend("PORT 127,0,0,1,0,20451");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -933,8 +937,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 249;
-            cl.StringSend("PORT 127,0,0,1,0,249");
+            var port = 20549;
+            cl.StringSend("PORT 127,0,0,1,0,20549");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -954,8 +958,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 249;
-            cl.StringSend("PORT 127,0,0,1,0,249");
+            var port = 20548;
+            cl.StringSend("PORT 127,0,0,1,0,20548");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -1003,8 +1007,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20650;
+            cl.StringSend("PORT 127,0,0,1,0,20650");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -1028,8 +1032,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 250;
-            cl.StringSend("PORT 127,0,0,1,0,250");
+            var port = 20651;
+            cl.StringSend("PORT 127,0,0,1,0,20651");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -1084,7 +1088,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //dele
-            cl.StringSend("DELE 0.txt");
+            cl.StringSend("DELE 99.txt");
             Assert.Equal(cl.StringRecv(1, this), "451 Dele error.\r\n");
 
         }
@@ -1098,7 +1102,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //dele
-            cl.StringSend("DELE 0.txt");
+            cl.StringSend("DELE 99.txt");
             Assert.Equal(cl.StringRecv(1, this), "451 Dele error.\r\n");
 
         }
@@ -1113,8 +1117,8 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 251;
-            cl.StringSend("PORT 127,0,0,1,0,251");
+            var port = 20751;
+            cl.StringSend("PORT 127,0,0,1,0,20751");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -1142,8 +1146,8 @@ namespace FtpServerTest
             Login("user1", cl);
 
             //port
-            var port = 251;
-            cl.StringSend("PORT 127,0,0,1,0,251");
+            var port = 20752;
+            cl.StringSend("PORT 127,0,0,1,0,20752");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 

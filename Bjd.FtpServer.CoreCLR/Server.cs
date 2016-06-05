@@ -542,7 +542,7 @@ namespace Bjd.FtpServer
             foreach (var s in session.CurrentDir.List(mask, wideMode))
             {
                 //session.SockData.StringSend(s, "Shift-Jis");
-                session.SockData.StringSend(s, "utf-8");
+                session.SockData.StringSend(s, "UTF-8");
             }
             session.StringSend("226 Transfer complete.");
 

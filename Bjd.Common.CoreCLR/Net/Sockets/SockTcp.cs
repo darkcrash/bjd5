@@ -454,7 +454,7 @@ namespace Bjd.Net.Sockets
         }
 
         //１行のString受信
-        public String StringRecv(String charsetName, int sec, ILife iLife)
+        public string StringRecv(string charsetName, int sec, ILife iLife)
         {
             try
             {
@@ -465,8 +465,10 @@ namespace Bjd.Net.Sockets
                 {
                     return null;
                 }
-
-                return Encoding.GetEncoding(charsetName).GetString(bytes);
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                if (enc == null)
+                    enc = Encoding.GetEncoding(charsetName);
+                return enc.GetString(bytes);
             }
             catch (Exception e)
             {
@@ -476,7 +478,7 @@ namespace Bjd.Net.Sockets
         }
 
         //１行受信(ASCII)
-        public String StringRecv(int sec, ILife iLife)
+        public string StringRecv(int sec, ILife iLife)
         {
             return StringRecv("ASCII", sec, iLife);
         }
@@ -538,12 +540,14 @@ namespace Bjd.Net.Sockets
         }
 
         //１行のString送信 (\r\nが付加される)
-        public bool StringSend(String str, String charsetName)
+        public bool StringSend(string str, string charsetName)
         {
             try
             {
-
-                var buf = Encoding.GetEncoding(charsetName).GetBytes(str);
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                if (enc == null)
+                    enc = Encoding.GetEncoding(charsetName);
+                var buf = enc.GetBytes(str);
                 //byte[] buf = str.getBytes(charsetName);
                 LineSend(buf);
                 return true;
@@ -556,7 +560,7 @@ namespace Bjd.Net.Sockets
         }
 
         //１行送信(ASCII)  (\r\nが付加される)
-        public bool SstringSend(String str)
+        public bool SstringSend(string str)
         {
             return StringSend(str, "ASCII");
         }
@@ -622,7 +626,7 @@ namespace Bjd.Net.Sockets
         /*******************************************************************/
         //以下、C#のコードを通すために設置（最終的に削除の予定）
         /*******************************************************************/
-        private String _lastLineSend = "";
+        private string _lastLineSend = "";
 
         public string LastLineSend
         {
@@ -650,7 +654,8 @@ namespace Bjd.Net.Sockets
         public int SjisSend(string str)
         {
             _lastLineSend = str;
-            var buf = Encoding.GetEncoding("shift-jis").GetBytes(str);
+            var enc = CodePagesEncodingProvider.Instance.GetEncoding(932);
+            var buf = enc.GetBytes(str);
             //return LineSend(buf, operateCrlf);
             //とりあえずCrLfの設定を無視している
             return LineSend(buf);

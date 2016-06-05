@@ -32,7 +32,7 @@ namespace Bjd.FtpServer
             //Ver5.9.7
             //SockCtrl.StringSend(str,"ascii");
             //SockCtrl.StringSend(str, "shift-jis");
-            SockCtrl.StringSend(str, "utf-8");
+            SockCtrl.StringSend(str, "UTF-8");
         }
     }
 }

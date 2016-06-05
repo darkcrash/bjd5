@@ -4,17 +4,25 @@ using Bjd.FtpServer;
 using Bjd.Services;
 using Bjd;
 using Xunit;
+using System;
 
 namespace FtpServerTest
 {
 
-    public class CurrentDirTest
+    public class CurrentDirTest: IDisposable
     {
         private TestService _service;
 
         public CurrentDirTest()
         {
             _service = TestService.CreateTestService();
+            _service.SetOption("CurrentDirTest.ini");
+            _service.ContentDirectory("TestDir");
+            _service.ContentDirectory("tmp");
+        }
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
 
@@ -22,7 +30,8 @@ namespace FtpServerTest
         public void ContentTypeTest()
         {
             //....\\FtpServerTest\\TestDir
-            var startup = Directory.GetCurrentDirectory();
+            //var startup = Directory.GetCurrentDirectory();
+            var startup = _service.Kernel.Enviroment.ExecutableDirectory;
             var path1 = Path.GetDirectoryName(startup);
             var path2 = Path.GetDirectoryName(path1);
             var dir = Path.GetDirectoryName(path2);
@@ -140,7 +149,7 @@ namespace FtpServerTest
             ////仮想フォルダを追加して試験する
             //**************************************************
             //fromFolder = workDir + "\\FtpTestDir2\\tmp";
-            fromFolder = Path.Combine(startup, "TestDir2");
+            fromFolder = Path.Combine(startup, "tmp");
             //toFolder = string.Format("{0}\\home0", rootDirectory);
             toFolder = Path.Combine(rootDirectory, "home0");
             listMount.Add(fromFolder, toFolder);
@@ -174,6 +183,7 @@ namespace FtpServerTest
             Assert.Equal(currentDir.GetPwd(), "/");
 
         }
+
 
         //CurrentDir.List()の確認用メソッド
         private bool confirm(CurrentDir currentDir, string mask, List<string> list)
