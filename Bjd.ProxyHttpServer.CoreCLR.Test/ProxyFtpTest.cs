@@ -20,18 +20,13 @@ namespace ProxyHttpServerTest
         public class ServerFixture : IDisposable
         {
             internal TestService _service;
-            private TestOption _op; //設定ファイルの上書きと退避
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
 
             public ServerFixture()
             {
-                //srcDir = string.Format("{0}\\ProxyHttpServerTest", TestUtil.ProhjectDirectory());
-
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.ProxyHttpServer.CoreCLR.Test", "ProxyHttpServerTest.ini");
-
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("ProxyFtpTest.ini");
 
                 Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("ProxyHttp");
@@ -57,8 +52,7 @@ namespace ProxyHttpServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
-                //設定ファイルのリストア
-                _op.Dispose();
+                _service.Dispose();
 
             }
 
@@ -84,7 +78,7 @@ namespace ProxyHttpServerTest
 
             //setUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8890, 10, null);
 
             //cl.Send(Encoding.ASCII.GetBytes("GET ftp://ftp.iij.ad.jp/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
             cl.Send(Encoding.ASCII.GetBytes("GET ftp://ftp.jaist.ac.jp/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
@@ -92,6 +86,7 @@ namespace ProxyHttpServerTest
             //exercise
             var lines = Inet.RecvLines(cl, 20, this);
             //verify
+            Assert.NotEqual(0, lines.Count);
             Assert.Equal(lines[0], "HTTP/1.0 200 OK");
 
         }

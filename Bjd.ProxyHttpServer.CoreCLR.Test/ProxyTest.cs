@@ -21,6 +21,9 @@ namespace ProxyHttpServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
+                _service.SetOption("ProxyTest.ini");
+
+
                 var kernel = _service.Kernel;
                 var ip = new Ip("127.0.0.1");
                 const int port = 0;
@@ -52,7 +55,7 @@ namespace ProxyHttpServerTest
         }
 
         [Theory]
-        [InlineData("127.0.0.1", 8888)]
+        [InlineData("127.0.0.1", 8889)]
         public void Test(string host, int port)
         {
 

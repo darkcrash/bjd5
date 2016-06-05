@@ -19,10 +19,12 @@ namespace ProxyHttpServerTest
             _documentRoot = documentRoot;
 
 
-            string prefix = string.Format("http://127.0.0.1:{0}/", port); // 受け付けるURL
+            //string prefix = string.Format("http://127.0.0.1:{0}/", port); // 受け付けるURL
+            UrlPrefix pre = UrlPrefix.Create("http", "127.0.0.1", port, "/");
             //_listener = new HttpListener();
             _listener = new WebListener();
-            _listener.UrlPrefixes.Add(prefix); // プレフィックスの登録
+            //_listener.UrlPrefixes.Add(prefix); // プレフィックスの登録
+            _listener.UrlPrefixes.Add(pre); // プレフィックスの登録
 
             _listener.Start();
             //_listener.BeginGetContext(OnRequested, _listener);
@@ -34,7 +36,7 @@ namespace ProxyHttpServerTest
         private void Listen()
         {
             var t = _listener.GetContextAsync();
-            t.ContinueWith(_ => OnRequested(null));
+            t.ContinueWith(_ => OnRequested(_));
 
         }
 
@@ -86,7 +88,7 @@ namespace ProxyHttpServerTest
             var res = ctx.Response;
 
             //var path = _documentRoot + req.RawUrl.Replace("/", "\\");
-            var path = _documentRoot + req.Path.Replace("/", "\\");
+            var path = _documentRoot + req.Path.Replace('/', Path.DirectorySeparatorChar);
 
             // ファイルが存在すればレスポンス・ストリームに書き出す
             if (File.Exists(path))

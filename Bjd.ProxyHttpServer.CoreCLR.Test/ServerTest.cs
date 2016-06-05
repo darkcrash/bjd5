@@ -30,7 +30,8 @@ namespace ProxyHttpServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("ProxyHttpServerTest.ini");
+                _service.SetOption("ServerTest.ini");
+                _service.ContentDirectory("public_html");
 
                 Kernel kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("ProxyHttp");
@@ -109,14 +110,14 @@ namespace ProxyHttpServerTest
 
             //setUp
             //ダミーWebサーバ
-            const int webPort = 778;
+            const int webPort = 1778;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
             var kernel = _fixture._service.Kernel;
 
             var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
             var lines = Inet.RecvLines(cl, 3, this);
@@ -144,14 +145,14 @@ namespace ProxyHttpServerTest
         {
             //setUp
             //ダミーWebサーバ
-            const int webPort = 778;
+            const int webPort = 1779;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
             var kernel = _fixture._service.Kernel;
 
             var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
             var lines = Inet.RecvLines(cl, 3, this);
@@ -200,14 +201,13 @@ namespace ProxyHttpServerTest
 
         //パフォーマンス測定
         [Theory]
-        [InlineData(5000)]
-        [InlineData(1000)]
-        [InlineData(30000)]
+        [InlineData(5000, 17777)]
+        [InlineData(1000, 17778)]
+        [InlineData(30000, 17779)]
         //[TestCase(1000000000)]
-        public void PerformanceTest(int count)
+        public void PerformanceTest(int count, int port)
         {
             //ダミーWebサーバ
-            const int webPort = 17777;
             //string webRoot = string.Format("{0}\\public_html", srcDir);
             string webRoot = Path.Combine(_fixture.srcDir, "public_html");
 
@@ -222,7 +222,7 @@ namespace ProxyHttpServerTest
             }
             File.WriteAllLines(path, buf);
 
-            var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
+            var tsWeb = new TsWeb(port, webRoot);//Webサーバ起動
             var kernel = _fixture._service.Kernel;
 
             //試験用クライアント
@@ -233,15 +233,17 @@ namespace ProxyHttpServerTest
             var sw = new Stopwatch();
             sw.Start();
 
-            cl.Send(Encoding.ASCII.GetBytes(string.Format("GET http://127.0.0.1:17777/{0} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", fileName)));
+            //cl.Send(Encoding.ASCII.GetBytes(string.Format("GET http://127.0.0.1:17777/{0} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", fileName)));
+            cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{port}/{fileName} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
             var lines = Inet.RecvLines(cl, 5, this);
 
             //計測終了
             sw.Stop();
             Console.Write("HTTPProxy Performance : {0}ms LINES:{1}\n", sw.ElapsedMilliseconds, count);
 
-            //作業ファイル削除
-            File.Delete(path);
+            ////作業ファイル削除
+            //File.Delete(path);
+
             if (lines != null)
             {
                 Assert.Equal(lines[0], "HTTP/1.1 200 OK");
