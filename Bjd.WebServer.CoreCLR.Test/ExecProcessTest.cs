@@ -3,14 +3,21 @@ using System.IO;
 using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
+using Bjd.Services;
 
 namespace WebServerTest
 {
 
     public class ExecProcessTest : IDisposable
     {
+        private TestService _service;
+        private string directory;
 
-        public ExecProcessTest() { }
+        public ExecProcessTest()
+        {
+            _service = TestService.CreateTestService();
+            directory = _service.Kernel.Enviroment.ExecutableDirectory;
+        }
 
         public void Dispose() { }
 
@@ -21,11 +28,12 @@ namespace WebServerTest
         public void StartTest(int block, int count)
         {
             //var srcDir = string.Format("{0}\\WebServerTest", TestUtil.ProjectDirectory());
-            var srcDir = AppContext.BaseDirectory;
+            //var srcDir = AppContext.BaseDirectory;
 
             //こちらの自作cat.exeでは、200Mbyteまでしか対応できていない
             //var execProcess = new ExecProcess(string.Format("{0}\\cat.exe", srcDir), "", srcDir, null);
-            var execProcess = new ExecProcess(Path.Combine(srcDir, "cat.exe"), "", srcDir, null);
+            //var execProcess = new ExecProcess(Path.Combine(srcDir, "cat.exe"), "", srcDir, null);
+            var execProcess = new ExecProcess("cat.exe", "", directory, null);
 
             var buf = new byte[block];
             for (var b = 0; b < block; b++)

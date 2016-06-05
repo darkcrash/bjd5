@@ -28,6 +28,7 @@ namespace WebServerTest
             {
                 _service = TestService.CreateTestService();
                 _service.SetOption("WebServerTest.ini");
+                _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Web-localhost:88");
@@ -151,7 +152,7 @@ namespace WebServerTest
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
             int sec = 30; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
-            var expected = "<html>";
+            var expected = "</html>";
             var actual = lines[8];
             //verify
             Assert.Equal(actual, expected);

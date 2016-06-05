@@ -125,8 +125,9 @@ namespace Bjd.Utils
             int len = 0; //カウンタ
             if (File.Exists(fileName))
             {
+                var enc = System.Text.CodePagesEncodingProvider.Instance.GetEncoding(932);
                 using (var bs = new FileStream(fileName, FileMode.Open))
-                using (var sr = new StreamReader(bs, Encoding.GetEncoding("Shift_JIS")))
+                using (var sr = new StreamReader(bs, enc))
                 {
                     while (true)
                     {

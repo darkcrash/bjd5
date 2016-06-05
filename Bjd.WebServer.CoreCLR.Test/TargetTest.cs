@@ -28,6 +28,7 @@ namespace WebServerTest
 
                 _service = TestService.CreateTestService();
                 _service.SetOption("WebServerTest.ini");
+                _service.ContentDirectory("public_html");
 
                 Kernel kernel = _service.Kernel;
                 option = kernel.ListOption.Get("Web-localhost:88");
