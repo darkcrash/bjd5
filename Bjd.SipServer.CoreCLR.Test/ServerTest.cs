@@ -14,7 +14,6 @@ namespace SipServerTest
 
         public class ServerFixture : IDisposable
         {
-            private TestOption _op; //設定ファイルの上書きと退避
             private TestService _service;
 
             internal Server _v6Sv; //サーバ
@@ -24,11 +23,10 @@ namespace SipServerTest
 
             public ServerFixture()
             {
-                //TestUtil.CopyLangTxt();//BJD.Lang.txt
 
-                //設定ファイルの退避と上書き
-                _op = new TestOption("Bjd.SipServer.CoreCLR.Test", "SipServerTest.ini");
-                _service = TestService.CreateTestService(_op);
+                _service = TestService.CreateTestService();
+                _service.SetOption("SipServerTest.ini");
+
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Sip");
                 var conf = new Conf(option);
@@ -50,8 +48,7 @@ namespace SipServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
-                //設定ファイルのリストア
-                _op.Dispose();
+                _service.Dispose();
 
             }
         }
