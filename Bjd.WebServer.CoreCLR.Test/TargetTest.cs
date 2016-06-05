@@ -27,11 +27,11 @@ namespace WebServerTest
                 //_op = new TestOption("Bjd.WebServer.CoreCLR.Test", "WebServerTest.ini");
 
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
+                _service.SetOption("TargetTest.ini");
                 _service.ContentDirectory("public_html");
 
                 Kernel kernel = _service.Kernel;
-                option = kernel.ListOption.Get("Web-localhost:88");
+                option = kernel.ListOption.Get("Web-localhost:91");
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, new Conf(option), new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -76,11 +76,11 @@ namespace WebServerTest
         public void DocumentRootTest()
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(conf, null);
+            var sut = new Target(_fixture._service.Kernel, conf, null);
 
             //無効なドキュメントルートを設定する
             conf.Set("documentRoot", "q:\\");
-            sut = new Target(conf, null);
+            sut = new Target(_fixture._service.Kernel, conf, null);
             Assert.Equal(sut.DocumentRoot, null);
 
 
@@ -97,7 +97,7 @@ namespace WebServerTest
         public void FullPathTest(string uri, string path)
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(conf, null);
+            var sut = new Target(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromUri(uri);
@@ -111,7 +111,7 @@ namespace WebServerTest
         public void InitFromFileTest(string uri, string path)
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(conf, null);
+            var sut = new Target(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromFile(fullPath);

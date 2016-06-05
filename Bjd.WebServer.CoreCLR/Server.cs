@@ -340,7 +340,7 @@ namespace Bjd.WebServer
                 //***************************************************************
                 //ターゲットオブジェクトの初期化
                 //***************************************************************
-                var target = new Target(Conf, Logger);
+                var target = new Target(Kernel, Conf, Logger);
                 if (target.DocumentRoot == null)
                 {
                     Logger.Set(LogKind.Error, sockTcp, 14, string.Format("documentRoot={0}", Conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
@@ -404,7 +404,7 @@ namespace Bjd.WebServer
                         case HttpMethod.Move:
                             responseCode = 405;
                             //Destnationで指定されたファイルは書き込み許可されているか？
-                            var dstTarget = new Target(Conf, Logger);
+                            var dstTarget = new Target(Kernel, Conf, Logger);
                             string destinationStr = recvHeader.GetVal("Destination");
                             if (destinationStr != null)
                             {

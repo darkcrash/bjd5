@@ -27,11 +27,11 @@ namespace WebServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
+                _service.SetOption("SsiTest.ini");
                 _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:88");
+                var option = kernel.ListOption.Get("Web-localhost:89");
                 Conf conf = new Conf(option);
 
                 //サーバ起動
@@ -82,7 +82,7 @@ namespace WebServerTest
         [InlineData("ExecCgi.html", "100+200=300")]
         [InlineData("Include.html", "Hello world.(SSL Include)")]
         //[InlineData("FSize.html", "179")]
-        [InlineData("FSize.html", "168")]
+        [InlineData("FSize.html", "179")]
         [InlineData("Echo.html", "DOCUMENT_NAME = Echo.html")]
         [InlineData("Echo.html", "LAST_MODIFIED = $")]
         [InlineData("Echo.html", "DATE_LOCAL = $")]
@@ -95,7 +95,7 @@ namespace WebServerTest
         {
 
             //var path = string.Format("{0}\\SsiTest\\Echo.html", _fixture._v4Sv.DocumentRoot);
-            var path = Path.Combine(_fixture._v4Sv.DocumentRoot, "SsiTest", "Echo.html");
+            var path = Path.Combine(_fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
 
             if (pattern == "LAST_MODIFIED = $")
             {
@@ -130,7 +130,7 @@ namespace WebServerTest
                 pattern = string.Format("FLASTMOD = {0}", Date2Str(File.GetLastWriteTime(path)));
             }
 
-            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
             int sec = 10; //CGI処理待ち時間（これで大丈夫?）
@@ -148,7 +148,7 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
@@ -168,7 +168,7 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));

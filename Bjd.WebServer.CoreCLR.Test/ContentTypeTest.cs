@@ -19,10 +19,10 @@ namespace WebServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
+                _service.SetOption("ContentTypeTest.ini");
 
                 Kernel kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:88");
+                var option = kernel.ListOption.Get("Web-localhost:92");
                 Conf conf = new Conf(option);
 
                 _contentType = new ContentType(conf);

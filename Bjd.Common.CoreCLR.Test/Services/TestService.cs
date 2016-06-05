@@ -109,9 +109,11 @@ namespace Bjd.Services
         {
             var src = Path.Combine(paths);
             CreateDirectory(this.env, src);
-            foreach (var f in Directory.GetFiles(src))
+            var srcPath = System.IO.Path.Combine(ProjectDirectory, src);
+            foreach (var f in Directory.GetFiles(srcPath))
             {
-                ContentFile(f);
+                var fPath = f.Substring(ProjectDirectory.Length + 1);
+                Copy(this.env, fPath, fPath);
             }
             foreach (var d in Directory.GetDirectories(src))
             {

@@ -25,11 +25,11 @@ namespace WebServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
+                _service.SetOption("EnvTest.ini");
                 _service.ContentDirectory("public_html");
 
                 _kernel = _service.Kernel;
-                option = _kernel.ListOption.Get("Web-localhost:88");
+                option = _kernel.ListOption.Get("Web-localhost:90");
 
             }
 
@@ -61,7 +61,7 @@ namespace WebServerTest
         {
             var request = new Request(null, null);
             var header = new Header();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 88, 3, null);
+            var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 90, 3, null);
             const string fileName = "";
             var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
             foreach (var e in env)
@@ -93,7 +93,7 @@ namespace WebServerTest
             conf.Set("documentRoot", val);
 
             var header = new Header();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 88, 1, null);
+            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
             const string fileName = "";
             var env = new Env(_fixture._kernel, conf, request, header, tcpObj, fileName);
             foreach (var e in env)
@@ -119,7 +119,7 @@ namespace WebServerTest
             var conf = new Conf(_fixture.option);
             var request = new Request(null, null);
             var header = new Header();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 88, 1, null);
+            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
             tcpObj.LocalAddress = new IPEndPoint((new Ip("127.0.0.1")).IPAddress, 80);
             tcpObj.RemoteAddress = new IPEndPoint((new Ip("10.0.0.100")).IPAddress, 5000);
             const string fileName = "";
@@ -156,7 +156,7 @@ namespace WebServerTest
             header.Append("Accept-Charset", Encoding.ASCII.GetBytes("Shift_JIS,utf-8;q=0.7,*;q=0.3"));
             header.Append("Cache-Control", Encoding.ASCII.GetBytes("max-age=0"));
 
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 88, 3, null);
+            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 3, null);
             const string fileName = "";
             var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
             foreach (var e in env)

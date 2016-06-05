@@ -16,13 +16,13 @@ namespace Bjd.WebServer
         //readonly OneOption _oneOption;
         readonly Conf _conf;
         readonly Logger _logger;
-        public Target(Conf conf, Logger logger)
+        public Target(Kernel kernel, Conf conf, Logger logger)
         {
             System.Diagnostics.Trace.TraceInformation($"Target..ctor ");
             //_oneOption = oneOption;
             _conf = conf;
             _logger = logger;
-
+            PhysicalRootPath = kernel.Enviroment.ExecutableDirectory;
             DocumentRoot = (string)_conf.Get("documentRoot");
             System.Diagnostics.Trace.TraceInformation($"Target..ctor {DocumentRoot} ");
             if (!Directory.Exists(DocumentRoot))
@@ -39,6 +39,7 @@ namespace Bjd.WebServer
         }
         public string DocumentRoot { get; private set; }//ドキュメントルート
         public string FullPath { get; private set; }
+        public string PhysicalRootPath { get; private set; }
         public TargetKind TargetKind { get; private set; }
         public WebDavKind WebDavKind { get; private set; }//Ver5.1.x
         public FileAttributes Attr { get; private set; }//ファイルのアトリビュート
@@ -66,6 +67,8 @@ namespace Bjd.WebServer
             var uri = file.Substring(root.Length);
             //uri = Util.SwapChar('\\', '/', uri);
             uri = Util.SwapChar(Path.DirectorySeparatorChar, '/', uri);
+            if (string.IsNullOrEmpty(uri))
+                uri = "/";
 
             Init(uri);
         }
@@ -366,7 +369,8 @@ namespace Bjd.WebServer
                             if (0 <= cgiExtList.IndexOf(ext.Substring(1)))
                             {
                                 //ターゲットファイルにキーワードが含まれているかどうかの確認
-                                if (0 <= Util.IndexOf(FullPath, "<!--#"))
+                                var physicalFullPath = Path.Combine(this.PhysicalRootPath, FullPath);
+                                if (0 <= Util.IndexOf(physicalFullPath, "<!--#"))
                                 {
                                     TargetKind = TargetKind.Ssi;
                                 }

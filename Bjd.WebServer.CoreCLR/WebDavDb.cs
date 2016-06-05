@@ -36,7 +36,8 @@ namespace Bjd.WebServer
         public void Dispose() {
             //ファイルへの保存
             using (var fs = new FileStream(_fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite)) {
-                using (var sw = new StreamWriter(fs, Encoding.GetEncoding("Shift-JIS"))) {
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(932);
+                using (var sw = new StreamWriter(fs, enc)) {
                     foreach (var o in _ar) {
                         sw.WriteLine(o.ToString());
                     }

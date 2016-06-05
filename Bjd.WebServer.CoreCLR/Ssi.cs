@@ -370,7 +370,7 @@ namespace Bjd.WebServer
         }
 
         Target CreateTarget(string tag, string val) {
-            var newTarget = new Target(_conf, _logger);
+            var newTarget = new Target(_kernel, _conf, _logger);
             if (tag == "file") {
                 //現在のドキュメンのフルパスからからファイル名を生成する
                 //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\" + val;

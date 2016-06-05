@@ -126,7 +126,7 @@ namespace Bjd.Utils
             if (File.Exists(fileName))
             {
                 var enc = System.Text.CodePagesEncodingProvider.Instance.GetEncoding(932);
-                using (var bs = new FileStream(fileName, FileMode.Open))
+                using (var bs = new FileStream(fileName, FileMode.Open,  FileAccess.Read, FileShare.Read))
                 using (var sr = new StreamReader(bs, enc))
                 {
                     while (true)
