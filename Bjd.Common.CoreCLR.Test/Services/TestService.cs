@@ -102,28 +102,28 @@ namespace Bjd.Services
         {
             var src = Path.Combine(paths);
             var filename = Path.GetFileName(src);
-            Copy(this.Kernel.Enviroment, src, filename);
+            Copy(this.env, src, filename);
         }
 
         public void SetOption(params string[] paths)
         {
             var src = Path.Combine(paths);
             //var filename = Path.GetFileName(src);
-            Copy(this.Kernel.Enviroment, src, "Option.ini");
+            Copy(this.env, src, "Option.ini");
         }
 
         public void AddMail(string srcFile, string user)
         {
             var filename = Path.GetFileName(srcFile);
             var destFilepath = Path.Combine(this.MailboxPath, user, filename);
-            Copy(this.Kernel.Enviroment, srcFile, destFilepath);
+            Copy(this.env, srcFile, destFilepath);
         }
 
         public void AddMailQueue(string srcFile)
         {
             var filename = Path.GetFileName(srcFile);
             var destFilepath = Path.Combine(this.MailQueuePath, filename);
-            Copy(this.Kernel.Enviroment, srcFile, destFilepath);
+            Copy(this.env, srcFile, destFilepath);
         }
 
         public void CreateMailbox(string username)
