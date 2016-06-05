@@ -18,6 +18,7 @@ namespace WebApiServerTest
 
     public class MailTest : ILife, IDisposable, IClassFixture<MailTest.ServerFixture>
     {
+        const int port = 5051;
 
         public class ServerFixture : IDisposable
         {
@@ -29,38 +30,15 @@ namespace WebApiServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebApiServerTest.ini");
+                _service.SetOption("MailTest.ini");
+                _service.ContentDirectory("mailbox");
+                _service.ContentDirectory("MailQueue");
 
                 //MailBoxのみ初期化する特別なテスト用Kernelコンストラクタ
                 //var kernel = new Kernel("MailBox");
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
-
-                ////メールボックスの初期化
-                //MailBoxBackup();
-                //MailBoxSetup();
-                //Copy(Path.Combine(testDir, "mailbox"), Path.Combine(exeDir, "mailbox"));
-                //Copy(Path.Combine(testDir, "MailQueue"), Path.Combine(exeDir, "MailQueue"));
-
-                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635152494430601419"), "user1");
-                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635152494802760458"), "user1");
-                _service.AddMail(Path.Combine("mailbox", "user1", "DF_00635154591705085681"), "user1");
-                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635152494430601419"), "user1");
-                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635152494802760458"), "user1");
-                _service.AddMail(Path.Combine("mailbox", "user1", "MF_00635154591705085681"), "user1");
-
-                _service.AddMail(Path.Combine("mailbox", "user2", "DF_00635152496274672823"), "user2");
-                _service.AddMail(Path.Combine("mailbox", "user2", "DF_00635154592194712756"), "user2");
-                _service.AddMail(Path.Combine("mailbox", "user2", "MF_00635152496274672823"), "user2");
-                _service.AddMail(Path.Combine("mailbox", "user2", "MF_00635154592194712756"), "user2");
-
-
-                _service.AddMailQueue(Path.Combine("MailQueue", "DF_00635154591911289944"));
-                _service.AddMailQueue(Path.Combine("MailQueue", "DF_00635154592434080602"));
-                _service.AddMailQueue(Path.Combine("MailQueue", "MF_00635154591911289944"));
-                _service.AddMailQueue(Path.Combine("MailQueue", "MF_00635154592434080602"));
-
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -78,6 +56,8 @@ namespace WebApiServerTest
 
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
+
+                _service.Dispose();
 
             }
 
@@ -98,7 +78,6 @@ namespace WebApiServerTest
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            var port = 5050;
             var kernel = _fixture._service.Kernel;
             if (inetKind == InetKind.V4)
             {
@@ -129,6 +108,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -153,6 +137,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -177,6 +166,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -201,6 +195,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -225,6 +224,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -249,6 +253,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -273,6 +282,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -297,6 +311,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -321,6 +340,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -345,6 +369,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -369,6 +398,11 @@ namespace WebApiServerTest
 
             //tearDown
             cl.Close();
+
+            //メールボックスの初期化
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
+
         }
 
         [Theory]
@@ -401,7 +435,8 @@ namespace WebApiServerTest
             cl.Close();
 
             //メールボックスの初期化
-            MailBoxSetup();
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
 
         }
 
@@ -435,7 +470,8 @@ namespace WebApiServerTest
             cl.Close();
 
             //メールボックスの初期化
-            MailBoxSetup();
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
 
         }
 
@@ -470,7 +506,8 @@ namespace WebApiServerTest
             cl.Close();
 
             //メールボックスの初期化
-            MailBoxSetup();
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
 
         }
 
@@ -500,7 +537,8 @@ namespace WebApiServerTest
             cl.Close();
 
             //メールボックスの初期化
-            MailBoxSetup();
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
 
         }
 
@@ -528,7 +566,8 @@ namespace WebApiServerTest
             cl.Close();
 
             //メールボックスの初期化
-            MailBoxSetup();
+            _fixture._service.ContentDirectory("mailbox");
+            _fixture._service.ContentDirectory("MailQueue");
 
         }
 
@@ -538,72 +577,7 @@ namespace WebApiServerTest
             return true;
         }
 
-        private void MailBoxSetup()
-        {
-            //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
-            //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
-            var testDir = AppContext.BaseDirectory;
-            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
-            //テスト用メールボックスをコピーする
-            Copy(Path.Combine(testDir, "mailbox"), Path.Combine(exeDir, "mailbox"));
-            Copy(Path.Combine(testDir, "MailQueue"), Path.Combine(exeDir, "MailQueue"));
-        }
 
-        private void MailBoxBackup()
-        {
-            //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
-            //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
-            var testDir = AppContext.BaseDirectory;
-            //var exeDir = TestDefine.Instance.TestDirectory;
-            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
-
-            //メールボックスをバックアップする
-            var exeMailbox = Path.Combine(exeDir, "mailbox");
-            if (Directory.Exists(exeMailbox))
-                Move(exeMailbox, Path.Combine(testDir, "mailbox.bak"));
-
-            var exeMailQueue = Path.Combine(exeDir, "MailQueue");
-            if (Directory.Exists(exeMailQueue))
-                Move(exeMailQueue, Path.Combine(testDir, "MailQueue.bak"));
-        }
-
-        private void MailBoxRestore()
-        {
-            //var testDir = TestUtil.ProjectDirectory() + "\\WebApiServerTest\\";
-            //var exeDir = TestUtil.ProjectDirectory() + "\\BJD\\out\\";
-            var testDir = AppContext.BaseDirectory;
-            //var exeDir = TestDefine.Instance.TestDirectory;
-            var exeDir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
-
-
-            //復旧
-            var bakMailbox = Path.Combine(testDir, "mailbox.bak");
-            if (Directory.Exists(bakMailbox))
-                Move(bakMailbox, Path.Combine(exeDir, "mailbox"));
-
-            var bakMailQueue = Path.Combine(testDir, "MailQueue.bak");
-            if (Directory.Exists(bakMailQueue))
-                Move(bakMailQueue, Path.Combine(exeDir, "MailQueue"));
-        }
-
-
-
-        static void Copy(string src, string dst)
-        {
-            if (Directory.Exists(dst))
-            {
-                Directory.Delete(dst, true);
-            }
-            Util.CopyDirectory(src, dst);
-        }
-        static void Move(string src, string dst)
-        {
-            if (Directory.Exists(dst))
-            {
-                Directory.Delete(dst, true);
-            }
-            Directory.Move(src, dst);
-        }
 
     }
 }

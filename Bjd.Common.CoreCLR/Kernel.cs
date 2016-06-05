@@ -186,7 +186,7 @@ namespace Bjd
 
             //Ver5.8.7 Java fix
             //mailBox初期化
-            var useMailBoxTag = new[] { "Smtp", "Pop3" };
+            var useMailBoxTag = new[] { "Smtp", "Pop3", "WebApi" };
             foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
             {
                 //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
@@ -195,7 +195,8 @@ namespace Bjd
                 var dir = ReplaceOptionEnv((String)conf.Get("dir"));
                 var datUser = (Dat)conf.Get("user");
                 var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
-                MailBox = new MailBox(logger, datUser, dir);
+                var dirFullPath = Path.Combine(this.Enviroment.ExecutableDirectory, dir);
+                MailBox = new MailBox(logger, datUser, dirFullPath);
                 break;
             }
 

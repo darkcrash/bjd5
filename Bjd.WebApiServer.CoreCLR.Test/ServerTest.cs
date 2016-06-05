@@ -25,14 +25,10 @@ namespace WebApiServerTest
 
             public ServerFixture()
             {
-                //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
-
-                //設定ファイルの退避と上書き
-                //_op = new TestOption("Bjd.WebApiServer.CoreCLR.Test", "WebApiServerTest.ini");
-
                 _service = TestService.CreateTestService();
-                _service.ContentFile("Option.ini");
+                _service.SetOption("ServerTest.ini");
+                _service.ContentDirectory("mailbox");
+                _service.ContentDirectory("MailQueue");
 
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("WebApi");
@@ -55,8 +51,7 @@ namespace WebApiServerTest
                 _v4Sv.Dispose();
                 _v6Sv.Dispose();
 
-                //設定ファイルのリストア
-                //_op.Dispose();
+                _service.Dispose();
 
             }
 

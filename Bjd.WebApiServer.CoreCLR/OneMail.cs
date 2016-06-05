@@ -67,7 +67,8 @@ namespace Bjd.WebApiServer
                 return subject; //未対応
             }
             //s[1]をEncoding名として、デコード
-            return Encoding.GetEncoding(s[1]).GetString(b);
+            var enc = CodePagesEncodingProvider.Instance.GetEncoding(s[1]);
+            return enc.GetString(b);
         }
 
     }
