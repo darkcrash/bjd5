@@ -77,7 +77,7 @@ namespace WebServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 56);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -91,7 +91,7 @@ namespace WebServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 50);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -110,7 +110,7 @@ namespace WebServerTest
             var buf = _v4Cl.LineRecv(3, this);
             var actual = Encoding.ASCII.GetString(buf);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -132,7 +132,7 @@ namespace WebServerTest
             var buf = _v4Cl.LineRecv(3, this);
             var actual = Encoding.ASCII.GetString(buf);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -157,7 +157,7 @@ namespace WebServerTest
             var actual = _v4Cl.LineRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -182,7 +182,7 @@ namespace WebServerTest
             _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("GET / {0}/1.0\n\n", protocol)));
             var actual = _v4Cl.LineRecv(3, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -208,7 +208,7 @@ namespace WebServerTest
             _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("GET {0} HTTP/1.0\n\n", uri)));
             var actual = _v4Cl.LineRecv(3, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -230,7 +230,7 @@ namespace WebServerTest
             _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("{0} / HTTP/1.0\n\n", method)));
             var actual = _v4Cl.LineRecv(3, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();
@@ -256,7 +256,7 @@ namespace WebServerTest
             _v4Cl.Send(Encoding.ASCII.GetBytes(reauest));
             var actual = _v4Cl.LineRecv(3, this);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDoen
             _v4Cl.Close();

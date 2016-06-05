@@ -65,7 +65,7 @@ namespace WebServerTest
 
         }
 
-        public  void Dispose()
+        public void Dispose()
         {
 
         }
@@ -94,7 +94,9 @@ namespace WebServerTest
         public void SsiRequestTest(string fileName, string pattern)
         {
 
-            var path = string.Format("{0}\\SsiTest\\Echo.html", _fixture._v4Sv.DocumentRoot);
+            //var path = string.Format("{0}\\SsiTest\\Echo.html", _fixture._v4Sv.DocumentRoot);
+            var path = Path.Combine(_fixture._v4Sv.DocumentRoot, "SsiTest", "Echo.html");
+
             if (pattern == "LAST_MODIFIED = $")
             {
                 pattern = string.Format("LAST_MODIFIED = {0}", Date2Str(File.GetLastWriteTime(path)));
@@ -152,10 +154,10 @@ namespace WebServerTest
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
             int sec = 30; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
-            var expected = "</html>";
+            var expected = "<html>";
             var actual = lines[8];
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             cl.Close();
 
@@ -175,7 +177,7 @@ namespace WebServerTest
             var expected = "100+200=300";
             var actual = lines[8];
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
             //TearDown
             cl.Close();
 

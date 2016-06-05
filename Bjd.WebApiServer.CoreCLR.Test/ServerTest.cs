@@ -99,7 +99,7 @@ namespace WebApiServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 58);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace WebApiServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 52);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -133,7 +133,7 @@ namespace WebApiServerTest
             var str = Encoding.UTF8.GetString(buf);
             var actual = str.Substring(str.IndexOf("\r\n\r\n") + 4);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();

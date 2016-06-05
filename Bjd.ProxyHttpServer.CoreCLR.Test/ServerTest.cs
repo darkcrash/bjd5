@@ -88,7 +88,7 @@ namespace ProxyHttpServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 58);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace ProxyHttpServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 52);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

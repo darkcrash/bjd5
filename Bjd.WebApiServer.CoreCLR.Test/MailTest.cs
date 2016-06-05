@@ -125,7 +125,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -149,7 +149,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -173,7 +173,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -197,7 +197,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -221,7 +221,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = (string)data[0].date;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -245,7 +245,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = (int)data[0].size;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -269,7 +269,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = ((string)data[0].all).Substring(0, 30);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -293,7 +293,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = ((string)data[0].body).Substring(1, 19);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -317,7 +317,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = (string)data[0].uid;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -341,7 +341,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = (string)data[0].filename;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -365,7 +365,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = (string)data[0].subject;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -395,7 +395,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -429,7 +429,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -464,7 +464,7 @@ namespace WebApiServerTest
             dynamic data = d.data;
             var actual = data.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -494,7 +494,7 @@ namespace WebApiServerTest
             //var actual = data.Count;
             var actual = (string)json;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
@@ -522,7 +522,7 @@ namespace WebApiServerTest
             //var actual = data.Count;
             var actual = (string)json;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();

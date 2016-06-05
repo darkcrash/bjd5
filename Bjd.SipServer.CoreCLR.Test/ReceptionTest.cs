@@ -125,7 +125,7 @@ namespace SipServerTest {
             //exercise
             var actual = sut.StartLine.ReceptionKind;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -140,7 +140,7 @@ namespace SipServerTest {
             //exercise
             var actual = sut.StartLine.SipMethod;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -155,7 +155,7 @@ namespace SipServerTest {
             //exercise
             var actual = sut.StartLine.StatusCode;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -170,7 +170,7 @@ namespace SipServerTest {
             //exercise
             var actual = sut.Header.GetVal(key);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -185,7 +185,7 @@ namespace SipServerTest {
             //exercise
             var actual = sut.Body.Count;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
     }

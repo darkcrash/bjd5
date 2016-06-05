@@ -176,7 +176,7 @@ namespace ProxyPop3ServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 58);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -191,7 +191,7 @@ namespace ProxyPop3ServerTest
             //exercise
             var actual = sv.ToString().Substring(0, 52);
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
         }
 
@@ -295,7 +295,7 @@ namespace ProxyPop3ServerTest
             var actual = cl2.StringRecv(3, this);
 
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
 
             //tearDown
             cl1.StringSend("QUIT");

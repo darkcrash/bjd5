@@ -31,7 +31,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.SipMethod;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -48,7 +48,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.RequestUri;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -65,7 +65,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.SipVer.No;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -81,7 +81,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.StatusCode;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -96,7 +96,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.SipVer.No;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
@@ -119,7 +119,7 @@ namespace SipServerTest
             //exercise
             var actual = sut.ReceptionKind;
             //verify
-            Assert.Equal(actual, expected);
+            Assert.Equal(expected, actual);
         }
 
 
