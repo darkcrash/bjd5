@@ -17,6 +17,7 @@ namespace Bjd.Common.Test.plugin
             //setUp
 
             TestService service = TestService.CreateTestService();
+            service.SetOption("Option.ini");
 
             //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
