@@ -7,16 +7,21 @@ using Bjd.Mails;
 using Bjd.Options;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class AliasTest : IDisposable
     {
+        private TestService _service;
         private MailBox _mailBox;
         private List<String> _domainList;
 
         public AliasTest()
         {
+            _service = TestService.CreateTestService();
+
+
             _domainList = new List<string>();
             _domainList.Add("example.com");
 
@@ -25,7 +30,8 @@ namespace Bjd.SmtpServer.Test
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             datUser.Add(true, "user3\tjNBu6GHNV633O4jMz1GJiQ==");
-            _mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
+            //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
+            _mailBox = new MailBox(new Logger(), datUser, _service.MailboxPath);
 
         }
         public void Dispose()

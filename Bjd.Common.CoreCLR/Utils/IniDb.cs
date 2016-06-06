@@ -239,7 +239,7 @@ namespace Bjd.Utils
 
 
         // 保存
-        public void Save(String nameTag, ListVal listVal)
+        public void Save(string nameTag, ListVal listVal)
         {
             // Ver5.0.1 デバッグファイルに対象のValListを書き込む
             for (var i = 0; i < 2; i++)

@@ -34,6 +34,7 @@ namespace Bjd.Common.Test.plugin
         {
             //setUp
             TestService service = TestService.CreateTestService();
+            service.SetOption("Option.ini");
 
             //var kernel = new Kernel();
             var kernel = service.Kernel;

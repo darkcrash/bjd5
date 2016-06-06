@@ -21,4 +21,48 @@
         Hidden = 16
     }
 
+    public static class ControlExtension
+    {
+        public static string GetControlTypeString(this CtrlType t)
+        {
+            switch (t)
+            {
+                case CtrlType.CheckBox:
+                    return "BOOL";
+                case CtrlType.TextBox:
+                    return "STRING";
+                case CtrlType.Hidden:
+                    return "HIDE_STRING";
+                case CtrlType.ComboBox:
+                    return "LIST";
+                case CtrlType.Folder:
+                    return "FOLDER";
+                case CtrlType.File:
+                    return "FILE";
+                case CtrlType.Dat:
+                    return "DAT";
+                case CtrlType.Int:
+                    return "INT";
+                case CtrlType.AddressV4:
+                    return "ADDRESS_V4";
+                case CtrlType.BindAddr:
+                    return "BINDADDR";
+                case CtrlType.Font:
+                    return "FONT";
+                case CtrlType.Group:
+                    return "GROUP";
+                case CtrlType.Label:
+                    return "LABEL";
+                case CtrlType.Memo:
+                    return "MEMO";
+                case CtrlType.Radio:
+                    return "RADIO";
+                case CtrlType.TabPage:
+                    return "TAB_PAGE";
+            }
+            return string.Empty;
+        }
+
+    }
+
 }
