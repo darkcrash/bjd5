@@ -39,7 +39,7 @@ namespace Bjd.Servers
         private readonly List<Task> _childThreads = new List<Task>();
 
         // 同時接続数
-        private readonly int _multiple; 
+        private readonly int _multiple;
         private readonly OneBind _oneBind;
 
         //ステータス表示用
@@ -154,15 +154,17 @@ namespace Bjd.Servers
             System.Diagnostics.Trace.TraceInformation($"OneServer.Stop ");
 
             // TCPソケットサーバーがなければ何もしない
-            if (_sockServerTcp == null)
+            if (_sockServerTcp == null && _sockServerUdp == null)
             {
                 return; //すでに終了処理が終わっている
             }
 
             // キャンセルして、停止
-            _sockServerTcp.Cancel();
+            if (_sockServerTcp != null) _sockServerTcp.Cancel();
+            if (_sockServerUdp != null) _sockServerUdp.Cancel();
             base.Stop(); //life=false ですべてのループを解除する
-            _sockServerTcp.Close();
+            if (_sockServerTcp != null) _sockServerTcp.Close();
+            if (_sockServerUdp != null) _sockServerUdp.Close();
 
             // クライアント接続終了まで待機する
             // 全部の子スレッドが終了するのを待つ
@@ -171,6 +173,7 @@ namespace Bjd.Servers
                 Thread.Sleep(200);
             }
             _sockServerTcp = null;
+            _sockServerUdp = null;
 
         }
 
