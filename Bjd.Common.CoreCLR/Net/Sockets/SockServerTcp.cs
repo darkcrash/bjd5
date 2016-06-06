@@ -34,7 +34,9 @@ namespace Bjd.Net.Sockets
             System.Diagnostics.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
+
         }
+
 
         public override void Close()
         {
@@ -86,7 +88,7 @@ namespace Bjd.Net.Sockets
             var tTcp = _socket.AcceptAsync();
             while (true)
             {
-                if (tTcp.Wait(2000, this.Kernel.CancelToken))
+                if (tTcp.Wait(2000, this.CancelToken))
                     break;
                 if (tTcp.Status == TaskStatus.Canceled)
                     break;

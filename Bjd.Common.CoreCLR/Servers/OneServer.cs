@@ -27,7 +27,6 @@ namespace Bjd.Servers
 
         //Ver5.9.2 Java fix
         protected Ssl ssl = null;
-        protected Kernel Kernel; //SockObjのTraceのため
         protected AclList AclList = null;
 
         private SockServerTcp _sockServerTcp;
@@ -82,7 +81,7 @@ namespace Bjd.Servers
 
         //コンストラクタ
         protected OneServer(Kernel kernel, Conf conf, OneBind oneBind)
-            : base(kernel.CreateLogger(conf.NameTag, true, null))
+            : base(kernel, kernel.CreateLogger(conf.NameTag, true, null))
         {
             Kernel = kernel;
             NameTag = conf.NameTag;
@@ -90,8 +89,6 @@ namespace Bjd.Servers
             _oneBind = oneBind;
             IsJp = kernel.IsJp;
 
-            // タスクのキャンセルにサーバー停止イベントを登録
-            kernel.CancelToken.Register(() => this.StopLife());
 
             //Ver6.1.6
             Lang = new Lang(kernel, IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);

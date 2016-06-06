@@ -29,7 +29,7 @@ namespace Bjd.Test.Sockets
             private readonly int _port;
             private readonly Ssl _ssl = null;
 
-            public EchoServer(Kernel kernel, String addr, int port) : base(null)
+            public EchoServer(Kernel kernel, String addr, int port) : base(kernel, null)
             {
                 //_sockServer = new SockServer(new Kernel(),ProtocolKind.Udp,_ssl);
                 _sockServer = new SockServerUdp(kernel, ProtocolKind.Udp, _ssl);

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Bjd;
 using Xunit;
+using Bjd.Services;
 
 namespace Bjd.Test
 {
@@ -9,7 +10,7 @@ namespace Bjd.Test
     {
         private class MyThread : ThreadBase
         {
-            public MyThread() : base(null)
+            public MyThread(Kernel kernel) : base(kernel, null)
             {
 
             }
@@ -40,11 +41,18 @@ namespace Bjd.Test
             }
         }
 
+        TestService _service;
+
+        public ThreadBaseTest()
+        {
+            _service = TestService.CreateTestService();
+        }
+
         [Fact]
         public void Startする前はThreadBaseKindはBeforeとなる()
         {
             //setUp
-            var sut = new MyThread();
+            var sut = new MyThread(_service.Kernel);
             //var expected = ThreadBaseKind.Before;
             //exercise
             var actual = sut.ThreadBaseKind;
@@ -58,7 +66,7 @@ namespace Bjd.Test
         public void StartするとThreadBaseKindはRunningとなる()
         {
             //setUp
-            var sut = new MyThread();
+            var sut = new MyThread(_service.Kernel);
             //var expected = ThreadBaseKind.Running;
             //exercise
             sut.Start();
@@ -73,7 +81,7 @@ namespace Bjd.Test
         public void Startは重複しても問題ない()
         {
             //setUp
-            var sut = new MyThread();
+            var sut = new MyThread(_service.Kernel);
             //var expected = ThreadBaseKind.Running;
             //exercise
             sut.Start();
@@ -89,7 +97,7 @@ namespace Bjd.Test
         public void Stopは重複しても問題ない()
         {
             //setUp
-            var sut = new MyThread();
+            var sut = new MyThread(_service.Kernel);
             //var expected = ThreadBaseKind.After;
             //exercise
             sut.Stop(); //重複
@@ -108,7 +116,7 @@ namespace Bjd.Test
         {
 
             //setUp
-            var sut = new MyThread();
+            var sut = new MyThread(_service.Kernel);
             //exercise verify 
             for (var i = 0; i < 5; i++)
             {
@@ -128,7 +136,7 @@ namespace Bjd.Test
             //exercise verify 
             for (var i = 0; i < 3; i++)
             {
-                var sut = new MyThread();
+                var sut = new MyThread(_service.Kernel);
                 sut.Start();
                 Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
                 sut.Stop();

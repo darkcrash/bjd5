@@ -7,6 +7,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Traces;
 using Bjd.Utils;
+using System.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -21,7 +22,8 @@ namespace Bjd.Net.Sockets
         public IPEndPoint LocalAddress { get; set; }
         public String RemoteHostname { get; private set; }
 
-        private bool isCancel = false;
+        private System.Threading.CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        protected  System.Threading.CancellationToken CancelToken { get; private set; }
 
         //このKernelはTrace()のためだけに使用されているので、Traceしない場合は削除することができる
         protected Kernel Kernel;
@@ -58,24 +60,20 @@ namespace Bjd.Net.Sockets
             SockState = SockState.Idle;
             LocalAddress = null;
             RemoteAddress = null;
-            Kernel.Cancel += this.Kernel_Cancel;
-        }
-
-        private void Kernel_Cancel(object sender, EventArgs e)
-        {
-            this.Cancel();
+            this.CancelToken = cancelTokenSource.Token;
+            this.Kernel.CancelToken.Register(this.Cancel);
         }
 
         protected internal virtual void Cancel()
         {
-            isCancel = true;
+            this.cancelTokenSource.Cancel();
         }
 
         protected bool IsCancel
         {
             get
             {
-                return isCancel || this.Kernel.CancelToken.IsCancellationRequested;
+                return this.CancelToken.IsCancellationRequested;
             }
         }
 
@@ -233,9 +231,7 @@ namespace Bjd.Net.Sockets
 
                 this.Cancel();
                 this._lastError = null;
-                Kernel.Cancel -= this.Kernel_Cancel;
                 this.Kernel = null;
-
 
                 disposedValue = true;
             }

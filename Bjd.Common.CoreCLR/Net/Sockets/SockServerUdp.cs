@@ -86,7 +86,7 @@ namespace Bjd.Net.Sockets
             // UDP
             var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
             var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
-            tUdp.ContinueWith(_ => this.Receive(_), Kernel.CancelToken);
+            tUdp.ContinueWith(_ => this.Receive(_), this.CancelToken);
         }
 
 
@@ -120,7 +120,6 @@ namespace Bjd.Net.Sockets
 
         Queue<SockUdp> sockQueue = new Queue<SockUdp>();
         ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false);
-        bool isCancel = false;
 
         public SockUdp Select(ILife iLife)
         {
@@ -134,7 +133,7 @@ namespace Bjd.Net.Sockets
                     {
                         return sockQueue.Dequeue();
                     }
-                    else if (!isCancel)
+                    else if (!IsCancel)
                     {
                         WaitSelect.Reset();
                     }
@@ -142,7 +141,7 @@ namespace Bjd.Net.Sockets
                 }                //Ver5.8.1
                 //Thread.Sleep(0);
                 //Thread.Sleep(1);
-                WaitSelect.Wait(2000, this.Kernel.CancelToken);
+                WaitSelect.Wait(2000, this.CancelToken);
             }
             SetError("isLife()==false");
             return null;
