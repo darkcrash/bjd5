@@ -35,7 +35,7 @@ namespace Bjd.ProxyHttpServer
         bool _cacheRefresh;//キャッシュ清掃
 
         public Cache(Kernel kernel, Logger logger, Conf conf)
-            : base(logger)
+            : base(kernel, logger)
         {
             this.logger = logger;
             //_oneOption = oneOption;

@@ -21,7 +21,7 @@ namespace Bjd.SmtpServer
 
         //public Agent(Server server, Kernel kernel, MailQueue mailQueue, SaveMail saveMail,bool always):base(kernel,"Agent") {
         public Agent(Kernel kernel, Server server, Conf conf, Logger logger, MailQueue mailQueue, bool always)
-            : base( kernel.CreateLogger("Agent", true, null))
+            : base(kernel, kernel.CreateLogger("Agent", true, null))
         {
             _conf = conf;
             _logger = logger;

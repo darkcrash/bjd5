@@ -24,7 +24,7 @@ namespace Bjd.ProxyFtpServer
 
         private Tunnel _tunnel;
 
-        public DataTunnel(Kernel kernel,Logger logger,Ip listenIp,int listenPort,Ip connectIp,int connectPort,Tunnel tunnel) : base( logger)
+        public DataTunnel(Kernel kernel,Logger logger,Ip listenIp,int listenPort,Ip connectIp,int connectPort,Tunnel tunnel) : base(kernel, logger)
         {
             _sock[CS.Client] = null;
             _sock[CS.Server] = null;

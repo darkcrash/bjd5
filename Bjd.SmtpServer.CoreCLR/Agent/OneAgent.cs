@@ -26,7 +26,7 @@ namespace Bjd.SmtpServer
 
 
         public OneAgent(Kernel kernel, Server server, Conf conf, Logger logger, MailQueue mailQueue, OneQueue oneQueue)
-            : base( kernel.CreateLogger("OneAgent", true, null))
+            : base(kernel, kernel.CreateLogger("OneAgent", true, null))
         {
             _conf = conf;
             _logger = logger;
