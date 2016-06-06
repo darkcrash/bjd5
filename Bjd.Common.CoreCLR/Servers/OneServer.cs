@@ -83,6 +83,10 @@ namespace Bjd.Servers
         protected OneServer(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, kernel.CreateLogger(conf.NameTag, true, null))
         {
+            if (kernel == null) throw new ArgumentNullException("kernel");
+            if (Conf == null) throw new ArgumentNullException("conf");
+            if (_oneBind == null)throw new ArgumentNullException("oneBind");
+
             Kernel = kernel;
             NameTag = conf.NameTag;
             Conf = conf;
@@ -93,25 +97,6 @@ namespace Bjd.Servers
             //Ver6.1.6
             Lang = new Lang(kernel, IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);
             CheckLang();//定義のテスト
-
-            //テスト用
-            if (Conf == null)
-            {
-                var optionSample = new OptionSample(kernel, "");
-                Conf = new Conf(optionSample);
-                Conf.Set("port", 9990);
-                Conf.Set("multiple", 10);
-                Conf.Set("acl", new Dat(new CtrlType[0]));
-                Conf.Set("enableAcl", 1);
-                Conf.Set("timeOut", 3);
-            }
-
-            //テスト用
-            if (_oneBind == null)
-            {
-                var ip = new Ip(IpKind.V4Localhost);
-                _oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            }
 
             Logger = kernel.CreateLogger(conf.NameTag, (bool)Conf.Get("useDetailsLog"), this);
             _multiple = (int)Conf.Get("multiple");
