@@ -167,7 +167,7 @@ namespace Bjd.Test.Servers
             var ip = new Ip(IpKind.V4Localhost);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
             Conf conf = TestUtil.CreateConf("OptionSample");
-            conf.Set("port", 9990);
+            conf.Set("port", 9991);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);

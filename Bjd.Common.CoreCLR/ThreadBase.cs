@@ -119,6 +119,10 @@ namespace Bjd
                 //ThreadBaseKindをRunningにする
                 OnRunThread();
             }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Trace.TraceInformation("スレッドの中止");
+            }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError(ex.Message);

@@ -80,7 +80,8 @@ namespace Bjd.Net.Sockets
                 }
                 BeginReceive(); //接続完了処理（受信待機開始）
             }
-            else {
+            else
+            {
                 SetError("CallbackConnect() faild");
             }
         }
@@ -184,7 +185,8 @@ namespace Bjd.Net.Sockets
                     //Ver5.9.2 Java fix
                     _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, Kernel.CancelToken);
                 }
-                else {
+                else
+                {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                     var tReceive = _socket.ReceiveAsync(_recvBufSegment, SocketFlags.None);
                     tReceive.ContinueWith(_ => this.EndReceive(_), Kernel.CancelToken);
@@ -288,7 +290,8 @@ namespace Bjd.Net.Sockets
                     }
                 }
             }
-            else {
+            else
+            {
                 //受信完了
                 lock (this)
                 {
@@ -312,7 +315,8 @@ namespace Bjd.Net.Sockets
                             this.SetErrorReceive();
                             return;
                         }
-                        else {
+                        else
+                        {
                             _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
                         }
                     }
@@ -363,9 +367,9 @@ namespace Bjd.Net.Sockets
                 {
                     // キューから取得する
                     buffer = _sockQueue.Dequeue(len);
-
                 }
-                else {
+                else
+                {
                     while (iLife.IsLife())
                     {
                         Thread.Sleep(0);
@@ -391,7 +395,8 @@ namespace Bjd.Net.Sockets
                                 break;
                             }
                         }
-                        else {
+                        else
+                        {
                             if (SockState != SockState.Connect)
                             {
                                 return null;
@@ -495,7 +500,8 @@ namespace Bjd.Net.Sockets
                     Buffer.BlockCopy(buf, 0, b, 0, length);
                     Trace(TraceKind.Send, b, false);
                 }
-                else {
+                else
+                {
                     Trace(TraceKind.Send, buf, false);
                 }
                 //Ver5.9.2 Java fix
@@ -503,7 +509,8 @@ namespace Bjd.Net.Sockets
                 {
                     return _oneSsl.Write(buf, buf.Length);
                 }
-                else {
+                else
+                {
                     //return _socket.Send(buf, 0, length, SocketFlags.None);
                     var t = _socket.SendAsync(new ArraySegment<byte>(buf, 0, length), SocketFlags.None);
                     t.Wait(this.Kernel.CancelToken);
