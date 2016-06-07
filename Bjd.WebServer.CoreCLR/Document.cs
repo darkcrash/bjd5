@@ -194,7 +194,7 @@ namespace Bjd.WebServer
                         return true;
                     }
                     break;
-                    end:
+                end:
                     _body.Set(output);
                     _sendHeader.Replace("Content-Length", _body.Length.ToString());
                     return true;
@@ -208,20 +208,20 @@ namespace Bjd.WebServer
             charset = "utf-8";
             encoding = Encoding.UTF8;
             var enc = (string)_conf.Get("encode");
-            //switch ((int)_conf.Get("encode")) {
-            //    case 0://UTF-8
-            //        return true;
-            //    case 1://shift-jis
-            //        charset = "Shift-JIS";
-            //        encoding = Encoding.GetEncoding("shift-jis");
-            //        return true;
-            //    case 2://eyc
-            //        charset = "euc-jp";
-            //        encoding = Encoding.GetEncoding("euc-jp");
-            //        return true;
-            //}
+            switch (int.Parse(enc))
+            {
+                case 0://UTF-8
+                    return true;
+                case 1://shift-jis
+                    charset = "Shift-JIS";
+                    encoding = CodePagesEncodingProvider.Instance.GetEncoding("shift-jis");
+                    return true;
+                case 2://eyc
+                    charset = "euc-jp";
+                    encoding = CodePagesEncodingProvider.Instance.GetEncoding("euc-jp");
+                    return true;
+            }
             charset = enc;
-            encoding = Encoding.GetEncoding(enc);
             return true;
         }
 

@@ -38,6 +38,8 @@ namespace WebServerTest
                 _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
                 _v6Sv.Start();
 
+                System.Threading.Tasks.Task.Delay(200).Wait();
+
             }
 
             public void Dispose()
@@ -71,7 +73,6 @@ namespace WebServerTest
         [Fact]
         public void ステータス情報_ToString_の出力確認_V4()
         {
-            System.Threading.Tasks.Task.Delay(200).Wait();
             var sv = _fixture._v4Sv;
             var expected = "+ サービス中 \t    Web-localhost:88\t[127.0.0.1\t:TCP 88]\tThread";
 
@@ -85,7 +86,6 @@ namespace WebServerTest
         [Fact]
         public void ステータス情報_ToString_の出力確認_V6()
         {
-            System.Threading.Tasks.Task.Delay(200).Wait();
 
             var sv = _fixture._v6Sv;
             var expected = "+ サービス中 \t    Web-localhost:88\t[::1\t:TCP 88]\tThread";
