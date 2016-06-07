@@ -40,6 +40,7 @@ namespace Bjd.Net.Sockets
 
         public override void Close()
         {
+            this.Cancel();
             if (_socket != null)
             {
                 _socket.Dispose();

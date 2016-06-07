@@ -37,7 +37,7 @@ namespace Bjd.Test.Options
         //[InlineData(CtrlType.BindAddr, new BindAddr(BindStyle.V4ONLY, new Ip(InetKind.V4), new Ip(InetKind.V6)), "V4ONLY,0.0.0.0,::0")]
         [InlineData(CtrlType.ComboBox, 0, "0")]
         [InlineData(CtrlType.ComboBox, 1, "1")]
-        public void デフォルト値をtoRegで取り出す(CtrlType ctrlType, Object val, String expected)
+        public void デフォルト値をtoRegで取り出す(CtrlType ctrlType, object val, string expected)
         {
             //setUp
             const bool isSecret = false;
@@ -72,7 +72,7 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.BindAddr, "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT")]
         [InlineData(CtrlType.BindAddr, "V6Only,198.168.0.1,ffe0::1")]
         [InlineData(CtrlType.ComboBox, "1")]
-        public void FromRegで設定した値をtoRegで取り出す(CtrlType ctrlType, String str)
+        public void FromRegで設定した値をtoRegで取り出す(CtrlType ctrlType, string str)
         {
             //setUp
             const bool isSecret = false;
@@ -80,7 +80,7 @@ namespace Bjd.Test.Options
             sut.FromReg(str);
             var expected = str;
             //exercise
-            String actual = sut.ToReg(isSecret);
+            string actual = sut.ToReg(isSecret);
             //verify
             Assert.Equal(expected, actual);
         }
@@ -118,7 +118,7 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.ComboBox, "XXX", false)] //不正入力
         [InlineData(CtrlType.ComboBox, null, false)] //不正入力
         [InlineData(CtrlType.ComboBox, "2", false)] //不正入力 list.size()オーバー
-        public void FromRegの不正パラメータ判定(CtrlType ctrlType, String str, bool expected)
+        public void FromRegの不正パラメータ判定(CtrlType ctrlType, string str, bool expected)
         {
             //setUp
             var sut = Assistance.CreateOneVal(ctrlType, null);
@@ -134,12 +134,12 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.Hidden, false, "", "0t9GC1bkpWNzg1uea3drbQ==")]
         [InlineData(CtrlType.Hidden, false, null, "0t9GC1bkpWNzg1uea3drbQ==")]
         [InlineData(CtrlType.Hidden, false, "本日は晴天なり", "Htt+6zREaQU3sc7UrnAWHQ==")]
-        public void IsDebugTrueの時のToReg出力(CtrlType ctrlType, bool isDebug, String str, String expected)
+        public void IsDebugTrueの時のToReg出力(CtrlType ctrlType, bool isDebug, string str, string expected)
         {
             //setUp
             OneVal sut = Assistance.CreateOneVal(ctrlType, str);
             //exercise
-            String actual = sut.ToReg(isDebug);
+            string actual = sut.ToReg(isDebug);
             //verify
             Assert.Equal(expected, actual);
         }
@@ -161,7 +161,7 @@ namespace Bjd.Test.Options
         //×[InlineData(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }))]
         //[InlineData(CtrlType.BindAddr, new BindAddr())]
         [InlineData(CtrlType.ComboBox, 0)]
-        public void ReadCtrlFalseでデフォルトの値に戻るかどうかのテスト(CtrlType ctrlType, Object value)
+        public void ReadCtrlFalseでデフォルトの値に戻るかどうかのテスト(CtrlType ctrlType, object value)
         {
             //setUp
             var sut = Assistance.CreateOneVal(ctrlType, value);
@@ -182,7 +182,7 @@ namespace Bjd.Test.Options
     {
         //OneValの生成
         //デフォルト値(nullを設定した場合、適切な値を自動でセットする)
-        public static OneVal CreateOneVal(CtrlType ctrlType, Object val)
+        public static OneVal CreateOneVal(CtrlType ctrlType, object val)
         {
             //Kernel kernel = new Kernel();
             //const string help = "help";
@@ -252,7 +252,7 @@ namespace Bjd.Test.Options
                     }
                     //oneCtrl = new CtrlHidden(help, 30);
                     return new OneVal("name", val, Crlf.Nextline, true);
-                    //break;
+                //break;
                 case CtrlType.AddressV4:
                     if (val == null)
                     {
@@ -291,9 +291,9 @@ namespace Bjd.Test.Options
                 case CtrlType.Dat:
                     //カラムはTEXTBOX×2で決め打ち
                     var listVal = new ListVal{
-					    //new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")),
-					    //new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help"))
-					    new OneVal("name1", true, Crlf.Nextline),
+                        //new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")),
+                        //new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help"))
+                        new OneVal("name1", true, Crlf.Nextline),
                         new OneVal("name2", true, Crlf.Nextline)
                     };
 
