@@ -46,7 +46,7 @@ namespace Bjd.WebServer
             {
                 if (o.NameTag.IndexOf("Web-") == 0)
                 {
-                    if ((int)o.GetValue("port") == (int)Conf.Get("port"))
+                    if ((int)o.GetValue("port") == (int)_conf.Get("port"))
                     {
                         WebOptionList.Add(o);
                     }
@@ -66,7 +66,7 @@ namespace Bjd.WebServer
             var tagList = new List<string> { "cgiPath", "webDavPath", "aliaseList" };
             foreach (string tag in tagList)
             {
-                var dat = (Dat)Conf.Get(tag);
+                var dat = (Dat)_conf.Get(tag);
                 var changed = false;
                 foreach (var o in dat)
                 {
@@ -84,12 +84,12 @@ namespace Bjd.WebServer
                     o.StrList[0] = str;
                 }
                 if (changed)
-                    Conf.Set(tag, dat);
+                    _conf.Set(tag, dat);
             }
 
 
             //当初、opBase及びloggerは、weboptionList[0]で暫定的に初期化される 
-            var protocol = (int)Conf.Get("protocol");
+            var protocol = (int)_conf.Get("protocol");
             if (protocol == 1)
             {//HTTPS
                 var op = kernel.ListOption.Get("VirtualHost");
@@ -100,7 +100,7 @@ namespace Bjd.WebServer
                 ssl = new Ssl(Logger, certificate, privateKeyPassword);
             }
 
-            var useAutoAcl = (bool)Conf.Get("useAutoAcl");// ACL拒否リストへ自動追加する
+            var useAutoAcl = (bool)_conf.Get("useAutoAcl");// ACL拒否リストへ自動追加する
             if (useAutoAcl)
             {
                 const int max = 1; //発生回数
@@ -173,10 +173,10 @@ namespace Bjd.WebServer
                 //***************************************************************
                 // ドキュメント生成クラスの初期化
                 //***************************************************************
-                var contentType = new ContentType(Conf);
-                var document = new Document(Kernel, Logger, Conf, sockTcp, contentType);
+                var contentType = new ContentType(_conf);
+                var document = new Document(_kernel, Logger, _conf, sockTcp, contentType);
 
-                var authrization = new Authorization(Conf, Logger);
+                var authrization = new Authorization(_conf, Logger);
                 var authName = "";
 
 
@@ -198,7 +198,7 @@ namespace Bjd.WebServer
                 }
 
                 //ヘッダ取得（内部データは初期化される）
-                if (!recvHeader.Recv(sockTcp, (int)Conf.Get("timeOut"), this))
+                if (!recvHeader.Recv(sockTcp, (int)_conf.Get("timeOut"), this))
                     break;
 
                 {
@@ -228,7 +228,7 @@ namespace Bjd.WebServer
                                 {
                                     len = 51200000;
                                 }
-                                var b = sockTcp.Recv((int)len, (int)Conf.Get("timeOut"), this);
+                                var b = sockTcp.Recv((int)len, (int)_conf.Get("timeOut"), this);
                                 if (!inputStream.Add(b))
                                 {
                                     errorCount++;//エラー蓄積
@@ -340,10 +340,10 @@ namespace Bjd.WebServer
                 //***************************************************************
                 //ターゲットオブジェクトの初期化
                 //***************************************************************
-                var target = new Target(Kernel, Conf, Logger);
+                var target = new Target(_kernel, _conf, Logger);
                 if (target.DocumentRoot == null)
                 {
-                    Logger.Set(LogKind.Error, sockTcp, 14, string.Format("documentRoot={0}", Conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
+                    Logger.Set(LogKind.Error, sockTcp, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
                     break;//ドキュメントルートが無効な場合は、処理を継続できない
                 }
                 target.InitFromUri(request.Uri);
@@ -352,7 +352,7 @@ namespace Bjd.WebServer
                 // 送信ヘッダの追加
                 //***************************************************************
                 // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
-                if ((bool)Conf.Get("useExpansion"))
+                if ((bool)_conf.Get("useExpansion"))
                 {
                     if (recvHeader.GetVal("Host") != null)
                     {
@@ -372,7 +372,7 @@ namespace Bjd.WebServer
                 //***************************************************************
                 if (WebDav.IsTarget(request.Method))
                 {
-                    var webDav = new WebDav(Logger, _webDavDb, target, document, urlStr, recvHeader.GetVal("Depth"), contentType, (bool)Conf.Get("useEtag"));
+                    var webDav = new WebDav(Logger, _webDavDb, target, document, urlStr, recvHeader.GetVal("Depth"), contentType, (bool)_conf.Get("useEtag"));
 
                     var inputBuf = new byte[0];
                     if (inputStream != null)
@@ -404,7 +404,7 @@ namespace Bjd.WebServer
                         case HttpMethod.Move:
                             responseCode = 405;
                             //Destnationで指定されたファイルは書き込み許可されているか？
-                            var dstTarget = new Target(Kernel, Conf, Logger);
+                            var dstTarget = new Target(_kernel, _conf, Logger);
                             string destinationStr = recvHeader.GetVal("Destination");
                             if (destinationStr != null)
                             {
@@ -463,7 +463,7 @@ namespace Bjd.WebServer
                 //***************************************************************
                 //  隠し属性のファイルへのアクセス制御
                 //***************************************************************
-                if (!(bool)Conf.Get("useHidden"))
+                if (!(bool)_conf.Get("useHidden"))
                 {
                     if ((target.Attr & FileAttributes.Hidden) == FileAttributes.Hidden)
                     {
@@ -479,7 +479,7 @@ namespace Bjd.WebServer
                     keepAlive = false;//デフォルトで切断
 
                     //環境変数作成
-                    var env = new Env(Kernel, Conf, request, recvHeader, sockTcp, target.FullPath);
+                    var env = new Env(_kernel, _conf, request, recvHeader, sockTcp, target.FullPath);
 
                     // 詳細ログ
                     Logger.Set(LogKind.Detail, sockTcp, 18, string.Format("{0} {1}", target.CgiCmd, Path.GetFileName(target.FullPath)));
@@ -488,7 +488,7 @@ namespace Bjd.WebServer
                     {
 
                         var cgi = new Cgi();
-                        var cgiTimeout = (int)Conf.Get("cgiTimeout");
+                        var cgiTimeout = (int)_conf.Get("cgiTimeout");
                         if (!cgi.Exec(target, request.Param, env, inputStream, out outputStream, cgiTimeout))
                         {
                             // エラー出力
@@ -516,7 +516,7 @@ namespace Bjd.WebServer
                         goto SEND;
                     }
                     //SSI
-                    var ssi = new Ssi(Kernel, Logger, Conf, sockTcp, request, recvHeader);
+                    var ssi = new Ssi(_kernel, Logger, _conf, sockTcp, request, recvHeader);
                     if (!ssi.Exec(target, env, outputStream))
                     {
                         // エラー出力
@@ -558,7 +558,7 @@ namespace Bjd.WebServer
                 //********************************************************************
                 // (1) useEtagがtrueの場合は、送信時にETagを付加する
                 // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
-                if ((bool)Conf.Get("useEtag") || recvHeader.GetVal("If-Match") != null || recvHeader.GetVal("If-None-Match") != null)
+                if ((bool)_conf.Get("useEtag") || recvHeader.GetVal("If-Match") != null || recvHeader.GetVal("If-None-Match") != null)
                 {
                     //Ver5.1.5
                     //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
@@ -581,7 +581,7 @@ namespace Bjd.WebServer
                             goto SEND;
                         }
                     }
-                    if ((bool)Conf.Get("useEtag"))
+                    if ((bool)_conf.Get("useEtag"))
                         document.AddHeader("ETag", etagStr);
                 }
                 //********************************************************************
@@ -759,7 +759,7 @@ namespace Bjd.WebServer
                     string name = op.NameTag.Substring(4).ToUpper();
                     if (name == host)
                     {
-                        if (op.NameTag != Conf.NameTag)
+                        if (op.NameTag != _conf.NameTag)
                         {
                             //Ver5.1.4 webDavDbを置き換える
                             foreach (var db in _webDavDbList)
@@ -771,8 +771,8 @@ namespace Bjd.WebServer
                             }
                             //オプション及びロガーを再初期化する
                             //OneOption = op;
-                            Conf = new Conf(op);
-                            Logger = Kernel.CreateLogger(op.NameTag, (bool)Conf.Get("useDetailsLog"), this);
+                            _conf = new Conf(op);
+                            Logger = _kernel.CreateLogger(op.NameTag, (bool)_conf.Get("useDetailsLog"), this);
                         }
                         return;
                     }
@@ -816,7 +816,7 @@ namespace Bjd.WebServer
 
                 // ..を参照するパスの排除
             }
-            else if (!(bool)Conf.Get("useDot") && 0 <= request.Uri.IndexOf(".."))
+            else if (!(bool)_conf.Get("useDot") && 0 <= request.Uri.IndexOf(".."))
             {
                 Logger.Set(LogKind.Secure, sockTcp, 13, "URI=" + request.Uri);//.. が含まれるリクエストは許可されていません。
                 responseCode = 403;
@@ -856,12 +856,12 @@ namespace Bjd.WebServer
             if (AclList.Append(remoteIp))
             {//ACL自動拒否設定(「許可する」に設定されている場合、機能しない)
                 //追加に成功した場合、オプションを書き換える
-                var d = (Dat)Conf.Get("acl");
+                var d = (Dat)_conf.Get("acl");
                 var name = string.Format("AutoDeny-{0}", DateTime.Now);
                 var ipStr = remoteIp.ToString();
                 d.Add(true, string.Format("{0}\t{1}", name, ipStr));
-                Conf.Set("acl", d);
-                Conf.Save(Kernel.Configuration);
+                _conf.Set("acl", d);
+                _conf.Save(_kernel.Configuration);
 
                 Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));
             }
@@ -875,7 +875,7 @@ namespace Bjd.WebServer
         {
             get
             {
-                return (string)Conf.Get("documentRoot");
+                return (string)_conf.Get("documentRoot");
             }
         }
 

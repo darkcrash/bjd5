@@ -50,7 +50,7 @@ namespace Bjd.SmtpServer
 
             //ドメイン名のリスト整備
             DomainList = new List<string>();
-            foreach (var s in ((string)Conf.Get("domainName")).Split(','))
+            foreach (var s in ((string)_conf.Get("domainName")).Split(','))
             {
                 //Ver6.1.9
                 // 設定時に誤って空白が入ってしまった際、強制的に削除する
@@ -65,7 +65,7 @@ namespace Bjd.SmtpServer
 
             //エリアス初期化
             Alias = new Alias(DomainList, kernel.MailBox);
-            foreach (var dat in (Dat)Conf.Get("aliasList"))
+            foreach (var dat in (Dat)_conf.Get("aliasList"))
             {
                 if (dat.Enable)
                 {
@@ -76,32 +76,32 @@ namespace Bjd.SmtpServer
             }
 
             //メールキューの初期化
-            _mailQueue = new MailQueue(Kernel.Enviroment.ExecutableDirectory);
+            _mailQueue = new MailQueue(_kernel.Enviroment.ExecutableDirectory);
 
             //SaveMail初期化
-            var receivedHeader = new ReceivedHeader(kernel, (string)Conf.Get("receivedHeader"));
+            var receivedHeader = new ReceivedHeader(kernel, (string)_conf.Get("receivedHeader"));
             _mailSave = new MailSave(kernel.MailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
 
-            var always = (bool)Conf.Get("always");//キュー常時処理
-            _agent = new Agent(kernel, this, Conf, Logger, _mailQueue, always);
+            var always = (bool)_conf.Get("always");//キュー常時処理
+            _agent = new Agent(kernel, this, _conf, Logger, _mailQueue, always);
 
             //中継許可の初期化
-            _relay = new Relay((Dat)Conf.Get("allowList"), (Dat)Conf.Get("denyList"), (int)Conf.Get("order"), Logger);
+            _relay = new Relay((Dat)_conf.Get("allowList"), (Dat)_conf.Get("denyList"), (int)_conf.Get("order"), Logger);
 
             //PopBeforeSmtp
             _popBeforeSmtp = new PopBeforeSmtp((bool)conf.Get("usePopBeforeSmtp"), (int)conf.Get("timePopBeforeSmtp"), kernel.MailBox);
 
 
             //usePopAccountがfalseの時、内部でmailBoxが無効化される
-            _smtpAuthUserList = new SmtpAuthUserList((bool)Conf.Get("usePopAcount"), Kernel.MailBox, (Dat)Conf.Get("esmtpUserList"));
-            _smtpAuthRange = new SmtpAuthRange((Dat)Conf.Get("range"), (int)Conf.Get("enableEsmtp"), Logger);
+            _smtpAuthUserList = new SmtpAuthUserList((bool)_conf.Get("usePopAcount"), _kernel.MailBox, (Dat)_conf.Get("esmtpUserList"));
+            _smtpAuthRange = new SmtpAuthRange((Dat)_conf.Get("range"), (int)_conf.Get("enableEsmtp"), Logger);
 
             //ヘッダ置換
-            _changeHeader = new ChangeHeader((Dat)Conf.Get("patternList"), (Dat)Conf.Get("appendList"));
+            _changeHeader = new ChangeHeader((Dat)_conf.Get("patternList"), (Dat)_conf.Get("appendList"));
 
 
             //Ver5.3.3 Ver5.2以前のバージョンのカラムの違いを修正する
-            var d = (Dat)Conf.Get("hostList");
+            var d = (Dat)_conf.Get("hostList");
             if (d.Count > 0 && d[0].StrList.Count == 6)
             {
                 foreach (var o in d)
@@ -123,7 +123,7 @@ namespace Bjd.SmtpServer
         override public string Cmd(string cmdStr)
         {
 
-            if (!Kernel.MailBox.Status)
+            if (!_kernel.MailBox.Status)
                 return "";
 
             if (cmdStr == "Refresh-MailBox")
@@ -139,10 +139,10 @@ namespace Bjd.SmtpServer
                     sb.Append('\b');
                 }
                 //ユーザメール一覧
-                foreach (var user in Kernel.MailBox.UserList)
+                foreach (var user in _kernel.MailBox.UserList)
                 {
                     //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-                    var folder = Path.Combine(Kernel.MailBox.Dir, user);
+                    var folder = Path.Combine(_kernel.MailBox.Dir, user);
                     files = Directory.GetFiles(folder, "DF_*");
                     Array.Sort(files);
                     foreach (string fileName in files)
@@ -200,7 +200,7 @@ namespace Bjd.SmtpServer
         MailInfo Search(string user, string uid, ref string folder)
         {
             //folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-            folder = Path.Combine(Kernel.MailBox.Dir, user);
+            folder = Path.Combine(_kernel.MailBox.Dir, user);
             if (user == "QUEUE")
                 folder = _mailQueue.Dir;
 
@@ -228,7 +228,7 @@ namespace Bjd.SmtpServer
                 _agent.Start();
 
             //Ver5.9.8
-            if (Kernel.MailBox == null || !Kernel.MailBox.Status)
+            if (_kernel.MailBox == null || !_kernel.MailBox.Status)
             {
                 return false;
             }
@@ -236,7 +236,7 @@ namespace Bjd.SmtpServer
             //fetchList = (Dat) conf.Get("fetchList");
             //_timeout = (int) conf.Get("timeOut");
             //_sizeLimit = (int) conf.Get("sizeLimit");
-            _fetch = new Fetch(Kernel, _mailSave, DomainList[0], (Dat)Conf.Get("fetchList"), (int)Conf.Get("timeOut"), (int)Conf.Get("sizeLimit"));
+            _fetch = new Fetch(_kernel, _mailSave, DomainList[0], (Dat)_conf.Get("fetchList"), (int)_conf.Get("timeOut"), (int)_conf.Get("sizeLimit"));
             _fetch.Start();
             return true;
         }
@@ -257,7 +257,7 @@ namespace Bjd.SmtpServer
             var sockTcp = (SockTcp)sockObj;
 
             //WebApi関連
-            if (!Kernel.WebApi.ServiceSmtp)
+            if (!_kernel.WebApi.ServiceSmtp)
             {
                 if (sockTcp != null)
                     sockTcp.Close();
@@ -266,31 +266,31 @@ namespace Bjd.SmtpServer
 
 
             //グリーティングメッセージの表示
-            sockTcp.AsciiSend("220 " + Kernel.ChangeTag((string)Conf.Get("bannerMessage")));
+            sockTcp.AsciiSend("220 " + _kernel.ChangeTag((string)_conf.Get("bannerMessage")));
 
-            var checkParam = new CheckParam((bool)Conf.Get("useNullFrom"), (bool)Conf.Get("useNullDomain"));
+            var checkParam = new CheckParam((bool)_conf.Get("useNullFrom"), (bool)_conf.Get("useNullDomain"));
             var session = new Session();
 
             SmtpAuth smtpAuth = null;
 
-            var useEsmtp = (bool)Conf.Get("useEsmtp");
+            var useEsmtp = (bool)_conf.Get("useEsmtp");
             if (useEsmtp)
             {
                 if (_smtpAuthRange.IsHit(sockTcp.RemoteIp))
                 {
-                    var usePlain = (bool)Conf.Get("useAuthPlain");
-                    var useLogin = (bool)Conf.Get("useAuthLogin");
-                    var useCramMd5 = (bool)Conf.Get("useAuthCramMD5");
+                    var usePlain = (bool)_conf.Get("useAuthPlain");
+                    var useLogin = (bool)_conf.Get("useAuthLogin");
+                    var useCramMd5 = (bool)_conf.Get("useAuthCramMD5");
 
                     smtpAuth = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
                 }
             }
 
             //受信サイズ制限
-            var sizeLimit = (int)Conf.Get("sizeLimit");
+            var sizeLimit = (int)_conf.Get("sizeLimit");
 
             //Ver5.0.0-b8 Frmo:偽造の拒否
-            var useCheckFrom = (bool)Conf.Get("useCheckFrom");
+            var useCheckFrom = (bool)_conf.Get("useCheckFrom");
 
 
             while (IsLife())
@@ -310,7 +310,7 @@ namespace Bjd.SmtpServer
                 var smtpCmd = new SmtpCmd(cmd);
 
                 //WebApi関連
-                var responseSmtp = Kernel.WebApi.ResponseSmtp(cmd.CmdStr);
+                var responseSmtp = _kernel.WebApi.ResponseSmtp(cmd.CmdStr);
                 if (responseSmtp != -1)
                 {
                     sockTcp.AsciiSend(string.Format("{0} WebAPI response", responseSmtp));
@@ -384,7 +384,7 @@ namespace Bjd.SmtpServer
                 {
                     if (session.Hello != null)
                     {//HELO/EHLOは１回しか受け取らない
-                        sockTcp.AsciiSend(string.Format("503 {0} Duplicate HELO/EHLO", Kernel.ServerName));
+                        sockTcp.AsciiSend(string.Format("503 {0} Duplicate HELO/EHLO", _kernel.ServerName));
                         continue;
                     }
                     if (smtpCmd.ParamList.Count < 1)
@@ -397,7 +397,7 @@ namespace Bjd.SmtpServer
 
                     if (smtpCmd.Kind == SmtpCmdKind.Ehlo)
                     {
-                        sockTcp.AsciiSend(string.Format("250-{0} Helo {1}[{2}], Pleased to meet you.", Kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
+                        sockTcp.AsciiSend(string.Format("250-{0} Helo {1}[{2}], Pleased to meet you.", _kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
                         sockTcp.AsciiSend("250-8BITMIME");
                         sockTcp.AsciiSend(string.Format("250-SIZE={0}", sizeLimit));
                         if (smtpAuth != null)
@@ -412,7 +412,7 @@ namespace Bjd.SmtpServer
                     }
                     else
                     {
-                        sockTcp.AsciiSend(string.Format("250 {0} Helo {1}[{2}], Pleased to meet you.", Kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
+                        sockTcp.AsciiSend(string.Format("250 {0} Helo {1}[{2}], Pleased to meet you.", _kernel.ServerName, sockObj.RemoteHostname, sockObj.RemoteAddress));
                     }
                     continue;
                 }
@@ -458,7 +458,7 @@ namespace Bjd.SmtpServer
                         if (!Alias.IsUser(mailAddress.User))
                         {
                             //有効なユーザかどうかの確認
-                            if (!Kernel.MailBox.IsUser(mailAddress.User))
+                            if (!_kernel.MailBox.IsUser(mailAddress.User))
                             {
                                 //Ver_Ml
                                 //有効なメーリングリスト名かどうかの確認
@@ -542,7 +542,7 @@ namespace Bjd.SmtpServer
                             continue;
                         }
                         //有効なユーザでない場合拒否する
-                        if (!Kernel.MailBox.IsUser(mailAddress.User))
+                        if (!_kernel.MailBox.IsUser(mailAddress.User))
                         {
                             Logger.Set(LogKind.Secure, sockTcp, 29, string.Format("From:{0}", mailAddress));
                             sockTcp.AsciiSend("530 There is not an email address in a local user");

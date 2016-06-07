@@ -15,7 +15,6 @@ namespace Bjd.SmtpServer
         readonly bool _always;//�L���[�펞����
 
         //�b��
-        private Kernel _kernel;
         private Server _server;
 
 
@@ -30,7 +29,6 @@ namespace Bjd.SmtpServer
             _always = always;
 
             //�b��
-            _kernel = kernel;
             _server = server;
         }
         override protected bool OnStartThread() { return true; }//�O����

@@ -148,6 +148,12 @@ namespace Bjd.Services
             Directory.CreateDirectory(boxPath);
         }
 
+        public void CleanMailbox(string username)
+        {
+            var boxPath = Path.Combine(this.MailboxPath, username);
+            Directory.Delete(boxPath, true);
+            Directory.CreateDirectory(boxPath);
+        }
 
         public static string ProjectDirectory
         {

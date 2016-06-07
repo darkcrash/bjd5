@@ -23,7 +23,7 @@ namespace Bjd.TftpServer
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
-            _workDir = (string)Conf.Get("workDir");
+            _workDir = (string)_conf.Get("workDir");
         }
         enum Opcode
         {
@@ -90,7 +90,7 @@ namespace Bjd.TftpServer
             //リクエスト元に対するソケットを新規に作成する
             var ip = sockUdp.RemoteIp;
             var port = sockUdp.RemoteAddress.Port;
-            var childObj = new SockUdp(Kernel, ip, port, null, new byte[0]);
+            var childObj = new SockUdp(_kernel, ip, port, null, new byte[0]);
 
             if (opCode == Opcode.Wrq)
             {//アップロード処理
@@ -197,7 +197,7 @@ namespace Bjd.TftpServer
             FileStream fs = null;
             BinaryReader br = null;
 
-            if (!(bool)Conf.Get("read"))
+            if (!(bool)_conf.Get("read"))
             {//「読込み」が許可されていない
                 Logger.Set(LogKind.Secure, childObj, 10, path);
                 //エラーコード(2) アクセス違反
@@ -289,14 +289,14 @@ namespace Bjd.TftpServer
             FileStream fs = null;
             BinaryWriter bw = null;
 
-            if (!(bool)Conf.Get("write"))
+            if (!(bool)_conf.Get("write"))
             {//「書込み」が許可されていない
                 Logger.Set(LogKind.Secure, childObj, 11, path);
                 //エラーコード(2) アクセス違反
                 childObj.Send(Bytes.Create(Util.htons((ushort)Opcode.Error), Util.htons(2), "Transmission of a message prohibition"));
                 goto end;
             }
-            if (!(bool)Conf.Get("override"))
+            if (!(bool)_conf.Get("override"))
             {//「上書き」が許可されていない
                 if (File.Exists(path))
                 {

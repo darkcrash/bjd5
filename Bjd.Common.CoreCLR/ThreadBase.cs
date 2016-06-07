@@ -19,12 +19,12 @@ namespace Bjd
         }
         private bool _life; //スレッドを停止するためのスイッチ
         readonly Logger _logger;
-        protected Kernel Kernel; //SockObjのTraceのため
+        protected Kernel _kernel; //SockObjのTraceのため
 
         //logger　スレッド実行中に例外がスローされたとき表示するためのLogger(nullを設定可能)
         protected ThreadBase(Kernel kernel, Logger logger)
         {
-            this.Kernel = kernel;
+            this._kernel = kernel;
             _logger = logger;
 
             // タスクのキャンセルにサーバー停止イベントを登録

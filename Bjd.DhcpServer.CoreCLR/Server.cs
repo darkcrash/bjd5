@@ -32,25 +32,25 @@ namespace Bjd.DhcpServer
         {
 
             //オプションの読み込み
-            _maskIp = (Ip)Conf.Get("maskIp");
-            _gwIp = (Ip)Conf.Get("gwIp");
-            _dnsIp0 = (Ip)Conf.Get("dnsIp0");
-            _dnsIp1 = (Ip)Conf.Get("dnsIp1");
-            _leaseTime = (int)Conf.Get("leaseTime");
+            _maskIp = (Ip)_conf.Get("maskIp");
+            _gwIp = (Ip)_conf.Get("gwIp");
+            _dnsIp0 = (Ip)_conf.Get("dnsIp0");
+            _dnsIp1 = (Ip)_conf.Get("dnsIp1");
+            _leaseTime = (int)_conf.Get("leaseTime");
             if (_leaseTime <= 0)
                 _leaseTime = 86400;
-            if ((bool)Conf.Get("useWpad"))
+            if ((bool)_conf.Get("useWpad"))
             {
-                _wpadUrl = (string)Conf.Get("wpadUrl");
+                _wpadUrl = (string)_conf.Get("wpadUrl");
             }
 
 
             //DB生成
             //string fileName = string.Format("{0}\\lease.db", kernel.ProgDir());
-            string fileName = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}lease.db";
-            var startIp = (Ip)Conf.Get("startIp");
-            var endIp = (Ip)Conf.Get("endIp");
-            _macAcl = (Dat)Conf.Get("macAcl");
+            string fileName = $"{_kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}lease.db";
+            var startIp = (Ip)_conf.Get("startIp");
+            var endIp = (Ip)_conf.Get("endIp");
+            _macAcl = (Dat)_conf.Get("macAcl");
             //設定が無い場合は、空のDatを生成する
             if (_macAcl == null)
             {
@@ -72,7 +72,7 @@ namespace Bjd.DhcpServer
             _lease = new Lease(fileName, startIp, endIp, _leaseTime, _macAcl);
 
             //サーバアドレスの初期化
-            _serverAddress = Kernel.Enviroment.ServerAddress;
+            _serverAddress = _kernel.Enviroment.ServerAddress;
 
         }
 
@@ -122,7 +122,7 @@ namespace Bjd.DhcpServer
             //********************************************************
             // MAC制御
             //********************************************************
-            if ((bool)Conf.Get("useMacAcl"))
+            if ((bool)_conf.Get("useMacAcl"))
             {// MAC制御が有効な場合
                 if (!_lease.SearchMac(rp.Mac))
                 {

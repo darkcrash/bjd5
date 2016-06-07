@@ -36,11 +36,11 @@ namespace Bjd.Pop3Server
                 Logger.Set(LogKind.Error, null, 4, "");
             }
 
-            var useAutoAcl = (bool)Conf.Get("useAutoAcl"); // ACL拒否リストへ自動追加する
+            var useAutoAcl = (bool)_conf.Get("useAutoAcl"); // ACL拒否リストへ自動追加する
             if (!useAutoAcl)
                 return;
-            var max = (int)Conf.Get("autoAclMax"); // 認証失敗数（回）
-            var sec = (int)Conf.Get("autoAclSec"); // 対象期間(秒)
+            var max = (int)_conf.Get("autoAclMax"); // 認証失敗数（回）
+            var sec = (int)_conf.Get("autoAclSec"); // 対象期間(秒)
             _attackDb = new AttackDb(sec, max);
         }
 
@@ -74,14 +74,14 @@ namespace Bjd.Pop3Server
 
             var pop3LoginState = Pop3LoginState.User;
 
-            var authType = (int)Conf.Get("authType"); // 0=USER/PASS 1=APOP 2=両方
-            var useChps = (bool)Conf.Get("useChps"); //パスワード変更[CPHS]の使用・未使用
+            var authType = (int)_conf.Get("authType"); // 0=USER/PASS 1=APOP 2=両方
+            var useChps = (bool)_conf.Get("useChps"); //パスワード変更[CPHS]の使用・未使用
 
 
             string user = null;
 
             //グリーティングメッセージの表示
-            var bannerMessage = Kernel.ChangeTag((string)Conf.Get("bannerMessage"));
+            var bannerMessage = _kernel.ChangeTag((string)_conf.Get("bannerMessage"));
 
             var authStr = ""; //APOP用の認証文字列
             if (authType == 0)
@@ -92,7 +92,7 @@ namespace Bjd.Pop3Server
             else
             {
                 //APOP
-                authStr = APop.CreateAuthStr(Kernel.ServerName);
+                authStr = APop.CreateAuthStr(_kernel.ServerName);
                 sockTcp.AsciiSend("+OK " + bannerMessage + " " + authStr);
 
             }
@@ -182,7 +182,7 @@ namespace Bjd.Pop3Server
                         user = paramList[0];
 
                         //認証(APOP対応)
-                        var success = APop.Auth(user, Kernel.MailBox.GetPass(user), authStr, paramList[1]);
+                        var success = APop.Auth(user, _kernel.MailBox.GetPass(user), authStr, paramList[1]);
                         //var success = APopAuth(user, authStr, paramList[1]);
                         AutoDeny(success, remoteIp); //ブルートフォース対策
                         if (success)
@@ -216,7 +216,7 @@ namespace Bjd.Pop3Server
                     }
                     string pass = paramList[0];
 
-                    var success = Kernel.MailBox.Auth(user, pass); //認証
+                    var success = _kernel.MailBox.Auth(user, pass); //認証
                     AutoDeny(success, remoteIp); //ブルートフォース対策
                     if (success)
                     {
@@ -365,14 +365,14 @@ namespace Bjd.Pop3Server
                         var password = paramList[0];
 
                         //最低文字数
-                        var minimumLength = (int)Conf.Get("minimumLength");
+                        var minimumLength = (int)_conf.Get("minimumLength");
                         if (password.Length < minimumLength)
                         {
                             sockTcp.AsciiSend("-ERR The number of letter is not enough.");
                             continue;
                         }
                         //ユーザ名と同一のパスワードを許可しない
-                        if ((bool)Conf.Get("disableJoe"))
+                        if ((bool)_conf.Get("disableJoe"))
                         {
                             if (user.ToUpper() == password.ToUpper())
                             {
@@ -397,16 +397,16 @@ namespace Bjd.Pop3Server
                             else
                                 checkSign = true;
                         }
-                        if (((bool)Conf.Get("useNum") && !checkNum) ||
-                            ((bool)Conf.Get("useSmall") && !checkSmall) ||
-                            ((bool)Conf.Get("useLarge") && !checkLarge) ||
-                            ((bool)Conf.Get("useSign") && !checkSign))
+                        if (((bool)_conf.Get("useNum") && !checkNum) ||
+                            ((bool)_conf.Get("useSmall") && !checkSmall) ||
+                            ((bool)_conf.Get("useLarge") && !checkLarge) ||
+                            ((bool)_conf.Get("useSign") && !checkSign))
                         {
                             sockTcp.AsciiSend("-ERR A required letter is not included.");
                             continue;
                         }
-                        var conf = new Conf(Kernel.ListOption.Get("MailBox"));
-                        if (!Chps.Change(user, password, Kernel.MailBox, conf))
+                        var conf = new Conf(_kernel.ListOption.Get("MailBox"));
+                        if (!Chps.Change(user, password, _kernel.MailBox, conf))
                         {
                             //if (!Kernel.MailBox.Chps(user, password, conf)){
                             sockTcp.AsciiSend("-ERR A problem occurred to a mailbox.");
@@ -426,10 +426,10 @@ namespace Bjd.Pop3Server
                 continue;
 
                 END:
-                sockTcp.AsciiSend(string.Format("+OK Pop Server at {0} signing off.", Kernel.ServerName));
+                sockTcp.AsciiSend(string.Format("+OK Pop Server at {0} signing off.", _kernel.ServerName));
                 break;
             }
-            Kernel.MailBox.Logout(user);
+            _kernel.MailBox.Logout(user);
             if (sockTcp != null)
                 sockTcp.Close();
 
@@ -439,14 +439,14 @@ namespace Bjd.Pop3Server
         {
 
             //var folder = Kernel.MailBox.Login(user, addr);
-            if (!Kernel.MailBox.Login(user, addr))
+            if (!_kernel.MailBox.Login(user, addr))
             {
                 Logger.Set(LogKind.Secure, sockTcp, 1, string.Format("user={0}", user));
                 sockTcp.AsciiSend("-ERR Double login");
                 return false;
             }
             //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-            var folder = Path.Combine(Kernel.MailBox.Dir, user);
+            var folder = Path.Combine(_kernel.MailBox.Dir, user);
             messageList = new MessageList(folder);//初期化
 
             //if (kernel.MailBox.Login(user, addr)) {//POP before SMTPのために、最後のログインアドレスを保存する
@@ -463,7 +463,7 @@ namespace Bjd.Pop3Server
 
             Logger.Set(LogKind.Secure, sockTcp, 3, string.Format("user={0} pass={1}", user, pass));
             // 認証のエラーはすぐに返答を返さない
-            var authTimeout = (int)Conf.Get("authTimeout");
+            var authTimeout = (int)_conf.Get("authTimeout");
             for (int i = 0; i < (authTimeout * 10) && IsLife(); i++)
             {
                 Thread.Sleep(100);
@@ -482,12 +482,12 @@ namespace Bjd.Pop3Server
             if (!AclList.Append(remoteIp))
                 return; //ACL自動拒否設定(「許可する」に設定されている場合、機能しない)
             //追加に成功した場合、オプションを書き換える
-            var d = (Dat)Conf.Get("acl");
+            var d = (Dat)_conf.Get("acl");
             var name = string.Format("AutoDeny-{0}", DateTime.Now);
             var ipStr = remoteIp.ToString();
             d.Add(true, string.Format("{0}\t{1}", name, ipStr));
-            Conf.Set("acl", d);
-            Conf.Save(Kernel.Configuration);
+            _conf.Set("acl", d);
+            _conf.Save(_kernel.Configuration);
             //OneOption.SetVal("acl", d);
             //OneOption.Save(OptionIni.GetInstance());
             Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));

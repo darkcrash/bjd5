@@ -38,7 +38,7 @@ namespace Bjd.RemoteServer
             //*************************************************************
             // パスワード認証
             //*************************************************************
-            var password = (string)Conf.Get("password");
+            var password = (string)_conf.Get("password");
             if (password == "")
             {
                 Logger.Set(LogKind.Normal, _sockTcp, 5, "");
@@ -102,14 +102,14 @@ namespace Bjd.RemoteServer
             Logger.Set(LogKind.Normal, _sockTcp, 1, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
 
             //バージョン/ログイン完了の送信
-            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, Kernel.Enviroment.ProductVersion);
+            RemoteData.Send(_sockTcp, RemoteDataKind.DatVer, _kernel.Enviroment.ProductVersion);
 
             //kernel.LocalAddressをRemote側で生成する
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLocaladdress, LocalAddress.GetInstance().RemoteStr());
 
             //オプションの送信
             //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
-            var optionFileName = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
+            var optionFileName = $"{_kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
             string optionStr;
             using (var bs = new FileStream(optionFileName, FileMode.Open))
             using (var sr = new StreamReader(bs, Encoding.UTF8))
@@ -119,7 +119,7 @@ namespace Bjd.RemoteServer
                 sr.Dispose();
             }
             RemoteData.Send(_sockTcp, RemoteDataKind.DatOption, optionStr);
-            Kernel.RemoteConnect = new Bjd.Remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
+            _kernel.RemoteConnect = new Bjd.Remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
             //Kernel.View.SetColor();//ウインド色の初期化
 
             while (IsLife() && _sockTcp.SockState == SockState.Connect)
@@ -139,7 +139,7 @@ namespace Bjd.RemoteServer
                 }
             }
 
-            Kernel.RemoteConnect = null;//リモートクライアント接続終了
+            _kernel.RemoteConnect = null;//リモートクライアント接続終了
 
             Logger.Set(LogKind.Normal, _sockTcp, 2, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
             //Kernel.View.SetColor();//ウインド色の初期化
@@ -172,10 +172,10 @@ namespace Bjd.RemoteServer
 
                         if (nameTag == "BJD")
                         {
-                            buffer = Kernel.Cmd(cmdStr);//リモート操作（データ取得）
+                            buffer = _kernel.Cmd(cmdStr);//リモート操作（データ取得）
                         }
                         else {
-                            var server = Kernel.ListServer.Get(nameTag);
+                            var server = _kernel.ListServer.Get(nameTag);
                             if (server != null)
                             {
                                 buffer = server.Cmd(cmdStr);//リモート操作（データ取得）
@@ -185,7 +185,7 @@ namespace Bjd.RemoteServer
                     }
                     break;
                 case RemoteDataKind.CmdBrowse:
-                    var lines = Kernel.GetBrowseInfo(o.Str);
+                    var lines = _kernel.GetBrowseInfo(o.Str);
                     RemoteData.Send(_sockTcp, RemoteDataKind.DatBrowse, lines);
                     break;
                 case RemoteDataKind.CmdOption:
@@ -197,7 +197,7 @@ namespace Bjd.RemoteServer
                     //    変更された内容が、ここに到着しているかどうかを確認する
 
                     //var optionFileName = string.Format("{0}\\Option.ini", Define.ExecutableDirectory);
-                    var optionFileName = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
+                    var optionFileName = $"{_kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}Option.ini";
                     using (var bs = new FileStream(optionFileName, FileMode.Open))
                     using (var sw = new StreamWriter(bs, Encoding.UTF8))
                     {
@@ -205,17 +205,17 @@ namespace Bjd.RemoteServer
                         //sw.Close();
                         sw.Dispose();
                     }
-                    Kernel.ListInitialize();//Option.iniを読み込む
+                    _kernel.ListInitialize();//Option.iniを読み込む
 
                     //Ver5.8.6 Java fix 新しくDefから読み込んだオプションがあった場合に、そのオプションを保存するため
-                    Kernel.ListOption.Save(Kernel.Configuration);
+                    _kernel.ListOption.Save(_kernel.Configuration);
 
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);
                     DefaultService.Restart();
                     break;
                 case RemoteDataKind.CmdTrace:
-                    Kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");
+                    _kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");
                     break;
                     //    }
             }

@@ -22,7 +22,6 @@ namespace Bjd.SmtpServer.Test
                 //usrr2のメールボックスへの２通のメールをセット
                 _service.CreateMailbox("user1");
                 _service.CreateMailbox("user2");
-
             }
 
             public override void Dispose()
@@ -40,6 +39,11 @@ namespace Bjd.SmtpServer.Test
             //_testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest.ini");
 
             _testServer = fixture;
+
+            //usrr2のメールボックスへの２通のメールをセット
+            _testServer._service.CleanMailbox("user1");
+            _testServer._service.CleanMailbox("user2");
+
 
         }
 
@@ -188,7 +192,7 @@ namespace Bjd.SmtpServer.Test
             Assert.Equal(expected, actual);
 
             //tearDown
-            sut.Dispose();
+            sut.Dispose(); 
         }
 
         public bool IsLife()

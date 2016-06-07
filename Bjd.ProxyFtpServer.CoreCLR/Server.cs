@@ -27,7 +27,7 @@ namespace Bjd.ProxyFtpServer
         //�ڑ��P�ʂ̏���
         override protected void OnSubThread(SockObj sockObj) {
 
-            var timeout = (int)Conf.Get("timeOut");
+            var timeout = (int)_conf.Get("timeOut");
 
             var client = (SockTcp)sockObj;
             SockTcp server = null;
@@ -40,7 +40,7 @@ namespace Bjd.ProxyFtpServer
             //�O�����i�ڑ���E���[�U���E�p�X���[�h�̎擾)
             //***************************************************************
             {
-                var str = string.Format("220 {0} {1}", Kernel.Enviroment.ApplicationName, Kernel.Enviroment.Copyright);
+                var str = string.Format("220 {0} {1}", _kernel.Enviroment.ApplicationName, _kernel.Enviroment.Copyright);
                 client.AsciiSend(str);
 
                 var cmdStr = "";
@@ -94,7 +94,7 @@ namespace Bjd.ProxyFtpServer
                 //        goto end;
                 //    }
                 //}
-                var ipList = Kernel.GetIpList(hostName);
+                var ipList = _kernel.GetIpList(hostName);
                 if (ipList.Count == 0) {
                     goto end;
                 }
@@ -102,7 +102,7 @@ namespace Bjd.ProxyFtpServer
                 Ssl ssl = null;
 
                 foreach (var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip, port,TimeoutSec, ssl);
+                    server = Inet.Connect(_kernel,ip, port,TimeoutSec, ssl);
                     if (server != null)
                         break;
                 }
@@ -138,7 +138,7 @@ namespace Bjd.ProxyFtpServer
             //***************************************************************
             // �p�C�v
             //***************************************************************
-            var ftpTunnel = new FtpTunnel(Kernel, Logger, (int)Conf.Get("idleTime"), _dataPort, timeout);
+            var ftpTunnel = new FtpTunnel(_kernel, Logger, (int)_conf.Get("idleTime"), _dataPort, timeout);
             //Ver5.0.5
             //ftpTunnel.BytePipe(ref life, server,client);
             ftpTunnel.Pipe(server, client,this);

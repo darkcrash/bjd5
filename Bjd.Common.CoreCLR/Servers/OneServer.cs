@@ -21,7 +21,7 @@ namespace Bjd.Servers
         public Logger Logger;
         public String NameTag { get; private set; }
 
-        protected Conf Conf;
+        protected Conf _conf;
         protected bool IsJp;
         protected int TimeoutSec;//sec
 
@@ -50,7 +50,7 @@ namespace Bjd.Servers
             {
                 stat = IsJp ? "- 停止 " : "- Initialization failure ";
             }
-            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)Conf.Get("port"), Count(), _multiple);
+            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)_conf.Get("port"), Count(), _multiple);
         }
 
         public int Count()
@@ -84,32 +84,33 @@ namespace Bjd.Servers
             : base(kernel, kernel.CreateLogger(conf.NameTag, true, null))
         {
             if (kernel == null) throw new ArgumentNullException("kernel");
-            if (Conf == null) throw new ArgumentNullException("conf");
-            if (_oneBind == null)throw new ArgumentNullException("oneBind");
+            if (conf == null) throw new ArgumentNullException("conf");
+            if (oneBind == null)throw new ArgumentNullException("oneBind");
 
-            Kernel = kernel;
-            NameTag = conf.NameTag;
-            Conf = conf;
+            _kernel = kernel;
+            _conf = conf;
             _oneBind = oneBind;
+
             IsJp = kernel.IsJp;
+            NameTag = conf.NameTag;
 
 
             //Ver6.1.6
             Lang = new Lang(kernel, IsJp ? LangKind.Jp : LangKind.En, "Server" + conf.NameTag);
             CheckLang();//定義のテスト
 
-            Logger = kernel.CreateLogger(conf.NameTag, (bool)Conf.Get("useDetailsLog"), this);
-            _multiple = (int)Conf.Get("multiple");
+            Logger = kernel.CreateLogger(conf.NameTag, (bool)_conf.Get("useDetailsLog"), this);
+            _multiple = (int)_conf.Get("multiple");
 
             //DHCPにはACLが存在しない
             if (NameTag != "Dhcp")
             {
                 //ACLリスト 定義が無い場合は、aclListを生成しない
-                var acl = (Dat)Conf.Get("acl");
-                AclList = new AclList(acl, (int)Conf.Get("enableAcl"), Logger);
+                var acl = (Dat)_conf.Get("acl");
+                AclList = new AclList(acl, (int)_conf.Get("enableAcl"), Logger);
             }
 
-            TimeoutSec = (int)Conf.Get("timeOut");
+            TimeoutSec = (int)_conf.Get("timeOut");
 
         }
 
@@ -195,7 +196,7 @@ namespace Bjd.Servers
         {
             System.Diagnostics.Trace.TraceInformation($"OneServer.OnRunThread {this.GetType().FullName}");
 
-            var port = (int)Conf.Get("port");
+            var port = (int)_conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
 
             Logger.Set(LogKind.Normal, null, 9000000, bindStr);
@@ -208,7 +209,7 @@ namespace Bjd.Servers
             switch (_oneBind.Protocol)
             {
                 case ProtocolKind.Tcp:
-                    _sockServerTcp = new SockServerTcp(Kernel, _oneBind.Protocol, ssl);
+                    _sockServerTcp = new SockServerTcp(_kernel, _oneBind.Protocol, ssl);
                     if (ssl != null && !ssl.Status)
                     {
                         Logger.Set(LogKind.Error, null, 9000024, bindStr);
@@ -222,7 +223,7 @@ namespace Bjd.Servers
                     _sockServerTcp.Close();
                     break;
                 case ProtocolKind.Udp:
-                    _sockServerUdp = new SockServerUdp(Kernel, _oneBind.Protocol, ssl);
+                    _sockServerUdp = new SockServerUdp(_kernel, _oneBind.Protocol, ssl);
                     if (this.SockState != SockState.Error)
                     {
                         RunUdpServer(port);
@@ -283,7 +284,7 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, Kernel.CancelToken);
+                    }, _kernel.CancelToken);
 
                 this.StartTask(t);
             }
@@ -334,7 +335,7 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, Kernel.CancelToken);
+                    }, _kernel.CancelToken);
 
                 this.StartTask(t);
             }
@@ -378,7 +379,7 @@ namespace Bjd.Servers
             var sockObj = (SockObj)o;
 
             //クライアントのホスト名を逆引きする
-            sockObj.Resolve((bool)Conf.Get("useResolve"), Logger);
+            sockObj.Resolve((bool)_conf.Get("useResolve"), Logger);
 
             //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));

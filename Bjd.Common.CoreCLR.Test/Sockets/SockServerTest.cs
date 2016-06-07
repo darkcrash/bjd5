@@ -43,6 +43,7 @@ namespace Bjd.Test.Sockets
             public Execute()
             {
                 _service = TestService.CreateTestService();
+                _service.SetOption("Option.ini");
             }
 
             public void startStop(String title, ProtocolKind protocolKind)

@@ -21,7 +21,6 @@ namespace Bjd.SmtpServer
         readonly SmtpClient2 _smtpClient2;
 
         //暫定
-        private readonly Kernel _kernel;
         private readonly Server _server;
 
 
@@ -35,7 +34,6 @@ namespace Bjd.SmtpServer
             _smtpClient2 = new SmtpClient2();
 
             //暫定
-            _kernel = kernel;
             _server = server;
 
         }

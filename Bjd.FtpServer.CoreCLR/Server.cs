@@ -24,11 +24,11 @@ namespace Bjd.FtpServer
         public Server(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind)
         {
 
-            _bannerMessage = kernel.ChangeTag((String)Conf.Get("bannerMessage"));
+            _bannerMessage = kernel.ChangeTag((String)_conf.Get("bannerMessage"));
             //ユーザ情報
-            _listUser = new ListUser((Dat)Conf.Get("user"));
+            _listUser = new ListUser((Dat)_conf.Get("user"));
             //仮想フォルダ
-            _listMount = new ListMount((Dat)Conf.Get("mountList"));
+            _listMount = new ListMount((Dat)_conf.Get("mountList"));
 
 
         }
@@ -102,7 +102,7 @@ namespace Bjd.FtpServer
                 //SYSTコマンドが有効かどうかの判断
                 if (ftpCmd == FtpCmd.Syst)
                 {
-                    if (!(bool)Conf.Get("useSyst"))
+                    if (!(bool)_conf.Get("useSyst"))
                     {
                         ftpCmd = FtpCmd.Unknown;
                     }
@@ -245,7 +245,7 @@ namespace Bjd.FtpServer
                     {
                         //var os = Environment.OSVersion;
                         //session.StringSend(string.Format("215 {0}", os.VersionString));
-                        session.StringSend(string.Format("215 {0}", Kernel.Enviroment.OperatingSystem));
+                        session.StringSend(string.Format("215 {0}", _kernel.Enviroment.OperatingSystem));
                     }
                     else if (ftpCmd == FtpCmd.Type)
                     {
@@ -367,7 +367,7 @@ namespace Bjd.FtpServer
                 //以下認証失敗処理
                 Logger.Set(LogKind.Secure, session.SockCtrl, 15, string.Format("USER:{0} PASS:{1}", session.UserName, password));
             }
-            var reservationTime = (int)Conf.Get("reservationTime");
+            var reservationTime = (int)_conf.Get("reservationTime");
 
             //ブルートフォース防止のためのウエイト(5秒)
             for (int i = 0; i < reservationTime / 100 && IsLife(); i++)
@@ -602,7 +602,7 @@ namespace Bjd.FtpServer
             {
 
                 Thread.Sleep(10);
-                var sockData = Inet.Connect(Kernel, ip, port, TimeoutSec, null);
+                var sockData = Inet.Connect(_kernel, ip, port, TimeoutSec, null);
                 if (sockData != null)
                 {
                     resStr = string.Format("200 {0} command successful.", ftpCmd.ToString().ToUpper());
@@ -627,7 +627,7 @@ namespace Bjd.FtpServer
                     port = 2000;
                 }
                 //バインド可能かどうかの確認
-                if (SockServerTcp.IsAvailable(Kernel, ip, port))
+                if (SockServerTcp.IsAvailable(_kernel, ip, port))
                 {
                     //成功
                     if (ftpCmd == FtpCmd.Epsv)
@@ -644,7 +644,7 @@ namespace Bjd.FtpServer
                         session.StringSend(string.Format("227 Entering Passive Mode ({0},{1},{2})", ipStr.Replace('.', ','), port / 256, port % 256));
                     }
                     //指定したアドレス・ポートで待ち受ける
-                    var sockData = SockServerTcp.CreateConnection(Kernel, ip, port, null, this);
+                    var sockData = SockServerTcp.CreateConnection(_kernel, ip, port, null, this);
                     if (sockData == null)
                     {
                         //接続失敗

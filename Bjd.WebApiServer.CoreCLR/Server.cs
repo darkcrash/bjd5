@@ -76,7 +76,7 @@ namespace Bjd.WebApiServer
 
 //                            OneOption.GetValue("sampleText");
 
-                            var mail = new SvMail(Kernel);
+                            var mail = new SvMail(_kernel);
                             json = mail.Exec(method,cmd, param);
 
                             //Ver5.9.8

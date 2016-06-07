@@ -20,6 +20,7 @@ namespace Bjd.SmtpServer.Test
         {
             public SmtpTestServer() : base(TestServerType.Smtp,  "ServerTest.ini")
             {
+                _service.CreateMailbox("user1");
             }
         }
 
@@ -28,9 +29,7 @@ namespace Bjd.SmtpServer.Test
         public ServerTest(SmtpTestServer server)
         {
             _testServer = server;
-
-
-
+            _testServer._service.CleanMailbox("user1");
 
         }
 

@@ -19,10 +19,8 @@ namespace Bjd.DnsServer
         private RrDb _rootCache;
         private List<RrDb> _cacheList;
 
-        private readonly Kernel _kernel;
 
         public Server(Kernel kernel, Conf conf, OneBind oneBind) : base(kernel, conf, oneBind) {
-            _kernel = kernel;
 
         }
 
@@ -36,11 +34,11 @@ namespace Bjd.DnsServer
             //ルートキャッシュの初期化
             _rootCache = null;
             //var namedCaPath = string.Format("{0}\\{1}", Define.ExecutableDirectory, Conf.Get("rootCache"));
-            var namedCaPath = $"{Kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}{Conf.Get("rootCache")}";
+            var namedCaPath = $"{base._kernel.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}{_conf.Get("rootCache")}";
             if (File.Exists(namedCaPath)) {
                 try {
                     //named.ca読み込み用コンストラクタ
-                    var expire = (int) Conf.Get("soaExpire");
+                    var expire = (int) _conf.Get("soaExpire");
                     //var expire = (uint)Conf.Get("soaExpire");
                     _rootCache = new RrDb(namedCaPath, (uint) expire);
                     Logger.Set(LogKind.Detail, null, 6, namedCaPath);
@@ -72,7 +70,7 @@ namespace Bjd.DnsServer
                             var res = _kernel.ListOption.Get("Resource-" + domainName);
                             if (res != null) {
                                 var resource = (Dat) res.GetValue("resourceList");
-                                var rrDb = new RrDb(Logger, Conf, resource, domainName, authority);
+                                var rrDb = new RrDb(Logger, _conf, resource, domainName, authority);
                                 _cacheList.Add(rrDb);
                                 Logger.Set(LogKind.Detail, null, 21, "Resource-" + domainName);
                             }
@@ -382,7 +380,7 @@ namespace Bjd.DnsServer
             var id = (ushort) random.Next(0xFFFF);
             const bool qr = false; //要求
             const bool aa = false; //権威なし
-            var rd = (bool) Conf.Get("useRD"); //再帰要求を使用するかどうか
+            var rd = (bool) _conf.Get("useRD"); //再帰要求を使用するかどうか
             const bool ra = false; //再帰無効
 
             //リクエストパケットの生成

@@ -46,7 +46,7 @@ namespace Bjd.ProxyHttpServer
             _cache = new Cache(kernel, this.Logger, conf);
 
             // 上位プロキシを経由しないサーバのリスト
-            foreach (var o in (Dat)Conf.Get("disableAddress"))
+            foreach (var o in (Dat)_conf.Get("disableAddress"))
             {
                 if (o.Enable)
                 {//有効なデータだけを対象にする
@@ -54,8 +54,8 @@ namespace Bjd.ProxyHttpServer
                 }
             }
             //URL制限
-            var allow = (Dat)Conf.Get("limitUrlAllow");
-            var deny = (Dat)Conf.Get("limitUrlDeny");
+            var allow = (Dat)_conf.Get("limitUrlAllow");
+            var deny = (Dat)_conf.Get("limitUrlDeny");
             //Ver5.4.5正規表現の誤りをチェックする
             for (var i = 0; i < 2; i++)
             {
@@ -78,10 +78,10 @@ namespace Bjd.ProxyHttpServer
 
 
             //リクエストを通常ログで表示する
-            _useRequestLog = (bool)Conf.Get("useRequestLog");
+            _useRequestLog = (bool)_conf.Get("useRequestLog");
 
             //コンテンツ制限
-            _limitString = new LimitString((Dat)Conf.Get("limitString"));
+            _limitString = new LimitString((Dat)_conf.Get("limitString"));
             if (_limitString.Length == 0)
                 _limitString = null;
 
@@ -149,11 +149,11 @@ namespace Bjd.ProxyHttpServer
 
             //Ver5.6.9
             //UpperProxy upperProxy = new UpperProxy((bool)Conf.Get("useUpperProxy"),(string)this.Conf.Get("upperProxyServer"),(int)this.Conf.Get("upperProxyPort"),disableAddressList);
-            var upperProxy = new UpperProxy((bool)Conf.Get("useUpperProxy"), (string)Conf.Get("upperProxyServer"), (int)Conf.Get("upperProxyPort"), _disableAddressList,
-                (bool)Conf.Get("upperProxyUseAuth"),
-                (string)Conf.Get("upperProxyAuthName"),
-                (string)Conf.Get("upperProxyAuthPass"));
-            var proxy = new Proxy(Kernel, Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
+            var upperProxy = new UpperProxy((bool)_conf.Get("useUpperProxy"), (string)_conf.Get("upperProxyServer"), (int)_conf.Get("upperProxyPort"), _disableAddressList,
+                (bool)_conf.Get("upperProxyUseAuth"),
+                (string)_conf.Get("upperProxyAuthName"),
+                (string)_conf.Get("upperProxyAuthPass"));
+            var proxy = new Proxy(_kernel, Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
             ProxyObj proxyObj = null;
             OneObj oneObj = null;
 
@@ -177,7 +177,7 @@ namespace Bjd.ProxyHttpServer
             if (oneObj.Request.Protocol == ProxyProtocol.Http)
             {
 
-                proxyObj = new ProxyHttp(proxy, Kernel, Conf, _cache, _limitString);//HTTPデータ管理オブジェクト
+                proxyObj = new ProxyHttp(proxy, _kernel, _conf, _cache, _limitString);//HTTPデータ管理オブジェクト
 
                 //最初のオブジェクトの追加
                 proxyObj.Add(oneObj);
@@ -288,7 +288,7 @@ namespace Bjd.ProxyHttpServer
             }
             else if (oneObj.Request.Protocol == ProxyProtocol.Ftp)
             {
-                proxyObj = new ProxyFtp(proxy, Kernel, Conf, this, ++_dataPort);//FTPデータ管理オブジェクト
+                proxyObj = new ProxyFtp(proxy, _kernel, _conf, this, ++_dataPort);//FTPデータ管理オブジェクト
 
                 //オブジェクトの追加
                 proxyObj.Add(oneObj);

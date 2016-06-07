@@ -13,11 +13,9 @@ namespace Bjd.SmtpServer
         readonly ListFetchJob _listFetchJob;
         private readonly Logger _logger;
         //private Server _server;
-        private Kernel _kernel;
 
           public Fetch(Kernel kernel, MailSave mailSave, String domainName,IEnumerable<OneDat> fetchList, int timeout,int sizeLimit)
             : base(kernel, kernel.CreateLogger("FetchThread", true, null)){
-             _kernel = kernel;
             //_server = server;
             _logger = kernel.CreateLogger("Fetch", true, this);
             _listFetchJob = new ListFetchJob(kernel, mailSave, domainName, _logger, fetchList, timeout, sizeLimit);

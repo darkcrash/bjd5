@@ -16,7 +16,6 @@ namespace Bjd.ProxyFtpServer
         private readonly Dictionary<CS, SockTcp> _sock = new Dictionary<CS, SockTcp>(2);
         private readonly Dictionary<CS, byte[]> _buf = new Dictionary<CS, byte []>(2);
 
-        private readonly Kernel _kernel;
         private readonly Ip _listenIp;
         private readonly Ip _connectIp;
         private readonly int _listenPort;
@@ -30,7 +29,6 @@ namespace Bjd.ProxyFtpServer
             _sock[CS.Server] = null;
             _buf[CS.Client] = new byte[0];
             _buf[CS.Server] = new byte[0];
-            _kernel = kernel;
             _listenIp = listenIp;
             _listenPort = listenPort;
             _connectIp = connectIp;

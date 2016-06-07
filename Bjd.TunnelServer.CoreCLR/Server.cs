@@ -25,8 +25,8 @@ namespace Bjd.TunnelServer
             : base(kernel, conf, oneBind)
         {
 
-            _targetServer = (string)Conf.Get("targetServer");
-            _targetPort = (int)Conf.Get("targetPort");
+            _targetServer = (string)_conf.Get("targetServer");
+            _targetPort = (int)_conf.Get("targetPort");
 
             if (_targetServer == "")
             {
@@ -76,7 +76,7 @@ namespace Bjd.TunnelServer
                 //        goto end;
                 //    }
                 //}
-                var ipList = Kernel.GetIpList(_targetServer);
+                var ipList = _kernel.GetIpList(_targetServer);
                 if (ipList.Count == 0)
                 {
                     Logger.Set(LogKind.Normal, null, 4, string.Format("{0}:{1}", _targetServer, _targetPort));
@@ -84,7 +84,7 @@ namespace Bjd.TunnelServer
                 }
                 foreach (var ip in ipList)
                 {
-                    server = Inet.Connect(Kernel, ip, port, TimeoutSec, null);
+                    server = Inet.Connect(_kernel, ip, port, TimeoutSec, null);
                     if (server != null)
                         break;
                 }
@@ -99,7 +99,7 @@ namespace Bjd.TunnelServer
             //***************************************************************
             // パイプ
             //***************************************************************
-            var tunnel = new Tunnel(Logger, (int)Conf.Get("idleTime"), TimeoutSec);
+            var tunnel = new Tunnel(Logger, (int)_conf.Get("idleTime"), TimeoutSec);
             tunnel.Pipe(server, client, this);
             end:
             if (client != null)
@@ -158,7 +158,7 @@ namespace Bjd.TunnelServer
                 }
 
 
-                sock[CS.Server] = new SockUdp(Kernel, ip, port, null, new byte[0]);
+                sock[CS.Server] = new SockUdp(_kernel, ip, port, null, new byte[0]);
                 if (sock[CS.Server].SockState == SockState.Error)
                     goto end;
             }

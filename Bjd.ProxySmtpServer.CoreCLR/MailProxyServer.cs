@@ -23,7 +23,7 @@ namespace Bjd.ProxySmtpServer {
             : base(kernel, conf,oneBind) {
 
             //特別なユーザのリスト初期化
-             _specialUser = new SpecialUser((Dat)Conf.Get("specialUser"));
+             _specialUser = new SpecialUser((Dat)_conf.Get("specialUser"));
         }
 
         readonly SpecialUser _specialUser;//特別なユーザのリスト
@@ -48,8 +48,8 @@ namespace Bjd.ProxySmtpServer {
             int _targetPort;
             var clientBuf = new List<byte[]>();
 
-            _targetServer = (string)Conf.Get("targetServer");
-            _targetPort = (int)Conf.Get("targetPort");
+            _targetServer = (string)_conf.Get("targetServer");
+            _targetPort = (int)_conf.Get("targetPort");
             if(_targetServer == "") {
                 Logger.Set(LogKind.Error,client,1,"");
                 goto end;
@@ -103,14 +103,14 @@ namespace Bjd.ProxySmtpServer {
                 //        goto end;
                 //    }
                 //}
-                var ipList = Kernel.GetIpList(_targetServer);
+                var ipList = _kernel.GetIpList(_targetServer);
                 if (ipList.Count == 0) {
                     Logger.Set(LogKind.Normal, client, 4, string.Format("{0}:{1}", _targetServer, _targetPort));
                     goto end;
                 }
 
                 foreach(var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip,port,TimeoutSec,null);
+                    server = Inet.Connect(_kernel,ip,port,TimeoutSec,null);
                     if(server != null)
                         break;
                 }
@@ -140,7 +140,7 @@ namespace Bjd.ProxySmtpServer {
             //***************************************************************
             // パイプ
             //***************************************************************
-            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),TimeoutSec);
+            var tunnel = new Tunnel(Logger,(int)_conf.Get("idleTime"),TimeoutSec);
             tunnel.Pipe(server,client,this);
         end:
             if(client != null)
@@ -151,10 +151,10 @@ namespace Bjd.ProxySmtpServer {
 
         public override string GetMsg(int messageNo) {
             switch(messageNo) {
-                case 1: return Kernel.IsJp ? "接続先サーバが指定されていません" : "Connection ahead server is not appointed";
-                case 2: return Kernel.IsJp ? "接続先ポートが指定されていません" : "Connection ahead port is not appointed";
-                case 3: return Kernel.IsJp ? "特別なユーザにヒットしました" : "made a hit in a special user";
-                case 4: return Kernel.IsJp ? "メールストリームをトンネルしました" : "I do a tunnel of a Mail stream";
+                case 1: return _kernel.IsJp ? "接続先サーバが指定されていません" : "Connection ahead server is not appointed";
+                case 2: return _kernel.IsJp ? "接続先ポートが指定されていません" : "Connection ahead port is not appointed";
+                case 3: return _kernel.IsJp ? "特別なユーザにヒットしました" : "made a hit in a special user";
+                case 4: return _kernel.IsJp ? "メールストリームをトンネルしました" : "I do a tunnel of a Mail stream";
             }
             return "unknown";
         }

@@ -142,13 +142,13 @@ namespace Bjd.ProxyTelnetServer
                 //        goto end;
                 //    }
                 //}
-                var ipList = Kernel.GetIpList(hostName);
+                var ipList = _kernel.GetIpList(hostName);
                 if (ipList.Count == 0) {
                     Logger.Set(LogKind.Normal, null, 2, string.Format("open>{0}", hostName));
                     goto end;
                 }
                 foreach (var ip in ipList) {
-                    server = Inet.Connect(Kernel,ip,port,TimeoutSec,null);
+                    server = Inet.Connect(_kernel,ip,port,TimeoutSec,null);
                     if (server != null)
                         break;
                 }
@@ -170,7 +170,7 @@ namespace Bjd.ProxyTelnetServer
             //***************************************************************
             // �p�C�v
             //***************************************************************
-            var tunnel = new Tunnel(Logger,(int)Conf.Get("idleTime"),TimeoutSec);
+            var tunnel = new Tunnel(Logger,(int)_conf.Get("idleTime"),TimeoutSec);
             tunnel.Pipe(server,client,this);
         end:
             client.Close();
