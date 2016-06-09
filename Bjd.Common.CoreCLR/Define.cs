@@ -181,7 +181,7 @@ namespace Bjd
                         }
                     }
                 }
-                catch (System.UnauthorizedAccessException ex)
+                catch (Exception ex)
                 {
                     Trace.TraceError($"ServerAddressList:{ex.Message}");
                     Trace.TraceError(ex.StackTrace);
