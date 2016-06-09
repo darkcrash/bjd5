@@ -35,29 +35,6 @@ namespace Bjd
 
         private static Define Instance = new Define();
 
-        static Define()
-        {
-            if (ServerAddressList == null)
-            {//プログラム起動から初めて呼び出されたとき、１度だけ実行される
-                ServerAddressList = new List<string>();
-                NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-                foreach (NetworkInterface nic in nics)
-                {
-                    if (nic.OperationalStatus != OperationalStatus.Up)
-                        continue;
-                    IPInterfaceProperties props = nic.GetIPProperties();
-                    foreach (UnicastIPAddressInformation info in props.UnicastAddresses)
-                    {
-                        if (info.Address.AddressFamily == AddressFamily.InterNetwork)
-                            ServerAddressList.Add(info.Address.ToString());
-                    }
-                }
-
-                Define.HostName = Dns.GetHostName();
-            }
-        }
-
-
         public static void Initialize()
         {
             IsInitialize = true;
@@ -184,6 +161,34 @@ namespace Bjd
             Trace.TraceInformation($"CurrentDirectory:{dir}");
             Trace.TraceInformation($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
             Trace.TraceInformation($"Assembly.Location:{asm.Location}");
+
+            //プログラム起動から初めて呼び出されたとき、１度だけ実行される
+            if (ServerAddressList == null)
+            {
+                ServerAddressList = new List<string>();
+                try
+                {
+                    NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (NetworkInterface nic in nics)
+                    {
+                        if (nic.OperationalStatus != OperationalStatus.Up)
+                            continue;
+                        IPInterfaceProperties props = nic.GetIPProperties();
+                        foreach (UnicastIPAddressInformation info in props.UnicastAddresses)
+                        {
+                            if (info.Address.AddressFamily == AddressFamily.InterNetwork)
+                                ServerAddressList.Add(info.Address.ToString());
+                        }
+                    }
+                }
+                catch (System.UnauthorizedAccessException ex)
+                {
+                    Trace.TraceError($"ServerAddressList:{ex.Message}");
+                    Trace.TraceError(ex.StackTrace);
+                }
+
+                Define.HostName = Dns.GetHostName();
+            }
 
 
             // set define
