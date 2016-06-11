@@ -91,6 +91,8 @@ namespace Bjd.Net.Sockets
             {
                 try
                 {
+                    if (_socket == null) return null;
+
                     var tTcp = _socket.AcceptAsync();
                     while (true)
                     {
@@ -103,11 +105,12 @@ namespace Bjd.Net.Sockets
                     }
 
                     // キャンセル時、終了時はNullを返す
-                    if (this.IsCancel || !iLife.IsLife())
+                    if (this.IsCancel || !iLife.IsLife() || tTcp.Result == null)
                     {
                         SetError("isLife()==false");
                         return null;
                     }
+
                     client = new SockTcp(Kernel, _ssl, tTcp.Result);
                 }
                 catch (Exception ex)
