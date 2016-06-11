@@ -6,18 +6,17 @@ RUN cd /dotnetapp \
     && rm -fr *.Test \
     && rm -fr *.sln \
     && rm -fr *.sh \
-    && rm -fr *.json 
-
-ONBUILD RUN cd /dotnetapp
-ONBUILD RUN dotnet restore
-ONBUILD RUN cd /dotnetapp/Bjd.CoreCLR
-ONBUILD RUN dotnet publish -c Release
-ONBUILD RUN cd /dotnetapp
-ONBUILD RUN mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish .
+    && rm -fr *.json \
+    && cd /dotnetapp \
+    && dotnet restore \
+    && cd /dotnetapp/Bjd.CoreCLR \
+    && dotnet publish -c Release \
+    && cd /dotnetapp \
+    &&  mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish .
 
 WORKDIR /dotnetapp/publish/
 
-ENTRYPOINT dotnet Bjd.CoreCLR.dll
+ENTRYPOINT ["dotnet", "Bjd.CoreCLR.dll"]
 
 EXPOSE 110
 EXPOSE 1080
