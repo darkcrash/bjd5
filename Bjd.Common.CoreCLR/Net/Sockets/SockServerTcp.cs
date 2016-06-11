@@ -92,7 +92,7 @@ namespace Bjd.Net.Sockets
                 try
                 {
                     if (_socket == null) return null;
-                    if (this.CancelToken.IsCancellationRequested) return null;
+                    if (this.IsCancel) return null;
 
                     var tTcp = _socket.AcceptAsync();
                     while (true)

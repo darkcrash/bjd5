@@ -1,2 +1,2 @@
 cd Bjd.CoreCLR
-dnx bjd
+dotnet run
