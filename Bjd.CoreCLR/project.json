@@ -6,7 +6,12 @@
   "publishOptions": {
     "include": [
       "wwwroot",
-      "tftp"
+      "tftp",
+      "BJD.Lang.txt",
+      "example.pfx",
+      "named.ca",
+      "Option.def",
+      "Option.ini"
     ]
   },
   "buildOptions": {
