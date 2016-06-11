@@ -5,6 +5,12 @@
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "publishOptions": {
     "include": [
+      "wwwroot",
+      "tftp",
+      "mailbox",
+      "MailQueue",
+      "ProxyHttpCache",
+      "logs",
       "BJD.Lang.txt",
       "example.pfx",
       "named.ca",

@@ -2,17 +2,21 @@ FROM microsoft/dotnet:1.0.0-preview1
 
 RUN mkdir -p /dotnetapp
 COPY . /dotnetapp
-RUN cd /dotnetapp
-RUN ["dotnet", "restore"]
-RUN cd /dotnetapp/Bjd.CoreCLR
-RUN ["dotnet", "publish"]
-RUN cd /dotnetapp
-RUN mv Bjd.CoreCLR Bjd
-RUN rm -fr Bjd.*
-RUN mv Bjd/bin/Debug/netcoreapp1.0/publish Bjd/bin/Debug/
+RUN cd /dotnetapp \
+    && rm -fr *.Test \
+    && rm -fr *.sln \
+    && rm -fr *.sh \
+    && rm -fr *.json 
 
+ONBUILD RUN cd /dotnetapp
+ONBUILD RUN ["dotnet", "restore"]
+ONBUILD RUN cd /dotnetapp/Bjd.CoreCLR
+ONBUILD RUN ["dotnet", "publish"]
+ONBUILD RUN cd /dotnetapp
+ONBUILD RUN mv Bjd.CoreCLR/bin/Debug/netcoreapp1.0/publish .
+ONBUILD RUN rm -fr Bjd*
 
-WORKDIR /dotnetapp/Bjd/bin/Debug/publish/
+WORKDIR /dotnetapp/publish/
 
 ENTRYPOINT ["dotnet", "Bjd.CoreCLR.dll"]
 
