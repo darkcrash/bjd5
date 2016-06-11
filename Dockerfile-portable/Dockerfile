@@ -1,4 +1,4 @@
-FROM microsoft/blackjumbodog-dotnet-core:latest-onbuild
+FROM darkcrash/blackjumbodog-dotnet-core:latest-onbuild
 
 RUN cd /dotnetapp/Bjd.CoreCLR \
  && dotnet publish -c Release \
