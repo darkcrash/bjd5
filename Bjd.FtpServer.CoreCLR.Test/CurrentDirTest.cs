@@ -9,7 +9,7 @@ using System;
 namespace FtpServerTest
 {
 
-    public class CurrentDirTest: IDisposable
+    public class CurrentDirTest : IDisposable
     {
         private TestService _service;
 

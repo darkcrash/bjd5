@@ -2,13 +2,16 @@
 using Bjd.DnsServer;
 using Xunit;
 
-namespace DnsServerTest{
+namespace DnsServerTest
+{
 
 
-    public class RrDbTest_add{
+    public class RrDbTest_add
+    {
 
         [Fact]
-        public void 新規のリソース追加は成功する(){
+        public void 新規のリソース追加は成功する()
+        {
             //setUp
             var sut = new RrDb();
             var expected = true; //成功
@@ -19,7 +22,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 同一リソースの追加_TTLが0の場合は失敗する(){
+        public void 同一リソースの追加_TTLが0の場合は失敗する()
+        {
             //setUp
             var sut = new RrDb();
             var expected = false; //失敗
@@ -32,7 +36,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 同一リソースの追加_TTLが0以外の場合は上書きされる(){
+        public void 同一リソースの追加_TTLが0以外の場合は上書きされる()
+        {
             //setUp
             var sut = new RrDb();
             //exercise
@@ -45,7 +50,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 異なるリソースの追加(){
+        public void 異なるリソースの追加()
+        {
             //setUp
             var sut = new RrDb();
             var expected = 3; //全部で3件になる

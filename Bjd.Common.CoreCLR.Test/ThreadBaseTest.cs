@@ -2,11 +2,12 @@
 using Bjd;
 using Xunit;
 using Bjd.Services;
+using System;
 
 namespace Bjd.Test
 {
 
-    public class ThreadBaseTest
+    public class ThreadBaseTest : IDisposable
     {
         private class MyThread : ThreadBase
         {
@@ -46,6 +47,11 @@ namespace Bjd.Test
         public ThreadBaseTest()
         {
             _service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         [Fact]

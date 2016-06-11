@@ -34,6 +34,7 @@ namespace Bjd.SmtpServer.Test
         {
 
             _mlSubscribeDb.Remove();
+            _service.Dispose();
         }
 
         [Theory]

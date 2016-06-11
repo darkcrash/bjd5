@@ -1,12 +1,15 @@
 ﻿using Bjd.DnsServer;
 using Xunit;
 
-namespace DnsServerTest{
+namespace DnsServerTest
+{
 
-    public class RrQueryTest{
+    public class RrQueryTest
+    {
 
         [Fact]
-        public void GetDnsTypeの確認(){
+        public void GetDnsTypeの確認()
+        {
             //setUp
             var expected = DnsType.A;
             var sut = new RrQuery("aaa.com", expected);
@@ -17,7 +20,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void ToStringの確認(){
+        public void ToStringの確認()
+        {
             //setUp
             var expected = "Query A aaa.com";
             var sut = new RrQuery("aaa.com", DnsType.A);

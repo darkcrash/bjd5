@@ -17,21 +17,16 @@ namespace DhcpServerTest
 
     public class DhcpServerTest : IDisposable
     {
-        private static TestOption _op; //設定ファイルの上書きと退避
         private static TestService _service;
         private static Server _sv; //サーバ
 
         public DhcpServerTest()
         {
-            //TestUtil.CopyLangTxt();//BJD.Lang.txt
-
-            //設定ファイルの退避と上書き
-            _op = new TestOption("", "DhcpServerTest.ini");
-            _service = TestService.CreateTestService(_op);
+            _service = TestService.CreateTestService();
+            _service.SetOption("DhcpServerTest.ini");
 
 
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
-            //Kernel kernel = new Kernel();
             Kernel kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Dhcp");
             Conf conf = new Conf(option);
@@ -53,7 +48,7 @@ namespace DhcpServerTest
             finally
             {
                 //設定ファイルのリストア
-                _op.Dispose();
+                _service.Dispose();
             }
         }
 

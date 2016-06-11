@@ -8,17 +8,6 @@ namespace Bjd.Test
     public class MacTest
     {
 
-        //[SetUp]
-        public void SetUp()
-        {
-        }
-
-        //[TearDown]
-        public void TearDown()
-        {
-
-        }
-
         [Theory]
         [InlineData("00-00-00-00-00-00")]
         [InlineData("FF-FF-FF-FF-FF-FF")]

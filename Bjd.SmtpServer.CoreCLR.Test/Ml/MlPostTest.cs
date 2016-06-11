@@ -57,6 +57,7 @@ namespace Bjd.SmtpServer.Test
         {
             _tsMailSave.Dispose();
             _ml.Remove();
+            _service.Dispose();
         }
 
         [Theory]

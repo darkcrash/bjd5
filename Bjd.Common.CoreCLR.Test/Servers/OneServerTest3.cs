@@ -12,13 +12,18 @@ using Bjd.Services;
 
 namespace Bjd.Test.Servers
 {
-    public class OneServerTest3 : ILife
+    public class OneServerTest3 : ILife, IDisposable
     {
         TestService _service;
 
         public OneServerTest3()
         {
             _service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         private class EchoServer : OneServer

@@ -15,7 +15,7 @@ using Bjd.Services;
 namespace Bjd.Test.Servers
 {
 
-    public class OneServerTest
+    public class OneServerTest :IDisposable
     {
 
         TestService _service;
@@ -23,6 +23,11 @@ namespace Bjd.Test.Servers
         public OneServerTest()
         {
             this._service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            this._service.Dispose();
         }
 
         private class MyServer : OneServer

@@ -14,29 +14,35 @@ namespace Bjd.Test.Sockets
         [Fact]
         public void test()
         {
-            var execute = new Execute();
-            execute.startStop("a001 TCPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Tcp);
-            execute.startStop("a002 UDPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Udp);
-            execute.getLocalAddress("a003 TCPサーバのgetLocalAddress()の確認", ProtocolKind.Tcp);
-            execute.getLocalAddress("a004 UDPサーバのgetLocalAddress()の確認", ProtocolKind.Udp);
+            using (var execute = new Execute())
+            {
+                execute.startStop("a001 TCPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Tcp);
+                execute.startStop("a002 UDPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Udp);
+                execute.getLocalAddress("a003 TCPサーバのgetLocalAddress()の確認", ProtocolKind.Tcp);
+                execute.getLocalAddress("a004 UDPサーバのgetLocalAddress()の確認", ProtocolKind.Udp);
+            }
         }
 
         [Fact]
         public void test1()
         {
-            var execute = new Execute();
-            execute.startStop("a001 TCPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Tcp);
+            using (var execute = new Execute())
+            {
+                execute.startStop("a001 TCPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Tcp);
+            }
         }
 
         [Fact]
         public void test2()
         {
-            var execute = new Execute();
-            execute.startStop("a002 UDPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Udp);
+            using (var execute = new Execute())
+            {
+                execute.startStop("a002 UDPサーバの 起動・停止時のSockState()の確認", ProtocolKind.Udp);
+            }
         }
 
 
-        private class Execute
+        private class Execute : IDisposable
         {
             TestService _service;
 
@@ -46,13 +52,19 @@ namespace Bjd.Test.Sockets
                 _service.SetOption("Option.ini");
             }
 
+            public void Dispose()
+            {
+                _service.Dispose();
+            }
+
             public void startStop(String title, ProtocolKind protocolKind)
             {
                 if (protocolKind == ProtocolKind.Tcp)
                 {
                     startStopTcp(title);
                 }
-                else {
+                else
+                {
                     startStopUdp(title);
                 }
 
@@ -127,7 +139,8 @@ namespace Bjd.Test.Sockets
                 {
                     getLocalAddressTcp(title);
                 }
-                else {
+                else
+                {
                     getLocalAddressUdp(title);
                 }
 

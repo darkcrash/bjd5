@@ -22,8 +22,6 @@ namespace Pop3ServerTest
         internal TestService _service;
         internal Server _v6Sv; //サーバ
         internal Server _v4Sv; //サーバ
-
-
         public class InternalFixture : IDisposable
         {
             public InternalFixture()
@@ -31,20 +29,10 @@ namespace Pop3ServerTest
                 //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
-                try
-                {
-
-                }
-                catch
-                {
-                    throw;
-                }
-
             }
 
             public void Dispose()
             {
-
 
             }
 
@@ -83,7 +71,6 @@ namespace Pop3ServerTest
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        //[TearDown]
         public void Dispose()
         {
             //サーバ停止

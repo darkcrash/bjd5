@@ -15,6 +15,48 @@ namespace Bjd.Services
         {
         }
 
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                    if (this._kernel != null)
+                    {
+                        this._kernel.Dispose();
+                    }
+                    this._kernel = null;
+                    Directory.Delete(this.env.ExecutableDirectory, true);
+                }
+
+                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
+        // ~TestService() {
+        //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+        //   Dispose(false);
+        // }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(true);
+            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
+
+
         static TestService()
         {
             foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
@@ -188,44 +230,6 @@ namespace Bjd.Services
             return dst;
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false; // 重複する呼び出しを検出するには
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
-                    if (this._kernel != null)
-                        this._kernel.Dispose();
-                    this._kernel = null;
-                    Directory.Delete(this.env.ExecutableDirectory, true);
-                }
-
-                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
-                // TODO: 大きなフィールドを null に設定します。
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
-        // ~TestService() {
-        //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-        //   Dispose(false);
-        // }
-
-        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
-        public void Dispose()
-        {
-            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-            Dispose(true);
-            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
 
     }
 

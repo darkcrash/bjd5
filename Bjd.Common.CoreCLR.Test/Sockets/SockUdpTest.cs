@@ -12,13 +12,18 @@ namespace Bjd.Test.Sockets
     // Echoサーバを使用したテスト
     //**************************************************
 
-    public class SockUdpTest
+    public class SockUdpTest :IDisposable
     {
         TestService _service;
 
         public SockUdpTest()
         {
             _service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         private class EchoServer : ThreadBase

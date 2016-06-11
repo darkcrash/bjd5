@@ -25,17 +25,8 @@ namespace DnsServerTest
         private TestService _service;
         private Server _sv; //サーバ
 
-        //[TestFixtureSetUp]
         public ServerTest()
         {
-            //named.caのコピー
-            //var src = string.Format("{0}\\Bjd.DnsServer.CoreCLR.Test\\named.ca", TestUtil.ProjectDirectory());
-            //var dst = string.Format("{0}\\Bjd.CoreCLR\\named.ca", TestUtil.ProjectDirectory());
-            //var src = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.DnsServer.CoreCLR.Test", "named.ca");
-            //var dst = Path.Combine(TestUtil.ProjectDirectory(), "Bjd.CoreCLR", "named.ca");
-            //File.Copy(src, dst, true);
-
-            //TestService.ServiceTest();
             _service = TestService.CreateTestService();
             _service.SetOption("DnsServerTest.ini");
 
@@ -54,7 +45,6 @@ namespace DnsServerTest
 
         }
 
-        //[TestFixtureTearDown]
         public void Dispose()
         {
 

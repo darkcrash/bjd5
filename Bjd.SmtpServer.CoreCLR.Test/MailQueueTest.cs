@@ -27,21 +27,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
-            try
-            {
-                Directory.Delete(sut.Dir);
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    Directory.Delete(sut.Dir, true);
-                }
-                catch (Exception)
-                {
-
-                }
-            }
+            _service.Dispose();
         }
 
         MailInfo CreateMailInfo()

@@ -63,6 +63,7 @@ namespace Bjd.SmtpServer.Test
         {
             _tsMailSave.Dispose();
             _ml.Remove();
+            _service.Dispose();
         }
 
         //蓄積されていないメールをリクエスト

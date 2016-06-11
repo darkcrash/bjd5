@@ -34,21 +34,7 @@ namespace Pop3ServerTest
 
         public void Dispose()
         {
-            try
-            {
-                Directory.Delete(_mailBox.Dir);
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    Directory.Delete(_mailBox.Dir, true);
-                }
-                catch (Exception)
-                {
-
-                }
-            }
+            _service.Dispose();
         }
 
         [Theory]

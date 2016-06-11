@@ -6,13 +6,16 @@ using Bjd.Net;
 using Bjd.DnsServer;
 using Xunit;
 
-namespace DnsServerTest{
+namespace DnsServerTest
+{
 
 
-    public class RrDbTest_initSoa{
+    public class RrDbTest_initSoa
+    {
 
         [Fact]
-        public void 予め同一ドメインのNSレコードが有る場合成功する(){
+        public void 予め同一ドメインのNSレコードが有る場合成功する()
+        {
             //setUp
             RrDb sut = new RrDb();
             bool expected = true;
@@ -24,7 +27,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 予め同一ドメインのNSレコードが無い場合失敗する_レコードが無い(){
+        public void 予め同一ドメインのNSレコードが無い場合失敗する_レコードが無い()
+        {
             //setUp
             RrDb sut = new RrDb();
             bool expected = false;
@@ -35,7 +39,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 予め同一ドメインのNSレコードが無い場合失敗する_NSレコードはあるがドメインが違う(){
+        public void 予め同一ドメインのNSレコードが無い場合失敗する_NSレコードはあるがドメインが違う()
+        {
             //setUp
             RrDb sut = new RrDb();
             bool expected = false;
@@ -47,7 +52,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 予め同一ドメインのNSレコードが無い場合失敗する_ドメインは同じだがNSレコードではない(){
+        public void 予め同一ドメインのNSレコードが無い場合失敗する_ドメインは同じだがNSレコードではない()
+        {
             //setUp
             RrDb sut = new RrDb();
             bool expected = false;
@@ -59,7 +65,8 @@ namespace DnsServerTest{
         }
 
         [Fact]
-        public void 追加に成功したばあのSOAレコードの検証(){
+        public void 追加に成功したばあのSOAレコードの検証()
+        {
             //setUp
             RrDb sut = new RrDb();
             sut.Add(new RrNs("aaa.com.", 0, "ns.aaa.com."));
@@ -67,7 +74,7 @@ namespace DnsServerTest{
             RrDbTest.InitSoa(sut, "aaa.com.", "root@aaa.com", 1, 2, 3, 4, 5);
             //verify
             Assert.Equal(RrDbTest.Size(sut), 2); //NS及びSOAの2件になっている
-            RrSoa o = (RrSoa) RrDbTest.Get(sut, 1);
+            RrSoa o = (RrSoa)RrDbTest.Get(sut, 1);
             Assert.Equal(o.NameServer, "ns.aaa.com.");
             Assert.Equal(o.PostMaster, "root.aaa.com."); //変換が完了している(@=>. 最後に.追加）
             Assert.Equal(o.Serial, 1U);

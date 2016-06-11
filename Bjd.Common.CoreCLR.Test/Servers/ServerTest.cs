@@ -8,16 +8,21 @@ using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
 using Bjd.Services;
+using System;
 
 namespace Bjd.Test.Servers
 {
 
-    public class ServerTest
+    public class ServerTest : IDisposable
     {
         TestService _service;
         public ServerTest()
         {
             _service = TestService.CreateTestService();
+        }
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         //サーバ動作確認用

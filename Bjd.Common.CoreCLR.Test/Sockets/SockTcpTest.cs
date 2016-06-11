@@ -10,12 +10,17 @@ using Bjd.Services;
 namespace Bjd.Test.Sockets
 {
 
-    public class SockTcpTest : ILife
+    public class SockTcpTest : ILife, IDisposable
     {
         TestService _service;
         public SockTcpTest()
         {
             _service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         //テスト用のEchoサーバ

@@ -8,17 +8,23 @@ using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
 using Bjd.Services;
+using System;
 
 namespace Bjd.Test.Servers
 {
 
-    public class OneServerTest2 : ILife
+    public class OneServerTest2 : ILife, IDisposable
     {
         TestService _service;
 
         public OneServerTest2()
         {
             _service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         private class EchoServer : OneServer

@@ -278,7 +278,9 @@ namespace Bjd
                 //**********************************************
                 // 破棄
                 //**********************************************
-                ListServer.Dispose(); //各サーバは停止される
+                //ListServer.Dispose(); //各サーバは停止される
+                this.Stop();
+
                 ListOption.Dispose();
                 MailBox = null;
 
