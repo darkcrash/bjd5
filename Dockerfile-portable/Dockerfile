@@ -11,10 +11,9 @@ RUN cd /dotnetapp \
 ONBUILD RUN cd /dotnetapp
 ONBUILD RUN ["dotnet", "restore"]
 ONBUILD RUN cd /dotnetapp/Bjd.CoreCLR
-ONBUILD RUN ["dotnet", "publish"]
+ONBUILD RUN ["dotnet", "publish" ,"-c", "Release"]
 ONBUILD RUN cd /dotnetapp
-ONBUILD RUN mv Bjd.CoreCLR/bin/Debug/netcoreapp1.0/publish .
-ONBUILD RUN rm -fr Bjd*
+ONBUILD RUN mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish .
 
 WORKDIR /dotnetapp/publish/
 
