@@ -74,9 +74,9 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebApiServer.CoreCLR.Te
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.CoreCLR.Test", "Bjd.CoreCLR.Test\Bjd.CoreCLR.Test.xproj", "{3B59D154-A891-4741-A18D-4F4BC5CA3A52}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "onbuild", "onbuild", "{A25A2CA1-32E6-4441-960D-4E02E423A3DE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "portable", "portable", "{A25A2CA1-32E6-4441-960D-4E02E423A3DE}"
 	ProjectSection(SolutionItems) = preProject
-		Dockerfile-onbuild\Dockerfile = Dockerfile-onbuild\Dockerfile
+		Dockerfile-portable\Dockerfile = Dockerfile-portable\Dockerfile
 	EndProjectSection
 EndProject
 Global
