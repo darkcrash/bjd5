@@ -92,6 +92,7 @@ namespace Bjd.Net.Sockets
                 try
                 {
                     if (_socket == null) return null;
+                    if (this.CancelToken.IsCancellationRequested) return null;
 
                     var tTcp = _socket.AcceptAsync();
                     while (true)
@@ -112,6 +113,11 @@ namespace Bjd.Net.Sockets
                     }
 
                     client = new SockTcp(Kernel, _ssl, tTcp.Result);
+                }
+                catch (OperationCanceledException)
+                {
+                    System.Diagnostics.Trace.TraceInformation("SockServer.Select OperationCanceledException");
+                    return null;
                 }
                 catch (Exception ex)
                 {
