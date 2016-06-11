@@ -5,8 +5,6 @@
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "publishOptions": {
     "include": [
-      "wwwroot",
-      "tftp",
       "BJD.Lang.txt",
       "example.pfx",
       "named.ca",
