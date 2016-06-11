@@ -3,12 +3,12 @@ FROM microsoft/dotnet:onbuild
 WORKDIR /dotnetapp/Bjd.CoreCLR
 
 EXPOSE 110
-EXPOSE 1080
-EXPOSE 5050
-EXPOSE 5060
-EXPOSE 8021
-EXPOSE 8023
-EXPOSE 8025
-EXPOSE 8080
-EXPOSE 8090
-EXPOSE 8110
+       1080
+       5050
+       5060
+       8021
+       8023
+       8025
+       8080
+       8090
+       8110
