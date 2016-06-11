@@ -3,10 +3,10 @@ FROM microsoft/dotnet:1.0.0-preview1
 RUN mkdir -p /dotnetapp
 COPY . /dotnetapp
 RUN cd /dotnetapp \
+    && ls -l \
     && rm -fr *.Test \
     && rm -fr *.sln \
     && rm -fr *.sh \
-    && cd /dotnetapp \
     && dotnet restore \
     && cd /dotnetapp/Bjd.CoreCLR \
     && dotnet publish -c Release \
