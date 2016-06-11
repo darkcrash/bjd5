@@ -68,11 +68,8 @@ namespace Bjd.Test.Sockets
 
                     while (IsLife())
                     {
-                        var child = (SockTcp)_sockServer.Select(this);
-                        if (child == null)
-                        {
-                            break;
-                        }
+                        var child = _sockServer.Select(this);
+                        if (child == null) break;
                         while (IsLife() && child.SockState == SockState.Connect)
                         {
                             var len = child.Length();

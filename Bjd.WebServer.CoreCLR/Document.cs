@@ -208,20 +208,32 @@ namespace Bjd.WebServer
             charset = "utf-8";
             encoding = Encoding.UTF8;
             var enc = (string)_conf.Get("encode");
-            switch (int.Parse(enc))
+            int intEncode;
+            if (int.TryParse(enc, out intEncode))
             {
-                case 0://UTF-8
-                    return true;
-                case 1://shift-jis
-                    charset = "Shift-JIS";
-                    encoding = CodePagesEncodingProvider.Instance.GetEncoding("shift-jis");
-                    return true;
-                case 2://eyc
-                    charset = "euc-jp";
-                    encoding = CodePagesEncodingProvider.Instance.GetEncoding("euc-jp");
-                    return true;
+                switch (intEncode)
+                {
+                    case 0://UTF-8
+                        return true;
+                    case 1://shift-jis
+                        charset = "Shift-JIS";
+                        encoding = CodePagesEncodingProvider.Instance.GetEncoding("shift-jis");
+                        return true;
+                    case 2://eyc
+                        charset = "euc-jp";
+                        encoding = CodePagesEncodingProvider.Instance.GetEncoding("euc-jp");
+                        return true;
+                }
             }
-            charset = enc;
+            else
+            {
+                var confEncoding1 = CodePagesEncodingProvider.Instance.GetEncoding(enc);
+                if (confEncoding1 != null) encoding = confEncoding1;
+                var confEncoding2 = Encoding.GetEncoding(enc);
+                if (confEncoding2 != null) encoding = confEncoding2;
+            }
+            //charset = enc;
+            charset = encoding.WebName;
             return true;
         }
 

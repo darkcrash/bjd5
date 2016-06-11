@@ -86,24 +86,37 @@ namespace Bjd.Net.Sockets
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
 
-            var tTcp = _socket.AcceptAsync();
-            while (true)
+            SockTcp client = null;
+            while (client == null)
             {
-                if (tTcp.Wait(2000, this.CancelToken))
-                    break;
-                if (tTcp.Status == TaskStatus.Canceled)
-                    break;
-                if (!iLife.IsLife())
-                    break;
-            }
-            if (this.IsCancel || !iLife.IsLife())
-            {
-                SetError("isLife()==false");
-                return null;
-            }
-            var client = new SockTcp(Kernel, _ssl, tTcp.Result);
-            return client;
+                try
+                {
+                    var tTcp = _socket.AcceptAsync();
+                    while (true)
+                    {
+                        if (tTcp.Wait(2000, this.CancelToken))
+                            break;
+                        if (tTcp.Status == TaskStatus.Canceled)
+                            break;
+                        if (!iLife.IsLife())
+                            break;
+                    }
 
+                    // キャンセル時、終了時はNullを返す
+                    if (this.IsCancel || !iLife.IsLife())
+                    {
+                        SetError("isLife()==false");
+                        return null;
+                    }
+                    client = new SockTcp(Kernel, _ssl, tTcp.Result);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError(ex.Message);
+                    System.Diagnostics.Trace.TraceError(ex.StackTrace);
+                }
+            }
+            return client;
         }
 
 
@@ -124,11 +137,8 @@ namespace Bjd.Net.Sockets
                 {
                     while (iLife.IsLife())
                     {
-                        var child = (SockTcp)sockServer.Select(iLife);
-                        if (child == null)
-                        {
-                            break;
-                        }
+                        var child = sockServer.Select(iLife);
+                        if (child == null) break;
                         //sockServer.Close(); //これ大丈夫？
                         return child;
                     }
