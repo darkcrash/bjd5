@@ -40,6 +40,43 @@ cd Bjd.CoreCLR
 dotnet run
 ```
 
+## Default Directory (dotnet publish)
+```
+publish
+ |--logs
+ |   |-dummy.txt
+ |
+ |--mailbox
+ |   |-user
+ |
+ |--MailQueue
+ |   |-dummy.txt
+ |
+ |--ProxyHttpCache
+ |   |-dummy.txt
+ |
+ |--Tftp
+ |   |-sample.txt
+ |
+ |--wwwroot
+ |   |-index.html
+ |   |-env.cgi
+ |
+ |-example.pfx
+ |-named.ca
+ |-Option.def
+ |-Option.ini
+ |-Bjd.*.dll
+ |
+ |--runtimes
+     |--linux
+     |--osx.10.10
+     |--unix
+     |--win7
+
+
+```
+
 ## Docker Hub
 
 [darkcrash/blackjumbodog-dotnet-core](https://hub.docker.com/r/darkcrash/blackjumbodog-dotnet-core/)
