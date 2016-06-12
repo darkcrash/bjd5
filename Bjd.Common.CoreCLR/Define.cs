@@ -14,7 +14,7 @@ namespace Bjd
     internal class Define
     {
 
-        public static readonly string ApplicationName = "BlackJumboDog";
+        public static readonly string ApplicationName = "BlackJumboDog .NET Core";
         public static readonly string Copyright = "Copyright(c) 1998/05.. by SIN/SapporoWorks";
         public static readonly string WebHome = "http://www.sapporoworks.ne.jp/spw/";
         public static readonly string WebDocument = "http://www.sapporoworks.ne.jp/spw/?page_id=517";

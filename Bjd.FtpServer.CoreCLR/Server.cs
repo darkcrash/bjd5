@@ -624,7 +624,7 @@ namespace Bjd.FtpServer
                 port++;
                 if (port >= 2100)
                 {
-                    port = 2000;
+                    port = 2010;
                 }
                 //バインド可能かどうかの確認
                 if (SockServerTcp.IsAvailable(_kernel, ip, port))
