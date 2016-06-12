@@ -20,9 +20,10 @@ namespace Bjd.FtpServer
         {
             SockCtrl = sockCtrl;
 
-            //PASV接続用ポート番号の初期化 (開始番号は2000～9900)
+            ////PASV接続用ポート番号の初期化 (開始番号は2000～9900)
+            //PASV接続用ポート番号の初期化 (開始番号は2000～2050)
             var rnd = new Random();
-            Port = (rnd.Next(79) + 20) * 100;
+            Port = (rnd.Next(10) + 2000) ;
 
         }
 

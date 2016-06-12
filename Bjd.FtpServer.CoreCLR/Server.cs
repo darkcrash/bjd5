@@ -622,7 +622,7 @@ namespace Bjd.FtpServer
             for (int i = 0; i < 100; i++)
             {
                 port++;
-                if (port >= 9999)
+                if (port >= 2100)
                 {
                     port = 2000;
                 }
