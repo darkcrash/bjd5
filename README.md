@@ -47,8 +47,10 @@ dotnet run
 
 TAG
 
-* darkcrash/blackjumbodog-dotnet-core:latest-onbuild
+* darkcrash/blackjumbodog-dotnet-core:latest-run
+ * ` dotnet restore ` ` dotnet run `
 
-* darkcrash/blackjumbodog-dotnet-core
+* darkcrash/blackjumbodog-dotnet-core:latest
+ * ` dotnet publish -c Relaese`
 
 
