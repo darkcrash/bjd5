@@ -87,7 +87,7 @@ namespace Bjd.WebServer
             Add(new OneVal("useDot", false, Crlf.Nextline));
             Add(new OneVal("useExpansion", false, Crlf.Nextline));
             Add(new OneVal("useDirectoryEnum", false, Crlf.Nextline));
-            Add(new OneVal("serverHeader", "BlackJumboDog Version $v", Crlf.Nextline));
+            Add(new OneVal("serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
             Add(new OneVal("useEtag", false, Crlf.Contonie));
             Add(new OneVal("serverAdmin", "", Crlf.Contonie));
 

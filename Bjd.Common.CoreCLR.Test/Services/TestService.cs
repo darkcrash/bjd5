@@ -85,9 +85,6 @@ namespace Bjd.Services
         public string MailboxPath { get; private set; }
         public string MailQueuePath { get; private set; }
 
-        private TestOption _op;
-
-
         private static TestService CreateTestServiceInternal()
         {
             var instance = new TestService();
@@ -121,20 +118,6 @@ namespace Bjd.Services
             Trace.TraceInformation("TestService.ServiceTest Start");
 
             var instance = CreateTestServiceInternal();
-
-            Trace.TraceInformation("TestService.ServiceTest End");
-            return instance;
-        }
-
-        public static TestService CreateTestService(TestOption option)
-        {
-            // Add console trace
-            //System.Diagnostics.Trace.Listeners.Add(new trace.ConsoleTraceListner());
-            Trace.TraceInformation("TestService.ServiceTest Start");
-
-            var instance = CreateTestServiceInternal();
-            instance._op = option;
-            instance._op.Copy(instance);
 
             Trace.TraceInformation("TestService.ServiceTest End");
             return instance;

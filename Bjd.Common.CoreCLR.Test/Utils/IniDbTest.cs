@@ -31,26 +31,29 @@ namespace Bjd.Test.Utils
         //***[TestCase(CtrlType.ADDRESSV4,	new Ip("192.168.0.1"), "ADDRESS_V4=Basic\bname=192.168.0.1")]
         public void listVal_add_OneVal_で初期化後saveして当該設定が保存されているかどうか(CtrlType ctrlType, Object value, string expected)
         {
+            using (TestService _service = TestService.CreateTestService())
+            {
+                //setUp
+                string fileName = "iniDbTestTmp"; //テンポラリファイル名
+                                                  //string progDir = new File(".").getAbsoluteFile().getParent(); //カレントディレクトリ
+                string progDir = Directory.GetCurrentDirectory();
+                //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+                string path = Path.Combine(progDir, fileName + ".ini");
+                IniDb sut = new IniDb(progDir, fileName);
 
-            //setUp
-            string fileName = "iniDbTestTmp"; //テンポラリファイル名
-            //string progDir = new File(".").getAbsoluteFile().getParent(); //カレントディレクトリ
-            string progDir = Directory.GetCurrentDirectory();
-            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
-            string path = Path.Combine(progDir, fileName + ".ini");
-            IniDb sut = new IniDb(progDir, fileName);
+                ListVal listVal = new ListVal();
+                listVal.Add(Assistance.createOneVal(_service.Kernel, ctrlType, value));
+                sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
 
-            ListVal listVal = new ListVal();
-            listVal.Add(Assistance.createOneVal(ctrlType, value));
-            sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
+                //exercise
+                var lines = File.ReadAllLines(path);
+                string actual = lines[0];
+                //verify
+                Assert.Equal(expected, actual);
+                //tearDown
+                sut.Delete();
 
-            //exercise
-            var lines = File.ReadAllLines(path);
-            string actual = lines[0];
-            //verify
-            Assert.Equal(expected, actual);
-            //tearDown
-            sut.Delete();
+            }
 
         }
 
@@ -67,71 +70,75 @@ namespace Bjd.Test.Utils
         [InlineData(CtrlType.AddressV4, "192.168.0.1", "ADDRESS_V4=Basic\bname=192.168.0.1")]
         public void 設定ファイルにテキストでセットしてreadして当該設定が読み込めるかどうか(CtrlType ctrlType, string value, string regStr)
         {
+            using (TestService _service = TestService.CreateTestService())
+            {
 
-            //setUp
-            string fileName = "iniDbTestTmp"; //テンポラリファイル名
-            //string progDir = new File(".").getAbsoluteFile().getParent();
-            string progDir = Directory.GetCurrentDirectory();
-            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
-            string path = Path.Combine(progDir, fileName + ".ini");
-
-
-            IniDb sut = new IniDb(progDir, fileName);
-            sut.Delete();
-
-            String expected = value;
-
-            //exercise
-            List<string> lines = new List<string>();
-            lines.Add(regStr);
-            File.WriteAllLines(path, lines);
-
-            ListVal listVal = new ListVal();
-            listVal.Add(Assistance.createOneVal(ctrlType, null));
-            sut.Read("Basic", listVal); // nameTagは"Basic"で決め打ちされている
-            OneVal oneVal = listVal.Search("name");
-
-            string actual = oneVal.ToReg(false);
-
-            //verify
-            Assert.Equal(expected, actual);
+                //setUp
+                string fileName = "iniDbTestTmp"; //テンポラリファイル名
+                                                  //string progDir = new File(".").getAbsoluteFile().getParent();
+                string progDir = Directory.GetCurrentDirectory();
+                //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+                string path = Path.Combine(progDir, fileName + ".ini");
 
 
-            //TearDown
-            sut.Delete();
+                IniDb sut = new IniDb(progDir, fileName);
+                sut.Delete();
+
+                String expected = value;
+
+                //exercise
+                List<string> lines = new List<string>();
+                lines.Add(regStr);
+                File.WriteAllLines(path, lines);
+
+                ListVal listVal = new ListVal();
+                listVal.Add(Assistance.createOneVal(_service.Kernel, ctrlType, null));
+                sut.Read("Basic", listVal); // nameTagは"Basic"で決め打ちされている
+                OneVal oneVal = listVal.Search("name");
+
+                string actual = oneVal.ToReg(false);
+
+                //verify
+                Assert.Equal(expected, actual);
+
+                //TearDown
+                sut.Delete();
+            }
         }
 
         [Fact]
         public void データの無いDATの保存()
         {
-            //setUp
-            string fileName = "iniDbTestTmp"; //テンポラリファイル名
-            string progDir = Directory.GetCurrentDirectory();
-            //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
-            string path = Path.Combine(progDir, fileName + ".ini");
-            IniDb sut = new IniDb(progDir, fileName);
+            using (TestService _service = TestService.CreateTestService())
+            {
+                //setUp
+                string fileName = "iniDbTestTmp"; //テンポラリファイル名
+                string progDir = Directory.GetCurrentDirectory();
+                //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
+                string path = Path.Combine(progDir, fileName + ".ini");
+                IniDb sut = new IniDb(progDir, fileName);
 
-            ListVal listVal = new ListVal();
-            var l = new ListVal();
-            //l.Add(new OneVal("mimeExtension", "", Crlf.Nextline, new CtrlTextBox("Extension", 10)));
-            //l.Add(new OneVal("mimeType", "", Crlf.Nextline, new CtrlTextBox("MIME Type", 50)));
-            //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-            l.Add(new OneVal("mimeExtension", "", Crlf.Nextline));
-            l.Add(new OneVal("mimeType", "", Crlf.Nextline));
-            //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-            var oneVal = new OneVal("mime", new Dat(l), Crlf.Nextline);
-            listVal.Add(oneVal);
+                ListVal listVal = new ListVal();
+                var l = new ListVal();
+                //l.Add(new OneVal("mimeExtension", "", Crlf.Nextline, new CtrlTextBox("Extension", 10)));
+                //l.Add(new OneVal("mimeType", "", Crlf.Nextline, new CtrlTextBox("MIME Type", 50)));
+                //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
+                l.Add(new OneVal("mimeExtension", "", Crlf.Nextline));
+                l.Add(new OneVal("mimeType", "", Crlf.Nextline));
+                //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
+                var oneVal = new OneVal("mime", new Dat(l), Crlf.Nextline);
+                listVal.Add(oneVal);
 
-            sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
+                sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
 
-            //exercise
-            var lines = File.ReadAllLines(path);
-            string actual = lines[0];
-            //verify
-            Assert.Equal("DAT=Basic\bmime=", actual);
-            //tearDown
-            sut.Delete();
-
+                //exercise
+                var lines = File.ReadAllLines(path);
+                string actual = lines[0];
+                //verify
+                Assert.Equal("DAT=Basic\bmime=", actual);
+                //tearDown
+                sut.Delete();
+            }
         }
 
 
@@ -140,12 +147,10 @@ namespace Bjd.Test.Utils
         {
             //OneValの生成
             //デフォルト値(nullを設定した場合、適切な値を自動でセットする)
-            public static OneVal createOneVal(CtrlType ctrlType, Object val)
+            public static OneVal createOneVal(Kernel kernel, CtrlType ctrlType, Object val)
             {
-               TestService _service =  TestService.CreateTestService();
 
                 //Kernel kernel = new Kernel();
-                Kernel kernel = _service.Kernel;
                 //string help = "help";
                 //OneCtrl oneCtrl = null;
                 switch (ctrlType)

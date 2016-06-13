@@ -85,7 +85,7 @@ namespace Bjd.ProxyHttpServer
 
             var list1 = new ListVal();
             list1.Add(new OneVal("anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
-            list1.Add(new OneVal("serverHeader", "BlackJumboDog Version $v", Crlf.Nextline));
+            list1.Add(new OneVal("serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
             Add(new OneVal("anonymousFtp", new Dat(list1), Crlf.Nextline));
 
             Add(new OneVal("useBrowserHedaer", false, Crlf.Nextline));

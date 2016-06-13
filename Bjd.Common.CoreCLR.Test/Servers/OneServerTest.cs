@@ -23,6 +23,7 @@ namespace Bjd.Test.Servers
         public OneServerTest()
         {
             this._service = TestService.CreateTestService();
+            this._service.SetOption("Option.ini");
         }
 
         public void Dispose()

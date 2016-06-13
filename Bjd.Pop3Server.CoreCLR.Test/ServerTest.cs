@@ -16,32 +16,14 @@ using Bjd.Services;
 
 namespace Pop3ServerTest
 {
-    public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.InternalFixture>
+    public class ServerTest : ILife, IDisposable
     {
-        private ServerTest.InternalFixture _fixture;
         internal TestService _service;
         internal Server _v6Sv; //サーバ
         internal Server _v4Sv; //サーバ
-        public class InternalFixture : IDisposable
+
+        public ServerTest()
         {
-            public InternalFixture()
-            {
-                //MailBoxは、Pop3ServerTest.iniの中で「c:\tmp2\bjd5\Pop3ServerTest\mailbox」に設定されている
-                //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
-
-            }
-
-            public void Dispose()
-            {
-
-            }
-
-        }
-
-        public ServerTest(InternalFixture fixture)
-        {
-            _fixture = fixture;
-
 
             _service = TestService.CreateTestService();
             _service.SetOption("Pop3ServerTest.ini");
@@ -102,7 +84,7 @@ namespace Pop3ServerTest
         {
             //テストの際は、バージョン番号はテストツール（ReSharper）のバージョンになる
             //const string bannerStr1 = "+OK BlackJumboDog (Version 9.0.0.0) ready <";
-            const string bannerStr = "+OK BlackJumboDog (Version ";
+            const string bannerStr = "+OK BlackJumboDog .NET Core (Version ";
 
 
             //Assert.That(_v6cl.StringRecv(3, this), Is.EqualTo(BannerStr));

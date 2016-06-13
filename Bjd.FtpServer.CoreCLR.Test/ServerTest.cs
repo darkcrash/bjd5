@@ -67,7 +67,6 @@ namespace FtpServerTest
 
         private ServerTest.InternalFixture _fixture;
 
-        //[SetUp]
         public ServerTest(ServerTest.InternalFixture fixture)
         {
             _fixture = fixture;
@@ -81,7 +80,6 @@ namespace FtpServerTest
 
         }
 
-        //[TearDown]
         public void Dispose()
         {
             //クライアント停止
@@ -94,7 +92,7 @@ namespace FtpServerTest
         {
             //テストの際は、バージョン番号はテストツール（ReSharper）のバージョンになる
             //const string bannerStr0 = "220 FTP ( BlackJumboDog Version 9.0.0.0 ) ready\r\n";
-            const string bannerStr = "220 FTP ( BlackJumboDog Version ";
+            const string bannerStr = "220 FTP ( BlackJumboDog .NET Core Version ";
             //Assert.Equal(_v6cl.StringRecv(1, this), BannerStr);
             //if (str != bannerStr0 && str != bannerStr1 && str != bannerStr2 && str != bannerStr3)
             //{
