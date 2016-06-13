@@ -316,7 +316,8 @@ namespace Pop3ServerTest
             var expected = "+OK user1 has 0 message (0 octets).\r\n";
 
             //exercise
-            var challengeStr = Inet.TrimCrlf(cl.StringRecv(3, this)).Split(' ')[5];
+            var rescStr = Inet.TrimCrlf(cl.StringRecv(3, this));
+            var challengeStr = rescStr.Split(' ')[7];
 
             //var result = (new MD5CryptoServiceProvider()).ComputeHash(Encoding.ASCII.GetBytes(challengeStr + "user1"));
             var md5 = System.Security.Cryptography.MD5.Create();
