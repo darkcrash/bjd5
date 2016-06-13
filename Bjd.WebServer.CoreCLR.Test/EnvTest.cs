@@ -56,7 +56,7 @@ namespace WebServerTest
         [InlineData("PATHEXT", ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC")]
         [InlineData("WINDIR", "C:\\Windows")]
         [InlineData("COMSPEC", "C:\\Windows\\system32\\cmd.exe")]
-        [InlineData("SERVER_SOFTWARE", "BlackJumboDog/1.0.0.0 (windows)")]
+        [InlineData("SERVER_SOFTWARE", "BlackJumboDog .net core/1.0.0.0 (windows)")]
         [InlineData("SystemRoot", "C:\\Windows")]
         public void OtherTest(string key, string val)
         {
