@@ -64,6 +64,7 @@ namespace Bjd.Test.Utils
         [InlineData(CtrlType.File, "c:\\1.txt", "FILE=Basic\bname=c:\\1.txt")]
         [InlineData(CtrlType.Folder, "c:\\tmp", "FOLDER=Basic\bname=c:\\tmp")]
         [InlineData(CtrlType.CheckBox, "true", "BOOL=Basic\bname=true")]
+        [InlineData(CtrlType.CheckBox, "True", "BOOL=Basic\bname=True")]
         [InlineData(CtrlType.Hidden, "qmw+Wuj6Y3f3WlWdncmLEQ==", "HIDE_STRING=Basic\bname=qmw+Wuj6Y3f3WlWdncmLEQ==")]
         [InlineData(CtrlType.Memo, "123", "MEMO=Basic\bname=123")]
         [InlineData(CtrlType.Radio, "1", "RADIO=Basic\bname=1")]
