@@ -27,13 +27,13 @@ namespace Bjd.SipServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
@@ -48,7 +48,7 @@ namespace Bjd.SipServer
             //onePage.Add(new OneVal(key, "Sample Server : ", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 60)));
 
             CreateServerOption(ProtocolKind.Tcp, 5060, 30, 30); //サーバ基本設定
-            Add(new OneVal("sampleText", "Sample Server : ", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "sampleText", "Sample Server : ", Crlf.Nextline));
 
             return onePage;
         }

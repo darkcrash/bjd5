@@ -17,9 +17,12 @@ namespace Bjd
             get { return _threadBaseKind; }
             protected set { _threadBaseKind = value; }
         }
-        private bool _life; //スレッドを停止するためのスイッチ
+        private bool _life = false; //スレッドを停止するためのスイッチ
         readonly Logger _logger;
         protected Kernel _kernel; //SockObjのTraceのため
+        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        protected CancellationToken CancelToken { get; private set; }
+
 
         //logger　スレッド実行中に例外がスローされたとき表示するためのLogger(nullを設定可能)
         protected ThreadBase(Kernel kernel, Logger logger)
@@ -28,8 +31,15 @@ namespace Bjd
             _logger = logger;
 
             // タスクのキャンセルにサーバー停止イベントを登録
-            kernel.CancelToken.Register(this.StopLife);
+            this.CancelToken = cancelTokenSource.Token;
+            this._kernel.CancelToken.Register(this.Cancel);
 
+        }
+
+        protected void Cancel()
+        {
+            _life = false;
+            this.cancelTokenSource.Cancel();
         }
 
         //時間を要するループがある場合、ループ条件で値がtrueであることを確認する<br>
@@ -37,12 +47,6 @@ namespace Bjd
         public bool IsLife()
         {
             return _life;
-        }
-
-        //暫定処置
-        protected void StopLife()
-        {
-            _life = false;
         }
 
         //終了処理
@@ -61,14 +65,12 @@ namespace Bjd
         public void Start()
         {
             if (_threadBaseKind == ThreadBaseKind.Running)
-            {
                 return;
-            }
 
             if (!OnStartThread())
             {
                 //Ver5.9.8
-                _life = false;
+                this.Cancel();
                 return;
             }
 
@@ -82,14 +84,15 @@ namespace Bjd
                 _t.Start();
 
                 //スレッドが起動してステータスがRUNになるまで待機する
-                Thread.Sleep(1);
                 while (_threadBaseKind == ThreadBaseKind.Before)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(100);
                 }
+                Thread.Sleep(100);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceWarning($"ThreadBase.Start {ex.Message}");
             }
         }
 
@@ -103,7 +106,8 @@ namespace Bjd
 
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
             {//起動されている場合
-                _life = false;//スイッチを切るとLoop内の無限ループからbreakする
+                //_life = false;//スイッチを切るとLoop内の無限ループからbreakする
+                this.Cancel();
                 while (_threadBaseKind != ThreadBaseKind.After)
                 {
                     Thread.Sleep(100);//breakした時点でIsRunがfalseになるので、ループを抜けるまでここで待つ
@@ -115,7 +119,7 @@ namespace Bjd
 
         protected abstract void OnRunThread();
 
-        void Loop()
+        private void Loop()
         {
             //[Java] 現在、Javaでは、ここでThreadBaseKindをRunnigにしている
             try

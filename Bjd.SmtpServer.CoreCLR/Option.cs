@@ -22,7 +22,7 @@ namespace Bjd.SmtpServer
 
             //var key = "useServer";
             //Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             //key = "Basic";
@@ -53,7 +53,7 @@ namespace Bjd.SmtpServer
             pageList.Add(Page7("Aliases", Lang.Value("Aliases"), kernel));
             pageList.Add(Page8("AutoReception", Lang.Value("AutoReception"), kernel));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
@@ -86,16 +86,16 @@ namespace Bjd.SmtpServer
 
             CreateServerOption(ProtocolKind.Tcp, 25, 30, 10); //サーバ基本設定
 
-            Add(new OneVal("domainName", "example.com", Crlf.Nextline));
-            Add(new OneVal("bannerMessage", "$s SMTP $p $v; $d", Crlf.Nextline));
-            Add(new OneVal("receivedHeader", "from $h ([$a]) by $s with SMTP id $i for <$t>; $d", Crlf.Nextline));
-            Add(new OneVal("sizeLimit", 5000, Crlf.Nextline));
-            Add(new OneVal("errorFrom", "root@local", Crlf.Nextline));
-            Add(new OneVal("useNullFrom", false, Crlf.Contonie));
-            Add(new OneVal("useNullDomain", false, Crlf.Nextline));
-            Add(new OneVal("usePopBeforeSmtp", false, Crlf.Contonie));
-            Add(new OneVal("timePopBeforeSmtp", 10, Crlf.Nextline));
-            Add(new OneVal("useCheckFrom", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "domainName", "example.com", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "bannerMessage", "$s SMTP $p $v; $d", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "receivedHeader", "from $h ([$a]) by $s with SMTP id $i for <$t>; $d", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "sizeLimit", 5000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "errorFrom", "root@local", Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useNullFrom", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useNullDomain", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "usePopBeforeSmtp", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "timePopBeforeSmtp", 10, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useCheckFrom", false, Crlf.Nextline));
 
             return onePage;
         }
@@ -135,25 +135,25 @@ namespace Bjd.SmtpServer
             //list3.Add(new OneVal(key, "", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 20)));
             //onePage.Add(new OneVal("range", null, Crlf.Nextline, new CtrlDat("", list3, 115, Lang.LangKind)));
 
-            Add(new OneVal("useEsmtp", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useEsmtp", false, Crlf.Nextline));
             var list1 = new ListVal();
-            list1.Add(new OneVal("useAuthCramMD5", true, Crlf.Contonie));
-            list1.Add(new OneVal("useAuthPlain", true, Crlf.Contonie));
-            list1.Add(new OneVal("useAuthLogin", true, Crlf.Nextline));
-            Add(new OneVal("groupAuthKind", new Dat(list1), Crlf.Nextline));
-            Add(new OneVal("usePopAcount", false, Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthCramMD5", true, Crlf.Contonie));
+            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthPlain", true, Crlf.Contonie));
+            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthLogin", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Group, "groupAuthKind", new Dat(list1), Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "usePopAcount", false, Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("user", "", Crlf.Contonie));
-            list2.Add(new OneVal("pass", "", Crlf.Contonie, true));
-            list2.Add(new OneVal("comment", "", Crlf.Nextline));
-            Add(new OneVal("esmtpUserList", new Dat(list2), Crlf.Nextline));
-            Add(new OneVal("enableEsmtp", 0, Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "user", "", Crlf.Contonie));
+            list2.Add(new OneVal(CtrlType.Hidden, "pass", "", Crlf.Contonie, true));
+            list2.Add(new OneVal(CtrlType.TextBox, "comment", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "esmtpUserList", new Dat(list2), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "enableEsmtp", 0, Crlf.Nextline));
 
             var list3 = new ListVal();
-            list3.Add(new OneVal("rangeName", "", Crlf.Contonie));
-            list3.Add(new OneVal("rangeAddress", "", Crlf.Nextline));
-            Add(new OneVal("range", new Dat(list3), Crlf.Nextline));
+            list3.Add(new OneVal(CtrlType.TextBox, "rangeName", "", Crlf.Contonie));
+            list3.Add(new OneVal(CtrlType.TextBox, "rangeAddress", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "range", new Dat(list3), Crlf.Nextline));
 
             return onePage;
         }
@@ -174,15 +174,15 @@ namespace Bjd.SmtpServer
             //key = "denyList";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 170, Lang.LangKind)));
 
-            Add(new OneVal("order", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "order", 0, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("allowAddress", "", Crlf.Nextline));
-            Add(new OneVal("allowList", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "allowAddress", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "allowList", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("denyAddress", "", Crlf.Nextline));
-            Add(new OneVal("denyList", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "denyAddress", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "denyList", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
@@ -201,11 +201,11 @@ namespace Bjd.SmtpServer
             //key = "mxOnly";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
 
-            Add(new OneVal("always", true, Crlf.Nextline));
-            Add(new OneVal("threadSpan", 300, Crlf.Nextline));
-            Add(new OneVal("retryMax", 5, Crlf.Nextline));
-            Add(new OneVal("threadMax", 5, Crlf.Nextline));
-            Add(new OneVal("mxOnly", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "always", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "threadSpan", 300, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "retryMax", 5, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "threadMax", 5, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "mxOnly", false, Crlf.Nextline));
 
             return onePage;
         }
@@ -229,14 +229,14 @@ namespace Bjd.SmtpServer
             //l.Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
             //onePage.Add(new OneVal("hostList", null, Crlf.Nextline, new CtrlOrgHostDat("", l, 370, Lang.LangKind)));
 
-            l.Add(new OneVal("transferTarget", "", Crlf.Nextline));
-            l.Add(new OneVal("transferServer", "", Crlf.Contonie));
-            l.Add(new OneVal("transferPort", 25, Crlf.Nextline));
-            l.Add(new OneVal("transferSmtpAuth", false, Crlf.Contonie));
-            l.Add(new OneVal("transferUser", "", Crlf.Contonie));
-            l.Add(new OneVal("transferPass", "", Crlf.Nextline, true));
-            l.Add(new OneVal("transferSsl", false, Crlf.Nextline));
-            Add(new OneVal("hostList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "transferTarget", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "transferServer", "", Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Int, "transferPort", 25, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.CheckBox, "transferSmtpAuth", false, Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.TextBox, "transferUser", "", Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Hidden, "transferPass", "", Crlf.Nextline, true));
+            l.Add(new OneVal(CtrlType.CheckBox, "transferSsl", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "hostList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }
@@ -259,14 +259,14 @@ namespace Bjd.SmtpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 185, Lang.LangKind)));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("pattern", "", Crlf.Nextline));
-            list1.Add(new OneVal("Substitution", "", Crlf.Nextline));
-            Add(new OneVal("patternList", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "pattern", "", Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "Substitution", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "patternList", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("tag", "", Crlf.Nextline));
-            list2.Add(new OneVal("string", "", Crlf.Nextline));
-            Add(new OneVal("appendList", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "tag", "", Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "string", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "appendList", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
@@ -282,9 +282,9 @@ namespace Bjd.SmtpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 250, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal("aliasUser", "", Crlf.Nextline));
-            l.Add(new OneVal("aliasName", "", Crlf.Nextline));
-            Add(new OneVal("aliasList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "aliasUser", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "aliasName", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "aliasList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }
@@ -311,15 +311,15 @@ namespace Bjd.SmtpServer
             //onePage.Add(new OneVal("fetchList", null, Crlf.Nextline, new CtrlOrgAutoReceptionDat("", l, 370, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal("fetchReceptionInterval", 60, Crlf.Nextline));
-            l.Add(new OneVal("fetchServer", "", Crlf.Contonie));
-            l.Add(new OneVal("fetchPort", 110, Crlf.Nextline));
-            l.Add(new OneVal("fetchUser", "", Crlf.Contonie));
-            l.Add(new OneVal("fetchPass", "", Crlf.Nextline, true));
-            l.Add(new OneVal("fetchLocalUser", "", Crlf.Nextline));
-            l.Add(new OneVal("fetchSynchronize", 0, Crlf.Contonie));
-            l.Add(new OneVal("fetchTime", 0, Crlf.Nextline));
-            Add(new OneVal("fetchList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.Int, "fetchReceptionInterval", 60, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "fetchServer", "", Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Int, "fetchPort", 110, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "fetchUser", "", Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Hidden, "fetchPass", "", Crlf.Nextline, true));
+            l.Add(new OneVal(CtrlType.TextBox, "fetchLocalUser", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.ComboBox, "fetchSynchronize", 0, Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Int, "fetchTime", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "fetchList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

@@ -13,28 +13,28 @@ namespace Bjd.Options
         {
             //var pageList = new List<OnePage>();
 
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             // Page1
             //pageList.Add(Page1("Basic", Lang.Value(key), kernel));
-            Add(new OneVal("normalLogKind", 2, Crlf.Nextline));
-            Add(new OneVal("secureLogKind", 2, Crlf.Nextline));
-            Add(new OneVal("saveDirectory", "", Crlf.Nextline));
-            Add(new OneVal("useLogFile", true, Crlf.Nextline));
-            Add(new OneVal("useLogClear", false, Crlf.Nextline));
-            Add(new OneVal("saveDays", 31, Crlf.Nextline));
-            Add(new OneVal("linesMax", 3000, Crlf.Nextline));
-            Add(new OneVal("linesDelete", 2000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.ComboBox, "normalLogKind", 2, Crlf.Nextline));
+            Add(new OneVal(CtrlType.ComboBox, "secureLogKind", 2, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Folder, "saveDirectory", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useLogFile", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useLogClear", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "saveDays", 31, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "linesMax", 3000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "linesDelete", 2000, Crlf.Nextline));
             //Add(new OneVal("font", null, Crlf.Nextline));
 
             // Page2
             //pageList.Add(Page2("Limit", Lang.Value(key)));
-            Add(new OneVal("isDisplay", 1, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "isDisplay", 1, Crlf.Nextline));
             var list = new ListVal();
-            list.Add(new OneVal("Character", "", Crlf.Nextline));
-            Add(new OneVal("limitString", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "Character", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "limitString", new Dat(list), Crlf.Nextline));
             //Add(new OneVal("limitString", new OneDat(true, new string[] { }, new bool[] { }), Crlf.Nextline));
-            Add(new OneVal("useLimitString", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useLimitString", false, Crlf.Nextline));
 
 
 

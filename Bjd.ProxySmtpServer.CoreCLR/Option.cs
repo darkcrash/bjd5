@@ -26,13 +26,13 @@ namespace Bjd.ProxySmtpServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(Page2("Expansion", Lang.Value("Expansion"), kernel));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
@@ -51,9 +51,9 @@ namespace Bjd.ProxySmtpServer
             //onePage.Add(new OneVal(key, 1, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));
 
             CreateServerOption(ProtocolKind.Tcp, 8025, 60, 10); //サーバ基本設定
-            Add(new OneVal("targetPort", 25, Crlf.Nextline));
-            Add(new OneVal("targetServer", "", Crlf.Nextline));
-            Add(new OneVal("idleTime", 1, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "targetPort", 25, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "targetServer", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "idleTime", 1, Crlf.Nextline));
 
             return onePage;
         }
@@ -73,11 +73,11 @@ namespace Bjd.ProxySmtpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 360, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal("mail", "", Crlf.Nextline));
-            l.Add(new OneVal("server", "", Crlf.Contonie));
-            l.Add(new OneVal("dstPort", 25, Crlf.Nextline));
-            l.Add(new OneVal("address", "", Crlf.Nextline));
-            Add(new OneVal("specialUser", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "mail", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "server", "", Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.Int, "dstPort", 25, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "specialUser", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

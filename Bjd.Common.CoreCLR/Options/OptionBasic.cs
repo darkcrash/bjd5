@@ -18,17 +18,17 @@ namespace Bjd.Options
             //var key = "Basic";
             //pageList.Add(Page1(key, Lang.Value(key), kernel));
 
-            Add(new OneVal("useExitDlg", false, Crlf.Nextline));
-            Add(new OneVal("useLastSize", true, Crlf.Nextline));
-            Add(new OneVal("isWindowOpen", true, Crlf.Nextline));
-            Add(new OneVal("useAdminPassword", false, Crlf.Nextline));
-            Add(new OneVal("password", "", Crlf.Nextline));
-            Add(new OneVal("serverName", "", Crlf.Nextline));
-            Add(new OneVal("editBrowse", false, Crlf.Nextline));
-            Add(new OneVal("lang", 2, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useExitDlg", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useLastSize", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "isWindowOpen", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useAdminPassword", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Hidden, "password", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "serverName", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "editBrowse", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.ComboBox, "lang", 2, Crlf.Nextline));
 
 
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }

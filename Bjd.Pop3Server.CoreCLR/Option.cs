@@ -29,14 +29,14 @@ namespace Bjd.Pop3Server
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic")));
             pageList.Add(Page2("Cange Password", Lang.Value("Cange Password")));
             pageList.Add(Page3("AutoDeny", Lang.Value("AutoDeny")));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
@@ -55,9 +55,9 @@ namespace Bjd.Pop3Server
 
             CreateServerOption(ProtocolKind.Tcp, 110, 30, 10);
 
-            Add(new OneVal("bannerMessage", "$p (Version $v) ready", Crlf.Nextline));
-            Add(new OneVal("authType", 0, Crlf.Nextline));
-            Add(new OneVal("authTimeout", 30, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "bannerMessage", "$p (Version $v) ready", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "authType", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "authTimeout", 30, Crlf.Nextline));
 
             return onePage;
         }
@@ -84,16 +84,16 @@ namespace Bjd.Pop3Server
             //key = "groupNeed";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlGroup(Lang.Value(key), list)));
 
-            Add(new OneVal("useChps", false, Crlf.Nextline));
-            Add(new OneVal("minimumLength", 8, Crlf.Nextline));
-            Add(new OneVal("disableJoe", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useChps", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "minimumLength", 8, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "disableJoe", true, Crlf.Nextline));
 
             var list = new ListVal();
-            list.Add(new OneVal("useNum", true, Crlf.Contonie));
-            list.Add(new OneVal("useSmall", true, Crlf.Contonie));
-            list.Add(new OneVal("useLarge", true, Crlf.Contonie));
-            list.Add(new OneVal("useSign", true, Crlf.Nextline));
-            Add(new OneVal("groupNeed", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.CheckBox, "useNum", true, Crlf.Contonie));
+            list.Add(new OneVal(CtrlType.CheckBox, "useSmall", true, Crlf.Contonie));
+            list.Add(new OneVal(CtrlType.CheckBox, "useLarge", true, Crlf.Contonie));
+            list.Add(new OneVal(CtrlType.CheckBox, "useSign", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Group, "groupNeed", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }
@@ -110,10 +110,10 @@ namespace Bjd.Pop3Server
             //key = "autoAclSec";
             //onePage.Add(new OneVal(key, 60, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));
 
-            Add(new OneVal("useAutoAcl", false, Crlf.Nextline));
-            Add(new OneVal("autoAclLabel", Lang.Value("autoAclLabel"), Crlf.Nextline));
-            Add(new OneVal("autoAclMax", 5, Crlf.Contonie));
-            Add(new OneVal("autoAclSec", 60, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useAutoAcl", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Label, "autoAclLabel", Lang.Value("autoAclLabel"), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "autoAclMax", 5, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "autoAclSec", 60, Crlf.Nextline));
 
             return onePage;
         }

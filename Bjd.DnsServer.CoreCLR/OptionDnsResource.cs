@@ -26,7 +26,7 @@ namespace Bjd.DnsServer
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
@@ -42,12 +42,12 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal("priority", 10, Crlf.Nextline, new CtrlInt("Priority", 5)));
             //onePage.Add(new OneVal("resourceList", null, Crlf.Nextline, new CtrlOrgDat("", list, 350, Lang.LangKind)));
 
-            list.Add(new OneVal("type", 0, Crlf.Nextline));
-            list.Add(new OneVal("name", "", Crlf.Contonie));
-            list.Add(new OneVal("alias", "", Crlf.Nextline));
-            list.Add(new OneVal("address", "", Crlf.Contonie));
-            list.Add(new OneVal("priority", 10, Crlf.Nextline));
-            Add(new OneVal("resourceList", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.ComboBox, "type", 0, Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Contonie));
+            list.Add(new OneVal(CtrlType.TextBox, "alias", "", Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Contonie));
+            list.Add(new OneVal(CtrlType.Int, "priority", 10, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "resourceList", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }

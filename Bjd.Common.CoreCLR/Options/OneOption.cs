@@ -53,12 +53,12 @@ namespace Bjd.Options
         {
             var onePage = new OnePage("ACL", "ACL");
             //onePage.Add(new OneVal("enableAcl", 0, Crlf.Nextline));
-            Add(new OneVal("enableAcl", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "enableAcl", 0, Crlf.Nextline));
             var list = new ListVal();
-            list.Add(new OneVal("aclName", "", Crlf.Nextline));
-            list.Add(new OneVal("aclAddress", "", Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "aclName", "", Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "aclAddress", "", Crlf.Nextline));
             //onePage.Add(new OneVal("acl", new Dat(list), Crlf.Nextline));
-            Add(new OneVal("acl", new Dat(list), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "acl", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }
@@ -82,13 +82,13 @@ namespace Bjd.Options
         //}
         protected void CreateServerOption(ProtocolKind protocolKind, int port, int timeout, int multiple)
         {
-            Add(new OneVal("protocolKind", protocolKind, Crlf.Contonie));
-            Add(new OneVal("port", port, Crlf.Nextline));
-            Add(new OneVal("bindAddress2", new BindAddr(), Crlf.Nextline));
-            Add(new OneVal("useResolve", false, Crlf.Nextline));
-            Add(new OneVal("useDetailsLog", true, Crlf.Contonie));
-            Add(new OneVal("multiple", multiple, Crlf.Contonie));
-            Add(new OneVal("timeOut", timeout, Crlf.Nextline));
+            Add(new OneVal(CtrlType.ComboBox, "protocolKind", protocolKind, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "port", port, Crlf.Nextline));
+            Add(new OneVal(CtrlType.BindAddr, "bindAddress2", new BindAddr(), Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useResolve", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useDetailsLog", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "multiple", multiple, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "timeOut", timeout, Crlf.Nextline));
         }
 
 

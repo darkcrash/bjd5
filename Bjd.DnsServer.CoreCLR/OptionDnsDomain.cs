@@ -20,7 +20,7 @@ namespace Bjd.DnsServer
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
@@ -35,9 +35,9 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal(key, true, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
             //onePage.Add(new OneVal("domainList", null, Crlf.Nextline, new CtrlDat("", list, 400, Lang.LangKind)));
 
-            list.Add(new OneVal("name", "", Crlf.Nextline));
-            list.Add(new OneVal("authority", true, Crlf.Nextline));
-            Add(new OneVal("domainList", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.CheckBox, "authority", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "domainList", new Dat(list), Crlf.Nextline));
 
             return onePage;
 

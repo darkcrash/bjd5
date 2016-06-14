@@ -19,14 +19,14 @@ namespace Bjd.DnsServer
 
             //var key = "useServer";
             //Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
             var pageList = new List<OnePage>();
             //key = "Basic";
             //pageList.Add(Page1(key, Lang.Value(key), kernel));
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
@@ -40,10 +40,10 @@ namespace Bjd.DnsServer
 
             //var key = "rootCache";
             //onePage.Add(new OneVal(key, "named.ca", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 30)));
-            Add(new OneVal("rootCache", "named.ca", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "rootCache", "named.ca", Crlf.Nextline));
             //key = "useRD";
             //onePage.Add(new OneVal(key, true, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
-            Add(new OneVal("useRD", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useRD", true, Crlf.Nextline));
 
             var list = new ListVal();
             //key = "soaMail";
@@ -60,13 +60,13 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal(key, 3600, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));
             //key = "GroupSoa";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlGroup(Lang.Value(key), list)));
-            Add(new OneVal("soaMail", "postmaster", Crlf.Nextline));
-            Add(new OneVal("soaSerial", 1, Crlf.Nextline));
-            Add(new OneVal("soaRefresh", 3600, Crlf.Contonie));
-            Add(new OneVal("soaRetry", 300, Crlf.Nextline));
-            Add(new OneVal("soaExpire", 360000, Crlf.Contonie));
-            Add(new OneVal("soaMinimum", 3600, Crlf.Nextline));
-            Add(new OneVal("GroupSoa", new Dat(list), Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "soaMail", "postmaster", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "soaSerial", 1, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "soaRefresh", 3600, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "soaRetry", 300, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "soaExpire", 360000, Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "soaMinimum", 3600, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Group, "GroupSoa", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }

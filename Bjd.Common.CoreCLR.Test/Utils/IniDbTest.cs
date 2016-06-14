@@ -36,7 +36,8 @@ namespace Bjd.Test.Utils
                 //setUp
                 string fileName = "iniDbTestTmp"; //テンポラリファイル名
                                                   //string progDir = new File(".").getAbsoluteFile().getParent(); //カレントディレクトリ
-                string progDir = Directory.GetCurrentDirectory();
+                                                  //string progDir = Directory.GetCurrentDirectory();
+                string progDir = _service.Kernel.Enviroment.ExecutableDirectory;
                 //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
                 string path = Path.Combine(progDir, fileName + ".ini");
                 IniDb sut = new IniDb(progDir, fileName);
@@ -64,7 +65,8 @@ namespace Bjd.Test.Utils
         [InlineData(CtrlType.File, "c:\\1.txt", "FILE=Basic\bname=c:\\1.txt")]
         [InlineData(CtrlType.Folder, "c:\\tmp", "FOLDER=Basic\bname=c:\\tmp")]
         [InlineData(CtrlType.CheckBox, "true", "BOOL=Basic\bname=true")]
-        [InlineData(CtrlType.CheckBox, "True", "BOOL=Basic\bname=True")]
+        //[InlineData(CtrlType.CheckBox, "True", "BOOL=Basic\bname=true")]
+        [InlineData(CtrlType.CheckBox, "true", "BOOL=Basic\bname=True")]
         [InlineData(CtrlType.Hidden, "qmw+Wuj6Y3f3WlWdncmLEQ==", "HIDE_STRING=Basic\bname=qmw+Wuj6Y3f3WlWdncmLEQ==")]
         [InlineData(CtrlType.Memo, "123", "MEMO=Basic\bname=123")]
         [InlineData(CtrlType.Radio, "1", "RADIO=Basic\bname=1")]
@@ -124,10 +126,10 @@ namespace Bjd.Test.Utils
                 //l.Add(new OneVal("mimeExtension", "", Crlf.Nextline, new CtrlTextBox("Extension", 10)));
                 //l.Add(new OneVal("mimeType", "", Crlf.Nextline, new CtrlTextBox("MIME Type", 50)));
                 //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-                l.Add(new OneVal("mimeExtension", "", Crlf.Nextline));
-                l.Add(new OneVal("mimeType", "", Crlf.Nextline));
+                l.Add(new OneVal(CtrlType.TextBox, "mimeExtension", "", Crlf.Nextline));
+                l.Add(new OneVal(CtrlType.TextBox, "mimeType", "", Crlf.Nextline));
                 //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-                var oneVal = new OneVal("mime", new Dat(l), Crlf.Nextline);
+                var oneVal = new OneVal(CtrlType.Dat, "mime", new Dat(l), Crlf.Nextline);
                 listVal.Add(oneVal);
 
                 sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
@@ -257,8 +259,8 @@ namespace Bjd.Test.Utils
                         ListVal listVal = new ListVal();
                         //listVal.Add(new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")));
                         //listVal.Add(new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help")));
-                        listVal.Add(new OneVal("name1", true, Crlf.Nextline));
-                        listVal.Add(new OneVal("name2", true, Crlf.Nextline));
+                        listVal.Add(new OneVal(CtrlType.CheckBox, "name1", true, Crlf.Nextline));
+                        listVal.Add(new OneVal(CtrlType.CheckBox, "name2", true, Crlf.Nextline));
 
                         if (val == null)
                         {
@@ -272,7 +274,7 @@ namespace Bjd.Test.Utils
                         throw new Exception(ctrlType.ToString());
                 }
                 //return new OneVal("name", val, Crlf.Nextline, oneCtrl);
-                return new OneVal("name", val, Crlf.Nextline);
+                return new OneVal(ctrlType, "name", val, Crlf.Nextline);
             }
 
 

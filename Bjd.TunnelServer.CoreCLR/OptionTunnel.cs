@@ -19,7 +19,7 @@ namespace Bjd.TunnelServer
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
@@ -40,11 +40,11 @@ namespace Bjd.TunnelServer
             //onePage.Add(new OneVal("tunnelList", null, Crlf.Nextline, new CtrlDat("", l, 380, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal("protocol", 0, Crlf.Nextline));
-            l.Add(new OneVal("srcPort", 0, Crlf.Nextline));
-            l.Add(new OneVal("server", "", Crlf.Nextline));
-            l.Add(new OneVal("dstPort", 0, Crlf.Nextline));
-            Add(new OneVal("tunnelList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.ComboBox, "protocol", 0, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.Int, "srcPort", 0, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "server", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.Int, "dstPort", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "tunnelList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

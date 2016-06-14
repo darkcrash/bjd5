@@ -24,12 +24,12 @@ namespace Bjd.DhcpServer
             //pageList.Add(Page2("Acl", "ACL(MAC)", kernel));
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(Page2("Acl", "ACL(MAC)", kernel));
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
@@ -62,15 +62,15 @@ namespace Bjd.DhcpServer
 
             CreateServerOption(ProtocolKind.Udp, 67, 10, 10);
 
-            Add(new OneVal("leaseTime", 18000, Crlf.Nextline));
-            Add(new OneVal("startIp", new Ip(IpKind.V4_0), Crlf.Nextline));
-            Add(new OneVal("endIp", new Ip(IpKind.V4_0), Crlf.Nextline));
-            Add(new OneVal("maskIp", new Ip("255.255.255.0"), Crlf.Nextline));
-            Add(new OneVal("gwIp", new Ip(IpKind.V4_0), Crlf.Nextline));
-            Add(new OneVal("dnsIp0", new Ip(IpKind.V4_0), Crlf.Nextline));
-            Add(new OneVal("dnsIp1", new Ip(IpKind.V4_0), Crlf.Nextline));
-            Add(new OneVal("useWpad", false, Crlf.Contonie));
-            Add(new OneVal("wpadUrl", "http://", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "leaseTime", 18000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "startIp", new Ip(IpKind.V4_0), Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "endIp", new Ip(IpKind.V4_0), Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "maskIp", new Ip("255.255.255.0"), Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "gwIp", new Ip(IpKind.V4_0), Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "dnsIp0", new Ip(IpKind.V4_0), Crlf.Nextline));
+            Add(new OneVal(CtrlType.AddressV4, "dnsIp1", new Ip(IpKind.V4_0), Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useWpad", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.TextBox, "wpadUrl", "http://", Crlf.Nextline));
 
 
             return onePage;
@@ -93,12 +93,12 @@ namespace Bjd.DhcpServer
             //key = "macAcl";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 250, Lang.LangKind)));
 
-            Add(new OneVal("useMacAcl", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useMacAcl", false, Crlf.Nextline));
             var l = new ListVal();
-            l.Add(new OneVal("macAddress", "", Crlf.Nextline));
-            l.Add(new OneVal("v4Address", new Ip(IpKind.V4_0), Crlf.Nextline));
-            l.Add(new OneVal("macName", "", Crlf.Nextline));
-            Add(new OneVal("macAcl", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "macAddress", "", Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.AddressV4, "v4Address", new Ip(IpKind.V4_0), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "macName", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "macAcl", new Dat(l), Crlf.Nextline));
 
 
             return onePage;

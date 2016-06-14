@@ -35,7 +35,7 @@ namespace Bjd.ProxyHttpServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
@@ -45,7 +45,7 @@ namespace Bjd.ProxyHttpServer
             pageList.Add(Page5("LimitUrl", Lang.Value("LimitUrl"), kernel));
             pageList.Add(Page6("LimitContents", Lang.Value("LimitContents"), kernel));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
@@ -81,20 +81,20 @@ namespace Bjd.ProxyHttpServer
 
             CreateServerOption(ProtocolKind.Tcp, 8080, 60, 300); //サーバ基本設定
 
-            Add(new OneVal("useRequestLog", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useRequestLog", false, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
-            list1.Add(new OneVal("serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
-            Add(new OneVal("anonymousFtp", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Group, "anonymousFtp", new Dat(list1), Crlf.Nextline));
 
-            Add(new OneVal("useBrowserHedaer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useBrowserHedaer", false, Crlf.Nextline));
 
             var list2 = new ListVal();
-            Add(new OneVal("addHeaderRemoteHost", false, Crlf.Contonie));
-            Add(new OneVal("addHeaderXForwardedFor", false, Crlf.Contonie));
-            Add(new OneVal("addHeaderForwarded", false, Crlf.Nextline));
-            Add(new OneVal("groupAddHeader", new Dat(list2), Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "addHeaderRemoteHost", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "addHeaderXForwardedFor", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "addHeaderForwarded", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Group, "groupAddHeader", new Dat(list2), Crlf.Nextline));
 
 
             return onePage;
@@ -126,16 +126,16 @@ namespace Bjd.ProxyHttpServer
             //key = "disableAddress";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 200, Lang.LangKind)));
 
-            Add(new OneVal("useUpperProxy", false, Crlf.Nextline));
-            Add(new OneVal("upperProxyServer", "", Crlf.Contonie));
-            Add(new OneVal("upperProxyPort", 8080, Crlf.Nextline));
-            Add(new OneVal("upperProxyUseAuth", false, Crlf.Contonie));
-            Add(new OneVal("upperProxyAuthName", "", Crlf.Contonie));
-            Add(new OneVal("upperProxyAuthPass", "", Crlf.Nextline, true));
+            Add(new OneVal(CtrlType.CheckBox, "useUpperProxy", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "upperProxyServer", "", Crlf.Contonie));
+            Add(new OneVal(CtrlType.Int, "upperProxyPort", 8080, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "upperProxyUseAuth", false, Crlf.Contonie));
+            Add(new OneVal(CtrlType.TextBox, "upperProxyAuthName", "", Crlf.Contonie));
+            Add(new OneVal(CtrlType.Hidden, "upperProxyAuthPass", "", Crlf.Nextline, true));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("address", "", Crlf.Nextline));
-            Add(new OneVal("disableAddress", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "disableAddress", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
@@ -158,13 +158,13 @@ namespace Bjd.ProxyHttpServer
             //key = "maxSize";
             //onePage.Add(new OneVal(key, 1200, Crlf.Nextline, new CtrlInt(Lang.Value(key), 10)));
 
-            Add(new OneVal("useCache", false, Crlf.Nextline));
-            Add(new OneVal("cacheDir", "", Crlf.Nextline));
-            Add(new OneVal("testTime", 3, Crlf.Nextline));
-            Add(new OneVal("memorySize", 1000, Crlf.Nextline));
-            Add(new OneVal("diskSize", 5000, Crlf.Nextline));
-            Add(new OneVal("expires", 24, Crlf.Nextline));
-            Add(new OneVal("maxSize", 1200, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useCache", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Folder, "cacheDir", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "testTime", 3, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "memorySize", 1000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "diskSize", 5000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "expires", 24, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "maxSize", 1200, Crlf.Nextline));
 
             return onePage;
         }
@@ -186,16 +186,16 @@ namespace Bjd.ProxyHttpServer
             //key = "cacheExt";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 135, Lang.LangKind)));
 
-            Add(new OneVal("enableHost", 1, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "enableHost", 1, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("host", "", Crlf.Nextline));
-            Add(new OneVal("cacheHost", new Dat(list1), Crlf.Nextline));
-            Add(new OneVal("enableExt", 1, Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "host", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "cacheHost", new Dat(list1), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Radio, "enableExt", 1, Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("ext", "", Crlf.Nextline));
-            Add(new OneVal("cacheExt", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "ext", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "cacheExt", new Dat(list2), Crlf.Nextline));
 
 
             return onePage;
@@ -218,14 +218,14 @@ namespace Bjd.ProxyHttpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 185, Lang.LangKind)));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("allowUrl", "", Crlf.Contonie));
-            list1.Add(new OneVal("allowMatching", 0, Crlf.Nextline));
-            Add(new OneVal("limitUrlAllow", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "allowUrl", "", Crlf.Contonie));
+            list1.Add(new OneVal(CtrlType.ComboBox, "allowMatching", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "limitUrlAllow", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("denyUrl", "", Crlf.Contonie));
-            list2.Add(new OneVal("denyMatching", 0, Crlf.Nextline));
-            Add(new OneVal("limitUrlDeny", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.TextBox, "denyUrl", "", Crlf.Contonie));
+            list2.Add(new OneVal(CtrlType.ComboBox, "denyMatching", 0, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "limitUrlDeny", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
@@ -239,8 +239,8 @@ namespace Bjd.ProxyHttpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 300, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal("string", "", Crlf.Nextline));
-            Add(new OneVal("limitString", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.TextBox, "string", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "limitString", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

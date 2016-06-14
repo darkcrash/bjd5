@@ -18,20 +18,23 @@ namespace Bjd.Options
         public Object Value { get; private set; }
         public Crlf Crlf { get; private set; }
 
+        public CtrlType CtrlType { get; private set; }
+
         public Type ValueType { get; private set; }
 
         public bool IsSecret { get; private set; }
 
-        public OneVal(String name, Object value, Crlf crlf) : this(name, value, crlf, false)
+        public OneVal(CtrlType type,  String name, Object value, Crlf crlf) : this(type, name, value, crlf, false)
         {
         }
 
-        public OneVal(String name, Object value, Crlf crlf, bool isSecret)
+        public OneVal(CtrlType type, String name, Object value, Crlf crlf, bool isSecret)
         {
-            Name = name;
-            Value = value;
-            Crlf = crlf;
-            IsSecret = isSecret;
+            this.CtrlType = type;
+            this.Name = name;
+            this.Value = value;
+            this.Crlf = crlf;
+            this.IsSecret = isSecret;
             if (value != null)
                 this.ValueType = value.GetType();
 
@@ -106,6 +109,10 @@ namespace Bjd.Options
             {
                 return ((Dat)this.Value).ToReg(isSecret);
             }
+            else if(this.ValueType == typeof(bool))
+            {
+                return this.Value.ToString().ToLower();
+            }
 
             // isSecretの対応
             if (this.IsSecret)
@@ -121,6 +128,11 @@ namespace Bjd.Options
             }
 
             return this.Value.ToString();
+        }
+
+        public string ToCtrlString()
+        {
+            return this.CtrlType.GetControlTypeString();
         }
 
         //出力ファイル(Option.ini)からの入力用<br>

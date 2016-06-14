@@ -283,7 +283,7 @@ namespace Bjd.Utils
                 foreach (var o in listVal.GetSaveList(null))
                 {
                     //var ctrlStr = CtrlType2Str(ctrlType);
-                    var ctrlStr = string.Empty;
+                    var ctrlStr = o.ToCtrlString();
                     lines.Add(string.Format("{0}={1}\b{2}={3}", ctrlStr, nameTag, o.Name, o.ToReg(isSecret)));
                 }
                 var enc = System.Text.CodePagesEncodingProvider.Instance;
@@ -295,7 +295,7 @@ namespace Bjd.Utils
         public bool IsJp()
         {
             var listVal = new ListVal{
-                new OneVal("lang", 2, Crlf.Nextline)
+                new OneVal(CtrlType.ComboBox, "lang", 2, Crlf.Nextline)
             };
             Read("Basic", listVal);
             var oneVal = listVal.Search("lang");

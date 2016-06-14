@@ -251,7 +251,7 @@ namespace Bjd.Test.Options
                         val = "";
                     }
                     //oneCtrl = new CtrlHidden(help, 30);
-                    return new OneVal("name", val, Crlf.Nextline, true);
+                    return new OneVal(ctrlType, "name", val, Crlf.Nextline, true);
                 //break;
                 case CtrlType.AddressV4:
                     if (val == null)
@@ -293,8 +293,8 @@ namespace Bjd.Test.Options
                     var listVal = new ListVal{
                         //new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")),
                         //new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help"))
-                        new OneVal("name1", true, Crlf.Nextline),
-                        new OneVal("name2", true, Crlf.Nextline)
+                        new OneVal(CtrlType.CheckBox, "name1", true, Crlf.Nextline),
+                        new OneVal(CtrlType.CheckBox,"name2", true, Crlf.Nextline)
                     };
 
                     if (val == null)
@@ -310,7 +310,7 @@ namespace Bjd.Test.Options
                     throw new Exception(ctrlType.ToString());
             }
             //return new OneVal("name", val, Crlf.Nextline, oneCtrl);
-            return new OneVal("name", val, Crlf.Nextline);
+            return new OneVal(ctrlType, "name", val, Crlf.Nextline);
         }
     }
 }

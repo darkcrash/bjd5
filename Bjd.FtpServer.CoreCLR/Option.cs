@@ -18,7 +18,7 @@ namespace Bjd.FtpServer
             : base(kernel, path, nameTag)
         {
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
@@ -39,15 +39,15 @@ namespace Bjd.FtpServer
 
             //var key = "bannerMessage";
             //onePage.Add(new OneVal(key, "FTP ( $p Version $v ) ready", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 80)));
-            Add(new OneVal("bannerMessage", "FTP ( $p Version $v ) ready", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "bannerMessage", "FTP ( $p Version $v ) ready", Crlf.Nextline));
             //ライブドア特別仕様
             //onePage.Add(new OneVal(new ValType(CRLF.NEXTLINE, VTYPE.FILE, (IsJp()) ? "ファイル受信時に起動するスクリプト" : "auto run acript", 250,kernel), "autoRunScript","c:\\test.bat"));
             //key = "useSyst";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
-            Add(new OneVal("useSyst", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useSyst", false, Crlf.Nextline));
             //key = "reservationTime";
             //onePage.Add(new OneVal(key, 5000, Crlf.Nextline, new CtrlInt(Lang.Value(key), 6)));
-            Add(new OneVal("reservationTime", 5000, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Int, "reservationTime", 5000, Crlf.Nextline));
             return onePage;
         }
 
@@ -57,13 +57,13 @@ namespace Bjd.FtpServer
             var listVal = new ListVal();
             //var key = "fromFolder";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlFolder(Lang.Value(key), 70, kernel)));
-            listVal.Add(new OneVal("fromFolder", "", Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.Folder, "fromFolder", "", Crlf.Nextline));
             //key = "toFolder";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlFolder(Lang.Value(key), 70, kernel)));
-            listVal.Add(new OneVal("toFolder", "", Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.Folder, "toFolder", "", Crlf.Nextline));
             //key = "mountList";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), listVal, 360, Lang.LangKind)));
-            Add(new OneVal("mountList", new Dat(listVal), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "mountList", new Dat(listVal), Crlf.Nextline));
             return onePage;
         }
 
@@ -73,19 +73,19 @@ namespace Bjd.FtpServer
             var listVal = new ListVal();
             //var key = "accessControl";
             //listVal.Add(new OneVal(key, 0, Crlf.Nextline, new CtrlComboBox(Lang.Value(key), new[] { "FULL", "DOWN", "UP" }, 100)));
-            listVal.Add(new OneVal("accessControl", 0, Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.ComboBox, "accessControl", 0, Crlf.Nextline));
             //key = "homeDirectory";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlFolder(Lang.Value(key), 60, kernel)));
-            listVal.Add(new OneVal("homeDirectory", "", Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.Folder, "homeDirectory", "", Crlf.Nextline));
             //key = "userName";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 20)));
-            listVal.Add(new OneVal("userName", "", Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.TextBox, "userName", "", Crlf.Nextline));
             //key = "password";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlHidden(Lang.Value(key), 20)));
-            listVal.Add(new OneVal("password", "", Crlf.Nextline, true));
+            listVal.Add(new OneVal(CtrlType.Hidden, "password", "", Crlf.Nextline, true));
             //key = "user";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), listVal, 360, Lang.LangKind)));
-            Add(new OneVal("user", new Dat(listVal), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "user", new Dat(listVal), Crlf.Nextline));
             return onePage;
         }
 

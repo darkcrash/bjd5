@@ -22,15 +22,15 @@ namespace Bjd.WebServer
             //Add(new OneVal("tab", null, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal("protocol", 0, Crlf.Nextline));
-            list1.Add(new OneVal("host", "", Crlf.Contonie));
-            list1.Add(new OneVal("port", 80, Crlf.Nextline));
-            Add(new OneVal("hostList", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.ComboBox, "protocol", 0, Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.TextBox, "host", "", Crlf.Contonie));
+            list1.Add(new OneVal(CtrlType.Int, "port", 80, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "hostList", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal("certificate", "", Crlf.Nextline));
-            list2.Add(new OneVal("privateKeyPassword", "", Crlf.Nextline, true));
-            Add(new OneVal("groupHttps", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.File, "certificate", "", Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.Hidden, "privateKeyPassword", "", Crlf.Nextline, true));
+            Add(new OneVal(CtrlType.Group, "groupHttps", new Dat(list2), Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み

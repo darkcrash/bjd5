@@ -26,12 +26,12 @@ namespace Bjd.TftpServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal("useServer", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
             pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
             pageList.Add(PageAcl());
-            Add(new OneVal("tab", null, Crlf.Nextline));
+            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
@@ -51,10 +51,10 @@ namespace Bjd.TftpServer
             //key = "override";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
 
-            Add(new OneVal("workDir", "Tftp", Crlf.Nextline));
-            Add(new OneVal("read", false, Crlf.Nextline));
-            Add(new OneVal("write", false, Crlf.Nextline));
-            Add(new OneVal("override", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Folder, "workDir", "Tftp", Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "read", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "write", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "override", false, Crlf.Nextline));
 
             return onePage;
         }

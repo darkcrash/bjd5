@@ -32,8 +32,8 @@ namespace Bjd.Options
             //key = "useDetailsLog";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline));
 
-            Add(new OneVal("dir", "", Crlf.Nextline));
-            Add(new OneVal("useDetailsLog", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.Folder, "dir", "", Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useDetailsLog", false, Crlf.Nextline));
 
             return onePage;
         }
@@ -50,9 +50,9 @@ namespace Bjd.Options
             //onePage.Add(new OneVal(key, null, Crlf.Nextline));
 
             var listVal = new ListVal();
-            listVal.Add(new OneVal("userName", "", Crlf.Nextline));
-            listVal.Add(new OneVal("password", "", Crlf.Nextline, true));
-            Add(new OneVal("user", new Dat(listVal), Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.TextBox, "userName", "", Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.TextBox, "password", "", Crlf.Nextline, true));
+            Add(new OneVal(CtrlType.Dat, "user", new Dat(listVal), Crlf.Nextline));
 
             return onePage;
         }
