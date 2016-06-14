@@ -158,7 +158,7 @@ namespace Bjd.Test.Servers
         {
 
             const string addr = "127.0.0.1";
-            const int port = 9991;
+            const int port = 9992;
             const int timeout = 5;
             Ip ip = null;
             try
