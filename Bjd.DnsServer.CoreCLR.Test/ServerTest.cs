@@ -463,7 +463,8 @@ namespace DnsServerTest
             //verify
             //Assert.Equal("QD=1 AN=2 NS=2 AR=2", Print(p));
             //Assert.Equal("Cname www.asahi.co.jp. TTL=600 202.242.245.10", Print(p, RrKind.AN, 0));
-            Assert.Equal("Cname www.asahi.co.jp. TTL=600 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
+            //Assert.Equal("Cname www.asahi.co.jp. TTL=600 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
+            Assert.Equal("Cname www.asahi.co.jp. TTL=28800 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
         }
 
         [Fact]

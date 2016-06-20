@@ -24,7 +24,7 @@ namespace Bjd.Options
 
         public bool IsSecret { get; private set; }
 
-        public OneVal(CtrlType type,  String name, Object value, Crlf crlf) : this(type, name, value, crlf, false)
+        public OneVal(CtrlType type, String name, Object value, Crlf crlf) : this(type, name, value, crlf, false)
         {
         }
 
@@ -102,6 +102,39 @@ namespace Bjd.Options
         //isSecret=true デバッグ用の設定ファイル出力用（パスワード等を***で表現する）
         public String ToReg(bool isSecret)
         {
+            switch (this.CtrlType)
+            {
+                case CtrlType.CheckBox:
+                    return ((bool)Value).ToString().ToLower();
+                case CtrlType.TextBox:
+                    return (string)Value;
+                case CtrlType.Hidden:
+                    if (isSecret)
+                    {
+                        return "***";
+                    }
+                    try
+                    {
+                        return Crypt.Encrypt((String)Value);
+                    }
+                    catch (Exception)
+                    {
+                        return "ERROR";
+                    }
+                case CtrlType.Memo:
+                    return Util.SwapStr("\r\n", "\t", (string)Value);
+                case CtrlType.Int:
+                    return ((int)Value).ToString();
+                case CtrlType.BindAddr:
+                    return Value.ToString();
+                case CtrlType.AddressV4:
+                    return Value.ToString();
+                default:
+
+
+                    break;
+            }
+
             if (this.Value == null)
                 return null;
 
@@ -109,7 +142,7 @@ namespace Bjd.Options
             {
                 return ((Dat)this.Value).ToReg(isSecret);
             }
-            else if(this.ValueType == typeof(bool))
+            else if (this.ValueType == typeof(bool))
             {
                 return this.Value.ToString().ToLower();
             }
@@ -146,23 +179,97 @@ namespace Bjd.Options
             }
             try
             {
+                switch (this.CtrlType)
+                {
+                    case CtrlType.CheckBox:
+                        bool valCheckBox;
+                        if (!bool.TryParse(str, out valCheckBox))
+                        {
+                            Value = false;
+                            return false;
+                        }
+                        Value = valCheckBox;
+                        break;
+                    case CtrlType.Memo:
+                        Value = Util.SwapStr("\t", "\r\n", str);
+                        break;
+                    case CtrlType.Hidden:
+                        try
+                        {
+                            Value = Crypt.Decrypt(str);
+                        }
+                        catch (Exception)
+                        {
+                            Value = "";
+                            return false;
+                        }
+                        break;
+                    case CtrlType.Radio:
+                        Int32 valRadio;
+                        if (!Int32.TryParse(str, out valRadio))
+                        {
+                            Value = 0;
+                            return false;
+                        }
+                        Value = valRadio;
+                        if ((int)Value < 0)
+                        {
+                            Value = 0;
+                            return false;
+                        }
+                        break;
+                    case CtrlType.Int:
+                        Int32 valInt;
+                        if (!Int32.TryParse(str, out valInt))
+                        {
+                            Value = 0;
+                            return false;
+                        }
+                        Value = valInt;
+                        break;
+                    case CtrlType.BindAddr:
+                        try
+                        {
+                            Value = new BindAddr(str);
+                        }
+                        catch (ValidObjException)
+                        {
+                            Value = 0;
+                            return false;
+                        }
+                        break;
+                    case CtrlType.AddressV4:
+                        try
+                        {
+                            Value = new Ip(str);
+                        }
+                        catch (ValidObjException)
+                        {
+                            Value = null;
+                            return false;
+                        }
+                        break;
+                    default:
 
-                if (this.ValueType == typeof(Dat))
-                {
-                    ((Dat)this.Value).FromReg(str);
+                        if (this.ValueType == typeof(Dat))
+                        {
+                            ((Dat)this.Value).FromReg(str);
+                        }
+                        else if (this.ValueType.GetTypeInfo().IsEnum)
+                        {
+                            this.Value = Enum.Parse(this.ValueType, str);
+                        }
+                        else if (typeof(ValidObj).IsAssignableFrom(this.ValueType))
+                        {
+                            ((ValidObj)this.Value).FromString(str);
+                        }
+                        else
+                        {
+                            Value = Convert.ChangeType(str, this.ValueType);
+                        }
+                        break;
                 }
-                else if (this.ValueType.GetTypeInfo().IsEnum)
-                {
-                    this.Value = Enum.Parse(this.ValueType, str);
-                }
-                else if (typeof(ValidObj).IsAssignableFrom(this.ValueType))
-                {
-                    ((ValidObj)this.Value).FromString(str);
-                }
-                else
-                {
-                    Value = Convert.ChangeType(str, this.ValueType);
-                }
+
             }
             catch (Exception)
             {
