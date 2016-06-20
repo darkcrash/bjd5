@@ -76,7 +76,7 @@ namespace Bjd.Options
             {
                 list = new List<OneVal>();
             }
-            if (this.ValueType == typeof(Dat))
+            if (this.ValueType == typeof(Dat) && (this.Value as Dat != null))
             {
                 ((Dat)this.Value).GetList(list);
             }
