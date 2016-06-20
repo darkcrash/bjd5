@@ -193,6 +193,11 @@ namespace Bjd.Options
                     case CtrlType.Memo:
                         Value = Util.SwapStr("\t", "\r\n", str);
                         break;
+                    case CtrlType.File:
+                    case CtrlType.Folder:
+                    case CtrlType.TextBox:
+                        Value = str;
+                        break;
                     case CtrlType.Hidden:
                         try
                         {
@@ -204,6 +209,7 @@ namespace Bjd.Options
                             return false;
                         }
                         break;
+                    case CtrlType.ComboBox:
                     case CtrlType.Radio:
                         Int32 valRadio;
                         if (!Int32.TryParse(str, out valRadio))
