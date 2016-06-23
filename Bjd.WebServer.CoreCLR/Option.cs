@@ -170,7 +170,7 @@ namespace Bjd.WebServer
             l.Add(new OneVal(CtrlType.TextBox, "AuthName", "", Crlf.Nextline));
             l.Add(new OneVal(CtrlType.TextBox, "Require", "", Crlf.Nextline));
             //onePage.Add(new OneVal("authList", new Dat(l), Crlf.Nextline));
-            Add(new OneVal(CtrlType.TextBox, "authList", new Dat(l), Crlf.Nextline));
+            Add(new OneVal(CtrlType.Dat, "authList", new Dat(l), Crlf.Nextline));
             return onePage;
         }
         private OnePage Page8(string name, string title, Kernel kernel)
