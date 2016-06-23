@@ -207,11 +207,11 @@ namespace Bjd.WebServer
             //System.Diagnostics.Trace.TraceInformation($"Document.GetEncodeOption");
             charset = "utf-8";
             encoding = Encoding.UTF8;
-            var enc = (string)_conf.Get("encode");
-            int intEncode;
-            if (int.TryParse(enc, out intEncode))
+            var enc = _conf.Get("encode");
+            if (enc == null) return false;
+            if (enc is int)
             {
-                switch (intEncode)
+                switch ((int)enc)
                 {
                     case 0://UTF-8
                         return true;
@@ -227,9 +227,10 @@ namespace Bjd.WebServer
             }
             else
             {
-                var confEncoding1 = CodePagesEncodingProvider.Instance.GetEncoding(enc);
+                var encString = enc.ToString();
+                var confEncoding1 = CodePagesEncodingProvider.Instance.GetEncoding(encString);
                 if (confEncoding1 != null) encoding = confEncoding1;
-                var confEncoding2 = Encoding.GetEncoding(enc);
+                var confEncoding2 = Encoding.GetEncoding(encString);
                 if (confEncoding2 != null) encoding = confEncoding2;
             }
             //charset = enc;
