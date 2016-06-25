@@ -2,18 +2,18 @@ FROM microsoft/dotnet:1.0.0-preview1
 
 RUN cd / \
  && git clone https://github.com/darkcrash/bjd5.git \
- && cd /Bjd \
+ && cd /bjd5 \
  && rm -fr *.Test \
  && rm -fr *.sln \
  && rm -fr *.sh \
  && dotnet restore \
- && cd /Bjd/Bjd.CoreCLR \
+ && cd /bjd5/Bjd.CoreCLR \
  && dotnet publish -c Release \
- && cd /Bjd \
+ && cd /bjd5 \
  && mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish . \
  && rm -fr Bjd*
 
-WORKDIR /Bjd/publish/
+WORKDIR /bjd5/publish/
 
 ENTRYPOINT ["dotnet", "Bjd.CoreCLR.dll"]
 
