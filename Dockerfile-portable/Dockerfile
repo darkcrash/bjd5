@@ -1,12 +1,12 @@
 FROM microsoft/dotnet:1.0.0-preview1
 
-RUN cd /
- && git clone https://github.com/darkcrash/bjd5.git
- && cd /Bjd
+RUN cd / \
+ && git clone https://github.com/darkcrash/bjd5.git \
+ && cd /Bjd \
  && rm -fr *.Test \
  && rm -fr *.sln \
  && rm -fr *.sh \
- && dotnet restore
+ && dotnet restore \
  && cd /Bjd/Bjd.CoreCLR \
  && dotnet publish -c Release \
  && cd /Bjd \
