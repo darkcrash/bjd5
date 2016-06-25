@@ -28,13 +28,11 @@ namespace Bjd.DnsServer
 
         OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            switch(nameTag)
+            switch(path)
             {
-                case "Dns":
-                    return new DnsServer.Option(kernel, path, nameTag);
-                case "DnsDomain":
+                case "OptionDnsDomain":
                     return new DnsServer.OptionDnsDomain(kernel, path, nameTag);
-                case "Resource-example":
+                case "OptionDnsResource":
                     return new DnsServer.OptionDnsResource(kernel, path, nameTag);
             }
             return new DnsServer.Option(kernel, path, nameTag);

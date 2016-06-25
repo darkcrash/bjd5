@@ -31,11 +31,9 @@ namespace Bjd.TunnelServer
 
         OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            switch(nameTag)
+            switch(path)
             {
-                case "Tunnel":
-                    break;
-                case "TunnelList":
+                case "OptionTunnel":
                     return new TunnelServer.OptionTunnel(kernel, path, nameTag);
             }
             return new TunnelServer.Option(kernel, path, nameTag);

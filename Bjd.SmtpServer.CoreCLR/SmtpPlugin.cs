@@ -31,14 +31,14 @@ namespace Bjd.SmtpServer
 
         OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            switch(nameTag)
+            switch(path)
             {
-                case "Smtp":
-                    return new SmtpServer.Option(kernel, path, nameTag);
-                case "Ml":
+                case "OptionMl":
                     return new SmtpServer.OptionMl(kernel, path, nameTag);
+                case "OptionOneMl":
+                    return new SmtpServer.OptionOneMl(kernel, path, nameTag);
             }
-            return new SmtpServer.OptionOneMl(kernel, path, nameTag);
+            return new SmtpServer.Option(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

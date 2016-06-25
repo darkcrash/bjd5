@@ -31,9 +31,9 @@ namespace Bjd.WebServer
 
         OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            switch (nameTag)
+            switch (path)
             {
-                case "VirtualHost":
+                case "OptionVirtualHost":
                     return new WebServer.OptionVirtualHost(kernel, path, nameTag);
             }
             return new WebServer.Option(kernel, path, nameTag);
