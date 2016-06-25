@@ -61,7 +61,7 @@ namespace Bjd.Servers
                 }
 
                 //プラグイン情報の検索
-                OnePlugin onePlugin = listPlugin.Get(op.NameTag);
+                IPlugin onePlugin = listPlugin.Get(op.NameTag);
                 //			if (onePlugin == null) {
                 //				//設計上の問題
                 //				Util.RuntimeException(string.Format("ListServer.initialize() listPlugin.get(%s)==null", op.getNameTag()));
@@ -107,7 +107,7 @@ namespace Bjd.Servers
         }
 
         //サーバ（OneServer）の生成
-        private void AddServer(Conf conf, OnePlugin onePlugin)
+        private void AddServer(Conf conf, IPlugin onePlugin)
         {
 
             var protocol = (ProtocolKind)conf.Get("protocolKind");

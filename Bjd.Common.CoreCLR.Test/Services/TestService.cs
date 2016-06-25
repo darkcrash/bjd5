@@ -30,7 +30,8 @@ namespace Bjd.Services
                         this._kernel.Dispose();
                     }
                     this._kernel = null;
-                    Directory.Delete(this.env.ExecutableDirectory, true);
+                    try { Directory.Delete(this.env.ExecutableDirectory, true); } catch { };
+                    try { Directory.Delete(this.env.ConfigurationDirectory, true); } catch { };
                 }
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
@@ -205,7 +206,7 @@ namespace Bjd.Services
             return dst;
         }
 
-        private static string CreateDirectory(Enviroments env,  string directoryPath)
+        private static string CreateDirectory(Enviroments env, string directoryPath)
         {
             var dst = System.IO.Path.Combine(env.ExecutableDirectory, directoryPath);
             if (!Directory.Exists(dst))

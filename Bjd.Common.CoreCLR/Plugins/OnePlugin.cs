@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyModel;
 
 namespace Bjd.Plugins
 {
-    public class OnePlugin : IDisposable
+    public class OnePlugin : IDisposable, IPlugin
     {
         readonly string _path;
         readonly RuntimeLibrary _lib;
@@ -20,6 +20,7 @@ namespace Bjd.Plugins
 
             var str = Path.GetFileNameWithoutExtension(_path);
             this.Name = this.GetName(str);
+            this.PluginName = str;
 
         }
         public OnePlugin(RuntimeLibrary lib)
@@ -27,7 +28,7 @@ namespace Bjd.Plugins
             _lib = lib;
 
             this.Name = this.GetName(lib.Name);
-
+            this.PluginName = lib.Name;
         }
 
         private string GetName(string str)
@@ -44,6 +45,7 @@ namespace Bjd.Plugins
             return str;
         }
 
+        public string PluginName { get; }
         public string Name { get; }
 
         //プラグイン固有のOptionインスタンスの生成

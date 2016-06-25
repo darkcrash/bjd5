@@ -11,6 +11,7 @@ namespace Bjd
     public class Enviroments
     {
         public string ExecutableDirectory { get; internal set; } = Define.ExecutableDirectory;
+        public string ConfigurationDirectory { get { return ExecutableDirectory; } }
 
         public string ServerAddress
         {
