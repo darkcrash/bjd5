@@ -1,12 +1,19 @@
-FROM darkcrash/blackjumbodog-dotnet-core:latest-run
+FROM microsoft/dotnet:1.0.0-preview1
 
-RUN cd /dotnetapp/Bjd.CoreCLR \
+RUN cd /
+ && git clone https://github.com/darkcrash/bjd5.git
+ && cd /Bjd
+ && rm -fr *.Test \
+ && rm -fr *.sln \
+ && rm -fr *.sh \
+ && dotnet restore
+ && cd /Bjd/Bjd.CoreCLR \
  && dotnet publish -c Release \
- && cd /dotnetapp \
+ && cd /Bjd \
  && mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish . \
  && rm -fr Bjd*
 
-WORKDIR /dotnetapp/publish/
+WORKDIR /Bjd/publish/
 
 ENTRYPOINT ["dotnet", "Bjd.CoreCLR.dll"]
 
