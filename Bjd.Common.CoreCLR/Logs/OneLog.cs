@@ -114,6 +114,13 @@ namespace Bjd.Logs
                                  NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
         }
 
+        public string ToTraceString()
+        {
+            CheckInitialise();
+            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", Kind(), 
+                                 NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
+        }
+
         //セキュリティログかどうかの確認
         public bool IsSecure()
         {

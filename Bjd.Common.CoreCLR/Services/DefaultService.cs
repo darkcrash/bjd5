@@ -55,20 +55,17 @@ namespace Bjd.Services
             Trace.TraceInformation("DefaultService.OnStart Start");
             _kernel = new Kernel(new Enviroments());
             _kernel.Start();
-            //_kernel.MenuOnClick("StartStop_Start");
             Trace.TraceInformation("DefaultService.OnStart End");
         }
         protected void OnPause()
         {
             Trace.TraceInformation("DefaultService.OnPause Start");
-            //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
             Trace.TraceInformation("DefaultService.OnPause End");
         }
         protected void OnContinue()
         {
             Trace.TraceInformation("DefaultService.OnContinue Start");
-            //_kernel.MenuOnClick("StartStop_Start");
             _kernel.Start();
             Trace.TraceInformation("DefaultService.OnContinue End");
         }
@@ -76,7 +73,6 @@ namespace Bjd.Services
         protected void OnStop()
         {
             Trace.TraceInformation("DefaultService.OnStop Start");
-            //_kernel.MenuOnClick("StartStop_Stop");
             _kernel.Stop();
             _kernel.Dispose();
             _kernel = null;

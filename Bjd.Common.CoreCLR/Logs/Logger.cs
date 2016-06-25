@@ -299,13 +299,13 @@ namespace Bjd.Logs
             switch (logKind)
             {
                 case LogKind.Error:
-                    System.Diagnostics.Trace.TraceError($"{oneLog.ToString()}");
+                    System.Diagnostics.Trace.TraceError($"{oneLog.ToTraceString()}");
                     break;
                 case LogKind.Secure:
-                    System.Diagnostics.Trace.TraceWarning($"{oneLog.ToString()}");
+                    System.Diagnostics.Trace.TraceWarning($"{oneLog.ToTraceString()}");
                     break;
                 default:
-                    System.Diagnostics.Trace.TraceInformation($"{oneLog.ToString()}");
+                    System.Diagnostics.Trace.TraceInformation($"{oneLog.ToTraceString()}");
                     break;
             }
 

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using Bjd.Utils;
 
-namespace Bjd
+namespace Bjd.Utils
 {
     public class Lookup
     {

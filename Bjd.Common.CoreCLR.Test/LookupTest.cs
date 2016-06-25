@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Xunit;
 using Bjd;
+using Bjd.Utils;
 
 namespace Bjd.Test
 {

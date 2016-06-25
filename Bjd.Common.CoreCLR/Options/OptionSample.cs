@@ -36,8 +36,6 @@ namespace Bjd.Options
             return onePage;
         }
 
-        protected void AbstractOnChange(OneCtrl oneCtrl)
-        {
-        }
+
     }
 }

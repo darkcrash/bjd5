@@ -14,7 +14,6 @@ namespace Bjd.Plugins
         {
             Trace.TraceInformation("ListPlugin..ctor Start");
 
-            Trace.Indent();
             if (Define.Libraries != null)
             {
                 //foreach (var lib in Define.Libraries)
@@ -40,32 +39,31 @@ namespace Bjd.Plugins
                             var ctor = t.GetConstructor(Type.EmptyTypes);
                             if (ctor == null)
                             {
-                                Trace.TraceError($"IPlugin require default conctructor {t.FullName}");
+                                Trace.TraceError($"[IPlugin] require default conctructor {t.FullName}");
                                 continue;
                             }
                             try
                             {
                                 var instance = (IPlugin)ctor.Invoke(null);
-                                Trace.TraceInformation($"IPlugin {instance.PluginName}");
+                                Trace.TraceInformation($"[IPlugin] {instance.PluginName}");
                                 Ar.Add(instance);
                             }
                             catch
                             {
-                                Trace.TraceError($"IPlugin throw exception conctructor {t.FullName}");
+                                Trace.TraceError($"[IPlugin] throw exception conctructor {t.FullName}");
                                 continue;
                             }
                         }
                         var plugin = t as IPlugin;
                         if (plugin != null)
                         {
-                            Trace.TraceInformation($"IPlugin {plugin.PluginName}");
+                            Trace.TraceInformation($"[IPlugin] {plugin.PluginName}");
                         }
 
                     }
                 }
 
             }
-            Trace.Unindent();
 
             Trace.TraceInformation("ListPlugin..ctor End");
         }

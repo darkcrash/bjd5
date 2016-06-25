@@ -4,6 +4,7 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Plugins;
 using Bjd.Utils;
+using System.Collections.Generic;
 
 namespace Bjd.Servers
 {
@@ -152,11 +153,15 @@ namespace Bjd.Servers
         //サーバ停止処理
         public void Stop()
         {
+            var tList = new List<System.Threading.Tasks.Task>();
             //全スレッド停止 
             foreach (OneServer sv in Ar)
             {
-                sv.Stop();
+                var t = new System.Threading.Tasks.Task(sv.Stop);
+                t.Start();
+                tList.Add(t);
             }
+            System.Threading.Tasks.Task.WhenAll(tList);
             //Java fix Ver5.9.0
             GC.Collect();
         }
@@ -169,11 +174,15 @@ namespace Bjd.Servers
             {
                 return;
             }
+            var tList = new List<System.Threading.Tasks.Task>();
             //全スレッドスタート
             foreach (var sv in Ar)
             {
-                sv.Start();
+                var t = new System.Threading.Tasks.Task(sv.Start);
+                t.Start();
+                tList.Add(t);
             }
+            System.Threading.Tasks.Task.WhenAll(tList);
             //Java fix Ver5.9.0
             GC.Collect();
         }

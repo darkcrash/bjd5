@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd;
 using Bjd.Net;
+using Bjd.Utils;
 
 namespace Bjd.SmtpServer
 {

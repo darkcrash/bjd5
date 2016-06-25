@@ -415,7 +415,8 @@ namespace Bjd.SmtpServer
             //レジストリ保存
             o.SetVal(_kernel.Configuration, "memberList", dat);
             //保存されたレジストリからオプションを生成する
-            var oneOption = (OneOption)Util.CreateInstance(_kernel, o.Path, "OptionOneMl", new object[] { _kernel, o.Path, o.NameTag });
+            var oneOption = new OptionOneMl(_kernel, o.Path, o.NameTag);
+            //var oneOption = (OneOption)Util.CreateInstance(_kernel, o.Path, "OptionOneMl", new object[] { _kernel, o.Path, o.NameTag });
             //オプションを置き換える
             _kernel.ListOption.Replice(oneOption);
 
