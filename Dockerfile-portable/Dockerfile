@@ -3,15 +3,20 @@ FROM microsoft/dotnet:1.0.0-preview1
 RUN cd / \
  && git clone https://github.com/darkcrash/bjd5.git \
  && cd /bjd5 \
+ && rm -fr .git \
  && rm -fr *.Test \
  && rm -fr *.sln \
  && rm -fr *.sh \
- && dotnet restore \
+ && rm -fr Dockerfile-portable \
+ && dotnet restore --no-cache \
  && cd /bjd5/Bjd.CoreCLR \
- && dotnet publish -c Release \
+ && dotnet publish -c Release --native-subdirectory \
  && cd /bjd5 \
  && mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish . \
- && rm -fr Bjd*
+ && rm -fr Bjd* \
+ && rm -fr /root/.nuget/packages 
+
+
 
 WORKDIR /bjd5/publish/
 
