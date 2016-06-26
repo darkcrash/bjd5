@@ -4,6 +4,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.ProxyHttpServer {
     internal class Response {

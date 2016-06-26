@@ -23,10 +23,18 @@ namespace Bjd.Net.Sockets
         public String RemoteHostname { get; private set; }
 
         private System.Threading.CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-        protected  System.Threading.CancellationToken CancelToken { get; private set; }
+        protected System.Threading.CancellationToken CancelToken { get; private set; }
 
         //このKernelはTrace()のためだけに使用されているので、Traceしない場合は削除することができる
         protected Kernel Kernel;
+
+
+        public event EventHandler SocketStateChanged;
+        protected void OnSocketStateChanged()
+        {
+            if (this.SocketStateChanged == null) return;
+            var t = System.Threading.Tasks.Task.Factory.StartNew(() => this.SocketStateChanged.Invoke(this, EventArgs.Empty));
+        }
 
         public Ip LocalIp
         {
@@ -92,7 +100,21 @@ namespace Bjd.Net.Sockets
         //****************************************************************
         // SockState関連
         //****************************************************************
-        public SockState SockState { get; private set; }
+        public SockState SockState
+        {
+            get
+            {
+                return _SockState;
+            }
+
+            protected set
+            {
+                if (value == _SockState) return;
+                OnSocketStateChanged();
+                _SockState = value;
+            }
+        }
+        private SockState _SockState;
 
 
         //ステータスの設定

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.ProxyHttpServer {
     class OneObj:IDisposable {

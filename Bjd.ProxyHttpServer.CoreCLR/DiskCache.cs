@@ -5,6 +5,7 @@ using System.Threading;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.ProxyHttpServer {
     //*****************************************************************

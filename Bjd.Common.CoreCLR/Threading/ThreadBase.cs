@@ -2,7 +2,7 @@
 using System.Threading;
 using Bjd.Logs;
 
-namespace Bjd
+namespace Bjd.Threading
 {
 
     //スレッドの起動停止機能を持った基本クラス

@@ -10,6 +10,7 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.Servers
 {
@@ -34,6 +35,7 @@ namespace Bjd.Servers
 
         // 子スレッド管理 - 排他制御オブジェクト
         private readonly object SyncObj = new object();
+        private readonly ManualResetEvent BindWait = new ManualResetEvent(false);
 
         // 子スレッドコレクション
         private readonly List<Task> _childThreads = new List<Task>();
@@ -128,10 +130,11 @@ namespace Bjd.Servers
             }
 
             //bindが完了するまで待機する
-            while ((_sockServerTcp == null && _sockServerUdp == null) || this.SockState == SockState.Idle)
-            {
-                Thread.Sleep(100);
-            }
+            //while ((_sockServerTcp == null && _sockServerUdp == null) || this.SockState == SockState.Idle)
+            //{
+            //    Thread.Sleep(100);
+            //}
+            BindWait.WaitOne();
         }
 
 
@@ -210,6 +213,7 @@ namespace Bjd.Servers
             {
                 case ProtocolKind.Tcp:
                     _sockServerTcp = new SockServerTcp(_kernel, _oneBind.Protocol, ssl);
+                    _sockServerTcp.SocketStateChanged += _sockServerTcp_SocketStateChanged;
                     if (ssl != null && !ssl.Status)
                     {
                         Logger.Set(LogKind.Error, null, 9000024, bindStr);
@@ -224,6 +228,7 @@ namespace Bjd.Servers
                     break;
                 case ProtocolKind.Udp:
                     _sockServerUdp = new SockServerUdp(_kernel, _oneBind.Protocol, ssl);
+                    _sockServerUdp.SocketStateChanged += _sockServerUdp_SocketStateChanged;
                     if (this.SockState != SockState.Error)
                     {
                         RunUdpServer(port);
@@ -237,12 +242,25 @@ namespace Bjd.Servers
 
         }
 
+        private void _sockServerUdp_SocketStateChanged(object sender, EventArgs e)
+        {
+            BindWait.Set();
+            _sockServerUdp.SocketStateChanged -= _sockServerUdp_SocketStateChanged;
+        }
+
+        private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
+        {
+            BindWait.Set();
+            _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
+        }
+
         private void RunTcpServer(int port)
         {
             System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer {this.GetType().FullName}");
 
             //[C#]
             ThreadBaseKind = ThreadBaseKind.Running;
+
             const int listenMax = 10;
 
             if (!_sockServerTcp.Bind(_oneBind.Addr, port, listenMax))
@@ -356,6 +374,22 @@ namespace Bjd.Servers
             }
             t.ContinueWith(this.RemoveTask);
             t.Start();
+        }
+
+        private void WaitSocketBind()
+        {
+            if (this._sockServerTcp != null && this._sockServerTcp.SockState != SockState.Idle)
+            {
+                this.ThreadBaseKind = ThreadBaseKind.Running;
+                return;
+            }
+            if (this._sockServerUdp != null && this._sockServerUdp.SockState != SockState.Idle)
+            {
+                this.ThreadBaseKind = ThreadBaseKind.Running;
+                return;
+            }
+            var w = Task.Delay(100);
+            var t = w.ContinueWith( _ => this.WaitSocketBind());
         }
 
         //ACL制限のチェック

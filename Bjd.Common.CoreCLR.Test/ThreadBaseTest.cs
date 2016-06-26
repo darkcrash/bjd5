@@ -3,6 +3,7 @@ using Bjd;
 using Xunit;
 using Bjd.Services;
 using System;
+using Bjd.Threading;
 
 namespace Bjd.Test
 {

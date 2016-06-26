@@ -1,4 +1,4 @@
-﻿namespace Bjd
+﻿namespace Bjd.Threading
 {
     public interface ILife
     {

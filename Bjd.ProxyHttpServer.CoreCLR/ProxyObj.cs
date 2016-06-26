@@ -1,5 +1,6 @@
 ﻿using System;
 using Bjd;
+using Bjd.Threading;
 
 namespace Bjd.ProxyHttpServer {
     abstract class ProxyObj:IDisposable {

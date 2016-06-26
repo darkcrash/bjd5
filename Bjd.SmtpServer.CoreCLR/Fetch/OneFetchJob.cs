@@ -5,6 +5,7 @@ using Bjd;
 using Bjd.Logs;
 using Bjd.Mails;
 using Debug = System.Diagnostics.Debug;
+using Bjd.Threading;
 
 namespace Bjd.SmtpServer
 {

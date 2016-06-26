@@ -11,6 +11,7 @@ using Bjd.Utils;
 using Bjd.Test;
 using Xunit;
 using Bjd.Services;
+using Bjd.Threading;
 
 namespace ProxyPop3ServerTest
 {

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using Bjd.Logs;
-using Bjd.Net;
-using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.Threading;
 
 
 //TCPによるプロキシのベースクラス
-namespace Bjd
+namespace Bjd.Net.Sockets
 {
 
     public class Tunnel

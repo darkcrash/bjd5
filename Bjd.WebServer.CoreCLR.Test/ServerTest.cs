@@ -8,6 +8,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
+using Bjd.Threading;
 
 namespace WebServerTest
 {
@@ -37,8 +38,6 @@ namespace WebServerTest
 
                 _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
                 _v6Sv.Start();
-
-                System.Threading.Tasks.Task.Delay(200).Wait();
 
             }
 

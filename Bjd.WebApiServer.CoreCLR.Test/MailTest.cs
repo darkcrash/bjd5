@@ -12,6 +12,7 @@ using Xunit;
 using Newtonsoft.Json;
 using Bjd.WebApiServer;
 using Bjd.Services;
+using Bjd.Threading;
 
 namespace WebApiServerTest
 {

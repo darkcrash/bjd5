@@ -174,7 +174,7 @@ namespace Bjd.SmtpServer
             }
             else if (cmdStr.IndexOf("Cmd-Delete") == 0)
             {
-                if (ThreadBaseKind == ThreadBaseKind.Running)
+                if (ThreadBaseKind == Threading.ThreadBaseKind.Running)
                 {
                     return "running";
                 }

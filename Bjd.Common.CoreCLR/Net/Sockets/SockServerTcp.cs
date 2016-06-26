@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -71,7 +72,7 @@ namespace Bjd.Net.Sockets
                     return false;
                 }
 
-                Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
+                Set(SockState.Idle, (IPEndPoint)_socket.LocalEndPoint, null);
 
                 return true;
 
@@ -95,6 +96,8 @@ namespace Bjd.Net.Sockets
                     if (this.IsCancel) return null;
 
                     var tTcp = _socket.AcceptAsync();
+                    this.SockState = SockState.Bind;
+
                     while (true)
                     {
                         if (tTcp.Wait(2000, this.CancelToken))

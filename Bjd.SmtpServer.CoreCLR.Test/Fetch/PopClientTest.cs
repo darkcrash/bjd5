@@ -10,6 +10,7 @@ using Bjd.Options;
 using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {

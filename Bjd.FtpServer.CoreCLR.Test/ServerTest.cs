@@ -9,6 +9,7 @@ using Bjd.Test;
 using Bjd.FtpServer;
 using Xunit;
 using Bjd.Services;
+using Bjd.Threading;
 
 namespace FtpServerTest
 {

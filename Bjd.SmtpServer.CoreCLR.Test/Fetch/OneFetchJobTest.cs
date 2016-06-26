@@ -5,6 +5,7 @@ using Bjd.Logs;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Test;
+using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {

@@ -13,6 +13,7 @@ using Xunit;
 using Bjd.Pop3Server;
 using System.Collections.Generic;
 using Bjd.Services;
+using Bjd.Threading;
 
 namespace Pop3ServerTest
 {
@@ -48,7 +49,7 @@ namespace Pop3ServerTest
             _service.AddMail("MF_00635026511425888292", "user2");
             _service.AddMail("MF_00635026511765086924", "user2");
 
-            Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+            //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
 
         }
 

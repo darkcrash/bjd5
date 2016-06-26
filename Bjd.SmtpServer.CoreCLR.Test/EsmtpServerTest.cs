@@ -5,6 +5,7 @@ using Bjd.Options;
 using Bjd.Services;
 using Bjd.SmtpServer;
 using Bjd.Test;
+using Bjd.Threading;
 using Bjd.Utils;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Bjd.SmtpServer.Test
                 _v6Sv.Start();
 
 
-                Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+                //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
 
             }
 

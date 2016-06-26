@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -69,7 +70,7 @@ namespace Bjd.Net.Sockets
                 return false;
             }
 
-            Set(SockState.Bind, (IPEndPoint)_socket.LocalEndPoint, null);
+            Set(SockState.Idle, (IPEndPoint)_socket.LocalEndPoint, null);
 
             _udpBuf = new byte[1600]; //１パケットの最大サイズで受信待ちにする
             _udpBufSegment = new ArraySegment<byte>(_udpBuf);
@@ -87,6 +88,7 @@ namespace Bjd.Net.Sockets
             // UDP
             var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
             var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
+            this.SockState = SockState.Bind;
             tUdp.ContinueWith(_ => this.Receive(_), this.CancelToken);
         }
 
