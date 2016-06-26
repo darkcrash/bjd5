@@ -149,7 +149,7 @@ namespace Bjd.Test.Servers
 
             var myServer = new MyServer(kernel, conf, oneBind);
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 50; i++)
             {
                 // Start
                 myServer.Start();
@@ -182,7 +182,7 @@ namespace Bjd.Test.Servers
 
             var myServer = new MyServer(kernel, conf, oneBind);
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 50; i++)
             {
                 myServer.Start();
 
@@ -212,7 +212,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 50; i++)
             {
                 var myServer = new MyServer(kernel, conf, oneBind);
 

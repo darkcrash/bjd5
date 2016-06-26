@@ -19,7 +19,8 @@ namespace Bjd.Threading
             protected set
             {
                 if (_threadBaseKind == value) return;
-                if (_threadBaseKind == ThreadBaseKind.Before) { RunningWait.Set(); }
+                if (value == ThreadBaseKind.Running) { RunningWait.Set(); }
+                if (_threadBaseKind == ThreadBaseKind.Running) { RunningWait.Reset(); }
                 _threadBaseKind = value;
             }
         }
@@ -83,7 +84,7 @@ namespace Bjd.Threading
             try
             {
                 //Ver5.9.0
-                _threadBaseKind = ThreadBaseKind.Before;
+                ThreadBaseKind = ThreadBaseKind.Before;
 
                 _life = true;
                 _t = new Thread(Loop) { IsBackground = true, Name = this.GetType().FullName };
@@ -146,7 +147,7 @@ namespace Bjd.Threading
             }
 
             //life = true;//Stop()でスレッドを停止する時、life=falseでループから離脱させ、このlife=trueで処理終了を認知する
-            _threadBaseKind = ThreadBaseKind.After;
+            ThreadBaseKind = ThreadBaseKind.After;
         }
 
         public abstract string GetMsg(int no);
