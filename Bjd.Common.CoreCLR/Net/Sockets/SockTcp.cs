@@ -23,7 +23,7 @@ namespace Bjd.Net.Sockets
         private SockQueue _sockQueue = new SockQueue();
         //ByteBuffer recvBuf = ByteBuffer.allocate(sockQueue.Max);
         private byte[] _recvBuf; //１行処理のためのテンポラリバッファ
-        private ArraySegment<byte> _recvBufSegment;
+        //private ArraySegment<byte> _recvBufSegment;
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -47,7 +47,7 @@ namespace Bjd.Net.Sockets
                 //socket.Connect(ip.IPAddress, port);
                 //_socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
                 var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
-                tConnect.ContinueWith(_ => CallbackConnect(), kernel.CancelToken);
+                tConnect.ContinueWith(_ => CallbackConnect(), this.CancelToken);
             }
             catch
             {
@@ -160,7 +160,7 @@ namespace Bjd.Net.Sockets
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
             _recvBuf = new byte[_sockQueue.Space]; //キューが空なので、Spaceはバッファの最大サイズになっている
-            _recvBufSegment = new ArraySegment<byte>(_recvBuf);
+            //_recvBufSegment = new ArraySegment<byte>(_recvBuf);
 
             // Using the LocalEndPoint property.
             string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -189,8 +189,9 @@ namespace Bjd.Net.Sockets
                 else
                 {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    var tReceive = _socket.ReceiveAsync(_recvBufSegment, SocketFlags.None);
-                    tReceive.ContinueWith(_ => this.EndReceive(_), Kernel.CancelToken);
+                    var buf = new ArraySegment<byte>(_recvBuf);
+                    var tReceive = _socket.ReceiveAsync(buf, SocketFlags.None);
+                    tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
                 }
             }
             catch
@@ -203,7 +204,7 @@ namespace Bjd.Net.Sockets
         {
             //System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
 
-            if (!result.IsCompleted)
+            if (result.IsFaulted || !result.IsCompleted)
             {
                 System.Diagnostics.Trace.TraceError(result.Exception.Message);
                 System.Diagnostics.Trace.TraceError(result.Exception.StackTrace);
@@ -254,7 +255,7 @@ namespace Bjd.Net.Sockets
                 //Ver5.9.2 Java fix
                 //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                 var tReceive = _socket.ReceiveAsync(new ArraySegment<byte>(_recvBuf, 0, _sockQueue.Space), SocketFlags.None);
-                tReceive.ContinueWith(_ => this.EndReceive(_));
+                tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
             catch (Exception ex)
             {
@@ -514,7 +515,7 @@ namespace Bjd.Net.Sockets
                 {
                     //return _socket.Send(buf, 0, length, SocketFlags.None);
                     var t = _socket.SendAsync(new ArraySegment<byte>(buf, 0, length), SocketFlags.None);
-                    t.Wait(this.Kernel.CancelToken);
+                    t.Wait(this.CancelToken);
                     return t.Result;
                 }
             }
@@ -575,14 +576,13 @@ namespace Bjd.Net.Sockets
 
         public override void Close()
         {
-            try
-            {
-                this._socket.Shutdown(SocketShutdown.Both);
-            }
-            catch
-            {
-                //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
-            }
+            if (this.disposedValue) return;
+            //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
+            try { this.Cancel(); }
+            catch { }
+            //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
+            try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
+            catch { }
             if (_socket != null)
             {
                 //_socket.Close();
@@ -610,11 +610,18 @@ namespace Bjd.Net.Sockets
                     return _oneSsl.Write(buffer, buffer.Length);
                 }
                 if (_socket.Connected)
-                    return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                {
+                    var arry = new ArraySegment<byte>(buffer, 0, buffer.Length);
+                    var result = _socket.SendAsync(arry, SocketFlags.None);
+                    result.Wait(this.CancelToken);
+                    if (result.IsCompleted)
+                        return result.Result;
+                    //return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                }
             }
             catch (Exception ex)
             {
-                SetError(string.Format("Length={0} {1}", buffer.Length, ex.Message));
+                SetError($"SendNoTrace Length={buffer.Length} {ex.Message}");
                 //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
             }
             return -1;
@@ -687,22 +694,36 @@ namespace Bjd.Net.Sockets
             return SendNoTrace(buf);
         }
 
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
         protected override void Dispose(bool disposing)
         {
-            this._lastLineSend = null;
-            this._recvBuf = null;
-            if (this._socket != null)
+            if (!disposedValue)
             {
-                this._socket.Dispose();
-                this._socket = null;
+                this._lastLineSend = null;
+                this._recvBuf = null;
+                if (this._socket != null)
+                {
+                    this._socket.Dispose();
+                    this._socket = null;
+                }
+                if (this._oneSsl != null)
+                {
+                    this._oneSsl.Close();
+                    this._oneSsl = null;
+                }
+                if (this._sockQueue != null)
+                {
+                    this._sockQueue.Dispose();
+                    this._sockQueue = null;
+                }
+                if (this._ssl != null)
+                {
+                    this._ssl.Dispose();
+                    this._ssl = null;
+                }
+                disposedValue = true;
             }
-            if (this._oneSsl != null)
-            {
-                this._oneSsl.Close();
-                this._oneSsl = null;
-            }
-            this._sockQueue = null;
-            this._ssl = null;
 
             base.Dispose(disposing);
         }

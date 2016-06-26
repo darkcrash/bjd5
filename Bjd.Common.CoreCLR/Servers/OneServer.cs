@@ -37,7 +37,6 @@ namespace Bjd.Servers
         private readonly object SyncObj = new object();
 
         // 子スレッドコレクション
-        private readonly List<Task> _childThreads = new List<Task>();
         private int _count = 0;
         private ManualResetEventSlim _childNone = new ManualResetEventSlim(true);
 
@@ -267,7 +266,7 @@ namespace Bjd.Servers
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
 
-            const int listenMax = 10;
+            const int listenMax = 5;
 
             if (!_sockServerTcp.Bind(_oneBind.Addr, port, listenMax))
             {
@@ -290,10 +289,13 @@ namespace Bjd.Servers
                     // 同時接続数を超えたのでリクエストをキャンセルします
                     System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
                     Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                    child.Close();
-                    child.Dispose();
+                    try { child.Close(); }
+                    catch { }
+                    try { child.Dispose(); }
+                    catch { }
                     continue;
                 }
+
 
                 // 子タスクで処理させる
                 var t = new Task(
@@ -308,9 +310,10 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, _cancelToken);
+                    }, _cancelToken, TaskCreationOptions.LongRunning);
 
                 this.StartTask(t);
+
             }
 
         }
@@ -343,7 +346,10 @@ namespace Bjd.Servers
                     // 同時接続数を超えたのでリクエストをキャンセルします
                     System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
                     Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                    child.Close();
+                    try { child.Close(); }
+                    catch { }
+                    try { child.Dispose(); }
+                    catch { }
                     continue;
                 }
 
@@ -359,7 +365,7 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, _cancelToken);
+                    }, _cancelToken, TaskCreationOptions.LongRunning);
 
                 this.StartTask(t);
             }
@@ -369,7 +375,6 @@ namespace Bjd.Servers
         {
             lock (SyncObj)
             {
-                _childThreads.Remove(t);
                 Count -= 1;
             }
         }
@@ -377,10 +382,9 @@ namespace Bjd.Servers
         {
             lock (SyncObj)
             {
-                _childThreads.Add(t);
                 Count += 1;
             }
-            t.ContinueWith(this.RemoveTask);
+            t.ContinueWith(this.RemoveTask, TaskContinuationOptions.LongRunning);
             t.Start();
         }
 
@@ -403,6 +407,8 @@ namespace Bjd.Servers
         private void SubThread(SockObj o)
         {
             var sockObj = (SockObj)o;
+
+            System.Threading.Thread.CurrentThread.Name = this.GetType().FullName;
 
             //クライアントのホスト名を逆引きする
             sockObj.Resolve((bool)_conf.Get("useResolve"), Logger);
@@ -428,8 +434,8 @@ namespace Bjd.Servers
             }
             finally
             {
-                sockObj.Close();
                 Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
+                sockObj.Close();
                 sockObj.Dispose();
             }
 

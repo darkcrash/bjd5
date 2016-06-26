@@ -22,7 +22,7 @@ namespace Bjd.Net.Sockets
         public IPEndPoint LocalAddress { get; set; }
         public String RemoteHostname { get; private set; }
 
-        private System.Threading.CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        private System.Threading.CancellationTokenSource cancelTokenSource;
         protected System.Threading.CancellationToken CancelToken { get; private set; }
 
         //このKernelはTrace()のためだけに使用されているので、Traceしない場合は削除することができる
@@ -62,18 +62,21 @@ namespace Bjd.Net.Sockets
             }
         }
 
-        protected SockObj(Kernel kernel)
+        protected SockObj(Kernel kernel) 
         {
             Kernel = kernel;
             SockState = SockState.Idle;
             LocalAddress = null;
             RemoteAddress = null;
-            this.CancelToken = cancelTokenSource.Token;
-            this.Kernel.CancelToken.Register(this.Cancel);
+            cancelTokenSource = new CancellationTokenSource();
+            CancelToken = cancelTokenSource.Token;
+            Kernel.CancelToken.Register(this.Cancel);
         }
+
 
         protected internal virtual void Cancel()
         {
+            if (this.disposedValue) return;
             this.cancelTokenSource.Cancel();
         }
 
@@ -110,8 +113,8 @@ namespace Bjd.Net.Sockets
             protected set
             {
                 if (value == _SockState) return;
-                OnSocketStateChanged();
                 _SockState = value;
+                OnSocketStateChanged();
             }
         }
         private SockState _SockState;
@@ -131,8 +134,8 @@ namespace Bjd.Net.Sockets
         //****************************************************************
         protected void SetException(Exception ex)
         {
-            System.Diagnostics.Trace.TraceError($"SockObj.SetException {ex.Message}");
-            _lastError = string.Format("[{0}] {1}", ex.Source, ex.Message);
+            System.Diagnostics.Trace.TraceError($"{this.GetType().Name}.SetException {ex.Message}");
+            _lastError = $"[{ex.Source}] {ex.Message}";
             SockState = SockState.Error;
         }
 
@@ -251,7 +254,10 @@ namespace Bjd.Net.Sockets
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
 
-                this.Cancel();
+                //if (!this.IsCancel) this.Cancel();
+                this.cancelTokenSource.Dispose();
+                this.cancelTokenSource = null;
+                this.SocketStateChanged = null;
                 this._lastError = null;
                 this.Kernel = null;
 
@@ -260,11 +266,11 @@ namespace Bjd.Net.Sockets
         }
 
         // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
-        ~SockObj()
-        {
-            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-            Dispose(false);
-        }
+        //~SockObj()
+        //{
+        //    // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+        //    Dispose(false);
+        //}
 
         // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
         public void Dispose()
@@ -272,7 +278,7 @@ namespace Bjd.Net.Sockets
             // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
             Dispose(true);
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-            // GC.SuppressFinalize(this);
+            //GC.SuppressFinalize(this);
         }
         #endregion
     }

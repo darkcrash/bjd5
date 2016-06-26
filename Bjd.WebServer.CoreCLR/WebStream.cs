@@ -30,12 +30,11 @@ namespace Bjd.WebServer
         }
 
         public void Dispose() {
-            if (_disk != null) {
+            if (_disk != null) 
                 _disk.Dispose();
-            } else {
+            if (_memory != null)
                 _memory.Dispose();
-            }
-            GC.Collect();
+            //GC.Collect();
         }
 
         public int Read(byte[] buffer, int offset, int count) {

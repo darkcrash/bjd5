@@ -317,7 +317,7 @@ namespace Bjd.ProxyHttpServer
             proxy.Dispose();
 
             //Java fix Ver5.9.0
-            GC.Collect();
+            //GC.Collect();
         }
 
         //RemoteServerでのみ使用される

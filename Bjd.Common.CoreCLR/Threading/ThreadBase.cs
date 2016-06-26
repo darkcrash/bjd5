@@ -82,6 +82,7 @@ namespace Bjd.Threading
         //Override可能
         public void Start()
         {
+            System.Diagnostics.Trace.TraceWarning($"{this.GetType().FullName}.Start Begin");
             if (_threadBaseKind == ThreadBaseKind.Running)
                 return;
 
@@ -109,9 +110,9 @@ namespace Bjd.Threading
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceWarning($"ThreadBase.Start {ex.Message}");
+                System.Diagnostics.Trace.TraceWarning($"{this.GetType().FullName}.Start {ex.Message}");
             }
-
+            System.Diagnostics.Trace.TraceWarning($"{this.GetType().FullName}.Start End");
         }
 
         //【スレッド終了処理】
@@ -121,6 +122,7 @@ namespace Bjd.Threading
         //Override可能
         public void Stop()
         {
+            System.Diagnostics.Trace.TraceWarning($"{this.GetType().FullName}.Stop Begin");
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
             {
                 //起動されている場合
@@ -137,6 +139,7 @@ namespace Bjd.Threading
                 AfterWait.Wait();
             }
             _t = null;
+            System.Diagnostics.Trace.TraceWarning($"{this.GetType().FullName}.Stop End");
         }
 
         protected abstract void OnRunThread();

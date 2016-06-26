@@ -12,8 +12,9 @@ namespace Bjd.ProxyHttpServer {
             Set(new byte[0]);
         }
         public void Dispose() {
-            if(!CanUse)
-                GC.Collect();
+            //if(!CanUse)
+            //    GC.Collect();
+            _buf = null;
         }
         public int Length {
             get {

@@ -108,7 +108,8 @@ namespace Bjd.Net.Sockets
                     }
 
                     // キャンセル時、終了時はNullを返す
-                    if (this.IsCancel || !iLife.IsLife() || tTcp.Result == null)
+                    //if (this.IsCancel || !iLife.IsLife() || tTcp.Result == null)
+                    if (tTcp.Result == null)
                     {
                         SetError("isLife()==false");
                         return null;

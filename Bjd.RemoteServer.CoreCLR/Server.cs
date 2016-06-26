@@ -131,7 +131,7 @@ namespace Bjd.RemoteServer
                 _queue.Enqueue(o);
                 if (_queue.Count == 0)
                 {
-                    GC.Collect();
+                    //GC.Collect();
                     Thread.Sleep(500);
                 }
                 else {

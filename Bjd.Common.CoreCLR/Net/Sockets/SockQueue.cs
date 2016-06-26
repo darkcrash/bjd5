@@ -3,7 +3,7 @@
 namespace Bjd.Net.Sockets
 {
     //SockTcpで使用されるデータキュー
-    public class SockQueue
+    public class SockQueue :IDisposable
     {
         byte[] _db = new byte[0]; //現在のバッファの内容
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
@@ -102,6 +102,36 @@ namespace Bjd.Net.Sockets
                 return new byte[0];
             }
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        protected  void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                }
+
+                _db = null;
+
+                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                disposedValue = true;
+            }
+        }
+
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
 }
 
