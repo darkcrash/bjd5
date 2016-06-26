@@ -7,7 +7,6 @@ using Bjd.Threading;
 
 namespace Bjd.Test
 {
-
     public class ThreadBaseTest : IDisposable
     {
         private class MyThread : ThreadBase
@@ -33,7 +32,7 @@ namespace Bjd.Test
 
                 while (IsLife())
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
             }
 
@@ -64,7 +63,7 @@ namespace Bjd.Test
             //exercise
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.Equal(actual, ThreadBaseKind.Before);
+            Assert.Equal(ThreadBaseKind.Before, actual);
             //tearDown
             sut.Dispose();
         }
@@ -79,7 +78,7 @@ namespace Bjd.Test
             sut.Start();
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.Equal(actual, ThreadBaseKind.Running);
+            Assert.Equal(ThreadBaseKind.Running, actual);
             //tearDown
             sut.Dispose();
         }
@@ -92,10 +91,12 @@ namespace Bjd.Test
             //var expected = ThreadBaseKind.Running;
             //exercise
             sut.Start();
+            sut.Start();
+            sut.Start();
             sut.Start(); //重複
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.Equal(actual, ThreadBaseKind.Running);
+            Assert.Equal(ThreadBaseKind.Running, actual);
             //tearDown
             sut.Dispose();
         }
@@ -110,10 +111,13 @@ namespace Bjd.Test
             sut.Stop(); //重複
             sut.Start();
             sut.Stop();
+            sut.Stop();
+            sut.Stop();
+            sut.Stop();
             sut.Stop(); //重複
             var actual = sut.ThreadBaseKind;
             //verify
-            Assert.Equal(actual, ThreadBaseKind.After);
+            Assert.Equal(ThreadBaseKind.After, actual);
             //tearDown
             sut.Dispose();
         }
@@ -125,12 +129,12 @@ namespace Bjd.Test
             //setUp
             var sut = new MyThread(_service.Kernel);
             //exercise verify 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 100; i++)
             {
                 sut.Start();
-                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
                 sut.Stop();
-                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(ThreadBaseKind.After, sut.ThreadBaseKind);
             }
             //tearDown
             sut.Dispose();
@@ -139,18 +143,34 @@ namespace Bjd.Test
         [Fact]
         public void new及びstart_stop_disposeしてisRunnigの状態を確認する_負荷テスト()
         {
-
             //exercise verify 
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var sut = new MyThread(_service.Kernel);
+                Assert.Equal(ThreadBaseKind.Before, sut.ThreadBaseKind);
                 sut.Start();
-                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.Running);
+                Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
                 sut.Stop();
-                Assert.Equal(sut.ThreadBaseKind, ThreadBaseKind.After);
+                Assert.Equal(ThreadBaseKind.After, sut.ThreadBaseKind);
                 sut.Dispose();
             }
         }
+
+        [Fact]
+        public void new及びstart_disposeしてisRunnigの状態を確認する_負荷テスト()
+        {
+            //exercise verify 
+            for (var i = 0; i < 100; i++)
+            {
+                var sut = new MyThread(_service.Kernel);
+                Assert.Equal(ThreadBaseKind.Before, sut.ThreadBaseKind);
+                sut.Start();
+                Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
+                sut.Dispose();
+                Assert.Equal(ThreadBaseKind.After, sut.ThreadBaseKind);
+            }
+        }
+
 
     }
 

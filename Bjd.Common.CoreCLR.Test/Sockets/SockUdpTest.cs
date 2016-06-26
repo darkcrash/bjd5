@@ -107,11 +107,11 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 53;
+            const int port = 9053;
             var echoServer = new EchoServer(_service.Kernel, addr, port);
             echoServer.Start();
 
-            const int timeout = 3;
+            const int timeout = 5;
 
             const int max = 1500;
             const int loop = 10;

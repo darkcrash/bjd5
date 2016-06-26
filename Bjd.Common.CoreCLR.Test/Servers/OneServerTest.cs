@@ -259,12 +259,16 @@ namespace Bjd.Test.Servers
         }
 
 
-        [Fact]
-        public void multipleを超えたリクエストは破棄される事をcountで確認する()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        [InlineData(10)]
+        [InlineData(20)]
+        [InlineData(50)]
+        public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple)
         {
             var kernel = _service.Kernel;
 
-            const int multiple = 5;
             const int port = 8889;
             const string address = "127.0.0.1";
             var ip = new Ip(address);
@@ -281,7 +285,7 @@ namespace Bjd.Test.Servers
 
             var ar = new List<MyClient>();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < multiple * 4; i++)
             {
                 var myClient = new MyClient(address, port);
                 myClient.Connet();
@@ -290,7 +294,7 @@ namespace Bjd.Test.Servers
             Thread.Sleep(100);
 
             //multiple以上は接続できない
-            Assert.Equal(multiple, myServer.Count());
+            Assert.Equal(multiple, myServer.Count);
 
             myServer.Stop();
             myServer.Dispose();

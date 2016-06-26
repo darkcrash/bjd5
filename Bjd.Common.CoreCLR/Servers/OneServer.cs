@@ -38,6 +38,8 @@ namespace Bjd.Servers
 
         // 子スレッドコレクション
         private readonly List<Task> _childThreads = new List<Task>();
+        private int _count = 0;
+        private ManualResetEventSlim _childNone = new ManualResetEventSlim(true);
 
         // 同時接続数
         private readonly int _multiple;
@@ -51,12 +53,24 @@ namespace Bjd.Servers
             {
                 stat = IsJp ? "- 停止 " : "- Initialization failure ";
             }
-            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)_conf.Get("port"), Count(), _multiple);
+            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)_conf.Get("port"), Count, _multiple);
         }
 
-        public int Count()
+        public int Count
         {
-            return _childThreads.Count;
+            get { return _count; }
+            private set
+            {
+                _count = value;
+                if (_count == 0)
+                {
+                    _childNone.Set();
+                }
+                else
+                {
+                    _childNone.Reset();
+                }
+            }
         }
 
         //リモート操作(データの取得)
@@ -116,24 +130,22 @@ namespace Bjd.Servers
         }
 
 
-
-        public new void Start()
+        public override void Dispose()
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.Start ");
-
-            base.Start();
-            //Ver5.9.8
-            if (!IsLife())
-            {
-                return;
-            }
-
+            base.Dispose();
         }
 
+        //スレッド停止処理
+        protected abstract void OnStopServer(); //スレッド停止処理
 
-        public new void Stop()
+        protected override void OnStopThread()
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.Stop ");
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}.OnStopThread  ");
+            OnStopServer(); //子クラスのスレッド停止処理
+            if (ssl != null)
+            {
+                ssl.Dispose();
+            }
 
             // TCPソケットサーバーがなければ何もしない
             if (_sockServerTcp == null && _sockServerUdp == null)
@@ -144,38 +156,21 @@ namespace Bjd.Servers
             // キャンセルして、停止
             if (_sockServerTcp != null) _sockServerTcp.Cancel();
             if (_sockServerUdp != null) _sockServerUdp.Cancel();
-            base.Stop(); //life=false ですべてのループを解除する
+
             if (_sockServerTcp != null) _sockServerTcp.Close();
             if (_sockServerUdp != null) _sockServerUdp.Close();
 
             // クライアント接続終了まで待機する
             // 全部の子スレッドが終了するのを待つ
-            while (Count() > 0)
-            {
-                Thread.Sleep(200);
-            }
+            //while (Count() > 0)
+            //{
+            //    Thread.Sleep(200);
+            //}
+            _childNone.Wait();
+
             _sockServerTcp = null;
             _sockServerUdp = null;
 
-        }
-
-        public new void Dispose()
-        {
-            // super.dispose()は、ThreadBaseでstop()が呼ばれるだけなので必要ない
-            Stop();
-        }
-
-        //スレッド停止処理
-        protected abstract void OnStopServer(); //スレッド停止処理
-
-        protected override void OnStopThread()
-        {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.OnStopThread {this.GetType().FullName} ");
-            OnStopServer(); //子クラスのスレッド停止処理
-            if (ssl != null)
-            {
-                ssl.Dispose();
-            }
         }
 
         //スレッド開始処理
@@ -184,21 +179,13 @@ namespace Bjd.Servers
 
         protected override bool OnStartThread()
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.OnStartThread {this.GetType().FullName}");
-            return OnStartServer(); //子クラスのスレッド開始処理
-        }
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}.OnStartThread  ");
 
-        protected override void OnRunThread()
-        {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.OnRunThread {this.GetType().FullName}");
+            var result = OnStartServer(); //子クラスのスレッド開始処理
+            if (!result) return false;
 
             var port = (int)_conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
-
-            Logger.Set(LogKind.Normal, null, 9000000, bindStr);
-
-            //DOSを受けた場合、multiple数まで連続アクセスまでは記憶してしまう
-            //DOSが終わった後も、その分だけ復帰に時間を要する
 
             //Ver5.9,2 Java fix
             //_sockServer = new SockServer(this.Kernel,_oneBind.Protocol);
@@ -210,18 +197,42 @@ namespace Bjd.Servers
                     if (ssl != null && !ssl.Status)
                     {
                         Logger.Set(LogKind.Error, null, 9000024, bindStr);
-                        //[C#]
-                        //ThreadBaseKind = ThreadBaseKind.Running;
                     }
-                    else if (this.SockState != SockState.Error)
+                    break;
+                case ProtocolKind.Udp:
+                    _sockServerUdp = new SockServerUdp(_kernel, _oneBind.Protocol, ssl);
+                    _sockServerUdp.SocketStateChanged += _sockServerUdp_SocketStateChanged;
+                    break;
+            }
+
+            return true;
+
+        }
+
+        protected override void OnRunThread()
+        {
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}.OnRunThread  ");
+
+            var port = (int)_conf.Get("port");
+            var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
+
+            //DOSを受けた場合、multiple数まで連続アクセスまでは記憶してしまう
+            //DOSが終わった後も、その分だけ復帰に時間を要する
+
+            Logger.Set(LogKind.Normal, null, 9000000, bindStr);
+
+            //Ver5.9,2 Java fix
+            //_sockServer = new SockServer(this.Kernel,_oneBind.Protocol);
+            switch (_oneBind.Protocol)
+            {
+                case ProtocolKind.Tcp:
+                    if (this.SockState != SockState.Error)
                     {
                         RunTcpServer(port);
                     }
                     _sockServerTcp.Close();
                     break;
                 case ProtocolKind.Udp:
-                    _sockServerUdp = new SockServerUdp(_kernel, _oneBind.Protocol, ssl);
-                    _sockServerUdp.SocketStateChanged += _sockServerUdp_SocketStateChanged;
                     if (this.SockState != SockState.Error)
                     {
                         RunUdpServer(port);
@@ -237,21 +248,21 @@ namespace Bjd.Servers
 
         private void _sockServerUdp_SocketStateChanged(object sender, EventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer._sockServerUdp_SocketStateChanged ");
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}._sockServerUdp_SocketStateChanged  ");
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerUdp.SocketStateChanged -= _sockServerUdp_SocketStateChanged;
         }
 
         private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer._sockServerTcp_SocketStateChanged ");
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}._sockServerTcp_SocketStateChanged  ");
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
         }
 
         private void RunTcpServer(int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer {this.GetType().FullName}");
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}.RunTcpServer  ");
 
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
@@ -274,11 +285,11 @@ namespace Bjd.Servers
                     break;
 
                 // 同時接続数チェック
-                if (Count() >= _multiple)
+                if (Count >= _multiple)
                 {
                     // 同時接続数を超えたのでリクエストをキャンセルします
-                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count()}/multiple:{_multiple}");
-                    Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                    Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                     child.Close();
                     child.Dispose();
                     continue;
@@ -297,7 +308,7 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, _kernel.CancelToken);
+                    }, _cancelToken);
 
                 this.StartTask(t);
             }
@@ -306,7 +317,7 @@ namespace Bjd.Servers
 
         private void RunUdpServer(int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer {this.GetType().FullName}");
+            System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}.RunUdpServer  ");
 
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
@@ -327,11 +338,11 @@ namespace Bjd.Servers
                     continue;
 
                 // 同時接続数チェック
-                if (Count() >= _multiple)
+                if (Count >= _multiple)
                 {
                     // 同時接続数を超えたのでリクエストをキャンセルします
-                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count()}/multiple:{_multiple}");
-                    Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count(), _multiple));
+                    System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
+                    Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                     child.Close();
                     continue;
                 }
@@ -348,7 +359,7 @@ namespace Bjd.Servers
                         }
                         // 各実装へ
                         this.SubThread(child);
-                    }, _kernel.CancelToken);
+                    }, _cancelToken);
 
                 this.StartTask(t);
             }
@@ -359,6 +370,7 @@ namespace Bjd.Servers
             lock (SyncObj)
             {
                 _childThreads.Remove(t);
+                Count -= 1;
             }
         }
         private void StartTask(Task t)
@@ -366,6 +378,7 @@ namespace Bjd.Servers
             lock (SyncObj)
             {
                 _childThreads.Add(t);
+                Count += 1;
             }
             t.ContinueWith(this.RemoveTask);
             t.Start();
@@ -387,7 +400,7 @@ namespace Bjd.Servers
         protected abstract void OnSubThread(SockObj sockObj);
 
         //１リクエストに対する子スレッドとして起動される
-        public void SubThread(SockObj o)
+        private void SubThread(SockObj o)
         {
             var sockObj = (SockObj)o;
 
@@ -395,7 +408,7 @@ namespace Bjd.Servers
             sockObj.Resolve((bool)_conf.Get("useResolve"), Logger);
 
             //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
-            Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));
+            Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
 
             //Ver5.8.9 Java fix 接続単位のすべての例外をキャッチしてプログラムの停止を避ける
             //OnSubThread(sockObj); //接続単位の処理
@@ -416,7 +429,7 @@ namespace Bjd.Servers
             finally
             {
                 sockObj.Close();
-                Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count(), sockObj.LocalAddress, sockObj.RemoteAddress));
+                Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
                 sockObj.Dispose();
             }
 

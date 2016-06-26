@@ -11,6 +11,14 @@ namespace Bjd.Test.Sockets
     public class SockServerTest
     {
 
+        private class Life : Threading.ILife
+        {
+            public bool IsLife()
+            {
+                return true;
+            }
+        }
+
         [Fact]
         public void test()
         {
@@ -75,6 +83,7 @@ namespace Bjd.Test.Sockets
 
 
                 var bindIp = new Ip(IpKind.V4Localhost);
+                var life = new Life();
                 const int port = 8881;
                 const int listenMax = 10;
                 Ssl ssl = null;
@@ -86,6 +95,8 @@ namespace Bjd.Test.Sockets
                 ThreadStart action = () =>
                 {
                     sockServer.Bind(bindIp, port, listenMax);
+                    try { while (true) sockServer.Select(life); }
+                    catch { }
                 };
 
                 var _t = new Thread(action) { IsBackground = true };
@@ -106,6 +117,7 @@ namespace Bjd.Test.Sockets
             {
 
                 var bindIp = new Ip(IpKind.V4Localhost);
+                var life = new Life();
                 const int port = 8881;
                 Ssl ssl = null;
 
@@ -116,6 +128,8 @@ namespace Bjd.Test.Sockets
                 ThreadStart action = () =>
                 {
                     sockServer.Bind(bindIp, port);
+                    try { while (true) sockServer.Select(life); }
+                    catch { }
                 };
 
                 var _t = new Thread(action) { IsBackground = true };
@@ -150,6 +164,7 @@ namespace Bjd.Test.Sockets
             {
 
                 var bindIp = new Ip(IpKind.V4Localhost);
+                var life = new Life();
                 const int port = 9991;
                 const int listenMax = 10;
                 Ssl ssl = null;
@@ -159,6 +174,8 @@ namespace Bjd.Test.Sockets
                 ThreadStart action = () =>
                 {
                     sockServer.Bind(bindIp, port, listenMax);
+                    try { while (true) sockServer.Select(life); }
+                    catch { }
                 };
 
 
@@ -186,6 +203,7 @@ namespace Bjd.Test.Sockets
             {
 
                 var bindIp = new Ip(IpKind.V4Localhost);
+                var life = new Life();
                 const int port = 9991;
                 Ssl ssl = null;
 
@@ -194,6 +212,8 @@ namespace Bjd.Test.Sockets
                 ThreadStart action = () =>
                 {
                     sockServer.Bind(bindIp, port);
+                    try { while (true) sockServer.Select(life); }
+                    catch { }
                 };
 
 

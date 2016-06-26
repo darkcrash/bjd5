@@ -9,9 +9,10 @@ namespace Bjd.Threading
     public abstract class ThreadBase : IDisposable, ILogger, ILife
     {
 
-        Thread _t;
+        private Thread _t;
         private ThreadBaseKind _threadBaseKind = ThreadBaseKind.Before;
-        private readonly ManualResetEventSlim RunningWait = new ManualResetEventSlim(false);
+        private ManualResetEventSlim RunningWait = new ManualResetEventSlim(false);
+        private ManualResetEventSlim AfterWait = new ManualResetEventSlim(false);
 
         public ThreadBaseKind ThreadBaseKind
         {
@@ -19,34 +20,37 @@ namespace Bjd.Threading
             protected set
             {
                 if (_threadBaseKind == value) return;
-                if (value == ThreadBaseKind.Running) { RunningWait.Set(); }
-                if (_threadBaseKind == ThreadBaseKind.Running) { RunningWait.Reset(); }
+                var before = _threadBaseKind;
                 _threadBaseKind = value;
+                if (value == ThreadBaseKind.Running) { RunningWait.Set(); }
+                if (before == ThreadBaseKind.Running) { RunningWait.Reset(); }
+                if (value == ThreadBaseKind.After) { AfterWait.Set(); }
+                if (before == ThreadBaseKind.After) { AfterWait.Reset(); }
             }
         }
         private bool _life = false; //スレッドを停止するためのスイッチ
-        readonly Logger _logger;
+        private Logger _logger;
         protected Kernel _kernel; //SockObjのTraceのため
-        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-        protected CancellationToken CancelToken { get; private set; }
+        private CancellationTokenSource _cancelTokenSource;
+        protected CancellationToken _cancelToken;
+        private bool isDisposed = false;
 
 
         //logger　スレッド実行中に例外がスローされたとき表示するためのLogger(nullを設定可能)
         protected ThreadBase(Kernel kernel, Logger logger)
         {
-            this._kernel = kernel;
+            _kernel = kernel;
             _logger = logger;
 
             // タスクのキャンセルにサーバー停止イベントを登録
-            this.CancelToken = cancelTokenSource.Token;
-            this._kernel.CancelToken.Register(this.Cancel);
+            _kernel.CancelToken.Register(this.Cancel);
 
         }
 
         protected void Cancel()
         {
-            _life = false;
-            this.cancelTokenSource.Cancel();
+            if (isDisposed) return;
+            this.Stop();
         }
 
         //時間を要するループがある場合、ループ条件で値がtrueであることを確認する<br>
@@ -58,9 +62,16 @@ namespace Bjd.Threading
 
         //終了処理
         //Override可能
-        public void Dispose()
+        public virtual void Dispose()
         {
             Stop();
+            if (RunningWait != null) RunningWait.Dispose();
+            RunningWait = null;
+            if (AfterWait != null) AfterWait.Dispose();
+            AfterWait = null;
+            _logger = null;
+            _kernel = null;
+            isDisposed = true;
         }
 
         //【スレッド開始前処理】
@@ -86,6 +97,8 @@ namespace Bjd.Threading
                 //Ver5.9.0
                 ThreadBaseKind = ThreadBaseKind.Before;
 
+                _cancelTokenSource = new CancellationTokenSource();
+                _cancelToken = _cancelTokenSource.Token;
                 _life = true;
                 _t = new Thread(Loop) { IsBackground = true, Name = this.GetType().FullName };
                 _t.Start();
@@ -98,6 +111,7 @@ namespace Bjd.Threading
             {
                 System.Diagnostics.Trace.TraceWarning($"ThreadBase.Start {ex.Message}");
             }
+
         }
 
         //【スレッド終了処理】
@@ -107,18 +121,22 @@ namespace Bjd.Threading
         //Override可能
         public void Stop()
         {
-
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
-            {//起動されている場合
+            {
+                //起動されている場合
+                _life = false;
+                _cancelTokenSource.Cancel();
+                _cancelTokenSource.Dispose();
+                _cancelTokenSource = null;
+                OnStopThread();
                 //_life = false;//スイッチを切るとLoop内の無限ループからbreakする
-                this.Cancel();
-                while (_threadBaseKind != ThreadBaseKind.After)
-                {
-                    Thread.Sleep(100);//breakした時点でIsRunがfalseになるので、ループを抜けるまでここで待つ
-                }
+                //while (_threadBaseKind != ThreadBaseKind.After)
+                //{
+                //    Thread.Sleep(100);//breakした時点でIsRunがfalseになるので、ループを抜けるまでここで待つ
+                //}
+                AfterWait.Wait();
             }
             _t = null;
-            OnStopThread();
         }
 
         protected abstract void OnRunThread();
@@ -128,13 +146,12 @@ namespace Bjd.Threading
             //[Java] 現在、Javaでは、ここでThreadBaseKindをRunnigにしている
             try
             {
-
                 //[C#] C#の場合は、Start()が終了してしまうのを避けるため、OnRunThreadの中で、準備が完了してから
                 OnRunThread();
             }
             catch (OperationCanceledException)
             {
-                System.Diagnostics.Trace.TraceInformation("スレッドの中止");
+                System.Diagnostics.Trace.TraceInformation("stop Thread");
             }
             catch (Exception ex)
             {
@@ -145,9 +162,11 @@ namespace Bjd.Threading
                     _logger.Exception(ex, null, 2);
                 }
             }
-
-            //life = true;//Stop()でスレッドを停止する時、life=falseでループから離脱させ、このlife=trueで処理終了を認知する
-            ThreadBaseKind = ThreadBaseKind.After;
+            finally
+            {
+                //life = true;//Stop()でスレッドを停止する時、life=falseでループから離脱させ、このlife=trueで処理終了を認知する
+                ThreadBaseKind = ThreadBaseKind.After;
+            }
         }
 
         public abstract string GetMsg(int no);

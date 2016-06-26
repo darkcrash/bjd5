@@ -107,7 +107,7 @@ namespace Bjd.Test.Servers
             var expected = 0; //　Deny
 
             //exercise
-            var actual = sut.Count();
+            var actual = sut.Count;
 
             //verify
             Assert.Equal(expected, actual);
@@ -133,7 +133,7 @@ namespace Bjd.Test.Servers
             var expected = 1; //　Allow
 
             //exercise
-            var actual = sut.Count();
+            var actual = sut.Count;
 
             //verify
             Assert.Equal(expected, actual);
@@ -160,7 +160,7 @@ namespace Bjd.Test.Servers
             var expected = 1; //　Allow
 
             //exercise
-            var actual = sut.Count();
+            var actual = sut.Count;
 
             //verify
             Assert.Equal(expected, actual);
@@ -187,7 +187,7 @@ namespace Bjd.Test.Servers
             var expected = 0; //　Deny
 
             //exercise
-            var actual = sut.Count();
+            var actual = sut.Count;
 
             //verify
             Assert.Equal(expected, actual);
