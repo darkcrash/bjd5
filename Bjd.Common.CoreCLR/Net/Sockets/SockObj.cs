@@ -33,7 +33,7 @@ namespace Bjd.Net.Sockets
         protected void OnSocketStateChanged()
         {
             if (this.SocketStateChanged == null) return;
-            var t = System.Threading.Tasks.Task.Factory.StartNew(() => this.SocketStateChanged.Invoke(this, EventArgs.Empty));
+            var t = System.Threading.Tasks.Task.Factory.StartNew(() => this.SocketStateChanged(this, EventArgs.Empty));
         }
 
         public Ip LocalIp

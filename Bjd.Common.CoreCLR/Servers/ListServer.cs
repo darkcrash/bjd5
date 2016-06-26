@@ -154,15 +154,11 @@ namespace Bjd.Servers
         //サーバ停止処理
         public void Stop()
         {
-            var tList = new List<System.Threading.Tasks.Task>();
             //全スレッド停止 
             foreach (OneServer sv in Ar)
             {
-                var t = new System.Threading.Tasks.Task(sv.Stop);
-                t.Start();
-                tList.Add(t);
+                sv.Stop();
             }
-            System.Threading.Tasks.Task.WhenAll(tList);
             //Java fix Ver5.9.0
             GC.Collect();
         }
@@ -175,15 +171,11 @@ namespace Bjd.Servers
             {
                 return;
             }
-            var tList = new List<System.Threading.Tasks.Task>();
             //全スレッドスタート
             foreach (var sv in Ar)
             {
-                var t = new System.Threading.Tasks.Task(sv.Start);
-                t.Start();
-                tList.Add(t);
+                sv.Start();
             }
-            System.Threading.Tasks.Task.WhenAll(tList);
             //Java fix Ver5.9.0
             GC.Collect();
         }

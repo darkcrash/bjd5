@@ -87,8 +87,7 @@ namespace Bjd.Net.Sockets
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
 
-            SockTcp client = null;
-            while (client == null)
+            while (true)
             {
                 try
                 {
@@ -115,7 +114,7 @@ namespace Bjd.Net.Sockets
                         return null;
                     }
 
-                    client = new SockTcp(Kernel, _ssl, tTcp.Result);
+                    return new SockTcp(Kernel, _ssl, tTcp.Result);
                 }
                 catch (OperationCanceledException)
                 {
@@ -128,7 +127,6 @@ namespace Bjd.Net.Sockets
                     System.Diagnostics.Trace.TraceError(ex.StackTrace);
                 }
             }
-            return client;
         }
 
 

@@ -35,7 +35,6 @@ namespace Bjd.Servers
 
         // 子スレッド管理 - 排他制御オブジェクト
         private readonly object SyncObj = new object();
-        private readonly ManualResetEvent BindWait = new ManualResetEvent(false);
 
         // 子スレッドコレクション
         private readonly List<Task> _childThreads = new List<Task>();
@@ -87,7 +86,7 @@ namespace Bjd.Servers
         {
             if (kernel == null) throw new ArgumentNullException("kernel");
             if (conf == null) throw new ArgumentNullException("conf");
-            if (oneBind == null)throw new ArgumentNullException("oneBind");
+            if (oneBind == null) throw new ArgumentNullException("oneBind");
 
             _kernel = kernel;
             _conf = conf;
@@ -129,12 +128,6 @@ namespace Bjd.Servers
                 return;
             }
 
-            //bindが完了するまで待機する
-            //while ((_sockServerTcp == null && _sockServerUdp == null) || this.SockState == SockState.Idle)
-            //{
-            //    Thread.Sleep(100);
-            //}
-            BindWait.WaitOne();
         }
 
 
@@ -218,7 +211,7 @@ namespace Bjd.Servers
                     {
                         Logger.Set(LogKind.Error, null, 9000024, bindStr);
                         //[C#]
-                        ThreadBaseKind = ThreadBaseKind.Running;
+                        //ThreadBaseKind = ThreadBaseKind.Running;
                     }
                     else if (this.SockState != SockState.Error)
                     {
@@ -244,13 +237,15 @@ namespace Bjd.Servers
 
         private void _sockServerUdp_SocketStateChanged(object sender, EventArgs e)
         {
-            BindWait.Set();
+            System.Diagnostics.Trace.TraceInformation($"OneServer._sockServerUdp_SocketStateChanged ");
+            ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerUdp.SocketStateChanged -= _sockServerUdp_SocketStateChanged;
         }
 
         private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
         {
-            BindWait.Set();
+            System.Diagnostics.Trace.TraceInformation($"OneServer._sockServerTcp_SocketStateChanged ");
+            ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
         }
 
@@ -259,7 +254,7 @@ namespace Bjd.Servers
             System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer {this.GetType().FullName}");
 
             //[C#]
-            ThreadBaseKind = ThreadBaseKind.Running;
+            //ThreadBaseKind = ThreadBaseKind.Running;
 
             const int listenMax = 10;
 
@@ -314,7 +309,7 @@ namespace Bjd.Servers
             System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer {this.GetType().FullName}");
 
             //[C#]
-            ThreadBaseKind = ThreadBaseKind.Running;
+            //ThreadBaseKind = ThreadBaseKind.Running;
 
             if (!_sockServerUdp.Bind(_oneBind.Addr, port))
             {
@@ -374,22 +369,6 @@ namespace Bjd.Servers
             }
             t.ContinueWith(this.RemoveTask);
             t.Start();
-        }
-
-        private void WaitSocketBind()
-        {
-            if (this._sockServerTcp != null && this._sockServerTcp.SockState != SockState.Idle)
-            {
-                this.ThreadBaseKind = ThreadBaseKind.Running;
-                return;
-            }
-            if (this._sockServerUdp != null && this._sockServerUdp.SockState != SockState.Idle)
-            {
-                this.ThreadBaseKind = ThreadBaseKind.Running;
-                return;
-            }
-            var w = Task.Delay(100);
-            var t = w.ContinueWith( _ => this.WaitSocketBind());
         }
 
         //ACL制限のチェック

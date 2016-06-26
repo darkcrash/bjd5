@@ -243,30 +243,23 @@ namespace Bjd
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
         {
             Trace.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
-            try
+            if (ListOption == null)
             {
-                if (ListOption == null)
-                {
-                    Util.RuntimeException("CreateLogger() ListOption==null || LogFile==null");
-                }
-                var conf = CreateConf("Log");
-                if (conf == null)
-                {
-                    //CreateLoggerを使用する際に、OptionLogが検索できないのは、設計上の問題がある
-                    Util.RuntimeException("CreateLogger() conf==null");
-                    return null;
-                }
-                var dat = (Dat)conf.Get("limitString");
-                var isDisplay = ((int)conf.Get("isDisplay")) == 0;
-                var logLimit = new LogLimit(dat, isDisplay);
+                Util.RuntimeException("CreateLogger() ListOption==null || LogFile==null");
+            }
+            var conf = CreateConf("Log");
+            if (conf == null)
+            {
+                //CreateLoggerを使用する際に、OptionLogが検索できないのは、設計上の問題がある
+                Util.RuntimeException("CreateLogger() conf==null");
+                return null;
+            }
+            var dat = (Dat)conf.Get("limitString");
+            var isDisplay = ((int)conf.Get("isDisplay")) == 0;
+            var logLimit = new LogLimit(dat, isDisplay);
 
-                var useLimitString = (bool)conf.Get("useLimitString");
-                return new Logger(this, logLimit, LogFile, IsJp, nameTag, useDetailsLog, useLimitString, logger);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var useLimitString = (bool)conf.Get("useLimitString");
+            return new Logger(this, logLimit, LogFile, IsJp, nameTag, useDetailsLog, useLimitString, logger);
         }
 
         //終了処理

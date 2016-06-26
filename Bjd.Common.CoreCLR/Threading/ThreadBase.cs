@@ -11,11 +11,17 @@ namespace Bjd.Threading
 
         Thread _t;
         private ThreadBaseKind _threadBaseKind = ThreadBaseKind.Before;
+        private readonly ManualResetEventSlim RunningWait = new ManualResetEventSlim(false);
 
         public ThreadBaseKind ThreadBaseKind
         {
             get { return _threadBaseKind; }
-            protected set { _threadBaseKind = value; }
+            protected set
+            {
+                if (_threadBaseKind == value) return;
+                if (_threadBaseKind == ThreadBaseKind.Before) { RunningWait.Set(); }
+                _threadBaseKind = value;
+            }
         }
         private bool _life = false; //スレッドを停止するためのスイッチ
         readonly Logger _logger;
@@ -80,15 +86,12 @@ namespace Bjd.Threading
                 _threadBaseKind = ThreadBaseKind.Before;
 
                 _life = true;
-                _t = new Thread(Loop) { IsBackground = true };
+                _t = new Thread(Loop) { IsBackground = true, Name = this.GetType().FullName };
                 _t.Start();
 
                 //スレッドが起動してステータスがRUNになるまで待機する
-                while (_threadBaseKind == ThreadBaseKind.Before)
-                {
-                    Thread.Sleep(100);
-                }
-                Thread.Sleep(100);
+                RunningWait.Wait();
+
             }
             catch (Exception ex)
             {
@@ -126,7 +129,6 @@ namespace Bjd.Threading
             {
 
                 //[C#] C#の場合は、Start()が終了してしまうのを避けるため、OnRunThreadの中で、準備が完了してから
-                //ThreadBaseKindをRunningにする
                 OnRunThread();
             }
             catch (OperationCanceledException)
