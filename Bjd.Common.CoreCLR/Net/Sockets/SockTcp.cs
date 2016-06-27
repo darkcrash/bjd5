@@ -213,28 +213,25 @@ namespace Bjd.Net.Sockets
             }
 
             //受信完了
-            lock (this)
+            //ポインタを移動する場合は、排他制御が必要
+            try
             {
-                //ポインタを移動する場合は、排他制御が必要
-                try
+                //Ver5.9.2 Java fix
+                int bytesRead = result.Result;
+                if (bytesRead <= 0)
                 {
-                    //Ver5.9.2 Java fix
-                    int bytesRead = result.Result;
-                    if (bytesRead <= 0)
-                    {
-                        //  切断されている場合は、0が返される?
-                        this.SetErrorReceive();
-                        return;
-                    }
-                    _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
-                    //受信待機のままソケットがクローズされた場合は、ここにくる
+                    //  切断されている場合は、0が返される?
                     this.SetErrorReceive();
                     return;
                 }
+                _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
+            }
+            catch (Exception ex)
+            {
+                //受信待機のままソケットがクローズされた場合は、ここにくる
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
+                this.SetErrorReceive();
+                return;
             }
 
             //バッファがいっぱい 空の受信待機をかける
@@ -244,6 +241,7 @@ namespace Bjd.Net.Sockets
                 Thread.Sleep(10); //他のスレッドに制御を譲る  
                 if (SockState != SockState.Connect)
                 {
+                    System.Diagnostics.Trace.TraceInformation($"SockTcp.EndReceive Not Connected");
                     this.SetErrorReceive();
                     return;
                 }

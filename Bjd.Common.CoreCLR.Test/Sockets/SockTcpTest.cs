@@ -201,7 +201,7 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9993;
+            const int port = 9994;
 
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
@@ -217,6 +217,36 @@ namespace Bjd.Test.Sockets
 
             //verify
             Assert.Equal(expected, actual);
+
+            //tearDown
+            sut.Close();
+            sv.Stop();
+        }
+
+        [Fact]
+        public void EchoサーバにlineSend()
+        {
+            //setUp
+            const string addr = "127.0.0.1";
+            const int port = 9995;
+
+            var sv = new EchoServer(_service.Kernel, addr, port);
+            sv.Start();
+            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+
+            for (var i = 0; i < 100; i++)
+            {
+                sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
+
+                var expected = "本日は晴天なり\r\n";
+
+                //exercise
+                var bytes = sut.LineRecv(1, this);
+                var actual = Encoding.UTF8.GetString(bytes);
+
+                //verify
+                Assert.Equal(expected, actual);
+            }
 
             //tearDown
             sut.Close();

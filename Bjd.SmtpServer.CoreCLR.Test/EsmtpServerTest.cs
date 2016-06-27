@@ -17,48 +17,22 @@ namespace Bjd.SmtpServer.Test
 {
     public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
     {
+        public TestService _service;
+        public Server _v4Sv; //サーバ
+        public Server _v6Sv; //サーバ
 
         public class ServerFixture : IDisposable
         {
-            public TestService _service;
-            public Server _v4Sv; //サーバ
-            public Server _v6Sv; //サーバ
 
             public ServerFixture()
             {
 
-                //MailBoxは、Smtp3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
-                //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
-
-                _service = TestService.CreateTestService();
-                _service.SetOption("EsmtpServerTest.ini");
-
-                var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Smtp");
-                var conf = new Conf(option);
-
-                //サーバ起動
-                _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
-                _v4Sv.Start();
-                _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
-                _v6Sv.Start();
-
-
-                //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
 
             }
 
             public void Dispose()
             {
 
-                //サーバ停止
-                _v4Sv.Stop();
-                _v6Sv.Stop();
-
-                _v4Sv.Dispose();
-                _v6Sv.Dispose();
-
-                _service.Dispose();
 
             }
 
@@ -69,11 +43,39 @@ namespace Bjd.SmtpServer.Test
         public EsmtpServerTest(ServerFixture fixture)
         {
             _server = fixture;
+
+            //MailBoxは、Smtp3ServerTest.iniの中で「c:\tmp2\bjd5\SmtpServerTest\mailbox」に設定されている
+            //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
+
+            _service = TestService.CreateTestService();
+            _service.SetOption("EsmtpServerTest.ini");
+
+            var kernel = _service.Kernel;
+            var option = kernel.ListOption.Get("Smtp");
+            var conf = new Conf(option);
+
+            //サーバ起動
+            _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+            _v4Sv.Start();
+            _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+            _v6Sv.Start();
+
+
+            //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
+            //サーバ停止
+            _v4Sv.Stop();
+            _v6Sv.Stop();
+
+            _v4Sv.Dispose();
+            _v6Sv.Dispose();
+
+            _service.Dispose();
         }
 
 
@@ -82,7 +84,7 @@ namespace Bjd.SmtpServer.Test
         {
             //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
             //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
-            var dir = Path.Combine(_server._service.MailboxPath, user);
+            var dir = Path.Combine(_service.MailboxPath, user);
             var files = Directory.GetFiles(dir, "DF*");
             return files;
         }
@@ -93,9 +95,9 @@ namespace Bjd.SmtpServer.Test
             int port = 8825;  //ウイルススキャンにかかるため25を避ける
             if (inetKind == InetKind.V4)
             {
-                return Inet.Connect(_server._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+                return Inet.Connect(_service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             }
-            return Inet.Connect(_server._service.Kernel, new Ip(IpKind.V6Localhost), port, 10, null);
+            return Inet.Connect(_service.Kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
         }
 
