@@ -101,6 +101,29 @@ namespace Bjd.Test.Net
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Enqueueしたデータの一部をDequeueしたデータの整合性を確認する分割()
+        {
+            //setUp
+            var sut = new SockQueue();
+            var buf = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            sut.Enqueue(buf, 10);
+            sut.Enqueue(buf, 10);
+
+            var actual1 = sut.Dequeue(5); //最初に5バイト取得
+            var actual2 = sut.Dequeue(5);
+            var actual3 = sut.Dequeue(5);
+            var actual4 = sut.Dequeue(5);
+            var expected1 = new byte[] { 0, 1, 2, 3, 4 };
+            var expected2 = new byte[] { 5, 6, 7, 8, 9 };
+
+
+            Assert.Equal(expected1, actual1);
+            Assert.Equal(expected2, actual2);
+            Assert.Equal(expected1, actual3);
+            Assert.Equal(expected2, actual4);
+        }
+
 
         [Fact]
         public void SockQueueスペース確認()

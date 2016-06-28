@@ -3,12 +3,11 @@
 namespace Bjd.Net.Sockets
 {
     //SockTcpで使用されるデータキュー
-    public class SockQueue :IDisposable
+    public class SockQueue : IDisposable
     {
-        //byte[] _db = new byte[0]; //現在のバッファの内容
-        byte[] _db1 = new byte[max]; //現在のバッファの内容
-        byte[] _db2 = new byte[max]; //退避のバッファの内容
+        byte[] _db = new byte[max]; //現在のバッファの内容
         int _dbp = 0;
+
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
@@ -42,15 +41,9 @@ namespace Bjd.Net.Sockets
 
             lock (_lock)
             {
-                //var tmpBuf = new byte[_db.Length + len]; //テンポラリバッファ
-                //Buffer.BlockCopy(_db, 0, tmpBuf, 0, _db.Length);//現有DBのデータをテンポラリ前部へコピー
-                //Buffer.BlockCopy(buf, 0, tmpBuf, _db.Length, len);//追加のデータをテンポラリ後部へコピー
-                //_db = tmpBuf; //テンポラリを現用DBへ変更
-
-
-                Buffer.BlockCopy(buf, 0, _db1, _dbp, len);
+                // 追加データをコピー
+                Buffer.BlockCopy(buf, 0, _db, _dbp, len);
                 _dbp += len;
-
 
                 _modify = true; //データベースの内容が変化した
             }
@@ -69,22 +62,6 @@ namespace Bjd.Net.Sockets
 
             lock (_lock)
             {
-                ////要求サイズが現有数を超える場合はカットする
-                //if (_db.Length < len)
-                //{
-                //    len = _db.Length;
-                //}
-                //var retBuf = new byte[len]; //出力用バッファ
-                //var tmpBuf = new byte[_db.Length - len]; //テンポラリバッファ
-                //Buffer.BlockCopy(_db, 0, retBuf, 0, len);//現有DBから出力用バッファへコピー
-                //Buffer.BlockCopy(_db, len, tmpBuf, 0, _db.Length - len);//残りのデータをテンポラリへ
-                //_db = tmpBuf; //テンポラリを現用DBへ変更
-
-                //if (_db.Length == 0)
-                //{
-                //    _modify = false; //次に何か受信するまで処理の必要はない
-                //}
-
                 //要求サイズが現有数を超える場合はカットする
                 if (_dbp < len)
                 {
@@ -92,14 +69,16 @@ namespace Bjd.Net.Sockets
                 }
                 var retBuf = new byte[len]; //出力用バッファ
 
-                Buffer.BlockCopy(_db1, 0, retBuf, 0, len);
-                Buffer.BlockCopy(_db1, 0, _db2, 0, _dbp);
+                Buffer.BlockCopy(_db, 0, retBuf, 0, len);
                 _dbp -= len;
-                Buffer.BlockCopy(_db2, len, _db1, 0, _dbp);
 
                 if (_dbp == 0)
                 {
                     _modify = false; //次に何か受信するまで処理の必要はない
+                }
+                else
+                {
+                    Buffer.BlockCopy(_db, len, _db, 0, _dbp);
                 }
 
                 return retBuf;
@@ -115,38 +94,36 @@ namespace Bjd.Net.Sockets
             }
             lock (_lock)
             {
-                //for (var i = 0; i < _db.Length; i++)
-                //{
-                //    if (_db[i] != '\n')
-                //    {
-                //        continue;
-                //    }
-                //    var retBuf = new byte[i + 1]; //\r\nを削除しない
-                //    Buffer.BlockCopy(_db, 0, retBuf, 0, i + 1);//\r\nを削除しない
-                //    var tmpBuf = new byte[_db.Length - (i + 1)]; //テンポラリバッファ
-                //    Buffer.BlockCopy(_db, (i + 1), tmpBuf, 0, _db.Length - (i + 1));//残りのデータをテンポラリへ
-                //    _db = tmpBuf; //テンポラリを現用DBへ変更
-
-                //    return retBuf;
-
-                //}
 
                 for (var i = 0; i < _dbp; i++)
                 {
-                    if (_db1[i] != '\n')
+                    if (_db[i] != '\n')
                     {
                         continue;
                     }
                     var len = i + 1;
                     var retBuf = new byte[len]; //\r\nを削除しない
-                    Buffer.BlockCopy(_db1, 0, retBuf, 0, len);
-                    Buffer.BlockCopy(_db1, 0, _db2, 0, _dbp);
+                    Buffer.BlockCopy(_db, 0, retBuf, 0, len);
                     _dbp -= len;
-                    Buffer.BlockCopy(_db2, len, _db1, 0, _dbp);
+                    if (_dbp > 0)
+                        Buffer.BlockCopy(_db, len, _db, 0, _dbp);
 
                     return retBuf;
 
                 }
+
+                //var index = Array.IndexOf<byte>(_db, 10, 0, _dbp);
+
+                //if (index >= 0)
+                //{
+                //    var len = index + 1;
+                //    var retBuf = new byte[len]; //\r\nを削除しない
+                //    Buffer.BlockCopy(_db, 0, retBuf, 0, len);
+                //    _dbp -= len;
+                //    Buffer.BlockCopy(_db, len, _db, 0, _dbp);
+
+                //    return retBuf;
+                //}
 
                 _modify = false; //次に何か受信するまで処理の必要はない
             }
@@ -156,7 +133,7 @@ namespace Bjd.Net.Sockets
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
-        protected  void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -165,8 +142,7 @@ namespace Bjd.Net.Sockets
                     // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
                 }
 
-                _db1 = null;
-                _db2 = null;
+                _db = null;
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
