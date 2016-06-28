@@ -384,7 +384,7 @@ namespace Bjd.Servers
             {
                 Count += 1;
             }
-            t.ContinueWith(this.RemoveTask, TaskContinuationOptions.LongRunning);
+            t.ContinueWith(this.RemoveTask, TaskContinuationOptions.ExecuteSynchronously);
             t.Start();
         }
 
