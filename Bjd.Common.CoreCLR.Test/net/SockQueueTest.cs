@@ -1,4 +1,5 @@
 ﻿using Bjd.Net.Sockets;
+using System;
 using Xunit;
 
 
@@ -150,7 +151,41 @@ namespace Bjd.Test.Net
         }
 
         [Fact]
-        public void SockQueue行取得()
+        public void SockQueueスペース確認複数回()
+        {
+            const int max = 2000000;
+
+            var sockQueu = new SockQueue();
+
+            //キューの空きサイズ
+            Assert.Equal(max, sockQueu.Space);
+
+            var buf = new byte[max - 100];
+            buf[0] = byte.MaxValue;
+            sockQueu.Enqueue(buf, buf.Length);
+
+            //キューの空きサイズ
+            Assert.Equal(100, sockQueu.Space);
+
+            var recv1 = sockQueu.Dequeue(max - 100);
+            Assert.Equal(byte.MaxValue, recv1[0]);
+            sockQueu.Enqueue(buf, buf.Length);
+
+            //キューの空きサイズ
+            Assert.Equal(100, sockQueu.Space);
+
+            var len = sockQueu.Enqueue(buf, 200);
+            //空きサイズを超えて格納すると失敗する(※0が返る)
+            Assert.Equal(0, len);
+
+            var recv2 = sockQueu.Dequeue(max - 100);
+            Assert.Equal(byte.MaxValue, recv2[0]);
+
+        }
+
+
+        [Fact]
+        public void SockQueue_DequeueLine()
         {
             //int max = 1048560;
 
@@ -182,7 +217,7 @@ namespace Bjd.Test.Net
         }
 
         [Fact]
-        public void SockQueue行取得lf()
+        public void SockQueue_DequeueLinelf()
         {
             //int max = 1048560;
 
@@ -213,6 +248,50 @@ namespace Bjd.Test.Net
             Assert.Equal(buf, new byte[] { 0x63, 0x0a });
         }
 
+        [Fact]
+        public void SockQueueMaxDequeueLine()
+        {
+            const int max = 2000000;
+
+            var sockQueu = new SockQueue();
+
+            //2行と改行なしの1行で初期化
+            var lines = new byte[] { 0x61, 0x0d, 0x0a, 0x62, 0x0d, 0x0a  };
+            sockQueu.Enqueue(lines, lines.Length);
+            Assert.Equal(max, sockQueu.Space + sockQueu.Length);
+            Assert.Equal(max - lines.Length, sockQueu.Space);
+            Assert.Equal(lines.Length, sockQueu.Length);
+
+            var sendbuf = new byte[max - lines.Length];
+            sockQueu.Enqueue(sendbuf, sendbuf.Length);
+            Assert.Equal(max, sockQueu.Space + sockQueu.Length);
+            Assert.Equal(max - lines.Length - sendbuf.Length, sockQueu.Space);
+            Assert.Equal(max, sockQueu.Length);
+
+            var recvbuf1 = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"1/r/n\" 1行目取得
+            Assert.Equal(new byte[] { 0x61, 0x0d, 0x0a }, recvbuf1);
+
+            //sockQueue.dequeuLine()=\"2/r/n\" 2行目取得 
+            var recvbuf2 = sockQueu.DequeueLine();
+            Assert.Equal(new byte[] { 0x62, 0x0d, 0x0a }, recvbuf2);
+
+            var recvbuf3 = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"\" 3行目の取得は失敗する
+            Assert.Equal(new byte[0], recvbuf3);
+
+            lines = new byte[] { 0x63, 0x0d, 0x0a };
+            sockQueu.Enqueue(lines, lines.Length);
+            //"sockQueue.enqueu(/r/n) 改行のみ追加
+
+            var recvbuf4 = sockQueu.Dequeue(sendbuf.Length);
+            Assert.Equal(sendbuf, recvbuf4);
+
+
+            var recvbuf5 = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
+            Assert.Equal(new byte[] { 0x63, 0x0d, 0x0a }, recvbuf5);
+        }
 
 
 

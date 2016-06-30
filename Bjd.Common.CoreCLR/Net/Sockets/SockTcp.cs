@@ -21,8 +21,10 @@ namespace Bjd.Net.Sockets
 
         private OneSsl _oneSsl;
         private SockQueue _sockQueue = new SockQueue();
+        
         //ByteBuffer recvBuf = ByteBuffer.allocate(sockQueue.Max);
         private byte[] _recvBuf; //１行処理のためのテンポラリバッファ
+        private ArraySegment<byte> _recvBufSeg;
         //private ArraySegment<byte> _recvBufSegment;
 
         //***************************************************************************
@@ -159,8 +161,7 @@ namespace Bjd.Net.Sockets
             System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
-            _recvBuf = new byte[_sockQueue.Space]; //キューが空なので、Spaceはバッファの最大サイズになっている
-            //_recvBufSegment = new ArraySegment<byte>(_recvBuf);
+            //_recvBuf = new byte[4096]; //キューが空なので、Spaceはバッファの最大サイズになっている
 
             // Using the LocalEndPoint property.
             string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -184,13 +185,14 @@ namespace Bjd.Net.Sockets
                 if (_ssl != null)
                 {
                     //Ver5.9.2 Java fix
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, this.CancelToken);
+                    _recvBuf = new byte[4096]; //キューが空なので、Spaceはバッファの最大サイズになっている
+                    _oneSsl.BeginRead(_recvBuf, 0, _recvBuf.Length, EndReceiveSsl, this, this.CancelToken);
                 }
                 else
                 {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    var buf = new ArraySegment<byte>(_recvBuf);
-                    var tReceive = _socket.ReceiveAsync(buf, SocketFlags.None);
+                    _recvBufSeg = _sockQueue.GetWriteSegment();
+                    var tReceive = _socket.ReceiveAsync(_recvBufSeg, SocketFlags.None);
                     tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
                 }
             }
@@ -224,7 +226,8 @@ namespace Bjd.Net.Sockets
                     this.SetErrorReceive();
                     return;
                 }
-                _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
+                _sockQueue.NotifyWrite(_recvBufSeg, bytesRead);
+
             }
             catch (Exception ex)
             {
@@ -252,7 +255,8 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                var tReceive = _socket.ReceiveAsync(new ArraySegment<byte>(_recvBuf, 0, _sockQueue.Space), SocketFlags.None);
+                _recvBufSeg = _sockQueue.GetWriteSegment();
+                var tReceive = _socket.ReceiveAsync(_recvBufSeg, SocketFlags.None);
                 tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
             catch (Exception ex)
@@ -340,7 +344,7 @@ namespace Bjd.Net.Sockets
                 //受信待機の開始
                 try
                 {
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, Kernel.CancelToken);
+                    _oneSsl.BeginRead(_recvBuf, 0, _recvBuf.Length, EndReceiveSsl, this, this.CancelToken);
                 }
                 catch (Exception ex)
                 {
@@ -700,6 +704,7 @@ namespace Bjd.Net.Sockets
             {
                 this._lastLineSend = null;
                 this._recvBuf = null;
+                this._recvBufSeg = new ArraySegment<byte>();
                 if (this._socket != null)
                 {
                     this._socket.Dispose();

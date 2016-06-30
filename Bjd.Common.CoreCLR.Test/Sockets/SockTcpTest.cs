@@ -87,6 +87,7 @@ namespace Bjd.Test.Sockets
                         }
                     }
                 }
+                ThreadBaseKind = ThreadBaseKind.After;
             }
         }
         [Fact]
