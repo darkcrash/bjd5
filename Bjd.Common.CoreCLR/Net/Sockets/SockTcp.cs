@@ -184,7 +184,7 @@ namespace Bjd.Net.Sockets
                 if (_ssl != null)
                 {
                     //Ver5.9.2 Java fix
-                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, Kernel.CancelToken);
+                    _oneSsl.BeginRead(_recvBuf, 0, _sockQueue.Space, EndReceiveSsl, this, this.CancelToken);
                 }
                 else
                 {
@@ -431,16 +431,16 @@ namespace Bjd.Net.Sockets
 
             while (iLife.IsLife())
             {
-                //Ver5.1.6
-                if (_sockQueue.Length == 0)
-                {
-                    Thread.Sleep(100);
-                }
+                ////Ver5.1.6
+                //if (_sockQueue.Length == 0)
+                //{
+                //    Thread.Sleep(10);
+                //}
                 byte[] buf = _sockQueue.DequeueLine();
                 //noEncode = false;//テキストである事が分かっている
-                Trace(TraceKind.Recv, buf, false);
                 if (buf.Length != 0)
                 {
+                    Trace(TraceKind.Recv, buf, false);
                     //Ver5.8.6 Java fix
                     tout.Update(); //タイムアウトの更新
                     return buf;
@@ -453,7 +453,7 @@ namespace Bjd.Net.Sockets
                 {
                     return null; //タイムアウト
                 }
-                Thread.Sleep(1);
+                Thread.Sleep(5);
             }
             return null;
         }

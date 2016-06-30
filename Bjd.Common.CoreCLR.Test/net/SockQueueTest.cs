@@ -180,5 +180,41 @@ namespace Bjd.Test.Net
             //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
             Assert.Equal(buf, new byte[] { 0x63, 0x0d, 0x0a });
         }
+
+        [Fact]
+        public void SockQueue行取得lf()
+        {
+            //int max = 1048560;
+
+            var sockQueu = new SockQueue();
+
+            var lines = new byte[] { 0x61, 0x0a, 0x62, 0x0a, 0x63 };
+            sockQueu.Enqueue(lines, lines.Length);
+            //2行と改行なしの1行で初期化
+
+            var buf = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"1/n\" 1行目取得
+            Assert.Equal(buf, new byte[] { 0x61, 0x0a });
+
+            //sockQueue.dequeuLine()=\"2/n\" 2行目取得 
+            buf = sockQueu.DequeueLine();
+            Assert.Equal(buf, new byte[] { 0x62, 0x0a });
+
+            buf = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"\" 3行目の取得は失敗する
+            Assert.Equal(buf, new byte[0]);
+
+            lines = new byte[] { 0x0a };
+            sockQueu.Enqueue(lines, lines.Length);
+            //"sockQueue.enqueu(/n) 改行のみ追加
+
+            buf = sockQueu.DequeueLine();
+            //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
+            Assert.Equal(buf, new byte[] { 0x63, 0x0a });
+        }
+
+
+
+
     }
 }
