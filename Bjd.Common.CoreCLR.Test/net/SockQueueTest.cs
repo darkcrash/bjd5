@@ -87,6 +87,7 @@ namespace Bjd.Test.Net
             Assert.Equal(expected, actual);
         }
 
+
         [Fact]
         public void Enqueueしたデータの一部をDequeueしたデータの整合性を確認する()
         {
@@ -123,6 +124,52 @@ namespace Bjd.Test.Net
             Assert.Equal(expected2, actual2);
             Assert.Equal(expected1, actual3);
             Assert.Equal(expected2, actual4);
+        }
+
+        [Theory]
+        [InlineData(-1, -1)]
+        [InlineData(0, 0)]
+        [InlineData(1, 0)]
+        public void Enqueueしたデータの一部をDequeueしたデータの整合性を確認する境界値(int val, int excepted)
+        {
+            //setUp
+            var sut = new SockQueue();
+            var max = sut.Max;
+            var buf = new byte[max];
+            buf[0] = byte.MaxValue;
+            buf[1] = byte.MinValue;
+            buf[max - 1] = byte.MinValue;
+
+            sut.Enqueue(buf, buf.Length);
+            Assert.Equal(0, sut.Space);
+            Assert.Equal(max, sut.Length);
+            var dequeuebuf1 = sut.Dequeue(max + val);
+            Assert.Equal(max + excepted, dequeuebuf1.Length);
+            Assert.Equal(byte.MaxValue, dequeuebuf1[0]);
+            Assert.Equal(byte.MinValue, dequeuebuf1[1]);
+
+            // free
+            sut.Dequeue(sut.Length);
+
+            sut.Enqueue(buf, buf.Length);
+            Assert.Equal(0, sut.Space);
+            Assert.Equal(max, sut.Length);
+            var dequeuebuf2 = sut.Dequeue(max + val);
+            Assert.Equal(max + excepted, dequeuebuf2.Length);
+            Assert.Equal(byte.MaxValue, dequeuebuf2[0]);
+            Assert.Equal(byte.MinValue, dequeuebuf2[1]);
+
+            // free
+            sut.Dequeue(sut.Length);
+
+            sut.Enqueue(buf, buf.Length);
+            Assert.Equal(0, sut.Space);
+            Assert.Equal(max, sut.Length);
+            var dequeuebuf3 = sut.Dequeue(max + val);
+            Assert.Equal(max + excepted, dequeuebuf3.Length);
+            Assert.Equal(byte.MaxValue, dequeuebuf3[0]);
+            Assert.Equal(byte.MinValue, dequeuebuf3[1]);
+
         }
 
 
@@ -256,7 +303,7 @@ namespace Bjd.Test.Net
             var sockQueu = new SockQueue();
 
             //2行と改行なしの1行で初期化
-            var lines = new byte[] { 0x61, 0x0d, 0x0a, 0x62, 0x0d, 0x0a  };
+            var lines = new byte[] { 0x61, 0x0d, 0x0a, 0x62, 0x0d, 0x0a };
             sockQueu.Enqueue(lines, lines.Length);
             Assert.Equal(max, sockQueu.Space + sockQueu.Length);
             Assert.Equal(max - lines.Length, sockQueu.Space);

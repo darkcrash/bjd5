@@ -6,8 +6,9 @@ namespace Bjd.Net.Sockets
     public class SockQueue : IDisposable
     {
         byte[] _db = new byte[max]; //現在のバッファの内容
-        int _dbEnd = 0;
+        int _dbNext = 0;
         int _dbStart = 0;
+        int _length = 0;
 
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
@@ -20,18 +21,18 @@ namespace Bjd.Net.Sockets
 
         //空いているスペース
         //public int Space { get { return max - _db.Length; } }
-        public int Space { get { return max - this.Length; } }
+        public int Space { get { return max - _length; } }
 
         //現在のキューに溜まっているデータ量
         //public int Length { get { return _db.Length; } }
-        public int Length { get { if (_dbStart <= _dbEnd) return _dbEnd - _dbStart; return _dbEnd + (max - _dbStart); } }
+        public int Length { get { return _length; } }
 
-        private int AfterSpace { get { return max - _dbEnd; } }
-        private int BeforeSpace { get { return max - _dbStart; } }
+        private int AfterSpace { get { return max - _dbNext; } }
+        private int AfterLength { get { return max - _dbStart; } }
 
         public ArraySegment<byte> GetWriteSegment()
         {
-            return new ArraySegment<byte>(_db, _dbEnd, this.AfterSpace);
+            return new ArraySegment<byte>(_db, _dbNext, this.AfterSpace);
         }
 
         public void NotifyWrite(ArraySegment<byte> target, int len)
@@ -39,7 +40,9 @@ namespace Bjd.Net.Sockets
             if (target.Array != this._db) return;
             lock (_lock)
             {
-                _dbEnd += len;
+                _dbNext += len;
+                _length += len;
+                if (_dbNext >= max) _dbNext = 0;
                 _modify = true; //データベースの内容が変化した
             }
         }
@@ -65,21 +68,22 @@ namespace Bjd.Net.Sockets
                 if (afterSpace < len)
                 {
                     // 分割コピー
-                    Buffer.BlockCopy(buf, 0, _db, _dbEnd, afterSpace);
-                    _dbEnd = 0;
+                    Buffer.BlockCopy(buf, 0, _db, _dbNext, afterSpace);
+                    _dbNext = 0;
 
                     // 分割点取得
                     var splitLen = len - afterSpace;
                     Buffer.BlockCopy(buf, 0, _db, 0, splitLen);
-                    _dbEnd += splitLen;
-
+                    _dbNext += splitLen;
                 }
                 else
                 {
                     // そのままコピー
-                    Buffer.BlockCopy(buf, 0, _db, _dbEnd, len);
-                    _dbEnd += len;
+                    Buffer.BlockCopy(buf, 0, _db, _dbNext, len);
+                    _dbNext += len;
                 }
+                _length += len;
+                if (_dbNext >= max) _dbNext = 0;
                 _modify = true; //データベースの内容が変化した
             }
 
@@ -91,7 +95,7 @@ namespace Bjd.Net.Sockets
         public byte[] Dequeue(int len)
         {
             //if (_db.Length == 0 || len == 0 || !_modify)
-            if (this.Length == 0 || len == 0 || !_modify)
+            if (_length == 0 || len == 0 || !_modify)
             {
                 return new byte[0];
             }
@@ -99,36 +103,39 @@ namespace Bjd.Net.Sockets
             lock (_lock)
             {
                 //要求サイズが現有数を超える場合はカットする
-                if (this.Length < len)
+                if (_length < len)
                 {
-                    len = this.Length;
+                    len = _length;
                 }
 
                 // 出力用バッファ
                 var retBuf = new byte[len];
 
 
-                var beforeSpace = this.BeforeSpace;
-                if (beforeSpace < len)
+                var afterLength = this.AfterLength;
+                if (afterLength < len)
                 {
                     // 分割あり
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, beforeSpace);
+                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, afterLength);
                     _dbStart = 0;
 
                     // 分割点取得
-                    var splitLen = len - beforeSpace;
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, beforeSpace);
+                    var splitLen = len - afterLength;
+                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, splitLen);
                     _dbStart += splitLen;
+
                 }
                 else
                 {
                     // 分割なし
                     Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
                     _dbStart += len;
-                    if (_dbStart >= max) _dbStart = 0;
                 }
 
-                if (this.Length == 0)
+                _length -= len;
+                if (_dbStart >= max) _dbStart = 0;
+
+                if (_length == 0)
                 {
                     // 次に何か受信するまで処理の必要はない
                     _modify = false;
@@ -148,10 +155,8 @@ namespace Bjd.Net.Sockets
 
             lock (_lock)
             {
-                var ed = _dbEnd;
-
-                var splited = _dbStart > ed;
-                var end = (splited ? max - 1 : ed);
+                var splited = _dbStart >= _dbNext || (_length == max && _dbStart == _dbNext);
+                var end = (splited ? max : _dbNext);
 
                 // 分割なしの範囲
                 for (var i = _dbStart; i < end; i++)
@@ -164,6 +169,7 @@ namespace Bjd.Net.Sockets
 
                     Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
                     _dbStart += len;
+                    _length -= len;
                     if (_dbStart >= max) _dbStart = 0;
 
                     return retBuf;
@@ -172,7 +178,7 @@ namespace Bjd.Net.Sockets
                 // 分割ありの場合
                 if (splited)
                 {
-                    for (var i = 0; i < ed; i++)
+                    for (var i = 0; i < _dbNext; i++)
                     {
                         if (_db[i] != '\n') continue;
 
@@ -186,6 +192,7 @@ namespace Bjd.Net.Sockets
                         Buffer.BlockCopy(_db, _dbStart, retBuf, 0, splitCount);
                         Buffer.BlockCopy(_db, 0, retBuf, splitCount, splitEnd);
                         _dbStart = splitEnd;
+                        _length -= (splitCount + splitEnd);
 
                         return retBuf;
                     }
