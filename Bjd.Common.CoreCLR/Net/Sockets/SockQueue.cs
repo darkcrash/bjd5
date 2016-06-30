@@ -155,7 +155,7 @@ namespace Bjd.Net.Sockets
 
             lock (_lock)
             {
-                var splited = _dbStart >= _dbNext || (_length == max && _dbStart == _dbNext);
+                var splited = _dbStart > _dbNext || (_length == max && _dbStart == _dbNext);
                 var end = (splited ? max : _dbNext);
 
                 // 分割なしの範囲
