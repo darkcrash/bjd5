@@ -224,8 +224,11 @@ namespace Bjd.Test.Sockets
             sv.Stop();
         }
 
-        [Fact]
-        public void EchoサーバにlineSend()
+        [Theory]
+        [InlineData(10)]
+        [InlineData(50)]
+        [InlineData(100)]
+        public void EchoサーバにlineSend(int count)
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -235,7 +238,7 @@ namespace Bjd.Test.Sockets
             sv.Start();
             var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < count; i++)
             {
                 sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
 
@@ -253,6 +256,39 @@ namespace Bjd.Test.Sockets
             sut.Close();
             sv.Stop();
         }
+
+        [Fact]
+        public void EchoサーバにlineSend()
+        {
+            //setUp
+            const string addr = "127.0.0.1";
+            const int port = 9996;
+
+            var sv = new EchoServer(_service.Kernel, addr, port);
+            sv.Start();
+            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var expected = "本日は晴天なり\r\n";
+
+            for (var i = 0; i < 100000; i++)
+            {
+                sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
+            }
+
+            for (var i = 0; i < 100000; i++)
+            {
+                //exercise
+                var bytes = sut.LineRecv(1, this);
+                var actual = Encoding.UTF8.GetString(bytes);
+
+                //verify
+                Assert.Equal(expected, actual);
+            }
+
+            //tearDown
+            sut.Close();
+            sv.Stop();
+        }
+
 
         public bool IsLife()
         {

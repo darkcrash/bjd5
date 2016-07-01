@@ -230,6 +230,60 @@ namespace Bjd.Test.Net
 
         }
 
+        [Fact]
+        public void SockQueuePerformancePerMax()
+        {
+            var sockQueu = new SockQueue();
+            int max = sockQueu.Max;
+            var buf = new byte[max];
+
+            for (var i = 0; i < 1000; i++)
+            {
+                sockQueu.Enqueue(buf, buf.Length);
+                Assert.Equal(0, sockQueu.Space);
+                Assert.Equal(max, sockQueu.Length);
+
+                var bufdequeue = sockQueu.Dequeue(max);
+                Assert.Equal(max, sockQueu.Space);
+                Assert.Equal(0, sockQueu.Length);
+            }
+        }
+
+        [Fact]
+        public void SockQueuePerformancePerMiddle()
+        {
+            var sockQueu = new SockQueue();
+            int max = 1000;
+            var buf = new byte[max];
+
+            for (var i = 0; i < 1000000; i++)
+            {
+                sockQueu.Enqueue(buf, buf.Length);
+                Assert.Equal(max, sockQueu.Length);
+
+                var bufdequeue = sockQueu.Dequeue(max);
+                Assert.Equal(sockQueu.Max, sockQueu.Space);
+                Assert.Equal(0, sockQueu.Length);
+            }
+        }
+
+        [Fact]
+        public void SockQueuePerformancePerSmall()
+        {
+            var sockQueu = new SockQueue();
+            int max = 512;
+            var buf = new byte[max];
+
+            for (var i = 0; i < 1000000; i++)
+            {
+                sockQueu.Enqueue(buf, buf.Length);
+                Assert.Equal(max, sockQueu.Length);
+
+                var bufdequeue = sockQueu.Dequeue(max);
+                Assert.Equal(sockQueu.Max, sockQueu.Space);
+                Assert.Equal(0, sockQueu.Length);
+            }
+        }
 
         [Fact]
         public void SockQueue_DequeueLine()
