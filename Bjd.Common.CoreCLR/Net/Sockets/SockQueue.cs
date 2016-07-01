@@ -35,9 +35,8 @@ namespace Bjd.Net.Sockets
             return new ArraySegment<byte>(_db, _dbNext, this.AfterSpace);
         }
 
-        public void NotifyWrite(ArraySegment<byte> target, int len)
+        public void NotifyWrite(int len)
         {
-            if (target.Array != this._db) return;
             lock (_lock)
             {
                 _dbNext += len;
@@ -121,7 +120,7 @@ namespace Bjd.Net.Sockets
 
                     // 分割点取得
                     var splitLen = len - afterLength;
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, splitLen);
+                    Buffer.BlockCopy(_db, _dbStart, retBuf, afterLength, splitLen);
                     _dbStart += splitLen;
 
                 }
@@ -182,17 +181,16 @@ namespace Bjd.Net.Sockets
                     {
                         if (_db[i] != '\n') continue;
 
-                        var splitCount = (max - _dbStart) - 1;
-                        var splitEnd = i + 1;
-
                         // 出力サイズとバッファ
+                        var splitCount = (max - _dbStart);
+                        var splitEnd = i + 1;
                         var len = splitEnd + splitCount;
                         var retBuf = new byte[len]; //\r\nを削除しない
 
                         Buffer.BlockCopy(_db, _dbStart, retBuf, 0, splitCount);
                         Buffer.BlockCopy(_db, 0, retBuf, splitCount, splitEnd);
                         _dbStart = splitEnd;
-                        _length -= (splitCount + splitEnd);
+                        _length -= len;
 
                         return retBuf;
                     }

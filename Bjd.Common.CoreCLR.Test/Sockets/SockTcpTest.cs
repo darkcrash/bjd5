@@ -258,7 +258,7 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void EchoサーバにlineSend()
+        public void EchoサーバにlineSendOverQueue()
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -268,20 +268,23 @@ namespace Bjd.Test.Sockets
             sv.Start();
             var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
             var expected = "本日は晴天なり\r\n";
+            var data = Encoding.UTF8.GetBytes("本日は晴天なり");
 
-            for (var i = 0; i < 100000; i++)
+            for (var p = 0; p < 100; p++)
             {
-                sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
-            }
+                for (var i = 0; i < 1000; i++)
+                {
+                    sut.LineSend(data);
+                }
 
-            for (var i = 0; i < 100000; i++)
-            {
-                //exercise
-                var bytes = sut.LineRecv(1, this);
-                var actual = Encoding.UTF8.GetString(bytes);
-
-                //verify
-                Assert.Equal(expected, actual);
+                for (var i = 0; i < 1000; i++)
+                {
+                    //exercise
+                    var bytes = sut.LineRecv(1, this);
+                    var actual = Encoding.UTF8.GetString(bytes);
+                    //verify
+                    Assert.Equal(expected, actual);
+                }
             }
 
             //tearDown

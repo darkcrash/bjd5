@@ -24,8 +24,6 @@ namespace Bjd.Net.Sockets
         
         //ByteBuffer recvBuf = ByteBuffer.allocate(sockQueue.Max);
         private byte[] _recvBuf; //１行処理のためのテンポラリバッファ
-        private ArraySegment<byte> _recvBufSeg;
-        //private ArraySegment<byte> _recvBufSegment;
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -191,8 +189,8 @@ namespace Bjd.Net.Sockets
                 else
                 {
                     //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    _recvBufSeg = _sockQueue.GetWriteSegment();
-                    var tReceive = _socket.ReceiveAsync(_recvBufSeg, SocketFlags.None);
+                    var recvBufSeg = _sockQueue.GetWriteSegment();
+                    var tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                     tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
                 }
             }
@@ -226,7 +224,7 @@ namespace Bjd.Net.Sockets
                     this.SetErrorReceive();
                     return;
                 }
-                _sockQueue.NotifyWrite(_recvBufSeg, bytesRead);
+                _sockQueue.NotifyWrite(bytesRead);
 
             }
             catch (Exception ex)
@@ -255,8 +253,8 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                _recvBufSeg = _sockQueue.GetWriteSegment();
-                var tReceive = _socket.ReceiveAsync(_recvBufSeg, SocketFlags.None);
+                var recvBufSeg = _sockQueue.GetWriteSegment();
+                var tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
             catch (Exception ex)
@@ -704,7 +702,6 @@ namespace Bjd.Net.Sockets
             {
                 this._lastLineSend = null;
                 this._recvBuf = null;
-                this._recvBufSeg = new ArraySegment<byte>();
                 if (this._socket != null)
                 {
                     this._socket.Dispose();
