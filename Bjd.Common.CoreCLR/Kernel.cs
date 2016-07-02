@@ -36,6 +36,8 @@ namespace Bjd
         public bool IsJp { get; private set; } = true;
         private Logger _logger;
 
+        public KernelEvents Events { get; private set; } = new KernelEvents();
+
         //Ver5.9.6
         public WebApi WebApi { get; private set; }
 
@@ -44,7 +46,7 @@ namespace Bjd
 
         private CancellationTokenSource CancelTokenSource { get; set; }
 
-        public CancellationToken CancelToken { get; private set; }
+        private CancellationToken CancelToken { get;  set; }
 
 
         public string ServerName
@@ -60,13 +62,10 @@ namespace Bjd
             }
         }
 
-        internal event EventHandler Cancel;
 
         private void OnCancel()
         {
-            if (this.Cancel == null)
-                return;
-            this.Cancel(this, EventArgs.Empty);
+            Events.OnCancel(this);
         }
 
         //* 通常使用されるコンストラクタ

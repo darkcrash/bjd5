@@ -43,8 +43,13 @@ namespace Bjd.Threading
             _logger = logger;
 
             // タスクのキャンセルにサーバー停止イベントを登録
-            _kernel.CancelToken.Register(this.Cancel);
+            _kernel.Events.Cancel += Events_Cancel;
 
+        }
+
+        private void Events_Cancel(object sender, EventArgs e)
+        {
+            this.Cancel();
         }
 
         protected void Cancel()
@@ -64,6 +69,7 @@ namespace Bjd.Threading
         //Override可能
         public virtual void Dispose()
         {
+            _kernel.Events.Cancel -= Events_Cancel;
             Stop();
             if (RunningWait != null) RunningWait.Dispose();
             RunningWait = null;

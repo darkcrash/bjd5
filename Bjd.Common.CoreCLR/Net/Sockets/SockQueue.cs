@@ -33,10 +33,10 @@ namespace Bjd.Net.Sockets
         private int AfterSpace { get { return max - _dbNext; } }
         private int AfterLength { get { return max - _dbStart; } }
 
-        private void SetModify(bool v)
+        private void SetModify(bool modify)
         {
-            _modify = v;
-            if (v)
+            _modify = modify;
+            if (modify)
             {
                 _modifyEvent.Set();
             }
@@ -53,6 +53,12 @@ namespace Bjd.Net.Sockets
 
         public void NotifyWrite(int len)
         {
+            //空きスペースを越える場合は失敗する 0が返される
+            if (AfterSpace < len)
+            {
+                throw new ArgumentOutOfRangeException("queue overflow");
+            }
+
             lock (_lock)
             {
                 _dbNext += len;
@@ -259,6 +265,8 @@ namespace Bjd.Net.Sockets
                     // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
                 }
 
+                _modifyEvent.Dispose();
+                _modifyEvent = null;
                 _db = null;
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。

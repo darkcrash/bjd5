@@ -91,9 +91,13 @@ namespace Bjd.Net.Sockets
             RemoteAddress = null;
             cancelTokenSource = new CancellationTokenSource();
             CancelToken = cancelTokenSource.Token;
-            Kernel.CancelToken.Register(this.Cancel);
+            Kernel.Events.Cancel += this.KernelCancel;
         }
 
+        private void KernelCancel(object sender, EventArgs e)
+        {
+            this.Cancel();
+        }
 
         protected internal virtual void Cancel()
         {
@@ -275,6 +279,7 @@ namespace Bjd.Net.Sockets
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
+                Kernel.Events.Cancel -= this.KernelCancel;
 
                 //if (!this.IsCancel) this.Cancel();
                 this.cancelTokenSource.Dispose();
