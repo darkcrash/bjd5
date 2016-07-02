@@ -5,6 +5,8 @@ namespace Bjd.Net.Sockets
     //SockTcpで使用されるデータキュー
     public class SockQueue : IDisposable
     {
+        static byte[] empty = new byte[0];
+
         byte[] _db = new byte[max]; //現在のバッファの内容
         int _dbNext = 0;
         int _dbStart = 0;
@@ -15,6 +17,7 @@ namespace Bjd.Net.Sockets
         private const int max = 2000000; //保持可能な最大数
         //TODO modifyの動作に不安あり（これ必要なのか？） 
         bool _modify; //バッファに追加があった場合にtrueに変更される
+        System.Threading.ManualResetEventSlim _modifyEvent = new System.Threading.ManualResetEventSlim(false);
         object _lock = new object();
 
         public int Max { get { return max; } }
@@ -30,6 +33,19 @@ namespace Bjd.Net.Sockets
         private int AfterSpace { get { return max - _dbNext; } }
         private int AfterLength { get { return max - _dbStart; } }
 
+        private void SetModify(bool v)
+        {
+            _modify = v;
+            if (v)
+            {
+                _modifyEvent.Set();
+            }
+            else
+            {
+                _modifyEvent.Reset();
+            }
+        }
+
         public ArraySegment<byte> GetWriteSegment()
         {
             return new ArraySegment<byte>(_db, _dbNext, this.AfterSpace);
@@ -42,7 +58,8 @@ namespace Bjd.Net.Sockets
                 _dbNext += len;
                 _length += len;
                 if (_dbNext >= max) _dbNext = 0;
-                _modify = true; //データベースの内容が変化した
+                //_modify = true; //データベースの内容が変化した
+                SetModify(true);
             }
         }
 
@@ -83,11 +100,23 @@ namespace Bjd.Net.Sockets
                 }
                 _length += len;
                 if (_dbNext >= max) _dbNext = 0;
-                _modify = true; //データベースの内容が変化した
+                //_modify = true; //データベースの内容が変化した
+                SetModify(true);
             }
 
             return len;
 
+        }
+
+        public byte[] DequeueWait(int len, int millisecondsTimeout)
+        {
+            var result = Dequeue(len);
+            if (result == empty)
+            {
+                _modifyEvent.Wait(millisecondsTimeout);
+                result = Dequeue(len);
+            }
+            return result;
         }
 
         //キューからのデータ取得
@@ -96,7 +125,7 @@ namespace Bjd.Net.Sockets
             //if (_db.Length == 0 || len == 0 || !_modify)
             if (_length == 0 || len == 0 || !_modify)
             {
-                return new byte[0];
+                return empty;
             }
 
             lock (_lock)
@@ -137,19 +166,32 @@ namespace Bjd.Net.Sockets
                 if (_length == 0)
                 {
                     // 次に何か受信するまで処理の必要はない
-                    _modify = false;
+                    //_modify = false;
+                    SetModify(false);
                 }
                 return retBuf;
             }
 
         }
 
+        public byte[] DequeueLineWait(int millisecondsTimeout)
+        {
+            var result = DequeueLine();
+            if (result == empty)
+            {
+                _modifyEvent.Wait(millisecondsTimeout);
+                result = DequeueLine();
+            }
+            return result;
+        }
+
+
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
             if (!_modify)
             {
-                return new byte[0];
+                return empty;
             }
 
             lock (_lock)
@@ -197,11 +239,12 @@ namespace Bjd.Net.Sockets
 
                 }
 
-                _modify = false; //次に何か受信するまで処理の必要はない
+                //_modify = false; //次に何か受信するまで処理の必要はない
+                SetModify(false);
 
             }
 
-            return new byte[0];
+            return empty;
         }
 
         #region IDisposable Support
