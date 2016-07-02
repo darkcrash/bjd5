@@ -15,11 +15,42 @@ namespace Bjd.Net.Sockets
     public abstract class SockObj : IDisposable
     {
 
+        private IPEndPoint _RemoteAddress;
+        private IPEndPoint _LocalAddress;
+        private Ip _LocalIp;
+        private Ip _RemoteIp;
+
         //****************************************************************
         // アドレス関連
         //****************************************************************
-        public IPEndPoint RemoteAddress { get; set; }
-        public IPEndPoint LocalAddress { get; set; }
+        public IPEndPoint RemoteAddress
+        {
+            get { return _RemoteAddress; }
+            set
+            {
+                _RemoteAddress = value;
+                var strIp = "0.0.0.0";
+                if (_RemoteAddress != null)
+                {
+                    strIp = _RemoteAddress.Address.ToString();
+                }
+                _RemoteIp = new Ip(strIp);
+            }
+        }
+        public IPEndPoint LocalAddress
+        {
+            get { return _LocalAddress; }
+            set
+            {
+                _LocalAddress = value;
+                var strIp = "0.0.0.0";
+                if (_LocalAddress != null)
+                {
+                    strIp = _LocalAddress.Address.ToString();
+                }
+                _LocalIp = new Ip(strIp);
+            }
+        }
         public String RemoteHostname { get; private set; }
 
         private System.Threading.CancellationTokenSource cancelTokenSource;
@@ -40,12 +71,7 @@ namespace Bjd.Net.Sockets
         {
             get
             {
-                var strIp = "0.0.0.0";
-                if (LocalAddress != null)
-                {
-                    strIp = LocalAddress.Address.ToString();
-                }
-                return new Ip(strIp);
+                return _LocalIp;
             }
         }
 
@@ -53,16 +79,11 @@ namespace Bjd.Net.Sockets
         {
             get
             {
-                var strIp = "0.0.0.0";
-                if (RemoteAddress != null)
-                {
-                    strIp = RemoteAddress.Address.ToString();
-                }
-                return new Ip(strIp);
+                return _RemoteIp;
             }
         }
 
-        protected SockObj(Kernel kernel) 
+        protected SockObj(Kernel kernel)
         {
             Kernel = kernel;
             SockState = SockState.Idle;
@@ -180,6 +201,10 @@ namespace Bjd.Net.Sockets
         //これによりテキスト判断ロジックを省略できる
         protected void Trace(TraceKind traceKind, byte[] buf, bool noEncode)
         {
+            if (Kernel.RemoteConnect == null)
+            {
+                return;
+            }
 
             if (buf == null || buf.Length == 0)
             {
@@ -230,11 +255,8 @@ namespace Bjd.Net.Sockets
             {
                 Ip ip = RemoteIp;
 
-                if (Kernel.RemoteConnect != null)
-                {
-                    //リモートサーバへもデータを送る（クライアントが接続中の場合は、クライアントへ送信される）
-                    Kernel.RemoteConnect.AddTrace(traceKind, str, ip);
-                }
+                //リモートサーバへもデータを送る（クライアントが接続中の場合は、クライアントへ送信される）
+                Kernel.RemoteConnect.AddTrace(traceKind, str, ip);
             }
 
         }
