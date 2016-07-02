@@ -400,6 +400,8 @@ namespace Bjd.WebServer
                 Disk = 1,
             }
 
+            static byte[] empty = new byte[0];
+
             KindBuf _kindBuf;
             byte[] _doc;
 
@@ -410,12 +412,12 @@ namespace Bjd.WebServer
             public Body()
             {
                 _kindBuf = KindBuf.Memory;
-                _doc = new byte[0];
+                _doc = empty;
             }
             public void Clear()
             {
                 _kindBuf = KindBuf.Memory;
-                _doc = new byte[0];
+                _doc = empty;
             }
 
             public void Set(string fileName, long rangeFrom, long rangeTo)
@@ -446,6 +448,7 @@ namespace Bjd.WebServer
             //public bool Send(SockTcp tcpObj,bool encode,ref bool life){
             public bool Send(SockTcp tcpObj, bool encode, ILife iLife)
             {
+                System.Diagnostics.Trace.TraceInformation($"Document.Body.Send");
                 if (_kindBuf == KindBuf.Memory)
                 {
                     if (encode)
@@ -503,7 +506,7 @@ namespace Bjd.WebServer
                                 start += _doc.Length;
                                 if (_rangeTo - start <= 0)
                                     break;
-                                Thread.Sleep(1);
+                                //Thread.Sleep(1);
                             }
                             //br.Close();
                         }

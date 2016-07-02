@@ -32,6 +32,8 @@ namespace Bjd.WebServer
 
         protected List<OneOption> WebOptionList = null;
 
+        private CultureInfo _culture = new CultureInfo("en-US");
+
         //通常のServerThreadの子クラスと違い、オプションはリストで受け取る
         //親クラスは、そのリストの0番目のオブジェクトで初期化する
 
@@ -135,7 +137,7 @@ namespace Bjd.WebServer
         {
             System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            System.Globalization.CultureInfo.CurrentCulture = new CultureInfo("en-US");
+            System.Globalization.CultureInfo.CurrentCulture = _culture;
 
             var sockTcp = (SockTcp)sockObj;
 
@@ -172,16 +174,6 @@ namespace Bjd.WebServer
                     int responseCode;
 
                     //***************************************************************
-                    // ドキュメント生成クラスの初期化
-                    //***************************************************************
-                    var contentType = new ContentType(_conf);
-                    var document = new Document(_kernel, Logger, _conf, sockTcp, contentType);
-
-                    var authrization = new Authorization(_conf, Logger);
-                    var authName = "";
-
-
-                    //***************************************************************
                     //データ取得
                     //***************************************************************
                     //リクエスト取得
@@ -209,6 +201,15 @@ namespace Bjd.WebServer
                         urlStr = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
                         System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {urlStr}");
                     }
+
+                    //***************************************************************
+                    // ドキュメント生成クラスの初期化
+                    //***************************************************************
+                    var contentType = new ContentType(_conf);
+                    var document = new Document(_kernel, Logger, _conf, sockTcp, contentType);
+
+                    var authrization = new Authorization(_conf, Logger);
+                    var authName = "";
 
                     //入力取得（POST及びPUTの場合）
                     var contentLengthStr = recvHeader.GetVal("Content-Length");
