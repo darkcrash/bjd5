@@ -54,69 +54,15 @@ namespace Bjd.Net
             return buf.Length;
         }
 
-        public void BeginRead(byte[] buf, int offset, int count, AsyncCallback ac, object o, CancellationToken token)
+        public Task<int> ReadAsync(ArraySegment<byte> buf, CancellationToken token)
         {
-            //_stream.BeginRead(buf, offset, count, ac, o);
-            BeginRead(_stream, buf, offset, count, ac, o, token);
-        }
-
-        public int EndRead(IAsyncResult ar)
-        {
-            //return _stream.EndRead(ar);
-            return EndRead(_stream, ar);
+            return _stream.ReadAsync(buf.Array, buf.Offset, buf.Count, token);
         }
 
         public void Close()
         {
             //_stream.Close();
             _stream.Dispose();
-        }
-
-
-        private static void BeginRead(SslStream t, byte[] buf, int offset, int count, AsyncCallback ac, object o, CancellationToken token)
-        {
-            var result = t.ReadAsync(buf, offset, count);
-            Result r = new Result(ac, o);
-            result.ContinueWith(_ => r.Complete(_), token);
-        }
-
-        private static int EndRead(SslStream t, IAsyncResult ar)
-        {
-            var result = (Result)ar;
-            return result.ReadCount;
-        }
-
-
-        private class Result : IAsyncResult
-        {
-            private System.Threading.ManualResetEvent _wait;
-            private bool _Completed = false;
-            private AsyncCallback callback;
-            public int ReadCount = -1;
-            public Result(AsyncCallback ac, object state)
-            {
-                this._wait = new ManualResetEvent(false);
-                this.AsyncState = state;
-                this.AsyncWaitHandle = this._wait;
-                this.callback = ac;
-            }
-
-            public void Complete(Task<int> result)
-            {
-                this.ReadCount = result.Result;
-                this._Completed = true;
-                this._wait.Set();
-                this.callback(this);
-            }
-
-            public object AsyncState { get; }
-
-            public WaitHandle AsyncWaitHandle { get; }
-
-            public bool CompletedSynchronously { get; } = false;
-
-            public bool IsCompleted { get { return _Completed; } }
-
         }
 
     }

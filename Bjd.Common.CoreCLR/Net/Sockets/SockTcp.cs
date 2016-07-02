@@ -14,16 +14,11 @@ namespace Bjd.Net.Sockets
     public class SockTcp : SockObj
     {
 
-        //private Selector selector = null;
-        //private SocketChannel channel = null; //ACCEPTの場合は、コンストラクタでコピーされる
         private Socket _socket;
         private Ssl _ssl;
-
         private OneSsl _oneSsl;
-        private SockQueue _sockQueue = new SockQueue();
-        
-        //ByteBuffer recvBuf = ByteBuffer.allocate(sockQueue.Max);
-        private byte[] _recvBuf; //１行処理のためのテンポラリバッファ
+        private SockQueue _sockQueue;
+        private bool isSsl = false;
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -40,12 +35,11 @@ namespace Bjd.Net.Sockets
         {
             //SSL通信を使用する場合は、このオブジェクトがセットされる 通常の場合は、null
             _ssl = ssl;
+            isSsl = _ssl != null;
 
             _socket = new Socket((ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
             try
             {
-                //socket.Connect(ip.IPAddress, port);
-                //_socket.BeginConnect(ip.IPAddress, port, CallbackConnect, this);
                 var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
                 tConnect.ContinueWith(_ => CallbackConnect(), this.CancelToken);
             }
@@ -57,11 +51,8 @@ namespace Bjd.Net.Sockets
             while (SockState == SockState.Idle)
             {
                 Thread.Sleep(10);
-
             }
-            //************************************************
             //ここまでくると接続が完了している
-            //************************************************
         }
 
         private void CallbackConnect()
@@ -69,7 +60,7 @@ namespace Bjd.Net.Sockets
             if (_socket.Connected)
             {
                 //ここまでくると接続が完了している
-                if (_ssl != null)
+                if (isSsl)
                 {
                     //SSL通信の場合は、SSLのネゴシエーションが行われる
                     _oneSsl = _ssl.CreateClientStream(_socket);
@@ -87,45 +78,18 @@ namespace Bjd.Net.Sockets
             }
         }
 
-        //通常のサーバでは、このファンクションを外部で作成する
-        //private void CallbackConnect(IAsyncResult ar)
-        //{
-        //    if (_socket.Connected)
-        //    {
-        //        _socket.EndConnect(ar);
-        //        //ここまでくると接続が完了している
-        //        if (_ssl != null)
-        //        {
-        //            //SSL通信の場合は、SSLのネゴシエーションが行われる
-        //            _oneSsl = _ssl.CreateClientStream(_socket);
-        //            if (_oneSsl == null)
-        //            {
-        //                SetError("_ssl.CreateClientStream() faild");
-        //                return;
-        //            }
-        //        }
-        //        BeginReceive(); //接続完了処理（受信待機開始）
-        //    }
-        //    else {
-        //        SetError("CallbackConnect() faild");
-        //    }
-        //}
-
-
         //ACCEPT
         //Ver5.9.2 Java fix
         //public SockTcp(Kernel kernel, Socket s) : base(kernel){
         public SockTcp(Kernel kernel, Ssl ssl, Socket s) : base(kernel)
         {
-
-            //************************************************
-            //selector/channel生成
-            //************************************************
+            // set member
             _socket = s;
             _ssl = ssl;
+            isSsl = _ssl != null;
 
             //既に接続を完了している
-            if (_ssl != null)
+            if (isSsl)
             {
                 //SSL通信の場合は、SSLのネゴシエーションが行われる
                 _oneSsl = _ssl.CreateServerStream(_socket);
@@ -136,15 +100,9 @@ namespace Bjd.Net.Sockets
                 }
             }
 
-            //************************************************
-            //ここまでくると接続が完了している
-            //************************************************
-            //Set(SockState.Connect, (InetSocketAddress) channel.socket().getLocalSocketAddress(), (InetSocketAddress) channel.socket().getRemoteSocketAddress());
-
-            //************************************************
             //read待機
-            //************************************************
-            BeginReceive(); //接続完了処理（受信待機開始）
+            //接続完了処理（受信待機開始）
+            BeginReceive();
         }
 
         public int Length()
@@ -157,9 +115,9 @@ namespace Bjd.Net.Sockets
         private void BeginReceive()
         {
             System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
+
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
-            //_recvBuf = new byte[4096]; //キューが空なので、Spaceはバッファの最大サイズになっている
 
             // Using the LocalEndPoint property.
             string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -176,23 +134,19 @@ namespace Bjd.Net.Sockets
             }
 
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
-            //socket.BeginReceive(tcpBuffer, 0, (oneSsl != null) ? 0 : tcpQueue.Space, SocketFlags.None, new AsyncCallback(EndReceive), this);
-
             try
             {
-                if (_ssl != null)
+                var recvBufSeg = _sockQueue.GetWriteSegment();
+                Task<int> tReceive;
+                if (isSsl)
                 {
-                    //Ver5.9.2 Java fix
-                    _recvBuf = new byte[4096]; //キューが空なので、Spaceはバッファの最大サイズになっている
-                    _oneSsl.BeginRead(_recvBuf, 0, _recvBuf.Length, EndReceiveSsl, this, this.CancelToken);
+                    tReceive = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
                 }
                 else
                 {
-                    //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
-                    var recvBufSeg = _sockQueue.GetWriteSegment();
-                    var tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
-                    tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
+                    tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
+                tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
             catch
             {
@@ -202,7 +156,7 @@ namespace Bjd.Net.Sockets
 
         public void EndReceive(Task<int> result)
         {
-            //System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
+            System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
 
             if (result.IsFaulted || !result.IsCompleted)
             {
@@ -251,15 +205,22 @@ namespace Bjd.Net.Sockets
             //受信待機の開始
             try
             {
-                //Ver5.9.2 Java fix
-                //_socket.BeginReceive(_recvBuf, 0, _sockQueue.Space, SocketFlags.None, EndReceive, this);
                 var recvBufSeg = _sockQueue.GetWriteSegment();
-                var tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
+                Task<int> tReceive;
+                if (isSsl)
+                {
+                    tReceive = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
+                }
+                else
+                {
+                    tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
+                }
                 tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceInformation($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
                 this.SetErrorReceive();
                 return;
             }
@@ -274,86 +235,6 @@ namespace Bjd.Net.Sockets
 
             //Close();クローズは外部から明示的に行う
         }
-
-        //受信処理・受信待機
-        public void EndReceiveSsl(IAsyncResult ar)
-        {
-            System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
-            if (ar == null)
-            {
-                //受信待機
-                while ((_sockQueue.Space) == 0)
-                {
-                    Thread.Sleep(10); //他のスレッドに制御を譲る  
-                    if (SockState != SockState.Connect)
-                    {
-                        this.SetErrorReceive();
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                //受信完了
-                lock (this)
-                {
-                    //ポインタを移動する場合は、排他制御が必要
-                    try
-                    {
-                        //Ver5.9.2 Java fix
-                        int bytesRead = _oneSsl.EndRead(ar);
-                        if (bytesRead == 0)
-                        {
-                            //  切断されている場合は、0が返される?
-                            if (_ssl == null)
-                            {
-                                this.SetErrorReceive();
-                                return;
-                            }
-                            Thread.Sleep(10); //Ver5.0.0-a19
-                        }
-                        else if (bytesRead < 0)
-                        {
-                            this.SetErrorReceive();
-                            return;
-                        }
-                        else
-                        {
-                            _sockQueue.Enqueue(_recvBuf, bytesRead); //キューへの格納
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
-                        //受信待機のままソケットがクローズされた場合は、ここにくる
-                        this.SetErrorReceive();
-                        return;
-                    }
-                }
-            }
-
-            if (_sockQueue.Space == 0)
-            {
-                //バッファがいっぱい 空の受信待機をかける
-                EndReceiveSsl(null);
-            }
-            else
-            {
-                //受信待機の開始
-                try
-                {
-                    _oneSsl.BeginRead(_recvBuf, 0, _recvBuf.Length, EndReceiveSsl, this, this.CancelToken);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.Message}");
-                    System.Diagnostics.Trace.WriteLine($"SockTcp.EndReceive {ex.StackTrace}");
-                    this.SetErrorReceive();
-                    return;
-                }
-            }
-        }
-
 
         //受信<br>
         //切断・タイムアウトでnullが返される
@@ -507,7 +388,7 @@ namespace Bjd.Net.Sockets
                     Trace(TraceKind.Send, buf, false);
                 }
                 //Ver5.9.2 Java fix
-                if (_oneSsl != null)
+                if (isSsl)
                 {
                     return _oneSsl.Write(buf, buf.Length);
                 }
@@ -605,10 +486,11 @@ namespace Bjd.Net.Sockets
         {
             try
             {
-                if (_oneSsl != null)
+                if (isSsl)
                 {
                     return _oneSsl.Write(buffer, buffer.Length);
                 }
+
                 if (_socket.Connected)
                 {
                     var arry = new ArraySegment<byte>(buffer, 0, buffer.Length);
@@ -701,7 +583,6 @@ namespace Bjd.Net.Sockets
             if (!disposedValue)
             {
                 this._lastLineSend = null;
-                this._recvBuf = null;
                 if (this._socket != null)
                 {
                     this._socket.Dispose();
