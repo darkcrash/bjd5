@@ -116,7 +116,8 @@ namespace Bjd.Net.Sockets
         private void SetConnectionInfo()
         {
             //受信バッファは接続完了後に確保される
-            _sockQueue = new SockQueue();
+            //_sockQueue = new SockQueue();
+            _sockQueue = SockQueuePool.Instance.Get();
 
             try
             {
@@ -488,7 +489,8 @@ namespace Bjd.Net.Sockets
                 this._lastLineSend = null;
                 if (this._sockQueue != null)
                 {
-                    this._sockQueue.Dispose();
+                    //this._sockQueue.Dispose();
+                    SockQueuePool.Instance.Pool(ref this._sockQueue);
                     this._sockQueue = null;
                 }
                 if (this._ssl != null)

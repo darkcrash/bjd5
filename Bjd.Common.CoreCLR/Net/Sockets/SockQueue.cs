@@ -34,6 +34,14 @@ namespace Bjd.Net.Sockets
         private int AfterSpace { get { return max - _dbNext; } }
         private int AfterLength { get { return max - _dbStart; } }
 
+        internal void Initialize()
+        {
+            SetModify(false);
+            _dbNext = 0;
+            _dbStart = 0;
+            _length = 0;
+        }
+
         private void SetModify(bool modify)
         {
             _modify = modify;
