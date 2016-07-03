@@ -179,7 +179,7 @@ namespace Bjd.Options
             }
             if (Get("Smtp") != null || Get("Pop3") != null || Get("WebApi") != null)
             {
-                Add(new OptionMailBox(_kernel, Define.ExecutablePath)); //メールボックス
+                Add(new OptionMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
             }
         }
 

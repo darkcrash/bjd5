@@ -24,6 +24,10 @@ namespace Bjd.WebServer
             _logger = logger;
             PhysicalRootPath = kernel.Enviroment.ExecutableDirectory;
             DocumentRoot = (string)_conf.Get("documentRoot");
+            if (!Path.IsPathRooted(DocumentRoot))
+            {
+                DocumentRoot = Path.GetFullPath(Path.Combine(kernel.Enviroment.ExecutableDirectory, DocumentRoot));
+            }
             System.Diagnostics.Trace.TraceInformation($"Target..ctor {DocumentRoot} ");
             if (!Directory.Exists(DocumentRoot))
             {

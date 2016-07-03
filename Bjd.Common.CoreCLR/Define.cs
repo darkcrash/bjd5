@@ -158,7 +158,7 @@ namespace Bjd
 
 
             // set define
-            Define.ExecutableDirectory = AppContext.BaseDirectory;
+            Define.ExecutableDirectory = System.IO.Directory.GetCurrentDirectory();
             Define.ExecutablePath = AppContext.BaseDirectory;
             Define.ProductVersion = asmName.Version.ToString();
 
