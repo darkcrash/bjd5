@@ -259,16 +259,16 @@ namespace Bjd.Test.Servers
 
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(5)]
-        [InlineData(10)]
-        [InlineData(20)]
-        [InlineData(50)]
-        public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple)
+        [InlineData(1, 8701)]
+        [InlineData(5, 8702)]
+        [InlineData(10, 8703)]
+        [InlineData(20, 8704)]
+        [InlineData(50, 8705)]
+        public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple, int port)
         {
             var kernel = _service.Kernel;
 
-            const int port = 8889;
+            //const int port = 8889;
             const string address = "127.0.0.1";
             var ip = new Ip(address);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
