@@ -121,7 +121,14 @@ namespace ProxyHttpServerTest
             cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
-            var lines = Inet.RecvLines(cl, 3, this);
+            //var lines = Inet.RecvLines(cl, 3, this);
+            var lines = new List<string>();
+            for (var i = 0; i < 9; i++)
+            {
+                var buf = cl.LineRecv(2, this);
+                buf = Inet.TrimCrlf(buf);
+                lines.Add(Encoding.ASCII.GetString(buf));
+            }
 
             //verify
             Assert.Equal(lines.Count, 9);
@@ -156,7 +163,14 @@ namespace ProxyHttpServerTest
             cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
-            var lines = Inet.RecvLines(cl, 3, this);
+            //var lines = Inet.RecvLines(cl, 3, this);
+            var lines = new List<string>();
+            for (var i = 0; i < 9; i++)
+            {
+                var buf = cl.LineRecv(2, this);
+                buf = Inet.TrimCrlf(buf);
+                lines.Add(Encoding.ASCII.GetString(buf));
+            }
 
             //verify
             Assert.Equal(lines.Count, 9);
@@ -191,10 +205,13 @@ namespace ProxyHttpServerTest
             cl.Send(Encoding.ASCII.GetBytes(string.Format("CONNECT {0}:443/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", hostname)));
 
             //exercise
-            var lines = Inet.RecvLines(cl, 3, this);
+            //var lines = Inet.RecvLines(cl, 3, this);
+            var lines = new List<string>();
+            lines.Add(cl.AsciiRecv(2, this));
+
 
             //verify
-            Assert.Equal(lines[0], "HTTP/1.0 200 Connection established");
+            Assert.Equal(lines[0], "HTTP/1.0 200 Connection established\r\n");
 
             //tearDown
             cl.Close();
@@ -236,7 +253,12 @@ namespace ProxyHttpServerTest
 
             //cl.Send(Encoding.ASCII.GetBytes(string.Format("GET http://127.0.0.1:17777/{0} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", fileName)));
             cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{port}/{fileName} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
-            var lines = Inet.RecvLines(cl, 5, this);
+            //var lines = Inet.RecvLines(cl, 5, this);
+            var lines = new List<string>();
+            for (var i = 0; i < count; i++)
+            {
+                lines.Add(cl.AsciiRecv(2, this));
+            }
 
             //計測終了
             sw.Stop();
@@ -247,7 +269,7 @@ namespace ProxyHttpServerTest
 
             if (lines != null)
             {
-                Assert.Equal(lines[0], "HTTP/1.1 200 OK");
+                Assert.Equal(lines[0], "HTTP/1.1 200 OK\r\n");
             }
             else
             {

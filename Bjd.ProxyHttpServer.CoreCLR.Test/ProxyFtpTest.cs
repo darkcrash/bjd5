@@ -85,10 +85,23 @@ namespace ProxyHttpServerTest
             cl.Send(Encoding.ASCII.GetBytes("GET ftp://ftp.jaist.ac.jp/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
-            var lines = Inet.RecvLines(cl, 20, this);
+            //var lines = Inet.RecvLines(cl, 20, this);
+
+            var lines = new List<string>();
+            for (var i = 0; i < 100; i++)
+            {
+                var buf = cl.LineRecv(3, this);
+                if (buf == null) break;
+                buf = Inet.TrimCrlf(buf);
+                lines.Add(Encoding.ASCII.GetString(buf));
+            }
+
             //verify
             Assert.NotEqual(0, lines.Count);
             Assert.Equal(lines[0], "HTTP/1.0 200 OK");
+
+            cl.Close();
+            cl.Dispose();
 
         }
 
