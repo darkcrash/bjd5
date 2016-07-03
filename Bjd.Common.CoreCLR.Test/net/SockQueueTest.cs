@@ -1,5 +1,6 @@
 ﻿using Bjd.Net.Sockets;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -73,6 +74,53 @@ namespace Bjd.Test.Net
             //verify
             Assert.Equal(expected, actual);
         }
+
+        [Theory]
+        [InlineData(0, 50, 0)]
+        [InlineData(0, 0, 50)]
+        [InlineData(50, 50, 50)]
+        [InlineData(50, 50, 100)]
+        [InlineData(50, 100, 50)]
+        [InlineData(2000000, 2000000, 2000000)]
+        [InlineData(0, 2000001, 2000001)]
+        public void EnqueueDequeueWait(int expected, int writeLength, int dequeueLength)
+        {
+            //setUp
+            var sut = new SockQueue();
+
+            sut.Enqueue(new byte[writeLength], writeLength);
+
+            //exercise
+            var actual = sut.DequeueWait(dequeueLength, 1000).Length;
+
+            //verify
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, 50, 0)]
+        [InlineData(0, 0, 50)]
+        [InlineData(50, 50, 50)]
+        [InlineData(50, 50, 100)]
+        [InlineData(50, 100, 50)]
+        [InlineData(2000000, 2000000, 2000000)]
+        [InlineData(0, 2000001, 2000001)]
+        public void NotifyWriteDequeueWait(int expected, int writeLength, int dequeueLength)
+        {
+            //setUp
+            var sut = new SockQueue();
+            var seg = sut.GetWriteSegment();
+
+            var tWait = Task.Delay(25);
+            tWait.ContinueWith(_ => sut.NotifyWrite(writeLength));
+
+            //exercise
+            var actual = sut.DequeueWait(dequeueLength, 1000).Length;
+
+            //verify
+            Assert.Equal(expected, actual);
+        }
+
 
         [Fact]
         public void EnqueueしたデータとDequeueしたデータの整合性を確認する()
@@ -394,6 +442,50 @@ namespace Bjd.Test.Net
             Assert.Equal(new byte[] { 0x63, 0x0d, 0x0a }, recvbuf5);
         }
 
+        [Fact]
+        public void SockQueueMaxDequeueLineWait()
+        {
+            const int max = 2000000;
+
+            var sockQueu = new SockQueue();
+
+            //2行と改行なしの1行で初期化
+            var lines = new byte[] { 0x61, 0x0d, 0x0a, 0x62, 0x0d, 0x0a };
+            sockQueu.Enqueue(lines, lines.Length);
+            Assert.Equal(max, sockQueu.Space + sockQueu.Length);
+            Assert.Equal(max - lines.Length, sockQueu.Space);
+            Assert.Equal(lines.Length, sockQueu.Length);
+
+            var sendbuf = new byte[max - lines.Length];
+            sockQueu.Enqueue(sendbuf, sendbuf.Length);
+            Assert.Equal(max, sockQueu.Space + sockQueu.Length);
+            Assert.Equal(max - lines.Length - sendbuf.Length, sockQueu.Space);
+            Assert.Equal(max, sockQueu.Length);
+
+            var recvbuf1 = sockQueu.DequeueLineWait(2000);
+            //sockQueue.dequeuLine()=\"1/r/n\" 1行目取得
+            Assert.Equal(new byte[] { 0x61, 0x0d, 0x0a }, recvbuf1);
+
+            //sockQueue.dequeuLine()=\"2/r/n\" 2行目取得 
+            var recvbuf2 = sockQueu.DequeueLineWait(2000);
+            Assert.Equal(new byte[] { 0x62, 0x0d, 0x0a }, recvbuf2);
+
+            var recvbuf3 = sockQueu.DequeueLineWait(2000);
+            //sockQueue.dequeuLine()=\"\" 3行目の取得は失敗する
+            Assert.Equal(new byte[0], recvbuf3);
+
+            lines = new byte[] { 0x63, 0x0d, 0x0a };
+            sockQueu.Enqueue(lines, lines.Length);
+            //"sockQueue.enqueu(/r/n) 改行のみ追加
+
+            var recvbuf4 = sockQueu.DequeueWait(sendbuf.Length, 2000);
+            Assert.Equal(sendbuf, recvbuf4);
+
+
+            var recvbuf5 = sockQueu.DequeueLineWait(2000);
+            //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
+            Assert.Equal(new byte[] { 0x63, 0x0d, 0x0a }, recvbuf5);
+        }
 
 
     }
