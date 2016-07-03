@@ -1,42 +1,85 @@
 ﻿using System.Collections.Generic;
 using Bjd.Controls;
 using Bjd.Utils;
-using System;
+using Bjd.Options.Attributes;
 
 namespace Bjd.Options
 {
-    [Obsolete]
-    public class OptionLog : OneOption
+    public class SmartOptionLog : SmartOption
     {
+        [TabPage]
+        public string tab = null;
+
+        [ComboBox]
+        public int normalLogKind = 2;
+
+        [ComboBox]
+        public int secureLogKind = 2;
+
+        [Folder]
+        public string saveDirectory = "";
+
+        [CheckBox]
+        public bool useLogFile = true;
+
+        [CheckBox]
+        public bool useLogClear = false;
+
+        [Int]
+        public int saveDays = 31;
+
+        [Int]
+        public int linesMax = 3000;
+
+        [Int]
+        public int linesDelete = 2000;
+
+        [Radio]
+        public int isDisplay = 1;
+
+        [Dat]
+        public List<limitStringClass> limitString = new List<limitStringClass>() { new limitStringClass() };
+
+        public class limitStringClass
+        {
+            [TextBox]
+            public string Character = "";
+        }
+
+        [CheckBox]
+        public bool useLimitString = false;
+
 
         public override char Mnemonic { get { return 'L'; } }
 
-        public OptionLog(Kernel kernel, string path) : base(kernel, path, "Log")
+        public SmartOptionLog(Kernel kernel, string path) : base(kernel, path, "Log")
         {
             //var pageList = new List<OnePage>();
 
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             // Page1
             //pageList.Add(Page1("Basic", Lang.Value(key), kernel));
-            Add(new OneVal(CtrlType.ComboBox, "normalLogKind", 2, Crlf.Nextline));
-            Add(new OneVal(CtrlType.ComboBox, "secureLogKind", 2, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Folder, "saveDirectory", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useLogFile", true, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useLogClear", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "saveDays", 31, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "linesMax", 3000, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "linesDelete", 2000, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.ComboBox, "normalLogKind", 2, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.ComboBox, "secureLogKind", 2, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.Folder, "saveDirectory", "", Crlf.Nextline));
+            //Add(new OneVal(CtrlType.CheckBox, "useLogFile", true, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.CheckBox, "useLogClear", false, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.Int, "saveDays", 31, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.Int, "linesMax", 3000, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.Int, "linesDelete", 2000, Crlf.Nextline));
             //Add(new OneVal("font", null, Crlf.Nextline));
 
             // Page2
             //pageList.Add(Page2("Limit", Lang.Value(key)));
-            Add(new OneVal(CtrlType.Radio, "isDisplay", 1, Crlf.Nextline));
-            var list = new ListVal();
-            list.Add(new OneVal(CtrlType.TextBox, "Character", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "limitString", new Dat(list), Crlf.Nextline));
+            //Add(new OneVal(CtrlType.Radio, "isDisplay", 1, Crlf.Nextline));
+            //var list = new ListVal();
+            //list.Add(new OneVal(CtrlType.TextBox, "Character", "", Crlf.Nextline));
+
+            //Add(new OneVal(CtrlType.Dat, "limitString", new Dat(list), Crlf.Nextline));
+
             //Add(new OneVal("limitString", new OneDat(true, new string[] { }, new bool[] { }), Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useLimitString", false, Crlf.Nextline));
+            //Add(new OneVal(CtrlType.CheckBox, "useLimitString", false, Crlf.Nextline));
 
 
 

@@ -71,11 +71,11 @@ namespace Bjd.Test
             }
             if (optionName == "OptionLog")
             {
-                return new Conf(new OptionLog(kernel, ""));
+                return new Conf(new SmartOptionLog(kernel, ""));
             }
             if (optionName == "OptionBasic")
             {
-                return new Conf(new OptionBasic(kernel, ""));
+                return new Conf(new SmartOptionBasic(kernel, ""));
             }
             Util.RuntimeException(string.Format("{0} not found", optionName));
             return null; //k実行時例外により、ここは実行されない

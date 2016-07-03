@@ -36,7 +36,7 @@ namespace Bjd.Options
 
 
         //レジストリへ保存
-        public void Save(IniDb iniDb)
+        public virtual void Save(IniDb iniDb)
         {
             iniDb.Save(NameTag, ListVal);//レジストリへ保存
         }
@@ -44,7 +44,7 @@ namespace Bjd.Options
 
 
         //レジストリからの読み込み
-        public void Read(IniDb iniDb)
+        public virtual void Read(IniDb iniDb)
         {
             iniDb.Read(NameTag, ListVal);
         }
@@ -144,8 +144,7 @@ namespace Bjd.Options
             }
         }
 
-
-        public void Dispose()
+        public virtual void Dispose()
         {
 
         }

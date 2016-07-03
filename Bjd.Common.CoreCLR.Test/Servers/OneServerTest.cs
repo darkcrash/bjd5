@@ -284,13 +284,13 @@ namespace Bjd.Test.Servers
 
             var ar = new List<MyClient>();
 
-            for (int i = 0; i < multiple * 4; i++)
+            for (int i = 0; i < multiple * 2; i++)
             {
                 var myClient = new MyClient(address, port);
                 myClient.Connet();
                 ar.Add(myClient);
             }
-            Thread.Sleep(100);
+            Thread.Sleep(500);
 
             //multiple以上は接続できない
             Assert.Equal(multiple, myServer.Count);

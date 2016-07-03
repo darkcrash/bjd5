@@ -85,8 +85,8 @@ namespace Bjd.Options
 
             //固定的にBasicとLogを生成する
             const string executePath = ""; // Application.ExecutablePath
-            Add(new OptionBasic(_kernel, executePath)); //「基本」オプション
-            Add(new OptionLog(_kernel, executePath)); //「ログ」オプション
+            Add(new SmartOptionBasic(_kernel, executePath)); //「基本」オプション
+            Add(new SmartOptionLog(_kernel, executePath)); //「ログ」オプション
 
             foreach (var onePlugin in listPlugin)
             {
