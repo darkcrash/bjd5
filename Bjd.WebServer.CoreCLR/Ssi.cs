@@ -10,7 +10,8 @@ using Bjd.Utils;
 
 namespace Bjd.WebServer
 {
-    class Ssi {
+    class Ssi
+    {
         readonly Kernel _kernel;
         readonly Logger _logger;
         //readonly OneOption _oneOption;
@@ -25,7 +26,8 @@ namespace Bjd.WebServer
         readonly Request _request;
         readonly Header _recvHeader;
 
-        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, Request request, Header recvHeader) {
+        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, Request request, Header recvHeader)
+        {
             _kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;
@@ -37,7 +39,8 @@ namespace Bjd.WebServer
             _recvHeader = recvHeader;
         }
 
-        public bool Exec(Target target, Env env, WebStream output) {
+        public bool Exec(Target target, Env env, WebStream output)
+        {
             _target = target;
 
             //出力用バッファ
@@ -48,9 +51,11 @@ namespace Bjd.WebServer
             //***************************************************
             // 対象ファイルの読み込み
             //***************************************************
-            using (var bs = new FileStream(target.FullPath, FileMode.Open))
-            using (var sr = new StreamReader(bs, encoding)) {
-                while (true) {
+            using (var bs = new FileStream(target.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var sr = new StreamReader(bs, encoding))
+            {
+                while (true)
+                {
                     var str = sr.ReadLine();
                     if (str == null)
                         break;
@@ -64,7 +69,8 @@ namespace Bjd.WebServer
             return true;
         }
 
-        enum SsiKind {
+        enum SsiKind
+        {
             Unknown = 0,
             Exec = 1,
             Config = 2,
@@ -77,14 +83,17 @@ namespace Bjd.WebServer
         //***************************************************
         //SSIキーワードを検索して置き換える（再帰処理）
         //***************************************************
-        bool SsiConvert(ref string str, Encoding encoding) {
+        bool SsiConvert(ref string str, Encoding encoding)
+        {
             //分解
             var startIndex = str.IndexOf("<!--#");
-            if (startIndex < 0) {
+            if (startIndex < 0)
+            {
                 return true;
             }
             var stopIndex = str.Substring(startIndex).IndexOf("-->");
-            if (stopIndex < 0) {
+            if (stopIndex < 0)
+            {
                 return false;
             }
             var before = str.Substring(0, startIndex);
@@ -95,25 +104,37 @@ namespace Bjd.WebServer
             var ssiKind = SsiKind.Unknown;
             var param = "";
 
-            if (target.IndexOf("exec") == 0) {
-                if (!(bool)_conf.Get("useExec")) {
+            if (target.IndexOf("exec") == 0)
+            {
+                if (!(bool)_conf.Get("useExec"))
+                {
                     return true;
                 }
                 ssiKind = SsiKind.Exec;
                 param = target.Substring(4);
-            } else if (target.IndexOf("config") == 0) {
+            }
+            else if (target.IndexOf("config") == 0)
+            {
                 ssiKind = SsiKind.Config;
                 param = target.Substring(6);
-            } else if (target.IndexOf("echo") == 0) {
+            }
+            else if (target.IndexOf("echo") == 0)
+            {
                 ssiKind = SsiKind.Echo;
                 param = target.Substring(4);
-            } else if (target.IndexOf("flastmod") == 0) {
+            }
+            else if (target.IndexOf("flastmod") == 0)
+            {
                 ssiKind = SsiKind.Flastmod;
                 param = target.Substring(8);
-            } else if (target.IndexOf("fsize") == 0) {
+            }
+            else if (target.IndexOf("fsize") == 0)
+            {
                 ssiKind = SsiKind.Fsize;
                 param = target.Substring(5);
-            } else if (target.IndexOf("include") == 0) {
+            }
+            else if (target.IndexOf("include") == 0)
+            {
                 ssiKind = SsiKind.Include;
                 param = target.Substring(7);
             }
@@ -132,9 +153,11 @@ namespace Bjd.WebServer
         //***************************************************
         //SSIを実行する
         //***************************************************
-        string SsiJob(SsiKind ssiKind, string param, Encoding encoding) {
+        string SsiJob(SsiKind ssiKind, string param, Encoding encoding)
+        {
             var tmp = param.Split(new[] { '=' }, 2);
-            if (tmp.Length != 2) {
+            if (tmp.Length != 2)
+            {
                 _logger.Set(LogKind.Secure, null, 20, string.Format("param {0}", param));//"パラメータの解釈に失敗しました"
                 return "";
             }
@@ -144,7 +167,8 @@ namespace Bjd.WebServer
             var ret = false;
             var str = "";
 
-            switch (ssiKind) {
+            switch (ssiKind)
+            {
                 case SsiKind.Exec:
                     ret = SsiExec(tag, val, ref str, encoding, _sockTcp);
                     break;
@@ -165,55 +189,66 @@ namespace Bjd.WebServer
                     break;
             }
 
-            if (!ret) {
+            if (!ret)
+            {
                 _logger.Set(LogKind.Secure, null, 21, string.Format("{0}=\"{1}\"", tag, val));
                 return "";
             }
             _logger.Set(LogKind.Detail, null, 17, string.Format("{0} {1} -> {2}", ssiKind, param, str));//"exec SSI
 
-//            //Ver5.9.1 CGI出力だけ、ヘッダ処理する
-//            if (ssiKind != SsiKind.Include){
-//                //Ver5.4.8
-//                //SSI用のCGI出力からヘッダ情報を削除する
-//                var lines = str.Split('\n').ToList();
-//                var index = lines.IndexOf("\r");
-//                if (index != -1) {
-//                    var sb = new StringBuilder();
-//                    for (int i = index + 1; i < lines.Count(); i++) {
-//                        sb.Append(lines[i] + "\n");
-//                    }
-//                    str = sb.ToString();
-//                }
-//            }
+            //            //Ver5.9.1 CGI出力だけ、ヘッダ処理する
+            //            if (ssiKind != SsiKind.Include){
+            //                //Ver5.4.8
+            //                //SSI用のCGI出力からヘッダ情報を削除する
+            //                var lines = str.Split('\n').ToList();
+            //                var index = lines.IndexOf("\r");
+            //                if (index != -1) {
+            //                    var sb = new StringBuilder();
+            //                    for (int i = index + 1; i < lines.Count(); i++) {
+            //                        sb.Append(lines[i] + "\n");
+            //                    }
+            //                    str = sb.ToString();
+            //                }
+            //            }
             return str;
         }
 
         //プログラム実行
-        bool SsiExec(string tag, string val, ref string str, Encoding encoding, SockTcp tcpObj) {
+        bool SsiExec(string tag, string val, ref string str, Encoding encoding, SockTcp tcpObj)
+        {
             Target newTarget;
             var param = "";
-            if (tag.ToLower() == "cmd") {
+            if (tag.ToLower() == "cmd")
+            {
                 param = val;
                 newTarget = CreateTarget("comspec", null);
-                if (newTarget == null) {
+                if (newTarget == null)
+                {
                     return false;
                 }
-            } else if (tag.ToLower() == "cgi") {
+            }
+            else if (tag.ToLower() == "cgi")
+            {
                 var cmd = val;
                 var tmp = val.Split(new[] { ' ' }, 2);
-                if (tmp.Length == 2) {
+                if (tmp.Length == 2)
+                {
                     cmd = tmp[0];
                     param = tmp[1];
                 }
                 newTarget = CreateTarget("file", cmd);
-                if (newTarget == null) {
+                if (newTarget == null)
+                {
                     return false;
                 }
-                if (newTarget.TargetKind != TargetKind.Cgi) {
+                if (newTarget.TargetKind != TargetKind.Cgi)
+                {
                     _logger.Set(LogKind.Error, tcpObj, 27, string.Format("<!--#exec cgi=\"{0}\"-->", val));
                     return false;
                 }
-            } else { // cmd="" cgi="" 以外の場合はエラー
+            }
+            else
+            { // cmd="" cgi="" 以外の場合はエラー
                 _logger.Set(LogKind.Error, tcpObj, 28, "");
                 return false;
             }
@@ -224,22 +259,26 @@ namespace Bjd.WebServer
             //string remoteHost = tcpObj.RemoteHost;
             //環境変数作成
             //Env env = new Env(kernel, request, recvHeader, remoteAddress, remoteHost, newTarget.FullPath);
-            var env = new Env(_kernel,_conf, _request, _recvHeader, tcpObj, newTarget.FullPath);
+            var env = new Env(_kernel, _conf, _request, _recvHeader, tcpObj, newTarget.FullPath);
             WebStream output;//標準出力
             const string err = "";
             var cgiTimeout = (int)_conf.Get("cgiTimeout");
-            if (!cgi.Exec(newTarget, param, env, null, out output,cgiTimeout)) {
+            if (!cgi.Exec(newTarget, param, env, null, out output, cgiTimeout))
+            {
                 str = err;
-            } else{
+            }
+            else
+            {
                 var b = new byte[output.Length];
-                output.Read(b, 0, b.Length);   
+                output.Read(b, 0, b.Length);
                 str = encoding.GetString(b);
             }
             return true;
         }
 
         //ファイルの更新日時
-        bool SsiFlastmod(string tag, string val, ref string str) {
+        bool SsiFlastmod(string tag, string val, ref string str)
+        {
             var newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
@@ -250,18 +289,21 @@ namespace Bjd.WebServer
         }
 
         //ファイルのインクルード
-        bool SsiInclude(string tag, string val, ref string str, Encoding encoding) {
+        bool SsiInclude(string tag, string val, ref string str, Encoding encoding)
+        {
             var newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
 
             //ループに陥るため、自分自身はインクルードできない
-            if (_target.FullPath == newTarget.FullPath) {
+            if (_target.FullPath == newTarget.FullPath)
+            {
                 _logger.Set(LogKind.Error, null, 15, string.Format("{0}", newTarget.FullPath));
                 return false;
             }
 
-            if (newTarget.TargetKind == TargetKind.Cgi) {
+            if (newTarget.TargetKind == TargetKind.Cgi)
+            {
                 var cgi = new Cgi();
                 //TODO 変数削除 リファクタリング対象
                 //IPAddress remoteAddress = tcpObj.RemoteEndPoint.Address;
@@ -269,79 +311,108 @@ namespace Bjd.WebServer
                 //環境変数作成
                 //Ver5.6.2
                 //Env env = new Env(kernel, request, recvHeader, remoteAddress, remoteHostName, newTarget.FullPath);
-                var env = new Env(_kernel, _conf,_request, _recvHeader,_sockTcp,newTarget.FullPath);
+                var env = new Env(_kernel, _conf, _request, _recvHeader, _sockTcp, newTarget.FullPath);
                 const string param = "";
                 WebStream output;
                 var cgiTimeout = (int)_conf.Get("cgiTimeout");
-                cgi.Exec(newTarget, param, env,null, out output, cgiTimeout);
+                cgi.Exec(newTarget, param, env, null, out output, cgiTimeout);
                 str = Encoding.ASCII.GetString(output.GetBytes());
 
                 //Ver5.9.1 CGI出力は、ヘッダをカットする
                 var lines = str.Split('\n').ToList();
                 var index = lines.IndexOf("\r");
-                if (index != -1) {
+                if (index != -1)
+                {
                     var sb = new StringBuilder();
-                    for (int i = index + 1; i < lines.Count(); i++) {
+                    for (int i = index + 1; i < lines.Count(); i++)
+                    {
                         sb.Append(lines[i] + "\n");
                     }
                     str = sb.ToString();
                 }
 
-            } else if (newTarget.TargetKind == TargetKind.File || newTarget.TargetKind == TargetKind.Ssi) {
-                if (File.Exists(newTarget.FullPath)) {
+            }
+            else if (newTarget.TargetKind == TargetKind.File || newTarget.TargetKind == TargetKind.Ssi)
+            {
+                if (File.Exists(newTarget.FullPath))
+                {
                     using (var bs = new FileStream(newTarget.FullPath, FileMode.Open))
-                    using (var sr = new StreamReader(bs, encoding)) {
+                    using (var sr = new StreamReader(bs, encoding))
+                    {
                         str = sr.ReadToEnd();
                         //sr.Close();
                     }
-                } else {
+                }
+                else
+                {
                     return false;
                 }
-            } else {
+            }
+            else
+            {
                 return false;
             }
             return true;
         }
 
-        bool SsiConfig(string tag, string val) {
-            if (tag == "timefmt") {
+        bool SsiConfig(string tag, string val)
+        {
+            if (tag == "timefmt")
+            {
                 SetTimeFmt(val);//日付書式文字列(timeFmt)の変更
-            } else if (tag == "sizefmt") {
+            }
+            else if (tag == "sizefmt")
+            {
                 _sizeFmt = val == "abbrev" ? val : "bytes";
-            } else {
+            }
+            else
+            {
                 return false;
             }
             return true;
         }
 
         //ファイルのサイズ
-        bool SsiFsize(string tag, string val, ref string str) {
+        bool SsiFsize(string tag, string val, ref string str)
+        {
             Target newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
             long size = 0;
-            if (newTarget.FileInfo != null) {
+            if (newTarget.FileInfo != null)
+            {
                 size = newTarget.FileInfo.Length;
             }
-            if (_sizeFmt == "bytes") { //バイト単位固定
+            if (_sizeFmt == "bytes")
+            { //バイト単位固定
                 str = string.Format("{0}", size);
-            } else {
-                if (size < 1000) { //1000以下の場合は、バイト単位
+            }
+            else
+            {
+                if (size < 1000)
+                { //1000以下の場合は、バイト単位
                     str = string.Format("{0}", size);
-                } else if (size > 1024 * 1024) { //Mbyte単位
+                }
+                else if (size > 1024 * 1024)
+                { //Mbyte単位
                     str = string.Format("{0}M", size / (1024 * 1024));
-                } else { //Kbyte単位
+                }
+                else
+                { //Kbyte単位
                     str = string.Format("{0}K", size / 1024);
                 }
             }
             return true;
         }
 
-        bool SsiEcho(string tag, string val, ref string str) {
-            if (tag != "var") {
+        bool SsiEcho(string tag, string val, ref string str)
+        {
+            if (tag != "var")
+            {
                 return false;
             }
-            switch (val) {
+            switch (val)
+            {
                 case "LAST_MODIFIED":
                     str = _target.FileInfo.LastWriteTime.ToString(_timeFmt);
                     break;
@@ -369,20 +440,28 @@ namespace Bjd.WebServer
             return true;
         }
 
-        Target CreateTarget(string tag, string val) {
+        Target CreateTarget(string tag, string val)
+        {
             var newTarget = new Target(_kernel, _conf, _logger);
-            if (tag == "file") {
+            if (tag == "file")
+            {
                 //現在のドキュメンのフルパスからからファイル名を生成する
                 //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\" + val;
-                string fullPath = Path.Combine( Path.GetDirectoryName(_target.FullPath), val);
+                string fullPath = Path.Combine(Path.GetDirectoryName(_target.FullPath), val);
                 newTarget.InitFromFile(fullPath);
-            } else if (tag == "virtual") {
+            }
+            else if (tag == "virtual")
+            {
                 newTarget.InitFromUri(val);
-            } else if (tag == "comspec") {
+            }
+            else if (tag == "comspec")
+            {
                 //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\";
                 string fullPath = Path.GetDirectoryName(_target.FullPath) + Path.DirectorySeparatorChar;
                 newTarget.InitFromCmd(fullPath);
-            } else {
+            }
+            else
+            {
                 return null;
             }
             return newTarget;
@@ -392,14 +471,18 @@ namespace Bjd.WebServer
         // <!--config timefmt="--" で送られた日付書式を変換して
         // 内部処理変数 timeFmtにセットする
         //***************************************************
-        void SetTimeFmt(string str) {
+        void SetTimeFmt(string str)
+        {
             var sb = new StringBuilder();
-            for (int i = 0; i < str.Length; i++) {
+            for (int i = 0; i < str.Length; i++)
+            {
                 char c = str[i];
-                if (c == '%') {
+                if (c == '%')
+                {
                     i++;
                     c = str[i];
-                    switch (c) {
+                    switch (c)
+                    {
                         case 'c':
                             //sb.Append("MM/dd/yy hh/mm/ss");//10/30/97 11:22:33(月/日/年 時:分:秒)
                             sb.Append("MM/dd/yy hh:mm:ss");//10/30/97 11:22:33(月/日/年 時:分:秒)
@@ -460,7 +543,9 @@ namespace Bjd.WebServer
                             sb.Append("%K");//JST タイムゾーン 
                             break;
                     }
-                } else {
+                }
+                else
+                {
                     sb.Append(c);
                 }
                 _timeFmt = sb.ToString();

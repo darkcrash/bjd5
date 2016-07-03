@@ -31,7 +31,7 @@ namespace WebServerTest
                 _service.ContentDirectory("public_html");
 
                 Kernel kernel = _service.Kernel;
-                option = kernel.ListOption.Get("Web-localhost:91");
+                option = kernel.ListOption.Get("Web-localhost:7091");
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, new Conf(option), new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -100,7 +100,7 @@ namespace WebServerTest
         {
             Conf conf = new Conf(_fixture.option);
             var sut = new Target(_fixture._service.Kernel, conf, null);
-            var fullPath = Path.Combine(_fixture._v4Sv.DocumentRoot, path);
+            var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromUri(uri);
             Assert.Equal(sut.FullPath, fullPath);
@@ -114,7 +114,7 @@ namespace WebServerTest
         {
             Conf conf = new Conf(_fixture.option);
             var sut = new Target(_fixture._service.Kernel, conf, null);
-            var fullPath = Path.Combine(_fixture._v4Sv.DocumentRoot, path);
+            var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromFile(fullPath);
             Assert.Equal(sut.Uri, uri);

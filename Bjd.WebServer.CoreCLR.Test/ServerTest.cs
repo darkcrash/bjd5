@@ -15,6 +15,7 @@ namespace WebServerTest
 
     public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.ServerFixture>
     {
+        const int port = 7088;
 
         public class ServerFixture : IDisposable
         {
@@ -29,7 +30,7 @@ namespace WebServerTest
                 _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:88");
+                var option = kernel.ListOption.Get("Web-localhost:7088");
                 Conf conf = new Conf(option);
 
                 //サーバ起動
@@ -73,10 +74,10 @@ namespace WebServerTest
         public void ステータス情報_ToString_の出力確認_V4()
         {
             var sv = _fixture._v4Sv;
-            var expected = "+ サービス中 \t    Web-localhost:88\t[127.0.0.1\t:TCP 88]\tThread";
+            var expected = "+ サービス中 \t    Web-localhost:7088\t[127.0.0.1\t:TCP 7088]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 56);
+            var actual = sv.ToString().Substring(0, 60);
             //verify
             Assert.Equal(expected, actual);
 
@@ -87,10 +88,10 @@ namespace WebServerTest
         {
 
             var sv = _fixture._v6Sv;
-            var expected = "+ サービス中 \t    Web-localhost:88\t[::1\t:TCP 88]\tThread";
+            var expected = "+ サービス中 \t    Web-localhost:7088\t[::1\t:TCP 7088]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 50);
+            var actual = sv.ToString().Substring(0, 54);
             //verify
             Assert.Equal(expected, actual);
 
@@ -103,7 +104,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             var expected = "HTTP/1.0 200 Document follows\r\n";
 
             //exercise
@@ -125,7 +126,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             var expected = "HTTP/1.1 400 Missing Host header or incompatible headers detected.\r\n";
 
             //exercise
@@ -150,7 +151,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -176,7 +177,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -202,7 +203,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -224,7 +225,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -250,7 +251,7 @@ namespace WebServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             byte[] expected = null;
 
             //exercise

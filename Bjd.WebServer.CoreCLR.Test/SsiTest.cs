@@ -18,6 +18,7 @@ namespace WebServerTest
 
     public class SsiTest : ILife, IDisposable, IClassFixture<SsiTest.ServerFixture>
     {
+        const int port = 7089;
 
         public class ServerFixture : IDisposable
         {
@@ -32,7 +33,7 @@ namespace WebServerTest
                 _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:89");
+                var option = kernel.ListOption.Get("Web-localhost:7089");
                 Conf conf = new Conf(option);
 
                 //サーバ起動
@@ -98,7 +99,7 @@ namespace WebServerTest
         {
 
             //var path = string.Format("{0}\\SsiTest\\Echo.html", _fixture._v4Sv.DocumentRoot);
-            var path = Path.Combine(_fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
+            var path = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
 
             if (pattern == "LAST_MODIFIED = $")
             {
@@ -133,10 +134,10 @@ namespace WebServerTest
                 pattern = string.Format("FLASTMOD = {0}", Date2Str(File.GetLastWriteTime(path)));
             }
 
-            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
-            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 2; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
             var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
@@ -151,11 +152,11 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
-            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 2; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
             var expected = "<html>";
             var actual = lines[8];
@@ -171,11 +172,11 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 89, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));
-            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 2; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
             var expected = "100+200=300";
             var actual = lines[8];
