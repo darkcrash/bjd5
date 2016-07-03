@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -17,7 +18,7 @@ namespace Bjd.Net.Sockets
         private const int max = 2000000; //保持可能な最大数
         //TODO modifyの動作に不安あり（これ必要なのか？） 
         bool _modify; //バッファに追加があった場合にtrueに変更される
-        System.Threading.ManualResetEventSlim _modifyEvent = new System.Threading.ManualResetEventSlim(false);
+        ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
         object _lock = new object();
 
         public int Max { get { return max; } }
@@ -114,15 +115,27 @@ namespace Bjd.Net.Sockets
 
         }
 
-        public byte[] DequeueWait(int len, int millisecondsTimeout)
+        public byte[] DequeueWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var result = Dequeue(len);
-            if (result == empty)
+            lock (_lock)
             {
-                _modifyEvent.Wait(millisecondsTimeout);
-                result = Dequeue(len);
+                //要求サイズが現有数を超える場合は待機する
+                if (_length < len)
+                {
+                    SetModify(false);
+                }
             }
-            return result;
+            bool wait;
+            try { wait = _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
+            catch (OperationCanceledException) { return empty; }
+            if (!wait)
+            {
+                lock (_lock)
+                {
+                    SetModify(true);
+                }
+            }
+            return Dequeue(len);
         }
 
         //キューからのデータ取得
@@ -180,12 +193,13 @@ namespace Bjd.Net.Sockets
 
         }
 
-        public byte[] DequeueLineWait(int millisecondsTimeout)
+        public byte[] DequeueLineWait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
             var result = DequeueLine();
             if (result == empty)
             {
-                _modifyEvent.Wait(millisecondsTimeout);
+                try { _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
+                catch (OperationCanceledException) { return empty; }
                 result = DequeueLine();
             }
             return result;

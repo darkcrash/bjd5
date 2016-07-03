@@ -70,6 +70,7 @@ namespace Bjd.Net.Sockets
                         return;
                     }
                 }
+                SetConnectionInfo();
                 BeginReceive(); //接続完了処理（受信待機開始）
             }
             else
@@ -100,27 +101,22 @@ namespace Bjd.Net.Sockets
                 }
             }
 
+            SetConnectionInfo();
             //read待機
             //接続完了処理（受信待機開始）
-            BeginReceive();
+            var t = new Task(() => {  BeginReceive(); });
+            t.Start();
         }
 
         public int Length()
         {
-            Thread.Sleep(1); //次の動作が実行されるようにsleepを置く
             return _sockQueue.Length;
         }
 
-        //接続完了処理（受信待機開始）
-        private void BeginReceive()
+        private void SetConnectionInfo()
         {
-            System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
-
             //受信バッファは接続完了後に確保される
             _sockQueue = new SockQueue();
-
-            // Using the LocalEndPoint property.
-            //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
 
             try
             {
@@ -132,6 +128,15 @@ namespace Bjd.Net.Sockets
                 SetError("set IPENdPoint faild.");
                 return;
             }
+        }
+
+        //接続完了処理（受信待機開始）
+        private void BeginReceive()
+        {
+            System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
+
+            // Using the LocalEndPoint property.
+            //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
 
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
@@ -148,9 +153,11 @@ namespace Bjd.Net.Sockets
                 }
                 tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
             }
-            catch
+            catch (Exception ex)
             {
-                SetError("BeginRecvive() faild.");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
+                this.SetErrorReceive();
             }
         }
 
@@ -203,27 +210,8 @@ namespace Bjd.Net.Sockets
             }
 
             //受信待機の開始
-            try
-            {
-                var recvBufSeg = _sockQueue.GetWriteSegment();
-                Task<int> tReceive;
-                if (isSsl)
-                {
-                    tReceive = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
-                }
-                else
-                {
-                    tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
-                }
-                tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
-                this.SetErrorReceive();
-                return;
-            }
+            BeginReceive();
+
         }
 
         private void SetErrorReceive()
@@ -232,7 +220,6 @@ namespace Bjd.Net.Sockets
             //【2009.01.12 追加】相手が存在しなくなっている
             SetError("disconnect");
             //state = SocketObjState.Disconnect;
-
             //Close();クローズは外部から明示的に行う
         }
 
@@ -240,105 +227,21 @@ namespace Bjd.Net.Sockets
         //切断・タイムアウトでnullが返される
         public byte[] Recv(int len, int sec, ILife iLife)
         {
-
-            var tout = new Utils.Timeout(sec);
-
-            var buffer = new byte[0];
-            try
-            {
-                if (len <= _sockQueue.Length)
-                {
-                    // キューから取得する
-                    buffer = _sockQueue.Dequeue(len);
-                }
-                else
-                {
-                    while (iLife.IsLife())
-                    {
-                        Thread.Sleep(0);
-                        if (0 < _sockQueue.Length)
-                        {
-                            //Java fix 
-                            tout.Update(); //少しでも受信があった場合は、タイムアウトを更新する
-
-                            //size=受信が必要なバイト数
-                            int size = len - buffer.Length;
-
-                            //受信に必要なバイト数がバッファにない場合
-                            if (size > _sockQueue.Length)
-                            {
-                                size = _sockQueue.Length; //とりあえずバッファサイズ分だけ受信する
-                            }
-                            byte[] tmp = _sockQueue.Dequeue(size);
-                            buffer = Bytes.Create(buffer, tmp);
-
-                            //Java fix Ver5.8.2
-                            if (buffer.Length != 0)
-                            {
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (SockState != SockState.Connect)
-                            {
-                                return null;
-                            }
-                            Thread.Sleep(10);
-                        }
-                        if (tout.IsFinish())
-                        {
-                            buffer = _sockQueue.Dequeue(len); //タイムアウト
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
-                //ex.printStackTrace();
-                return null;
-            }
-            Trace(TraceKind.Recv, buffer, false);
-
-            return buffer;
+            var toutms = sec * 1000;
+            var result = _sockQueue.DequeueWait(len, toutms, this.CancelToken);
+            if (result.Length == 0 && SockState != SockState.Connect) return null;
+            return result;
         }
 
         //1行受信
         //切断・タイムアウトでnullが返される
         public byte[] LineRecv(int sec, ILife iLife)
         {
-            var tout = new Utils.Timeout(sec);
-
-            while (iLife.IsLife())
-            {
-                ////Ver5.1.6
-                //if (_sockQueue.Length == 0)
-                //{
-                //    Thread.Sleep(10);
-                //}
-                byte[] buf = _sockQueue.DequeueLine();
-                //noEncode = false;//テキストである事が分かっている
-                if (buf.Length != 0)
-                {
-                    Trace(TraceKind.Recv, buf, false);
-                    //Ver5.8.6 Java fix
-                    tout.Update(); //タイムアウトの更新
-                    return buf;
-                }
-                if (SockState != SockState.Connect)
-                {
-                    return null;
-                }
-                if (tout.IsFinish())
-                {
-                    return null; //タイムアウト
-                }
-                Thread.Sleep(5);
-            }
-            return null;
+            var toutms = sec * 1000;
+            var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
+            if (result.Length == 0) return null;
+            if (SockState != SockState.Connect) return null;
+            return result;
         }
 
         //１行のString受信
@@ -370,8 +273,6 @@ namespace Bjd.Net.Sockets
         {
             return StringRecv("ASCII", sec, iLife);
         }
-
-
 
         public int Send(byte[] buf, int length)
         {
@@ -458,25 +359,7 @@ namespace Bjd.Net.Sockets
         public override void Close()
         {
             if (this.disposedValue) return;
-            //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
-            try { this.Cancel(); }
-            catch { }
-            //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
-            try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
-            catch { }
-            if (_socket != null)
-            {
-                //_socket.Close();
-                _socket.Dispose();
-                _socket = null;
-            }
-            if (_oneSsl != null)
-            {
-                _oneSsl.Close();
-                _oneSsl = null;
-            }
-
-            SetError("close()");
+            this.Dispose();
         }
 
         //【送信】(トレースなし)
@@ -582,17 +465,26 @@ namespace Bjd.Net.Sockets
         {
             if (!disposedValue)
             {
+                //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
+                try { this.Cancel(); }
+                catch { }
+                //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
+                try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
+                catch { }
+                if (_socket != null)
+                {
+                    //_socket.Close();
+                    _socket.Poll(50000, SelectMode.SelectError);
+                    _socket.Dispose();
+                    _socket = null;
+                }
+                if (_oneSsl != null)
+                {
+                    _oneSsl.Close();
+                    _oneSsl = null;
+                }
+
                 this._lastLineSend = null;
-                if (this._socket != null)
-                {
-                    this._socket.Dispose();
-                    this._socket = null;
-                }
-                if (this._oneSsl != null)
-                {
-                    this._oneSsl.Close();
-                    this._oneSsl = null;
-                }
                 if (this._sockQueue != null)
                 {
                     this._sockQueue.Dispose();
@@ -604,6 +496,7 @@ namespace Bjd.Net.Sockets
                     this._ssl = null;
                 }
                 disposedValue = true;
+                SetError("Dispose");
             }
 
             base.Dispose(disposing);

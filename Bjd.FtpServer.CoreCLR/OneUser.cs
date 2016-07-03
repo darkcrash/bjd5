@@ -14,7 +14,7 @@ namespace Bjd.FtpServer
         public string HomeDir { get; private set; }
 
 
-        public OneUser(FtpAcl ftpAcl, string userName, string password, string homeDir){
+        public OneUser(Kernel kernel, FtpAcl ftpAcl, string userName, string password, string homeDir){
             FtpAcl = ftpAcl;
             UserName = userName;
             Password = password;
@@ -24,6 +24,10 @@ namespace Bjd.FtpServer
             if (homeDir[homeDir.Length - 1] != Path.DirectorySeparatorChar)
             {
                 homeDir = homeDir + Path.DirectorySeparatorChar;
+            }
+            if (!Path.IsPathRooted(homeDir))
+            {
+                homeDir = Path.Combine(kernel.Enviroment.ExecutableDirectory, homeDir);
             }
             HomeDir = homeDir;
         }

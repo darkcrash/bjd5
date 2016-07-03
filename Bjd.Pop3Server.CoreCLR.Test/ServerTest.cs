@@ -103,10 +103,10 @@ namespace Pop3ServerTest
         {
             CheckBanner(cl.StringRecv(3, this));//バナーチェック
 
-            cl.StringSend(string.Format("USER {0}", userName));
-            Assert.Equal(cl.StringRecv(3, this), string.Format("+OK Password required for {0}.\r\n", userName));
-            cl.StringSend(string.Format("PASS {0}", password));
-            Assert.Equal(cl.StringRecv(10, this), string.Format("+OK {0} has {1} message ({2} octets).\r\n", userName, n, size));
+            cl.StringSend($"USER {userName}");
+            Assert.Equal($"+OK Password required for {userName}.\r\n", cl.StringRecv(3, this));
+            cl.StringSend($"PASS {password}");
+            Assert.Equal($"+OK {userName} has {n} message ({size} octets).\r\n", cl.StringRecv(10, this));
         }
 
         [Fact]
@@ -430,12 +430,18 @@ namespace Pop3ServerTest
             //exercise
             Login("user1", "user1", 0, 0, cl);
             cl.StringSend("LIST");
-            var actual = Inet.RecvLines(cl, 5, this);
+            //var actual = Inet.RecvLines(cl, 5, this);
+
+            var actual1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
+            var actual2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
 
             //verify
-            Assert.Equal(actual.Count, 2);
-            Assert.Equal(actual[0], "+OK 0 message (0 octets)");
-            Assert.Equal(actual[1], ".");
+            //Assert.Equal(actual.Count, 2);
+            //Assert.Equal(actual[0], "+OK 0 message (0 octets)");
+            //Assert.Equal(actual[1], ".");
+            Assert.Equal("+OK 0 message (0 octets)", actual1);
+            Assert.Equal(".", actual2);
+
 
             //tearDown
             cl.StringSend("QUIT");
@@ -453,14 +459,24 @@ namespace Pop3ServerTest
             //exercise
             Login("user2", "user2", 2, 633, cl);
             cl.StringSend("LIST");
-            var actual = Inet.RecvLines(cl, 3, this);
+            //var actual = Inet.RecvLines(cl, 3, this);
+            var actual1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
+            var actual2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
+            var actual3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
+            var actual4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(3, this)));
 
             //verify
-            Assert.Equal(actual.Count, 4);
-            Assert.Equal(actual[0], "+OK 2 message (633 octets)");
-            Assert.Equal(actual[1], "1 317");
-            Assert.Equal(actual[2], "2 316");
-            Assert.Equal(actual[3], ".");
+            //Assert.Equal(actual.Count, 4);
+            //Assert.Equal(actual[0], "+OK 2 message (633 octets)");
+            //Assert.Equal(actual[1], "1 317");
+            //Assert.Equal(actual[2], "2 316");
+            //Assert.Equal(actual[3], ".");
+
+            Assert.Equal("+OK 2 message (633 octets)", actual1);
+            Assert.Equal("1 317", actual2);
+            Assert.Equal("2 316", actual3);
+            Assert.Equal(".", actual4);
+
 
             //tearDown
             cl.StringSend("QUIT");
@@ -521,11 +537,22 @@ namespace Pop3ServerTest
             //exercise
             Login("user2", "user2", 2, 633, cl);
             cl.StringSend("RETR 1");
-            var actual = Inet.RecvLines(cl, 3, this);
+
+            var actual1 = cl.StringRecv(3, this);
+            Assert.Equal("+OK 317 octets\r\n", actual1);
+
+            //var actual = Inet.RecvLines(cl, 3, this);
+            var actual = new List<String>();
+
+            for (var i = 0; i < 12; i++)
+            {
+                var recvLine = cl.StringRecv(1, this);
+                if (recvLine == null) Assert.False(true);
+                actual.Add(recvLine);
+            }
 
             //verify
-            Assert.Equal(actual.Count, 13);
-            Assert.Equal(actual[0], "+OK 317 octets");
+            Assert.Equal(actual.Count, 12);
 
             //tearDown
             cl.StringSend("QUIT");
@@ -697,7 +724,7 @@ namespace Pop3ServerTest
             //exercise
             Login("user2", "user2", 2, 633, cl);
             cl.StringSend("TOP 1 2");
-            var actual = Inet.RecvLines(cl, 3, this);
+            var actual = Inet.RecvLines(cl, 2, this);
 
             //verify
             Assert.Equal(actual.Count, 13);

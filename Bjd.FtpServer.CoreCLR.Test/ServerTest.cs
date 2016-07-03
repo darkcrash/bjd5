@@ -59,9 +59,7 @@ namespace FtpServerTest
 
             }
 
-
         }
-
 
         private SockTcp _v6Cl; //クライアント
         private SockTcp _v4Cl; //クライアント
@@ -86,6 +84,13 @@ namespace FtpServerTest
             //クライアント停止
             _v4Cl.Close();
             _v6Cl.Close();
+
+            _v4Cl.Dispose();
+            _v6Cl.Dispose();
+
+            _v4Cl = null;
+            _v6Cl = null;
+
         }
 
         //共通処理(バナーチェック)  Resharperのバージョンを吸収
@@ -112,10 +117,10 @@ namespace FtpServerTest
             var banner = cl.StringRecv(1, this);
             CheckBanner(banner);//バナーチェック
 
-            cl.StringSend(string.Format("USER {0}", userName));
-            Assert.Equal(cl.StringRecv(1, this), string.Format("331 Password required for {0}.\r\n", userName));
-            cl.StringSend(string.Format("PASS {0}", userName));
-            Assert.Equal(cl.StringRecv(10, this), string.Format("230 User {0} logged in.\r\n", userName));
+            cl.StringSend($"USER {userName}");
+            Assert.Equal($"331 Password required for {userName}.\r\n", cl.StringRecv(1, this));
+            cl.StringSend($"PASS {userName}");
+            Assert.Equal($"230 User {userName} logged in.\r\n", cl.StringRecv(10, this));
         }
 
         [Fact]
@@ -237,6 +242,7 @@ namespace FtpServerTest
             Assert.Equal(cl.StringRecv(1, this), "331 Password required for user1.\r\n");
             cl.StringSend("PASS xxxx");
             Assert.Equal(cl.StringRecv(10, this), "530 Login incorrect.\r\n");
+
         }
 
         [Fact]
@@ -766,7 +772,7 @@ namespace FtpServerTest
 
             //port
             var port = 20249;
-            cl.StringSend("PORT 127,0,0,1,0,20249");
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(2, this));
 
@@ -1117,7 +1123,7 @@ namespace FtpServerTest
 
             //port
             var port = 20751;
-            cl.StringSend("PORT 127,0,0,1,0,20751");
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 

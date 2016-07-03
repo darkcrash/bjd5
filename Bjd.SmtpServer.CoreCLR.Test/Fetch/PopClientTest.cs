@@ -138,7 +138,7 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             Assert.Equal(expected, actual);
-            Assert.Equal(sut.GetLastError(), "Timeout in PopClient RecvStatus()");
+            Assert.Equal("Timeout in PopClient RecvStatus()", sut.GetLastError());
 
             //tearDown
             sut.Dispose();

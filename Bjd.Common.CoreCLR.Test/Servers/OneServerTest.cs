@@ -58,7 +58,6 @@ namespace Bjd.Test.Servers
                 while (IsLife())
                 {
                     Thread.Sleep(0); //これが無いと、別スレッドでlifeをfalseにできない
-
                     if (sockObj.SockState != SockState.Connect)
                     {
                         Console.WriteLine(@">>>>>sockAccept.getSockState()!=SockState.CONNECT");

@@ -45,6 +45,7 @@ namespace Bjd.Net.Sockets
             if (_socket != null)
             {
                 _socket.Dispose();
+                _socket = null;
             }
             SetError("close()");
         }

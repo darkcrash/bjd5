@@ -11,6 +11,7 @@ using Xunit;
 using Bjd.SmtpServer;
 using System.Collections.Generic;
 using Bjd.Threading;
+using System.Text;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -83,17 +84,28 @@ namespace Bjd.SmtpServer.Test
 
             //EHLO
             cl.StringSend("EHLO 1");
-            var lines = Inet.RecvLines(cl, 4, this);
+            //var lines = Inet.RecvLines(cl, 4, this);
 
             var str = string.Format("250-localhost Helo 127.0.0.1[127.0.0.1:{0}], Pleased to meet you.", localPort);
             if (cl.LocalAddress.Address.ToString() == "::1")
             {
                 str = string.Format("250-localhost Helo ::1[[::1]:{0}], Pleased to meet you.", localPort);
             }
-            Assert.Equal(lines[0], str);
-            Assert.Equal(lines[1], "250-8BITMIME");
-            Assert.Equal(lines[2], "250-SIZE=5000");
-            Assert.Equal(lines[3], "250 HELP");
+
+            //Assert.Equal(lines[0], str);
+            //Assert.Equal(lines[1], "250-8BITMIME");
+            //Assert.Equal(lines[2], "250-SIZE=5000");
+            //Assert.Equal(lines[3], "250 HELP");
+
+            var line1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+          
+            Assert.Equal(line1, str);
+            Assert.Equal(line2, "250-8BITMIME");
+            Assert.Equal(line3, "250-SIZE=5000");
+            Assert.Equal(line4, "250 HELP");
 
         }
 
@@ -571,16 +583,16 @@ namespace Bjd.SmtpServer.Test
             var l2 = cl.StringRecv(5, this);
 
             cl.StringSend("Subject:TEST");
-            var l3 = cl.StringRecv(5, this);
+            //var l3 = cl.StringRecv(5, this);
 
             cl.StringSend("");
-            var l4 = cl.StringRecv(5, this);
+            //var l4 = cl.StringRecv(5, this);
 
             cl.StringSend("body-1");//本文１行目
-            var l5 = cl.StringRecv(5, this);
+            //var l5 = cl.StringRecv(5, this);
 
             cl.StringSend("body-2");//本文２行目
-            var l6 = cl.StringRecv(5, this);
+            //var l6 = cl.StringRecv(5, this);
 
             cl.StringSend(".");
             var l7 = cl.StringRecv(5, this);
@@ -590,6 +602,7 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var mail = _testServer.GetMf("user1")[0];
             var lines = Inet.GetLines(mail.GetBody());
+
             var actual = lines.Count;//本分の行数を取得
 
             //verify
@@ -619,16 +632,16 @@ namespace Bjd.SmtpServer.Test
             var l2 = cl.StringRecv(5, this);
 
             cl.StringSend("Subject:TEST");
-            var l3 = cl.StringRecv(5, this);
+            //var l3 = cl.StringRecv(5, this);
 
             //cl.StringSend("");
             //var l4 = cl.StringRecv(5, this);
 
             cl.StringSend("body-1");//本文１行目
-            var l5 = cl.StringRecv(5, this);
+            //var l5 = cl.StringRecv(5, this);
 
             cl.StringSend("body-2");//本文２行目
-            var l6 = cl.StringRecv(5, this);
+            //var l6 = cl.StringRecv(5, this);
 
             cl.StringSend(".");
             var l7 = cl.StringRecv(5, this);
@@ -783,20 +796,20 @@ namespace Bjd.SmtpServer.Test
 
             //cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
             cl.StringSend("Received: from localhost (unknown [127.0.0.1]) by");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             //cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
             cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@localhost>;");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend(" Tue, 24 Feb 2015 16:28:44 +0900 (JST)");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend("");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend("BODY");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend(".");
             cl.StringRecv(5, this);
@@ -834,20 +847,20 @@ namespace Bjd.SmtpServer.Test
 
             //cl.StringSend("Received: from mail.testdomain.co.jp (unknown [127.0.0.1]) by");
             cl.StringSend("Received: from localhost (unknown [127.0.0.1]) by");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             //cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@testdomain.co.jp>;");
             cl.StringSend(" IMSVA (Postfix) with ESMTP id 1F5C5D0037 for <test@localhost>;");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend(" Tue, 24 Feb 2015 16:28:44 +0900 (JST)");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend("");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend("BODY");
-            cl.StringRecv(5, this);
+            //cl.StringRecv(5, this);
 
             cl.StringSend(".");
             cl.StringRecv(5, this);

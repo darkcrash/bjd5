@@ -144,7 +144,6 @@ namespace Bjd.Net.Sockets
         }
         private SockState _SockState;
 
-
         //ステータスの設定
         //Connect/bindで使用する
         protected void Set(SockState sockState, IPEndPoint localAddress, IPEndPoint remoteAddress)

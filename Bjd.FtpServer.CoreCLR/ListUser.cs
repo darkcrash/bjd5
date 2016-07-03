@@ -7,7 +7,7 @@ namespace Bjd.FtpServer
 {
     class ListUser : ListBase<OneUser>
     {
-        public ListUser(IEnumerable<OneDat> dat)
+        public ListUser(Kernel kernel, IEnumerable<OneDat> dat)
         {
             if (dat != null)
             {
@@ -24,7 +24,7 @@ namespace Bjd.FtpServer
                             try
                             {
                                 var password = Crypt.Decrypt(o.StrList[3]);
-                                Ar.Add(new OneUser(ftpAcl, userName, password, homeDir));
+                                Ar.Add(new OneUser(kernel, ftpAcl, userName, password, homeDir));
                             }
                             catch (Exception e)
                             {

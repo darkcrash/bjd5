@@ -26,7 +26,7 @@ namespace Bjd.FtpServer
 
             _bannerMessage = kernel.ChangeTag((String)_conf.Get("bannerMessage"));
             //ユーザ情報
-            _listUser = new ListUser((Dat)_conf.Get("user"));
+            _listUser = new ListUser(kernel, (Dat)_conf.Get("user"));
             //仮想フォルダ
             _listMount = new ListMount((Dat)_conf.Get("mountList"));
 

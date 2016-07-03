@@ -10,6 +10,7 @@ using Bjd.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Xunit;
 
@@ -111,18 +112,25 @@ namespace Bjd.SmtpServer.Test
 
             //EHLO
             cl.StringSend("EHLO 1");
-            var lines = Inet.RecvLines(cl, 4, this);
+            //var lines = Inet.RecvLines(cl, 4, this);
 
             var str = string.Format("250-localhost Helo 127.0.0.1[127.0.0.1:{0}], Pleased to meet you.", localPort);
             if (cl.LocalAddress.Address.ToString() == "::1")
             {
                 str = string.Format("250-localhost Helo ::1[[::1]:{0}], Pleased to meet you.", localPort);
             }
-            Assert.Equal(lines[0], str);
-            Assert.Equal(lines[1], "250-8BITMIME");
-            Assert.Equal(lines[2], "250-SIZE=5000");
-            Assert.Equal(lines[3], "250-AUTH LOGIN PLAIN CRAM-MD5");
-            Assert.Equal(lines[4], "250 HELP");
+
+            var line1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+
+            Assert.Equal(line1, str);
+            Assert.Equal(line2, "250-8BITMIME");
+            Assert.Equal(line3, "250-SIZE=5000");
+            Assert.Equal(line4, "250-AUTH LOGIN PLAIN CRAM-MD5");
+            Assert.Equal(line5, "250 HELP");
 
         }
 

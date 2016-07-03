@@ -9,6 +9,16 @@ namespace Bjd.Threading
     public abstract class ThreadBase : IDisposable, ILogger, ILife
     {
 
+        private event EventHandler ThreadCancel;
+        protected void OnThreadCancel()
+        {
+            if (ThreadCancel == null) return;
+            try { ThreadCancel(this, EventArgs.Empty); }
+            catch { }
+        }
+
+
+
         private Thread _t;
         private ThreadBaseKind _threadBaseKind = ThreadBaseKind.Before;
         private ManualResetEventSlim RunningWait = new ManualResetEventSlim(false);
@@ -132,6 +142,7 @@ namespace Bjd.Threading
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
             {
                 //起動されている場合
+                OnThreadCancel();
                 _life = false;
                 _cancelTokenSource.Cancel();
                 _cancelTokenSource.Dispose();
