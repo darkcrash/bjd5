@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.0.0-preview1
+FROM microsoft/dotnet:1.0.0-preview2-sdk
 
 RUN cd / \
  && git clone https://github.com/darkcrash/bjd5.git \
