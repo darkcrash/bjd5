@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.DependencyModel;
+using Microsoft.DotNet.InternalAbstractions;
 
 namespace Bjd
 {
@@ -43,15 +44,12 @@ namespace Bjd
             // get service
             var runtimeServices = PlatformServices.Default;
             var compilerOptions = CompilationOptions.Default;
-            var runtimeEnvironment = runtimeServices.Runtime;
             var applicationEnvironment = runtimeServices.Application;
 
             Define.Libraries = DependencyContext.Default.RuntimeLibraries.ToArray();
 
             if (applicationEnvironment == null)
                 applicationEnvironment = PlatformServices.Default.Application;
-            if (runtimeEnvironment == null)
-                runtimeEnvironment = PlatformServices.Default.Runtime;
 
             if (applicationEnvironment != null)
             {
@@ -90,14 +88,10 @@ namespace Bjd
             }
 
             // RuntimeEnvironment
-            if (runtimeEnvironment != null)
-            {
-                Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystem:{(runtimeEnvironment.OperatingSystem)}");
-                Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystemVersion:{(runtimeEnvironment.OperatingSystemVersion)}");
-                Trace.TraceInformation($"[RuntimeEnvironment] RuntimeArchitecture:{(runtimeEnvironment.RuntimeArchitecture)}");
-                Trace.TraceInformation($"[RuntimeEnvironment] RuntimeType:{(runtimeEnvironment.RuntimeType)}");
-                Trace.TraceInformation($"[RuntimeEnvironment] RuntimeVersion:{(runtimeEnvironment.RuntimeVersion)}");
-            }
+                Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystem:{(RuntimeEnvironment.OperatingSystem)}");
+                Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystemPlatform:{(RuntimeEnvironment.OperatingSystemPlatform)}");
+                Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystemVersion:{(RuntimeEnvironment.OperatingSystemVersion)}");
+                Trace.TraceInformation($"[RuntimeEnvironment] RuntimeArchitecture:{(RuntimeEnvironment.RuntimeArchitecture)}");
 
             // ApplicationEnvironment
             if (applicationEnvironment != null)
@@ -162,16 +156,9 @@ namespace Bjd
             Define.ExecutablePath = AppContext.BaseDirectory;
             Define.ProductVersion = asmName.Version.ToString();
 
-            if (runtimeEnvironment != null)
-            {
-                Define.OperatingSystem = $"{runtimeEnvironment.OperatingSystem} {runtimeEnvironment.OperatingSystemVersion}";
-                Define.IsWindows = (runtimeEnvironment.OperatingSystem == "Windows");
-            }
-            else
-            {
-                Define.OperatingSystem = "Unknow";
-                Define.IsWindows = false;
-            }
+            Define.OperatingSystem = $"{RuntimeEnvironment.OperatingSystem} {RuntimeEnvironment.OperatingSystemVersion}";
+            Define.IsWindows = (RuntimeEnvironment.OperatingSystem == "Windows");
+
             OnChangeOperationSystem();
 
             Trace.TraceInformation("Define.Initialize End");

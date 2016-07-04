@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-rc2",
+  "version": "1.0.0-*",
   "description": "Bjd.CoreCLR Console Application",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002702",
+      "version": "1.0.0",
       "type": "platform"
     }
   },
