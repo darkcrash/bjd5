@@ -293,32 +293,40 @@ namespace Bjd.Servers
                 var t = new Task(
                     () =>
                     {
-                        // 同時接続数チェック
-                        if (Count > _multiple)
+                        try
                         {
-                            // 同時接続数を超えたのでリクエストをキャンセルします
-                            System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
-                            Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                            try { child.Close(); }
-                            catch { }
-                            try { child.Dispose(); }
-                            catch { }
-                            return;
-                        }
+                            this.StartTask(child);
+                            // 同時接続数チェック
+                            if (Count > _multiple)
+                            {
+                                // 同時接続数を超えたのでリクエストをキャンセルします
+                                System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                                try { child.Close(); }
+                                catch { }
+                                try { child.Dispose(); }
+                                catch { }
+                                return;
+                            }
 
-                        // ACL制限のチェック
-                        if (AclCheck(child) == AclKind.Deny)
+                            // ACL制限のチェック
+                            if (AclCheck(child) == AclKind.Deny)
+                            {
+                                child.Close();
+                                child.Dispose();
+                                return;
+                            }
+
+                            // 各実装へ
+                            this.SubThread(child);
+                        }
+                        finally
                         {
-                            child.Close();
-                            child.Dispose();
-                            return;
+                            RemoveTask(child);
                         }
-
-                        // 各実装へ
-                        this.SubThread(child);
                     }, _cancelToken, TaskCreationOptions.LongRunning);
 
-                this.StartTask(t, child);
+                t.Start();
 
             }
 
@@ -350,34 +358,44 @@ namespace Bjd.Servers
                 var t = new Task(
                     () =>
                     {
-                        // 同時接続数チェック
-                        if (Count > _multiple)
+                        try
                         {
-                            // 同時接続数を超えたのでリクエストをキャンセルします
-                            System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
-                            Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                            try { child.Close(); }
-                            catch { }
-                            try { child.Dispose(); }
-                            catch { }
-                            return;
+                            this.StartTask(child);
+                      
+                            // 同時接続数チェック
+                            if (Count > _multiple)
+                            {
+                                // 同時接続数を超えたのでリクエストをキャンセルします
+                                System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
+                                Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                                try { child.Close(); }
+                                catch { }
+                                try { child.Dispose(); }
+                                catch { }
+                                return;
+                            }
+
+                            // ACL制限のチェック
+                            if (AclCheck(child) == AclKind.Deny)
+                            {
+                                child.Close();
+                                return;
+                            }
+                            // 各実装へ
+                            this.SubThread(child);
+                        }
+                        finally
+                        {
+                            RemoveTask(child);
                         }
 
-                        // ACL制限のチェック
-                        if (AclCheck(child) == AclKind.Deny)
-                        {
-                            child.Close();
-                            return;
-                        }
-                        // 各実装へ
-                        this.SubThread(child);
                     }, _cancelToken, TaskCreationOptions.LongRunning);
 
-                this.StartTask(t, child);
+                t.Start();
             }
 
         }
-        private void RemoveTask(Task t, SockObj o)
+        private void RemoveTask(SockObj o)
         {
             lock (SyncObj)
             {
@@ -385,15 +403,13 @@ namespace Bjd.Servers
                 _childs.Remove(o);
             }
         }
-        private void StartTask(Task t, SockObj o)
+        private void StartTask(SockObj o)
         {
             lock (SyncObj)
             {
                 _childs.Add(o);
                 Count += 1;
             }
-            t.ContinueWith(_ => this.RemoveTask(_, o), TaskContinuationOptions.ExecuteSynchronously);
-            t.Start();
         }
 
         //ACL制限のチェック

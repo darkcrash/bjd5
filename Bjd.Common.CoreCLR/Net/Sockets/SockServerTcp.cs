@@ -64,6 +64,7 @@ namespace Bjd.Net.Sockets
                 try
                 {
                     _socket = new Socket(this.Family, SocketType.Stream, ProtocolType.Tcp);
+                    _socket.NoDelay = true;
                     _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
                     _socket.Listen(listenMax);
                 }

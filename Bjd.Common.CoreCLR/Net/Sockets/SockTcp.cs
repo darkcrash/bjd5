@@ -476,7 +476,7 @@ namespace Bjd.Net.Sockets
                 if (_socket != null)
                 {
                     //_socket.Close();
-                    _socket.Poll(50000, SelectMode.SelectError);
+                    _socket.Poll(50000, SelectMode.SelectRead);
                     _socket.Dispose();
                     _socket = null;
                 }
