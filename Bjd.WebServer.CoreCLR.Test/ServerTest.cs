@@ -74,10 +74,10 @@ namespace WebServerTest
         public void ステータス情報_ToString_の出力確認_V4()
         {
             var sv = _fixture._v4Sv;
-            var expected = "+ サービス中 \t    Web-localhost:7088\t[127.0.0.1\t:TCP 7088]\tThread";
+            var expected = "+ サービス中 \t  Web-localhost:7088\t[127.0.0.1\t:TCP 7088]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 60);
+            var actual = sv.ToString().Substring(0, 58);
             //verify
             Assert.Equal(expected, actual);
 
@@ -88,10 +88,10 @@ namespace WebServerTest
         {
 
             var sv = _fixture._v6Sv;
-            var expected = "+ サービス中 \t    Web-localhost:7088\t[::1\t:TCP 7088]\tThread";
+            var expected = "+ サービス中 \t  Web-localhost:7088\t[::1\t:TCP 7088]\tThread";
 
             //exercise
-            var actual = sv.ToString().Substring(0, 54);
+            var actual = sv.ToString().Substring(0, 52);
             //verify
             Assert.Equal(expected, actual);
 
