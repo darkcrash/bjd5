@@ -15,7 +15,6 @@
       ],
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
-        "System.IO.Compression.ZipFile": "4.0.1",
         "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
         "Bjd.Common.CoreCLR": "1.0.0-*"
       }

@@ -18,7 +18,6 @@
       ],
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
-        "System.Security.Cryptography.Algorithms": "4.2.0",
         "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
         "Bjd.Common.CoreCLR": "1.0.0-*"
       }

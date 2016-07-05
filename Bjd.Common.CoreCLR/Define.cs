@@ -128,6 +128,8 @@ namespace Bjd
                 ServerAddressList = new List<string>();
                 try
                 {
+                    
+
                     NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
                     foreach (NetworkInterface nic in nics)
                     {

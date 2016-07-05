@@ -23,7 +23,6 @@
         "Bjd.Common.CoreCLR.Test": "1.0.0-*",
         "Bjd.CoreCLR": "1.0.0-*",
         "Microsoft.NETCore.Platforms": "1.0.1",
-        "System.Diagnostics.TraceSource": "4.0.0",
         "Microsoft.CSharp": "4.0.1"
       }
     }
