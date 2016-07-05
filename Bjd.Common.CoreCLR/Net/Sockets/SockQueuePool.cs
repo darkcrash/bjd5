@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace Bjd.Net.Sockets
@@ -8,59 +9,40 @@ namespace Bjd.Net.Sockets
     public class SockQueuePool : IDisposable
     {
         public readonly static SockQueuePool Instance = new SockQueuePool();
+        const int poolSize = 20;
 
-        private Queue<SockQueue> _queue = new Queue<SockQueue>();
-        private object _lock = new object();
-        private int _countGet = 0;
-        private int _countPool = 0;
-        private int _countPeek = 0;
+        private ConcurrentQueue<SockQueue> _queue = new ConcurrentQueue<SockQueue>();
         private CancellationTokenSource cancel = new CancellationTokenSource();
 
         private SockQueuePool()
         {
-            Cleanup();
+            Task.Factory.StartNew(() => Cleanup());
         }
 
         private void Cleanup()
         {
-            const int poolSize = 4;
-            int get, pool, peek, q;
-            lock (_lock)
-            {
-                get = _countGet;
-                pool = _countPool;
-                peek = _countPeek;
-                q = _queue.Count;
-                _countGet = 0;
-                _countPool = 0;
-            }
-
             try
             {
+                var q = _queue.Count;
+
                 int create = poolSize - q;
                 if (create > 0)
                 {
-                    lock (_lock)
+                    for (int i = 0; i < create; i++)
                     {
-                        for (int i = 0; i < create; i++)
-                            _queue.Enqueue(new SockQueue());
+                        _queue.Enqueue(new SockQueue());
                     }
                     return;
                 }
 
-                // アクセス上昇中なら処理しない
-                if (_countGet < _countPool) return;
-
-                int delete = q - peek - poolSize;
+                int delete = q - poolSize;
                 if (delete > 0)
                 {
-                    lock (_lock)
-                    {
-                        for (int i = 0; i < delete; i++)
-                            _queue.Dequeue().Dispose();
-                    }
-                    return;
+                    SockQueue outQ;
+                    while (!_queue.TryDequeue(out outQ)) ;
+                    outQ.Dispose();
                 }
+
             }
             finally
             {
@@ -72,14 +54,12 @@ namespace Bjd.Net.Sockets
 
         public SockQueue Get()
         {
-            lock (_lock)
+            if (_queue.Count > 0)
             {
-                _countGet++;
-                var releaseCount = _countGet - _countPool;
-                if (_countPeek < releaseCount) _countPeek = releaseCount;
-                if (_queue.Count > 0) return _queue.Dequeue();
+                SockQueue outQ;
+                while (!_queue.TryDequeue(out outQ)) ;
+                return outQ;
             }
-
             return new SockQueue();
 
         }
@@ -87,11 +67,7 @@ namespace Bjd.Net.Sockets
         public void Pool(ref SockQueue q)
         {
             q.Initialize();
-            lock (_lock)
-            {
-                _countPool++;
-                _queue.Enqueue(q);
-            }
+            _queue.Enqueue(q);
             q = null;
 
         }

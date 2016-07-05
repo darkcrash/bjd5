@@ -35,7 +35,8 @@ namespace Bjd.Net.Sockets
             System.Diagnostics.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
-
+            var pool = SockQueuePool.Instance;
+            pool = null;
         }
 
 
@@ -64,7 +65,6 @@ namespace Bjd.Net.Sockets
                 try
                 {
                     _socket = new Socket(this.Family, SocketType.Stream, ProtocolType.Tcp);
-                    _socket.NoDelay = true;
                     _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
                     _socket.Listen(listenMax);
                 }
@@ -88,48 +88,36 @@ namespace Bjd.Net.Sockets
         public SockTcp Select(ILife iLife)
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
+            this.SockState = SockState.Bind;
 
-            while (true)
+            try
             {
-                try
+                while (true)
                 {
                     if (_socket == null) return null;
                     if (this.IsCancel) return null;
+                    if (!iLife.IsLife()) return null;
 
-                    var tTcp = _socket.AcceptAsync();
-                    this.SockState = SockState.Bind;
-
-                    while (true)
+                    if (_socket.Poll(1000000, SelectMode.SelectRead))
                     {
-                        if (tTcp.Wait(2000, this.CancelToken))
-                            break;
-                        if (tTcp.Status == TaskStatus.Canceled)
-                            break;
-                        if (!iLife.IsLife())
-                            break;
+                        if (_socket == null) return null;
+                        if (this.IsCancel) return null;
+                        var tTcp = _socket.Accept();
+                        return new SockTcp(Kernel, _ssl, tTcp);
                     }
 
-                    // キャンセル時、終了時はNullを返す
-                    //if (this.IsCancel || !iLife.IsLife() || tTcp.Result == null)
-                    if (tTcp.Result == null)
-                    {
-                        SetError("isLife()==false");
-                        return null;
-                    }
-
-                    return new SockTcp(Kernel, _ssl, tTcp.Result);
-                }
-                catch (OperationCanceledException)
-                {
-                    System.Diagnostics.Trace.TraceInformation("SockServer.Select OperationCanceledException");
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Trace.TraceError(ex.Message);
-                    System.Diagnostics.Trace.TraceError(ex.StackTrace);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Trace.TraceInformation("SockServer.Select OperationCanceledException");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError(ex.Message);
+                System.Diagnostics.Trace.TraceError(ex.StackTrace);
+            }
+            return null;
         }
 
 

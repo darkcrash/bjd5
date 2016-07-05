@@ -104,7 +104,7 @@ namespace Bjd.Net.Sockets
             SetConnectionInfo();
             //read待機
             //接続完了処理（受信待機開始）
-            var t = new Task(() => {  BeginReceive(); }, this.CancelToken, TaskCreationOptions.LongRunning);
+            var t = new Task(() => { BeginReceive(); }, this.CancelToken, TaskCreationOptions.LongRunning);
             t.Start();
         }
 
@@ -476,7 +476,7 @@ namespace Bjd.Net.Sockets
                 if (_socket != null)
                 {
                     //_socket.Close();
-                    _socket.Poll(50000, SelectMode.SelectRead);
+                    _socket.Poll(500000, SelectMode.SelectRead);
                     _socket.Dispose();
                     _socket = null;
                 }
