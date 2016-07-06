@@ -97,35 +97,45 @@ namespace Bjd.Traces
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
+            var ind = this.NeedIndent;
             Action tAct = () =>
             {
-                var sb = new System.Text.StringBuilder();
+                //var sb = new System.Text.StringBuilder();
 
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.DateTime))
                 {
                     var date = eventCache.DateTime.ToLocalTime().ToString("HH\\:mm\\:ss\\.fff");
-                    sb.Append($"[{date}]");
+                    //sb.Append($"[{date}]");
+                    Console.Write($"[{date}]");
                 }
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.Timestamp))
                 {
                     var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
-                    sb.Append($"[{time}]");
+                    //sb.Append($"[{time}]");
+                    Console.Write($"[{time}]");
                 }
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.ProcessId))
                 {
-                    sb.Append($"[PID:{eventCache.ProcessId}]");
+                    //sb.Append($"[PID:{eventCache.ProcessId}]");
+                    Console.Write($"[PID:{eventCache.ProcessId}]");
                 }
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.ThreadId))
                 {
-                    sb.Append($"[{eventCache.ThreadId.PadLeft(3)}]");
+                    //sb.Append($"[{eventCache.ThreadId.PadLeft(3)}]");
+                    Console.Write($"[{eventCache.ThreadId.PadLeft(3)}]");
                 }
 
-                var ind = this.NeedIndent;
                 //sb.Append($"[{eventType.ToString().Remove(4)}][{id}] ");
-                sb.Append($"[{id}] ");
-                sb.Append(new string(' ', this.IndentLevel * this.IndentSize));
-                sb.Append(message);
-                Console.WriteLine(sb.ToString());
+                //sb.Append($"[{id}] ");
+                Console.Write($"[{id}] ");
+                if (NeedIndent)
+                {
+                    //sb.Append(new string(' ', this.IndentLevel * this.IndentSize));
+                    Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+                }
+                //sb.Append(message);
+                Console.WriteLine(message);
+                //Console.WriteLine(sb.ToString());
 
                 //base.TraceEvent(eventCache, source, eventType, id, message);
             };

@@ -35,7 +35,8 @@ namespace Bjd.Servers
         private SockServerUdp _sockServerUdp;
 
         // 子スレッド管理 - 排他制御オブジェクト
-        private readonly object SyncObj = new object();
+        private readonly object SyncObj1 = new object();
+        private readonly object SyncObj2 = new object();
         private List<SockObj> _childs = new List<SockObj>();
 
         // 子スレッドコレクション
@@ -393,7 +394,7 @@ namespace Bjd.Servers
         }
         private void StartTask(SockObj o)
         {
-            lock (SyncObj)
+            lock (SyncObj1)
             {
                 _childs.Add(o);
             }
@@ -403,7 +404,11 @@ namespace Bjd.Servers
         {
             if (_count >= _multiple) return true;
 
-            Interlocked.Increment(ref _count);
+            lock (SyncObj2)
+            {
+                //Interlocked.Increment(ref _count);
+                _count++;
+            }
             if (_count > 0) _childNone.Reset();
             return false;
         }
@@ -411,7 +416,11 @@ namespace Bjd.Servers
 
         private void Decrement()
         {
-            Interlocked.Decrement(ref _count);
+            lock (SyncObj2)
+            {
+                _count--;
+                //Interlocked.Decrement(ref _count);
+            }
             if (_count == 0) _childNone.Set();
         }
 
@@ -423,7 +432,7 @@ namespace Bjd.Servers
             try { child.Dispose(); }
             catch { }
 
-            lock (SyncObj)
+            lock (SyncObj1)
             {
                 _childs.Remove(child);
             }

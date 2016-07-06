@@ -13,15 +13,15 @@ namespace Bjd.Services
 
         public static void ServiceMain()
         {
-            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
-            {
-                var f = new EventTypeFilter(SourceLevels.Warning);
-                l.Filter = f;
-            }
-
             // Add console trace
             System.Diagnostics.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
             Trace.TraceInformation("DefaultService.ServiceMain Start");
+
+            var f = new EventTypeFilter(SourceLevels.Warning);
+            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
+            {
+                l.Filter = f;
+            }
 
             // Define Initialize
             Define.Initialize();
