@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -59,18 +60,6 @@ namespace Bjd.Servers
         public int Count
         {
             get { return _count; }
-            private set
-            {
-                _count = value;
-                if (_count == 0)
-                {
-                    _childNone.Set();
-                }
-                else
-                {
-                    _childNone.Reset();
-                }
-            }
         }
 
         //リモート操作(データの取得)
@@ -296,25 +285,29 @@ namespace Bjd.Servers
                         try
                         {
                             this.StartTask(child);
+
                             // 同時接続数チェック
-                            if (Count > _multiple)
+                            if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
                                 System.Diagnostics.Trace.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
                                 Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                                try { child.Close(); }
-                                catch { }
-                                try { child.Dispose(); }
-                                catch { }
                                 return;
                             }
 
-                            // ACL制限のチェック
-                            if (AclCheck(child) == AclKind.Deny)
+                            try
                             {
-                                child.Close();
-                                child.Dispose();
-                                return;
+                                // ACL制限のチェック
+                                if (AclCheck(child) == AclKind.Deny)
+                                {
+                                    return;
+                                }
+                                // 各実装へ
+                                this.SubThread(child);
+                            }
+                            finally
+                            {
+                                Decrement();
                             }
 
                             // 各実装へ
@@ -361,28 +354,31 @@ namespace Bjd.Servers
                         try
                         {
                             this.StartTask(child);
-                      
+
                             // 同時接続数チェック
-                            if (Count > _multiple)
+                            if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
                                 System.Diagnostics.Trace.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
                                 Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                                try { child.Close(); }
-                                catch { }
-                                try { child.Dispose(); }
-                                catch { }
                                 return;
                             }
 
-                            // ACL制限のチェック
-                            if (AclCheck(child) == AclKind.Deny)
+                            try
                             {
-                                child.Close();
-                                return;
+                                // ACL制限のチェック
+                                if (AclCheck(child) == AclKind.Deny)
+                                {
+                                    return;
+                                }
+                                // 各実装へ
+                                this.SubThread(child);
                             }
-                            // 各実装へ
-                            this.SubThread(child);
+                            finally
+                            {
+                                Decrement();
+                            }
+
                         }
                         finally
                         {
@@ -395,21 +391,43 @@ namespace Bjd.Servers
             }
 
         }
-        private void RemoveTask(SockObj o)
-        {
-            lock (SyncObj)
-            {
-                Count -= 1;
-                _childs.Remove(o);
-            }
-        }
         private void StartTask(SockObj o)
         {
             lock (SyncObj)
             {
                 _childs.Add(o);
-                Count += 1;
             }
+        }
+
+        private bool Increment()
+        {
+            if (_count >= _multiple) return true;
+
+            Interlocked.Increment(ref _count);
+            if (_count > 0) _childNone.Reset();
+            return false;
+        }
+
+
+        private void Decrement()
+        {
+            Interlocked.Decrement(ref _count);
+            if (_count == 0) _childNone.Set();
+        }
+
+
+        private void RemoveTask(SockObj child)
+        {
+            try { child.Close(); }
+            catch { }
+            try { child.Dispose(); }
+            catch { }
+
+            lock (SyncObj)
+            {
+                _childs.Remove(child);
+            }
+
         }
 
         //ACL制限のチェック
@@ -459,8 +477,6 @@ namespace Bjd.Servers
             finally
             {
                 Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
-                sockObj.Close();
-                sockObj.Dispose();
             }
 
         }
