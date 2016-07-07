@@ -18,7 +18,7 @@ namespace Bjd.Traces
         public ConsoleTraceListner()
         {
 
-            this.TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime | System.Diagnostics.TraceOptions.ThreadId;
+            this.TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime;
             this.IndentSize = 1;
             try
             {

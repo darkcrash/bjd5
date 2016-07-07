@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace Bjd.Threading
 {
     public class SequentialTaskScheduler : System.Threading.Tasks.TaskScheduler
     {
-        List<Task> _q = new List<Task>();
+        ConcurrentQueue<Task> _q = new ConcurrentQueue<Task>();
         object Lock = new object();
         bool isRunning = false;
 
@@ -20,38 +20,37 @@ namespace Bjd.Threading
             Task t;
             while (true)
             {
-                lock (Lock)
+                if (_q.IsEmpty)
                 {
-                    if (_q.Count == 0)
+                    lock (Lock)
                     {
-                        isRunning = false;
-                        return;
+                        if (_q.IsEmpty)
+                        {
+                            isRunning = false;
+                            return;
+                        }
                     }
-                    t = _q.First();
-                    _q.Remove(t);
                 }
-                this.TryExecuteTask(t);
+                _q.TryDequeue(out t);
+                if (t != null) this.TryExecuteTask(t);
             }
         }
 
         protected override IEnumerable<Task> GetScheduledTasks()
         {
-            lock (Lock)
-            {
-                return _q.ToArray();
-            }
+            return _q.ToArray();
         }
 
         protected override void QueueTask(Task task)
         {
+            _q.Enqueue(task);
             lock (Lock)
             {
-                _q.Add(task);
                 if (isRunning)
                     return;
-                isRunning = true;
-                System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
             }
+            isRunning = true;
+            System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
@@ -60,10 +59,7 @@ namespace Bjd.Threading
         }
         protected override bool TryDequeue(Task task)
         {
-            lock (Lock)
-            {
-                return _q.Remove(task);
-            }
+            return false;
         }
         public override int MaximumConcurrencyLevel
         {

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using System.Threading.Tasks;
+using Bjd.Threading;
 
 namespace Bjd.Logs
 {
@@ -13,6 +15,7 @@ namespace Bjd.Logs
     //テスト用に、Logger.create()でログ出力を処理を一切行わないインスタンスが作成される
     public class Logger
     {
+        private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
         private readonly LogFile _logFile;
@@ -54,8 +57,6 @@ namespace Bjd.Logs
             _logger = null;
         }
 
-        //ログ出力
-        //Override可能（テストで使用）
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation)
         {
             //デバッグ等でkernelが初期化されていない場合、処理なし
@@ -73,6 +74,19 @@ namespace Bjd.Logs
             }
             int threadId = GetCurrentThreadId();
             //long threadId = Thread.currentThread().getId(); 
+
+            var t = new Task(() =>
+                SetInternal(logKind, sockBase, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
+            t.Start(sts);
+
+        }
+
+        //ログ出力
+        //Override可能（テストで使用）
+        private void SetInternal(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation, int threadId)
+        {
+
+
             var message = _isJp ? "定義されていません" : "Message is not defined";
             if (messageNo < 9000000)
             {

@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Bjd.Utils;
+using Bjd.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.Logs
 {
     public class LogFile : IDisposable
     {
 
+        private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private readonly String _saveDirectory;
         private readonly int _normalLogKind;
         private readonly int _secureLogKind;
@@ -60,14 +63,15 @@ namespace Bjd.Logs
         //ログファイルへの追加
         //oneLog 保存するログ（１行）
         //return 失敗した場合はfalseが返される
-        public bool Append(OneLog oneLog)
+        public void Append(OneLog oneLog)
         {
             //コンストラクタで初期化に失敗している場合、falseを返す
             if (_timer == null)
             {
-                return false;
+                return;
             }
-            lock (_lock)
+
+            Action a = () =>
             {
                 try
                 {
@@ -85,10 +89,12 @@ namespace Bjd.Logs
                 }
                 catch (IOException)
                 {
-                    return false;
                 }
-                return true;
-            }
+            };
+
+            var t = new Task(a, TaskCreationOptions.PreferFairness);
+            t.Start(sts);
+
         }
 
         private void LogOpen()
