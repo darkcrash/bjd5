@@ -394,6 +394,32 @@ namespace Bjd.Net.Sockets
             return -1;
         }
 
+        public int SendNoTrace(ArraySegment<byte> buffer)
+        {
+            try
+            {
+                if (isSsl)
+                {
+                    return _oneSsl.Write(buffer);
+                }
+
+                if (_socket.Connected)
+                {
+                    var result = _socket.SendAsync(buffer, SocketFlags.None);
+                    result.Wait(this.CancelToken);
+                    if (result.IsCompleted)
+                        return result.Result;
+                    //return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"SendNoTrace Length={buffer.Count} {ex.Message}");
+                //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
+            }
+            return -1;
+        }
+
 
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
         public int SendUseEncode(byte[] buf)
@@ -404,6 +430,14 @@ namespace Bjd.Net.Sockets
             return SendNoTrace(buf);
         }
 
+        //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
+        public int SendUseEncode(ArraySegment<byte> buf)
+        {
+            //テキストである可能性があるのでエンコード処理は省略できない
+            Trace(TraceKind.Send, buf, false); //noEncode = false テキストである可能性があるのでエンコード処理は省略できない
+            //実際の送信処理にテキストとバイナリの区別はない
+            return SendNoTrace(buf);
+        }
 
         /*******************************************************************/
         //以下、C#のコードを通すために設置（最終的に削除の予定）
@@ -460,6 +494,15 @@ namespace Bjd.Net.Sockets
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
+
+        public int SendNoEncode(ArraySegment<byte> buf)
+        {
+            //バイナリであるのでエンコード処理は省略される
+            Trace(TraceKind.Send, buf, true); //noEncode = true バイナリであるのでエンコード処理は省略される
+            //実際の送信処理にテキストとバイナリの区別はない
+            return SendNoTrace(buf);
+        }
+
 
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 

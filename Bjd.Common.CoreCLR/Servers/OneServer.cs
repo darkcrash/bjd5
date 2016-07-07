@@ -459,7 +459,7 @@ namespace Bjd.Servers
         {
             var sockObj = (SockObj)o;
 
-            System.Threading.Thread.CurrentThread.Name = this.GetType().FullName;
+            //System.Threading.Thread.CurrentThread.Name = this.GetType().FullName;
 
             //クライアントのホスト名を逆引きする
             sockObj.Resolve((bool)_conf.Get("useResolve"), Logger);

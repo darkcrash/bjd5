@@ -468,6 +468,7 @@ namespace Bjd.WebServer
                     {
                         using (var br = new BinaryReader(fs))
                         {
+                            _doc = new byte[1048560];
                             fs.Seek(_rangeFrom, SeekOrigin.Begin);
                             var start = _rangeFrom;
                             while (iLife.IsLife())
@@ -477,28 +478,29 @@ namespace Bjd.WebServer
                                     size = 1048560;
                                 if (size <= 0)
                                     break;
-                                _doc = new byte[size];
+
                                 int len = br.Read(_doc, 0, (int)size);
                                 if (len <= 0)
                                     break;
 
-                                if (len != size)
-                                {
-                                    var tmp = new byte[len];
-                                    Buffer.BlockCopy(_doc, 0, tmp, 0, len);
-                                    _doc = tmp;
-                                }
+                                //if (len != size)
+                                //{
+                                //    var tmp = new byte[len];
+                                //    Buffer.BlockCopy(_doc, 0, tmp, 0, len);
+                                //    _doc = tmp;
+                                //}
+                                var segment = new ArraySegment<byte>(_doc, 0, len);
 
                                 if (encode)
                                 {
-                                    if (-1 == tcpObj.SendUseEncode(_doc))
+                                    if (-1 == tcpObj.SendUseEncode(segment))
                                     {
                                         return false;
                                     }
                                 }
                                 else
                                 {
-                                    if (-1 == tcpObj.SendNoEncode(_doc))
+                                    if (-1 == tcpObj.SendNoEncode(segment))
                                     {
                                         return false;
                                     }

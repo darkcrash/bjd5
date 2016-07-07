@@ -44,7 +44,6 @@ namespace Bjd.Utils
             return str.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
         }
 
-        //行単位での切り出し(\r\nは削除しない)
         static public List<byte[]> GetLines(byte[] buf)
         {
             var lines = new List<byte[]>();
@@ -96,6 +95,61 @@ namespace Bjd.Utils
             }
             return lines;
         }
+
+        //行単位での切り出し(\r\nは削除しない)
+        static public List<byte[]> GetLines(ArraySegment<byte> buf)
+        {
+            var lines = new List<byte[]>();
+
+            if (buf == null || buf.Count == 0)
+            {
+                return lines;
+            }
+            int start = 0;
+            for (var end = buf.Offset; ; end++)
+            {
+                var ary = buf.Array;
+                if (ary[end] == '\n')
+                {
+                    if (1 <= end && ary[end - 1] == '\r')
+                    {
+                        var tmp = new byte[end - start + 1];//\r\nを削除しない
+                        Buffer.BlockCopy(ary, start, tmp, 0, end - start + 1);//\r\nを削除しない
+                        lines.Add(tmp);
+                        //string str = Encoding.ASCII.GetString(tmp);
+                        //ar.Add(str);
+                        start = end + 1;
+                        //Unicode
+                    }
+                    else if (2 <= end && end + 1 < (buf.Offset + buf.Count) && ary[end + 1] == '\0' && ary[end - 1] == '\0' && ary[end - 2] == '\r')
+                    {
+                        var tmp = new byte[end - start + 2];//\r\nを削除しない
+                        Buffer.BlockCopy(ary, start, tmp, 0, end - start + 2);//\r\nを削除しない
+                        lines.Add(tmp);
+                        start = end + 2;
+                    }
+                    else
+                    {//\nのみ
+                        var tmp = new byte[end - start + 1];//\nを削除しない
+                        Buffer.BlockCopy(ary, start, tmp, 0, end - start + 1);//\nを削除しない
+                        lines.Add(tmp);
+                        start = end + 1;
+                    }
+                }
+                if (end >= (buf.Offset + buf.Count) - 1)
+                {
+                    if (0 < (end - start + 1))
+                    {
+                        var tmp = new byte[end - start + 1];//\r\nを削除しない
+                        Buffer.BlockCopy(ary, start, tmp, 0, end - start + 1);//\r\nを削除しない
+                        lines.Add(tmp);
+                    }
+                    break;
+                }
+            }
+            return lines;
+        }
+     
         //\r\nの削除
         static public byte[] TrimCrlf(byte[] buf)
         {
