@@ -62,13 +62,16 @@ namespace Bjd.Traces
 
         public override void Write(string message)
         {
-            if (this.NeedIndent)
-                this.WriteIndent();
-
             //Console.Write(message);
+            var ind = this.NeedIndent;
 
             var t = new Task(
-                () => Console.Write(message), TaskCreationOptions.PreferFairness);
+                () =>
+                {
+                    if (ind)
+                        Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+                    Console.Write(message);
+                }, TaskCreationOptions.PreferFairness);
             t.Start(this.sts);
 
         }
@@ -84,13 +87,17 @@ namespace Bjd.Traces
 
         public override void WriteLine(string message)
         {
-            if (this.NeedIndent)
-                this.WriteIndent();
 
             //Console.WriteLine(message);
+            var ind = this.NeedIndent;
 
             var t = new Task(
-                () => Console.WriteLine(message), TaskCreationOptions.PreferFairness);
+                () =>
+                {
+                    if (ind)
+                        Console.Write(new string(' ', this.IndentLevel * this.IndentSize));
+                    Console.WriteLine(message);
+                }, TaskCreationOptions.PreferFairness);
             t.Start(this.sts);
 
         }
@@ -110,9 +117,10 @@ namespace Bjd.Traces
                 }
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.Timestamp))
                 {
-                    var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
-                    //sb.Append($"[{time}]");
-                    Console.Write($"[{time}]");
+                    //var time = TimeSpan.FromTicks(eventCache.Timestamp).ToString("hh\\:mm\\:ss\\.fffff");
+                    ////sb.Append($"[{time}]");
+                    //Console.Write($"[{time}]");
+                    Console.Write($"[{eventCache.Timestamp}]");
                 }
                 if (this.TraceOutputOptions.HasFlag(TraceOptions.ProcessId))
                 {
@@ -136,7 +144,6 @@ namespace Bjd.Traces
                 //sb.Append(message);
                 Console.WriteLine(message);
                 //Console.WriteLine(sb.ToString());
-
                 //base.TraceEvent(eventCache, source, eventType, id, message);
             };
             var t = new Task(tAct, TaskCreationOptions.PreferFairness);
