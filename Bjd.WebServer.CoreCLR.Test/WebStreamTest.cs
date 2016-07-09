@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using Bjd.WebServer;
+using Bjd.WebServer.IO;
 
 namespace WebServerTest
 {

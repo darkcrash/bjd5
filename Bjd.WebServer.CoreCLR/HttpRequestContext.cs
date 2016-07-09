@@ -1,5 +1,6 @@
 ﻿using Bjd.Net;
 using Bjd.Net.Sockets;
+using Bjd.WebServer.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,8 @@ namespace Bjd.WebServer
 
         public void Dispose()
         {
+            ConnectionContext = null;
+
             if (InputStream != null)
                 InputStream.Dispose();
             if (OutputStream != null)

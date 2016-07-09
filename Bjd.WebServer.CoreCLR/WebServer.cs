@@ -14,6 +14,7 @@ using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.WebServer.IO;
 
 namespace Bjd.WebServer
 {

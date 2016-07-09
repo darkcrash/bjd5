@@ -7,6 +7,7 @@ using Bjd.Logs;
 using Bjd.Options;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.WebServer.IO;
 
 namespace Bjd.WebServer
 {
