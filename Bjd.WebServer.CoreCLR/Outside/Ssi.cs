@@ -23,7 +23,7 @@ namespace Bjd.WebServer.Outside
         string _sizeFmt = "bytes";
 
         //子プロセスでCGIを実行する場合に使用する
-        HandlerSelector _target;
+        HandlerSelectorResult _target;
         readonly SockTcp _sockTcp;
         readonly HttpRequest _request;
         readonly HttpHeader _recvHeader;
@@ -41,19 +41,19 @@ namespace Bjd.WebServer.Outside
             _recvHeader = recvHeader;
         }
 
-        public bool Exec(HandlerSelector target, Env env, WebStream output)
+        public bool Exec(HandlerSelectorResult result, Env env, WebStream output)
         {
-            _target = target;
+            _target = result;
 
             //出力用バッファ
             var sb = new StringBuilder();
 
-            var encoding = MLang.GetEncoding(target.FullPath);
+            var encoding = MLang.GetEncoding(result.FullPath);
 
             //***************************************************
             // 対象ファイルの読み込み
             //***************************************************
-            using (var bs = new FileStream(target.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var bs = new FileStream(result.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var sr = new StreamReader(bs, encoding))
             {
                 while (true)
@@ -218,7 +218,7 @@ namespace Bjd.WebServer.Outside
         //プログラム実行
         bool SsiExec(string tag, string val, ref string str, Encoding encoding, SockTcp tcpObj)
         {
-            HandlerSelector newTarget;
+            HandlerSelectorResult newTarget;
             var param = "";
             if (tag.ToLower() == "cmd")
             {
@@ -243,7 +243,7 @@ namespace Bjd.WebServer.Outside
                 {
                     return false;
                 }
-                if (newTarget.TargetKind != TargetKind.Cgi)
+                if (newTarget.TargetKind != HandlerKind.Cgi)
                 {
                     _logger.Set(LogKind.Error, tcpObj, 27, string.Format("<!--#exec cgi=\"{0}\"-->", val));
                     return false;
@@ -304,7 +304,7 @@ namespace Bjd.WebServer.Outside
                 return false;
             }
 
-            if (newTarget.TargetKind == TargetKind.Cgi)
+            if (newTarget.TargetKind == HandlerKind.Cgi)
             {
                 var cgi = new Cgi();
                 //TODO 変数削除 リファクタリング対象
@@ -334,7 +334,7 @@ namespace Bjd.WebServer.Outside
                 }
 
             }
-            else if (newTarget.TargetKind == TargetKind.File || newTarget.TargetKind == TargetKind.Ssi)
+            else if (newTarget.TargetKind == HandlerKind.File || newTarget.TargetKind == HandlerKind.Ssi)
             {
                 if (File.Exists(newTarget.FullPath))
                 {
@@ -377,7 +377,7 @@ namespace Bjd.WebServer.Outside
         //ファイルのサイズ
         bool SsiFsize(string tag, string val, ref string str)
         {
-            HandlerSelector newTarget = CreateTarget(tag, val);
+            HandlerSelectorResult newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
             long size = 0;
@@ -442,7 +442,7 @@ namespace Bjd.WebServer.Outside
             return true;
         }
 
-        HandlerSelector CreateTarget(string tag, string val)
+        HandlerSelectorResult CreateTarget(string tag, string val)
         {
             var newTarget = new HandlerSelector(_kernel, _conf, _logger);
             if (tag == "file")
@@ -450,23 +450,20 @@ namespace Bjd.WebServer.Outside
                 //現在のドキュメンのフルパスからからファイル名を生成する
                 //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\" + val;
                 string fullPath = Path.Combine(Path.GetDirectoryName(_target.FullPath), val);
-                newTarget.InitFromFile(fullPath);
+                return newTarget.InitFromFile(fullPath);
             }
             else if (tag == "virtual")
             {
-                newTarget.InitFromUri(val);
+                return newTarget.InitFromUri(val);
             }
             else if (tag == "comspec")
             {
                 //string fullPath = Path.GetDirectoryName(_target.FullPath) + "\\";
                 string fullPath = Path.GetDirectoryName(_target.FullPath) + Path.DirectorySeparatorChar;
-                newTarget.InitFromCmd(fullPath);
+                return newTarget.InitFromCmd(fullPath);
             }
-            else
-            {
-                return null;
-            }
-            return newTarget;
+            return null;
+            //return newTarget;
         }
 
         //***************************************************

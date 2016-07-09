@@ -23,7 +23,7 @@ namespace Bjd.WebServer
 {
     partial class WebServer : OneServer
     {
-        readonly AttackDb _attackDb;//自動拒否
+        private HandlerSelector _Selector;
 
         //通常は各ポートごと１種類のサーバが起動するのでServerTread.option を使用するが、
         //バーチェルホストの場合、１つのポートで複数のサーバが起動するのでオプションリスト（webOptionList）
@@ -105,13 +105,7 @@ namespace Bjd.WebServer
                 ssl = new Ssl(Logger, certificate, privateKeyPassword);
             }
 
-            var useAutoAcl = (bool)_conf.Get("useAutoAcl");// ACL拒否リストへ自動追加する
-            if (useAutoAcl)
-            {
-                const int max = 1; //発生回数
-                const int sec = 120; // 対象期間(秒)
-                _attackDb = new AttackDb(sec, max);
-            }
+            _Selector = new HandlerSelector(_kernel, _conf, Logger);
 
         }
         //終了処理
@@ -323,14 +317,12 @@ namespace Bjd.WebServer
             //***************************************************************
             //ターゲットオブジェクトの初期化
             //***************************************************************
-            var target = new HandlerSelector(_kernel, _conf, Logger);
-            if (target.DocumentRoot == null)
+            if (_Selector.DocumentRoot == null)
             {
                 Logger.Set(LogKind.Error, connection.Connection, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
                 return false;//ドキュメントルートが無効な場合は、処理を継続できない
-
             }
-            target.InitFromUri(request.Request.Uri);
+            var handleSelectorResult = _Selector.InitFromUri(request.Request.Uri);
 
             //***************************************************************
             // 送信ヘッダの追加
@@ -347,7 +339,7 @@ namespace Bjd.WebServer
             var pathInfo = request.Header.GetVal("PathInfo");
             if (pathInfo != null)
             {
-                pathInfo = target.DocumentRoot + pathInfo;
+                pathInfo = _Selector.DocumentRoot + pathInfo;
                 //document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
                 request.Response.AddHeader("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
             }
@@ -356,7 +348,7 @@ namespace Bjd.WebServer
             //***************************************************************
             if (WebDav.WebDav.IsTarget(request.Request.Method))
             {
-                var webDav = new WebDav.WebDav(Logger, _webDavDb, target, request.Response, request.Url, request.Header.GetVal("Depth"), request.ContentType, (bool)_conf.Get("useEtag"));
+                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, request.Response, request.Url, request.Header.GetVal("Depth"), request.ContentType, (bool)_conf.Get("useEtag"));
 
                 var inputBuf = new byte[0];
                 if (request.InputStream != null)
@@ -397,10 +389,10 @@ namespace Bjd.WebServer
                                 destinationStr = request.Url + destinationStr;
                             }
                             var uri = new Uri(destinationStr);
-                            dstTarget.InitFromUri(uri.LocalPath);
+                            var result = dstTarget.InitFromUri(uri.LocalPath);
 
 
-                            if (dstTarget.WebDavKind == WebDavKind.Write)
+                            if (result.WebDavKind == WebDavKind.Write)
                             {
                                 var overwrite = false;
                                 var overwriteStr = request.Header.GetVal("Overwrite");
@@ -411,7 +403,7 @@ namespace Bjd.WebServer
                                         overwrite = true;
                                     }
                                 }
-                                request.ResponseCode = webDav.MoveCopy(dstTarget, overwrite, request.Request.Method);
+                                request.ResponseCode = webDav.MoveCopy(result, overwrite, request.Request.Method);
                                 request.Response.AddHeader("Location", destinationStr);
                             }
                         }
@@ -421,241 +413,11 @@ namespace Bjd.WebServer
                 goto SEND;
 
             }
-            //以下 label SENDまでの間は、GET/POSTに関する処理
 
-            //***************************************************************
-            //ターゲットの種類に応じた処理
-            //***************************************************************
-
-            if (target.TargetKind == TargetKind.Non)
-            { //見つからない場合
-                request.ResponseCode = 404;
-                goto SEND;
-            }
-            if (target.TargetKind == TargetKind.Move)
-            { //ターゲットはディレクトリの場合
-                request.ResponseCode = 301;
-                goto SEND;
-            }
-            if (target.TargetKind == TargetKind.Dir)
-            { //ディレクトリ一覧表示の場合
-              //インデックスドキュメントを生成する
-                if (!request.Response.CreateFromIndex(request.Request, target.FullPath))
-                    return false;
-                goto SEND;
-            }
-
-            //***************************************************************
-            //  隠し属性のファイルへのアクセス制御
-            //***************************************************************
-            if (!(bool)_conf.Get("useHidden"))
+            // handler
+            if (!handleSelectorResult.Handler.Request(request, handleSelectorResult))
             {
-                if ((target.Attr & FileAttributes.Hidden) == FileAttributes.Hidden)
-                {
-                    //エラーキュメントを生成する
-                    request.ResponseCode = 404;
-                    connection.KeepAlive = false;//切断
-                    goto SEND;
-                }
-            }
-
-            if (target.TargetKind == TargetKind.Cgi || target.TargetKind == TargetKind.Ssi)
-            {
-                connection.KeepAlive = false;//デフォルトで切断
-
-                //環境変数作成
-                var env = new Env(_kernel, _conf, request.Request, request.Header, connection.Connection, target.FullPath);
-
-                // 詳細ログ
-                Logger.Set(LogKind.Detail, connection.Connection, 18, string.Format("{0} {1}", target.CgiCmd, Path.GetFileName(target.FullPath)));
-
-                if (target.TargetKind == TargetKind.Cgi)
-                {
-
-                    var cgi = new Cgi();
-                    var cgiTimeout = (int)_conf.Get("cgiTimeout");
-                    if (!cgi.Exec(target, request.Request.Param, env, request.InputStream, out request.OutputStream, cgiTimeout))
-                    {
-                        // エラー出力
-                        var errStr = Encoding.ASCII.GetString(request.OutputStream.GetBytes());
-
-                        Logger.Set(LogKind.Error, connection.Connection, 16, errStr);
-                        request.ResponseCode = 500;
-                        goto SEND;
-
-                    }
-
-                    //***************************************************
-                    // NPH (Non-Parsed Header CGI)スクリプト  nph-で始まる場合、サーバ処理（レスポンスコードやヘッダの追加）を経由しない
-                    //***************************************************
-                    if (Path.GetFileName(target.FullPath).IndexOf("nph-") == 0)
-                    {
-                        connection.Connection.SendUseEncode(request.OutputStream.GetBytes());//CGI出力をそのまま送信する
-                        return false;
-                    }
-                    // CGIで得られた出力から、本体とヘッダを分離する
-                    if (!request.Response.CreateFromCgi(request.OutputStream.GetBytes()))
-                        return false;
-                    // cgi出力で、Location:が含まれる場合、レスポンスコードを302にする
-                    if (request.Response.SearchLocation())//Location:ヘッダを含むかどうか
-                        request.ResponseCode = 302;
-                    goto SEND;
-                }
-                //SSI
-                var ssi = new Ssi(_kernel, Logger, _conf, connection.Connection, request.Request, request.Header);
-                if (!ssi.Exec(target, env, request.OutputStream))
-                {
-                    // エラー出力
-                    Logger.Set(LogKind.Error, connection.Connection, 22, MLang.GetString(request.OutputStream.GetBytes()));
-                    request.ResponseCode = 500;
-                    goto SEND;
-                }
-                request.Response.CreateFromSsi(request.OutputStream.GetBytes(), target.FullPath);
-                goto SEND;
-            }
-
-            //以下は、通常ファイルの処理 TARGET_KIND.FILE
-
-            //********************************************************************
-            //Modified処理
-            //********************************************************************
-            if (request.Header.GetVal("If_Modified_Since") != null)
-            {
-                var dt = Util.Str2Time(request.Header.GetVal("If-Modified-Since"));
-                if (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
-                {
-                    request.ResponseCode = 304;
-                    goto SEND;
-                }
-            }
-            if (request.Header.GetVal("If_Unmodified_Since") != null)
-            {
-                var dt = Util.Str2Time(request.Header.GetVal("If_Unmodified_Since"));
-                if (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
-                {
-                    request.ResponseCode = 412;
-                    goto SEND;
-                }
-            }
-            request.Response.AddHeader("Last-Modified", Util.UtcTime2Str(target.FileInfo.LastWriteTimeUtc));
-            //********************************************************************
-            //ETag処理
-            //********************************************************************
-            // (1) useEtagがtrueの場合は、送信時にETagを付加する
-            // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
-            if ((bool)_conf.Get("useEtag") || request.Header.GetVal("If-Match") != null || request.Header.GetVal("If-None-Match") != null)
-            {
-                //Ver5.1.5
-                //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
-                var etagStr = WebServerUtil.Etag(target.FileInfo);
-                string str;
-                if (null != (str = request.Header.GetVal("If-Match")))
-                {
-                    if (str != "*" && str != etagStr)
-                    {
-                        request.ResponseCode = 412;
-                        goto SEND;
-                    }
-
-                }
-                if (null != (str = request.Header.GetVal("If-None-Match")))
-                {
-                    if (str != "*" && str == etagStr)
-                    {
-                        request.ResponseCode = 304;
-                        goto SEND;
-                    }
-                }
-                if ((bool)_conf.Get("useEtag"))
-                    request.Response.AddHeader("ETag", etagStr);
-            }
-            //********************************************************************
-            //Range処理
-            //********************************************************************
-            request.Response.AddHeader("Accept-Range", "bytes");
-            var rangeFrom = 0L;//デフォルトは最初から
-            var rangeTo = target.FileInfo.Length;//デフォルトは最後まで（ファイルサイズ）
-            if (request.Header.GetVal("Range") != null)
-            {//レンジ指定のあるリクエストの場合
-                var range = request.Header.GetVal("Range");
-                //指定範囲を取得する（マルチ指定には未対応）
-                if (range.IndexOf("bytes=") == 0)
-                {
-                    range = range.Substring(6);
-                    var tmp = range.Split('-');
-
-
-                    //Ver5.3.5 ApacheKiller対処
-                    if (tmp.Length > 20)
-                    {
-                        Logger.Set(LogKind.Secure, connection.Connection, 9000054, string.Format("[ Apache Killer ]Range:{0}", range));
-
-                        AutoDeny(false, connection.RemoteIp);
-                        request.ResponseCode = 503;
-                        connection.KeepAlive = false;//切断
-                        goto SEND;
-                    }
-
-                    if (tmp.Length == 2)
-                    {
-
-                        //Ver5.3.6 のデバッグ用
-                        //tmp[1] = "499";
-
-                        if (tmp[0] != "")
-                        {
-                            if (tmp[1] != "")
-                            {// bytes=0-10 0～10の11バイト
-
-                                //Ver5.5.9
-                                rangeFrom = Convert.ToInt64(tmp[0]);
-                                if (tmp[1] != "")
-                                {
-                                    //Ver5.5.9
-                                    rangeTo = Convert.ToInt64(tmp[1]);
-                                    if (target.FileInfo.Length <= rangeTo)
-                                    {
-                                        rangeTo = target.FileInfo.Length - 1;
-                                    }
-                                    else
-                                    {
-                                        request.Response.SetRangeTo = true;//Ver5.4.0
-                                    }
-                                }
-                            }
-                            else
-                            {// bytes=3- 3～最後まで
-                                rangeTo = target.FileInfo.Length - 1;
-                                rangeFrom = Convert.ToInt64(tmp[0]);
-                            }
-                        }
-                        else
-                        {
-                            if (tmp[1] != "")
-                            {// bytes=-3 最後から3バイト
-                                var len = Convert.ToInt64(tmp[1]);
-                                rangeTo = target.FileInfo.Length - 1;
-                                rangeFrom = rangeTo - len + 1;
-                                if (rangeFrom < 0)
-                                    rangeFrom = 0;
-                                request.Response.SetRangeTo = true;//Ver5.4.0
-                            }
-
-                        }
-                        if (rangeFrom <= rangeTo)
-                        {
-                            //正常に範囲を取得できた場合、事後Rangeモードで動作する
-                            request.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, target.FileInfo.Length));
-                            request.ResponseCode = 206;
-                        }
-                    }
-                }
-            }
-            //通常ファイルのドキュメント
-            if (request.Request.Method != HttpMethod.Head)
-            {
-                if (!request.Response.CreateFromFile(target.FullPath, rangeFrom, rangeTo))
-                    return false;
+                return false;
             }
 
             SEND:
@@ -723,7 +485,6 @@ namespace Bjd.WebServer
             }
         }
 
-
         //********************************************************
         //URIを点検して不正な場合はエラーコードを返す
         //return 200 エラーなし
@@ -765,50 +526,6 @@ namespace Bjd.WebServer
                 responseCode = 403;
             }
             return responseCode;
-        }
-
-        //bool CheckAuthList(string requestUri) {
-        //    // 【注意 ショートファイル名でアクセスした場合の、認証の回避を考慮する必要がある】
-        //    //AnsiString S = ExtractShortPathName(ShortNamePath);
-        //    var authList = (Dat)this.Conf.Get("authList");
-        //    foreach (var o in authList) {
-        //        if (!o.Enable)
-        //            continue;
-        //        string uri = o.StrList[0];
-
-        //        if (requestUri.IndexOf(uri) == 0) {
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
-
-        void AutoDeny(bool success, Ip remoteIp)
-        {
-            System.Diagnostics.Trace.TraceWarning($"WebServer.AutoDeny ");
-            if (_attackDb == null)
-                return;
-            //データベースへの登録
-            if (!_attackDb.IsInjustice(success, remoteIp))
-                return;
-
-            //ブルートフォースアタック
-            if (AclList.Append(remoteIp))
-            {//ACL自動拒否設定(「許可する」に設定されている場合、機能しない)
-                //追加に成功した場合、オプションを書き換える
-                var d = (Dat)_conf.Get("acl");
-                var name = string.Format("AutoDeny-{0}", DateTime.Now);
-                var ipStr = remoteIp.ToString();
-                d.Add(true, string.Format("{0}\t{1}", name, ipStr));
-                _conf.Set("acl", d);
-                _conf.Save(_kernel.Configuration);
-
-                Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));
-            }
-            else
-            {
-                Logger.Set(LogKind.Secure, null, 9000056, remoteIp.ToString());
-            }
         }
 
         private void Send(HttpRequestContext contextRequest)

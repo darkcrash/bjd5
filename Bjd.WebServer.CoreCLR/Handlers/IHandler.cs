@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace Bjd.WebServer.Handlers
 {
-    public interface IHandler
+    internal interface IHandler
     {
-        string HandlerName { get; }
 
-        bool Request(HttpRequestContext context);
+        bool Request(HttpRequestContext context, HandlerSelectorResult result);
 
     }
 }

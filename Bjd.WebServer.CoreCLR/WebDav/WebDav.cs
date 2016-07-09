@@ -37,11 +37,11 @@ namespace Bjd.WebServer.WebDav
         readonly string _hrefHost = "";
         readonly string _hrefUri = "";
         readonly WebDavKind _webDavKind;
-        readonly TargetKind _targetKind;
+        readonly HandlerKind _targetKind;
         readonly HttpContentType _contentType;
         readonly bool _useEtag;
 
-        public WebDav(Logger logger, WebDavDb webDavDb, HandlerSelector target, HttpResponse document, string urlStr, string depthStr, HttpContentType contentType, bool useEtag)
+        public WebDav(Logger logger, WebDavDb webDavDb, HandlerSelectorResult target, HttpResponse document, string urlStr, string depthStr, HttpContentType contentType, bool useEtag)
         {
             _logger = logger;
             _webDavDb = webDavDb;
@@ -83,7 +83,7 @@ namespace Bjd.WebServer.WebDav
             }
             if (_hrefUri != "")
             {
-                if (_targetKind == TargetKind.Dir && _hrefUri[_hrefUri.Length - 1] != '/')
+                if (_targetKind == HandlerKind.Dir && _hrefUri[_hrefUri.Length - 1] != '/')
                     _hrefUri = _hrefUri + "/";
             }
 
@@ -172,7 +172,7 @@ namespace Bjd.WebServer.WebDav
             if (_webDavKind == WebDavKind.Non)
                 return 500;
 
-            if (_targetKind == TargetKind.Non)
+            if (_targetKind == HandlerKind.Non)
                 return 404;
 
             if (_depth == Depth.Null)
@@ -184,7 +184,7 @@ namespace Bjd.WebServer.WebDav
             var propFindResponce = new PropFindResponce(_webDavDb);
 
             //if(target.Kind == TARGET_KIND.DIR) {//１コレクションのプロパテイ値の取得
-            if (_targetKind == TargetKind.Dir)
+            if (_targetKind == HandlerKind.Dir)
             { //１コレクションのプロパテイ値の取得
                 const bool isCollection = true; //コレクション
                 var di = new DirectoryInfo(_fullPath);
@@ -224,7 +224,7 @@ namespace Bjd.WebServer.WebDav
         //PROPPATCH
         public int PropPatch(byte[] input)
         {
-            if (_targetKind == TargetKind.Non)
+            if (_targetKind == HandlerKind.Non)
                 return 404;
 
             int responseCode = 500;
@@ -251,7 +251,7 @@ namespace Bjd.WebServer.WebDav
                                 var value = nodeTarget.InnerText;
                                 var responceCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:"){
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                if ((_targetKind == HandlerKind.File || _targetKind == HandlerKind.Dir) && nameSpace != "DAV:")
                                 {
                                     _webDavDb.Set(_hrefUri, nameSpace, name, value);//DB更新処理
                                 }
@@ -277,7 +277,7 @@ namespace Bjd.WebServer.WebDav
                                 var value = nodeTarget.InnerText;
                                 responseCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:") {
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                if ((_targetKind == HandlerKind.File || _targetKind == HandlerKind.Dir) && nameSpace != "DAV:")
                                 {
                                     _webDavDb.Set(_hrefUri, nameSpace, name, value);//DB更新処理
                                 }
@@ -302,7 +302,7 @@ namespace Bjd.WebServer.WebDav
                                 var name = nodeTarget.LocalName;
                                 responseCode = 200;
                                 //if(targetKind == TARGET_KIND.FILE && nameSpace != "DAV:") {
-                                if ((_targetKind == TargetKind.File || _targetKind == TargetKind.Dir) && nameSpace != "DAV:")
+                                if ((_targetKind == HandlerKind.File || _targetKind == HandlerKind.Dir) && nameSpace != "DAV:")
                                 {
                                     _webDavDb.Remove(_hrefUri, nameSpace, name);//DB更新処理
                                 }
@@ -349,7 +349,7 @@ namespace Bjd.WebServer.WebDav
         //DELETE
         public int Delete()
         {
-            if (_targetKind == TargetKind.Dir || _targetKind == TargetKind.Move)
+            if (_targetKind == HandlerKind.Dir || _targetKind == HandlerKind.Move)
             {
                 _depth = Depth.DepthInfinity;//コレクションに対するDELETE では「infinity」が使用されているように動作しなければならない RFC2518(8.6.2)
             }
@@ -428,10 +428,10 @@ namespace Bjd.WebServer.WebDav
         }
 
         //MOVE.COPY
-        public int MoveCopy(HandlerSelector destTarget, bool overwrite, HttpMethod httpMethod)
+        public int MoveCopy(HandlerSelectorResult destTarget, bool overwrite, HttpMethod httpMethod)
         {
             int responseCode = 405;
-            if (_targetKind == TargetKind.Dir)
+            if (_targetKind == HandlerKind.Dir)
             {
                 _depth = Depth.DepthInfinity;//コレクションに対するMOVE では「infinity」が使用されているように動作しなければならない RFC2518(8.9.2)
             }

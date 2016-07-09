@@ -17,6 +17,16 @@ namespace Bjd.WebServer.Handlers
         //readonly OneOption _oneOption;
         readonly Conf _conf;
         readonly Logger _logger;
+        readonly string PhysicalRootPath;
+        public string DocumentRoot { get; private set; }
+
+        private CgiHandler _HandlerCgi;
+        private DirectoryListHandler _HandlerDirectoryList;
+        private DefaultHandler _HandlerDefault;
+        private MoveHandler _HandlerMove;
+        private NotFoundHandler _HandlerNotFound;
+        private SsiHandler _HandlerSsi;
+
         public HandlerSelector(Kernel kernel, Conf conf, Logger logger)
         {
             //System.Diagnostics.Trace.TraceInformation($"Target..ctor ");
@@ -34,63 +44,105 @@ namespace Bjd.WebServer.Handlers
                 System.Diagnostics.Trace.TraceError($"Target..ctor DocumentRoot not exists ");
                 DocumentRoot = null;//ドキュメントルート無効
             }
-            FullPath = "";
-            TargetKind = TargetKind.Non;
-            Attr = new FileAttributes();
-            FileInfo = null;
-            CgiCmd = "";
-            Uri = null;
+
+            _HandlerCgi = new CgiHandler(kernel, conf);
+            _HandlerDefault = new DefaultHandler(kernel, conf, logger);
+            _HandlerDirectoryList = new DirectoryListHandler();
+            _HandlerMove = new MoveHandler();
+            _HandlerNotFound = new NotFoundHandler();
+            _HandlerSsi = new SsiHandler(kernel, conf);
+
         }
-        public string DocumentRoot { get; private set; }//ドキュメントルート
-        public string FullPath { get; private set; }
-        public string PhysicalRootPath { get; private set; }
-        public TargetKind TargetKind { get; private set; }
-        public WebDavKind WebDavKind { get; private set; }//Ver5.1.x
-        public FileAttributes Attr { get; private set; }//ファイルのアトリビュート
-        public FileInfo FileInfo { get; private set; }//ファイルインフォメーション
-        public string CgiCmd { get; private set; }//CGI実行プログラム
-        public string Uri { get; private set; }
+
+        private void SetHandler(HandlerSelectorResult result)
+        {
+            switch (result.TargetKind)
+            {
+                case HandlerKind.AspNetCore:
+                    break;
+                case HandlerKind.Cgi:
+                    result.Handler = _HandlerCgi;
+                    break;
+                case HandlerKind.Dir:
+                    result.Handler = _HandlerDirectoryList;
+                    break;
+                case HandlerKind.File:
+                    result.Handler = _HandlerDefault;
+                    break;
+                case HandlerKind.Move:
+                    result.Handler = _HandlerMove;
+                    break;
+                case HandlerKind.Non:
+                    result.Handler = _HandlerNotFound;
+                    break;
+                case HandlerKind.Ssi:
+                    result.Handler = _HandlerSsi;
+                    break;
+            }
+        }
+
         /*************************************************/
         // 初期化
         /*************************************************/
         //uriによる初期化
-        public void InitFromUri(string uri)
+        public HandlerSelectorResult InitFromUri(string uri)
         {
+            var result = new HandlerSelectorResult();
+            result.DocumentRoot = DocumentRoot;
+            result.PhysicalRootPath = PhysicalRootPath;
+
             System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri {uri}");
-            Init(uri);
-            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri TargetKind {TargetKind} WebDavKind {WebDavKind}");
+            Init(result, uri);
+            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
+
+            SetHandler(result);
+            return result;
         }
         //filenameによる初期化
-        public void InitFromFile(string file)
+        public HandlerSelectorResult InitFromFile(string file)
         {
+            var result = new HandlerSelectorResult();
+            result.DocumentRoot = DocumentRoot;
+            result.PhysicalRootPath = PhysicalRootPath;
 
             var tmp = file.ToLower();// fullPathからuriを生成する
             var root = DocumentRoot.ToLower();
             if (tmp.IndexOf(root) != 0)
-                return;
+                return result;
             var uri = file.Substring(root.Length);
             //uri = Util.SwapChar('\\', '/', uri);
             uri = Util.SwapChar(Path.DirectorySeparatorChar, '/', uri);
             if (string.IsNullOrEmpty(uri))
                 uri = "/";
 
-            Init(uri);
+            Init(result, uri);
+
+            SetHandler(result);
+            return result;
         }
+
         //コマンドによる初期化
-        public void InitFromCmd(string fullPath)
+        public HandlerSelectorResult InitFromCmd(string fullPath)
         {
-            TargetKind = TargetKind.Cgi;
-            CgiCmd = "COMSPEC";
-            FullPath = fullPath;
+            var result = new HandlerSelectorResult();
+            result.DocumentRoot = DocumentRoot;
+            result.PhysicalRootPath = PhysicalRootPath;
+
+            result.TargetKind = HandlerKind.Cgi;
+            result.CgiCmd = "COMSPEC";
+            result.FullPath = fullPath;
+
+            SetHandler(result);
+            return result;
         }
-        void Init(string uri)
+        private void Init(HandlerSelectorResult result, string uri)
         {
 
-            Uri = uri;
+            result.Uri = uri;
 
-            TargetKind = TargetKind.File;//通常ファイルであると仮置きする
+            result.TargetKind = HandlerKind.File;//通常ファイルであると仮置きする
             var enableCgiPath = false;//フォルダがCGI実行可能かどうか
-            WebDavKind = WebDavKind.Non;//Ver5.1.x WebDAV対象外であることを仮置きする
+            result.WebDavKind = WebDavKind.Non;//Ver5.1.x WebDAV対象外であることを仮置きする
 
             //****************************************************************
             //WebDavパスにヒットした場合、uri及びドキュメントルートを修正する
@@ -115,9 +167,9 @@ namespace Bjd.WebServer.Handlers
                         {
                             uri = "/";
                         }
-                        DocumentRoot = dir;
+                        result.DocumentRoot = dir;
                         //WevDavパス定義にヒットした場合
-                        WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
+                        result.WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
                         break;
                     }
 
@@ -143,10 +195,10 @@ namespace Bjd.WebServer.Handlers
                             {
                                 uri = "/";
                             }
-                            Uri = exUri;//リクエストに既に/が付いていたように動作させる
-                            DocumentRoot = dir;
+                            result.Uri = exUri;//リクエストに既に/が付いていたように動作させる
+                            result.DocumentRoot = dir;
                             //WevDavパス定義にヒットした場合
-                            WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
+                            result.WebDavKind = (write) ? WebDavKind.Write : WebDavKind.Read;
                             break;
                         }
 
@@ -160,7 +212,7 @@ namespace Bjd.WebServer.Handlers
             //CGIパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
             bool useCgiPath = false;//CGIパス定義が存在するかどうかのフラグ
-            if (WebDavKind == WebDavKind.Non && (bool)_conf.Get("useCgi"))
+            if (result.WebDavKind == WebDavKind.Non && (bool)_conf.Get("useCgi"))
             {
                 foreach (var o in (Dat)_conf.Get("cgiPath"))
                 {
@@ -180,7 +232,7 @@ namespace Bjd.WebServer.Handlers
                     {
                         uri = "/";
                     }
-                    DocumentRoot = dir;
+                    result.DocumentRoot = dir;
                     //CGIパス定義にヒットした場合
                     enableCgiPath = true;//CGI実行が可能なフォルダである
                     break;
@@ -198,7 +250,7 @@ namespace Bjd.WebServer.Handlers
             //****************************************************************
             //別名にヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
-            if (WebDavKind == WebDavKind.Non && !useCgiPath && uri.Length >= 1)
+            if (result.WebDavKind == WebDavKind.Non && !useCgiPath && uri.Length >= 1)
             {
                 foreach (var o in (Dat)_conf.Get("aliaseList"))
                 {
@@ -210,7 +262,7 @@ namespace Bjd.WebServer.Handlers
                     if (uri.ToUpper() + "/" == name.ToUpper())
                     {
                         //ファイル指定されたターゲットがファイルではなくディレクトリの場合
-                        TargetKind = TargetKind.Move;
+                        result.TargetKind = HandlerKind.Move;
                         return;
                     }
 
@@ -225,7 +277,7 @@ namespace Bjd.WebServer.Handlers
                         uri = "/";
                     }
 
-                    DocumentRoot = dir;
+                    result.DocumentRoot = dir;
                     break;
 
                 }
@@ -235,26 +287,26 @@ namespace Bjd.WebServer.Handlers
             // uriから物理的なパス名を生成する
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
-            FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, DocumentRoot + uri);
-            System.Diagnostics.Trace.TraceInformation($"Target.Init {FullPath}");
+            result.FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, DocumentRoot + uri);
+            System.Diagnostics.Trace.TraceInformation($"Target.Init {result.FullPath}");
 
             /*************************************************/
             //ファイル指定されたターゲットがファイルではなくディレクトリの場合
             /*************************************************/
-            if (WebDavKind == WebDavKind.Non)
+            if (result.WebDavKind == WebDavKind.Non)
             {
                 //if (FullPath[FullPath.Length - 1] != '\\')
-                if (FullPath[FullPath.Length - 1] != Path.DirectorySeparatorChar && Directory.Exists(FullPath))
+                if (result.FullPath[result.FullPath.Length - 1] != Path.DirectorySeparatorChar && Directory.Exists(result.FullPath))
                 {
-                    TargetKind = TargetKind.Move;
+                    result.TargetKind = HandlerKind.Move;
                     return;
                 }
             }
             else
             {
-                if (TargetKind == TargetKind.File && Directory.Exists(FullPath))
+                if (result.TargetKind == HandlerKind.File && Directory.Exists(result.FullPath))
                 {
-                    TargetKind = TargetKind.Dir;
+                    result.TargetKind = HandlerKind.Dir;
                     return;
                 }
             }
@@ -264,30 +316,30 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //Uriでファイル名が指定されていない場合で、当該ディレクトリにwelcomeFileNameが存在する場合
             //ファイル名として使用する
-            if (WebDavKind == WebDavKind.Non)
+            if (result.WebDavKind == WebDavKind.Non)
             {
                 //Ver5.1.3
                 try
                 {
-                    if (Path.GetFileName(FullPath) == "")
+                    if (Path.GetFileName(result.FullPath) == "")
                     {
                         var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
                         foreach (string welcomeFileName in tmp)
                         {
                             //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
-                            var newPath = Path.Combine(Path.GetDirectoryName(FullPath), welcomeFileName);
+                            var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
                             if (!File.Exists(newPath)) continue;
 
-                            FullPath = newPath;
-                            System.Diagnostics.Trace.TraceInformation($"Target.Init welcomeFileName {FullPath}");
+                            result.FullPath = newPath;
+                            System.Diagnostics.Trace.TraceInformation($"Target.Init welcomeFileName {result.FullPath}");
                             break;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.Set(LogKind.Error, null, 37, string.Format("uri={0} FullPath={1} {2}", uri, FullPath, ex.Message));
-                    TargetKind = TargetKind.Non;
+                    _logger.Set(LogKind.Error, null, 37, string.Format("uri={0} FullPath={1} {2}", uri, result.FullPath, ex.Message));
+                    result.TargetKind = HandlerKind.Non;
                     return;
                 }
 
@@ -295,19 +347,19 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //ターゲットはファイルとして存在するか
             /*************************************************/
-            if (!File.Exists(FullPath))
+            if (!File.Exists(result.FullPath))
             {
                 //ディレクトリとして存在しない場合
-                if (!Directory.Exists(FullPath))
+                if (!Directory.Exists(result.FullPath))
                 {
                     //存在しない
-                    TargetKind = TargetKind.Non;
+                    result.TargetKind = HandlerKind.Non;
                     return;
                 }
 
-                if ((bool)_conf.Get("useDirectoryEnum") && WebDavKind == WebDavKind.Non)
+                if ((bool)_conf.Get("useDirectoryEnum") && result.WebDavKind == WebDavKind.Non)
                 {
-                    TargetKind = TargetKind.Dir;
+                    result.TargetKind = HandlerKind.Dir;
                     return;
                 }
             }
@@ -316,9 +368,9 @@ namespace Bjd.WebServer.Handlers
             // 拡張子判断
             /*************************************************/
             // 「CGI実行が可能なフォルダの場合　拡張子がヒットすればターゲットはCGIである
-            if (WebDavKind == WebDavKind.Non && enableCgiPath)
+            if (result.WebDavKind == WebDavKind.Non && enableCgiPath)
             {
-                var ext = Path.GetExtension(FullPath);
+                var ext = Path.GetExtension(result.FullPath);
                 if (ext != null && ext.Length > 1)
                 {
                     ext = ext.Substring(1);
@@ -330,8 +382,8 @@ namespace Bjd.WebServer.Handlers
                         var cgiCmd = o.StrList[1];
                         if (cgiExt.ToUpper() == ext.ToUpper())
                         {
-                            TargetKind = TargetKind.Cgi;//CGIである
-                            CgiCmd = cgiCmd;
+                            result.TargetKind = HandlerKind.Cgi;//CGIである
+                            result.CgiCmd = cgiCmd;
                         }
 
                     }
@@ -341,23 +393,23 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             // ターゲットがSSIかどうかの判断
             /*************************************************/
-            if (WebDavKind == WebDavKind.Non)
+            if (result.WebDavKind == WebDavKind.Non)
             {
-                if (TargetKind == TargetKind.File && (bool)_conf.Get("useSsi"))
+                if (result.TargetKind == HandlerKind.File && (bool)_conf.Get("useSsi"))
                 {
                     //「SSIを使用する」場合
                     // SSI指定拡張子かどうかの判断
-                    var ext = Path.GetExtension(FullPath);
+                    var ext = Path.GetExtension(result.FullPath);
                     if (ext != null && 1 <= ext.Length)
                     {
                         var cgiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
                         if (0 <= cgiExtList.IndexOf(ext.Substring(1)))
                         {
                             //ターゲットファイルにキーワードが含まれているかどうかの確認
-                            var physicalFullPath = Path.Combine(this.PhysicalRootPath, FullPath);
+                            var physicalFullPath = Path.Combine(this.PhysicalRootPath, result.FullPath);
                             if (0 <= Util.IndexOf(physicalFullPath, "<!--#"))
                             {
-                                TargetKind = TargetKind.Ssi;
+                                result.TargetKind = HandlerKind.Ssi;
                             }
                         }
                     }
@@ -366,13 +418,26 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             // アトリビュート及びインフォメーションの取得
             /*************************************************/
-            if (TargetKind == TargetKind.File || TargetKind == TargetKind.Ssi)
+            if (result.TargetKind == HandlerKind.File || result.TargetKind == HandlerKind.Ssi)
             {
                 //ファイルアトリビュートの取得
-                Attr = File.GetAttributes(FullPath);
+                result.Attr = File.GetAttributes(result.FullPath);
                 //ファイルインフォメーションの取得
-                FileInfo = new FileInfo(FullPath);
+                result.FileInfo = new FileInfo(result.FullPath);
+
+                //***************************************************************
+                //  隠し属性のファイルへのアクセス制御
+                //***************************************************************
+                if (!(bool)_conf.Get("useHidden"))
+                {
+                    if ((result.Attr & FileAttributes.Hidden) == FileAttributes.Hidden)
+                    {
+                        result.TargetKind = HandlerKind.Non;
+                    }
+                }
+
             }
+
 
         }
 

@@ -9,9 +9,9 @@ namespace Bjd.WebServer.Outside
     class Cgi
     {
 
-        public bool Exec(HandlerSelector target, string param, Env env, WebStream inputStream, out WebStream outputStream, int cgiTimeout)
+        public bool Exec(HandlerSelectorResult result, string param, Env env, WebStream inputStream, out WebStream outputStream, int cgiTimeout)
         {
-            var cmd = target.CgiCmd;
+            var cmd = result.CgiCmd;
             if (cmd == null)
             {
                 outputStream = new WebStream(-1);
@@ -26,14 +26,14 @@ namespace Bjd.WebServer.Outside
             }
             else if (cmd.ToUpper().IndexOf("CMD.EXE") != -1)
             {
-                cmd = target.FullPath;
+                cmd = result.FullPath;
             }
             else
             {
-                param = string.Format("{0} {1}", Path.GetFileName(target.FullPath), param);
+                param = string.Format("{0} {1}", Path.GetFileName(result.FullPath), param);
             }
 
-            var execProcess = new ExecProcess(cmd, param, Path.GetDirectoryName(target.FullPath), env);
+            var execProcess = new ExecProcess(cmd, param, Path.GetDirectoryName(result.FullPath), env);
             return execProcess.Start(inputStream, out outputStream);
         }
 

@@ -103,8 +103,8 @@ namespace WebServerTest
             var sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
-            sut.InitFromUri(uri);
-            Assert.Equal(sut.FullPath, fullPath);
+            var result = sut.InitFromUri(uri);
+            Assert.Equal(result.FullPath, fullPath);
         }
 
         [Theory]
@@ -117,8 +117,8 @@ namespace WebServerTest
             var sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
-            sut.InitFromFile(fullPath);
-            Assert.Equal(sut.Uri, uri);
+            var result = sut.InitFromFile(fullPath);
+            Assert.Equal(result.Uri, uri);
         }
 
 
