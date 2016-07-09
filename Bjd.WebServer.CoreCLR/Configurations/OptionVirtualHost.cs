@@ -3,7 +3,7 @@ using Bjd;
 using Bjd.Controls;
 using Bjd.Options;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Configurations
 {
     public class OptionVirtualHost : OneOption
     {

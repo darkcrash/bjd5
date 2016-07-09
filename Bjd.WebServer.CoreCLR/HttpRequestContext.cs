@@ -20,6 +20,9 @@ namespace Bjd.WebServer
         public string Url;
         public int ResponseCode;
         public ContentType ContentType;
+        internal Authorization Auth;
+        internal string AuthName;
+        internal Response HttpResponse;
 
         public void Dispose()
         {

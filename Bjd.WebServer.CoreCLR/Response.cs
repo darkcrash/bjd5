@@ -16,7 +16,7 @@ namespace Bjd.WebServer
     //********************************************************
     //ドキュメント生成クラス
     //********************************************************
-    class Document
+    class Response
     {
         readonly Kernel kernel;
         readonly Logger _logger;
@@ -33,7 +33,7 @@ namespace Bjd.WebServer
 
         public bool SetRangeTo { get; set; }//Rangeヘッダで範囲（終わり）が指定された場合True
 
-        public Document(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, ContentType contentType)
+        public Response(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, ContentType contentType)
         {
             System.Diagnostics.Trace.TraceInformation($"Document..ctor");
             this.kernel = kernel;

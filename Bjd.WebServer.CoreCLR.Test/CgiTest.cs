@@ -27,11 +27,11 @@ namespace WebServerTest
             public ServerFixture()
             {
                 _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
+                _service.SetOption("CgiTest.ini");
                 _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:88");
+                var option = kernel.ListOption.Get("Web-localhost:7188");
                 var conf = new Conf(option);
 
                 //サーバ起動
@@ -67,21 +67,51 @@ namespace WebServerTest
         }
 
         [Fact]
-        public void EnvCgiTest()
+        public void EnvCgiTestv4()
         {
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 88, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 7188, 10, null);
 
-            cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\nHost: ws00\n\n"));
-            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\n"));
+            //cl.Send(Encoding.ASCII.GetBytes("Connection: keep-alive\n"));
+            cl.Send(Encoding.ASCII.GetBytes("Host: localhost\n"));
+            cl.Send(Encoding.ASCII.GetBytes("\n"));
+            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
             const string pattern = "<b>SERVER_NAME</b>";
             var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
+            Assert.NotEqual(0, lines.Count);
+            Assert.NotEqual(1, lines.Count);
+            Assert.NotEqual(2, lines.Count);
             Assert.Equal(find, true);
 
             cl.Close();
         }
+
+        [Fact]
+        public void EnvCgiTestv6()
+        {
+            var kernel = _fixture._service.Kernel;
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 7188, 10, null);
+
+            cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\n"));
+            //cl.Send(Encoding.ASCII.GetBytes("Connection: keep-alive\n"));
+            cl.Send(Encoding.ASCII.GetBytes("Host: localhost\n"));
+            cl.Send(Encoding.ASCII.GetBytes("\n"));
+            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
+            var lines = Inet.RecvLines(cl, sec, this);
+            const string pattern = "<b>SERVER_NAME</b>";
+            var find = lines.Any(l => l.IndexOf(pattern) != -1);
+            //Assert.Equal(find, true, string.Format("not found {0}", pattern));
+            Assert.NotEqual(0, lines.Count);
+            Assert.NotEqual(1, lines.Count);
+            Assert.NotEqual(2, lines.Count);
+            Assert.Equal(find, true);
+
+            cl.Close();
+        }
+
 
         public bool IsLife()
         {

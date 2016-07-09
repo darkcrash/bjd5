@@ -1,4 +1,4 @@
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Handlers
 {
     enum TargetKind {
         Non = 0,

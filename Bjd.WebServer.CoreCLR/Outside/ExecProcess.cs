@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Outside
 {
     class ExecProcess
     {

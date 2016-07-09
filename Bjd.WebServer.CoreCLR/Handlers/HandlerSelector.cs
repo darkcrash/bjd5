@@ -6,17 +6,17 @@ using Bjd.Logs;
 using Bjd.Options;
 using Bjd.Utils;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Handlers
 {
     /*******************************************************/
     //対象（ファイル）に関する各種の情報をまとめて扱うクラス
     /*******************************************************/
-    class Target
+    class HandlerSelector
     {
         //readonly OneOption _oneOption;
         readonly Conf _conf;
         readonly Logger _logger;
-        public Target(Kernel kernel, Conf conf, Logger logger)
+        public HandlerSelector(Kernel kernel, Conf conf, Logger logger)
         {
             //System.Diagnostics.Trace.TraceInformation($"Target..ctor ");
             //_oneOption = oneOption;

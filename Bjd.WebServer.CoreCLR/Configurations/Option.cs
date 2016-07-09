@@ -6,7 +6,7 @@ using Bjd.Controls;
 using Bjd.Net;
 using Bjd.Options;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Configurations
 {
     public class Option : OneOption
     {

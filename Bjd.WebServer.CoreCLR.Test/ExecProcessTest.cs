@@ -5,6 +5,7 @@ using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
 using Bjd.WebServer.IO;
+using Bjd.WebServer.Outside;
 
 namespace WebServerTest
 {

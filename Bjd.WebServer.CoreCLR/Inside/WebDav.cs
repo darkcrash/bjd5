@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml;
 using Bjd.Logs;
 using Bjd.Utils;
+using Bjd.WebServer.Handlers;
 
 namespace Bjd.WebServer
 {
@@ -31,7 +32,7 @@ namespace Bjd.WebServer
         Depth _depth = Depth.Null;
         readonly Logger _logger;
         readonly WebDavDb _webDavDb;
-        readonly Document _document;
+        readonly Response _document;
         readonly string _fullPath = "";
         readonly string _hrefHost = "";
         readonly string _hrefUri = "";
@@ -40,7 +41,7 @@ namespace Bjd.WebServer
         readonly ContentType _contentType;
         readonly bool _useEtag;
 
-        public WebDav(Logger logger, WebDavDb webDavDb, Target target, Document document, string urlStr, string depthStr, ContentType contentType, bool useEtag)
+        public WebDav(Logger logger, WebDavDb webDavDb, HandlerSelector target, Response document, string urlStr, string depthStr, ContentType contentType, bool useEtag)
         {
             _logger = logger;
             _webDavDb = webDavDb;
@@ -427,7 +428,7 @@ namespace Bjd.WebServer
         }
 
         //MOVE.COPY
-        public int MoveCopy(Target destTarget, bool overwrite, HttpMethod httpMethod)
+        public int MoveCopy(HandlerSelector destTarget, bool overwrite, HttpMethod httpMethod)
         {
             int responseCode = 405;
             if (_targetKind == TargetKind.Dir)

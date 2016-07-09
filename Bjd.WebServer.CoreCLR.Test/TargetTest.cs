@@ -7,6 +7,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
+using Bjd.WebServer.Handlers;
 
 namespace WebServerTest
 {
@@ -78,11 +79,11 @@ namespace WebServerTest
         public void DocumentRootTest()
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(_fixture._service.Kernel, conf, null);
+            var sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
 
             //無効なドキュメントルートを設定する
             conf.Set("documentRoot", "q:\\");
-            sut = new Target(_fixture._service.Kernel, conf, null);
+            sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
             Assert.Equal(sut.DocumentRoot, null);
 
 
@@ -99,7 +100,7 @@ namespace WebServerTest
         public void FullPathTest(string uri, string path)
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(_fixture._service.Kernel, conf, null);
+            var sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromUri(uri);
@@ -113,7 +114,7 @@ namespace WebServerTest
         public void InitFromFileTest(string uri, string path)
         {
             Conf conf = new Conf(_fixture.option);
-            var sut = new Target(_fixture._service.Kernel, conf, null);
+            var sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
             var fullPath = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, path);
 
             sut.InitFromFile(fullPath);

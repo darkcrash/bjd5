@@ -8,8 +8,9 @@ using Bjd.Options;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.WebServer.IO;
+using Bjd.WebServer.Handlers;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Outside
 {
     class Ssi
     {
@@ -22,7 +23,7 @@ namespace Bjd.WebServer
         string _sizeFmt = "bytes";
 
         //子プロセスでCGIを実行する場合に使用する
-        Target _target;
+        HandlerSelector _target;
         readonly SockTcp _sockTcp;
         readonly Request _request;
         readonly Header _recvHeader;
@@ -40,7 +41,7 @@ namespace Bjd.WebServer
             _recvHeader = recvHeader;
         }
 
-        public bool Exec(Target target, Env env, WebStream output)
+        public bool Exec(HandlerSelector target, Env env, WebStream output)
         {
             _target = target;
 
@@ -217,7 +218,7 @@ namespace Bjd.WebServer
         //プログラム実行
         bool SsiExec(string tag, string val, ref string str, Encoding encoding, SockTcp tcpObj)
         {
-            Target newTarget;
+            HandlerSelector newTarget;
             var param = "";
             if (tag.ToLower() == "cmd")
             {
@@ -376,7 +377,7 @@ namespace Bjd.WebServer
         //ファイルのサイズ
         bool SsiFsize(string tag, string val, ref string str)
         {
-            Target newTarget = CreateTarget(tag, val);
+            HandlerSelector newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
             long size = 0;
@@ -441,9 +442,9 @@ namespace Bjd.WebServer
             return true;
         }
 
-        Target CreateTarget(string tag, string val)
+        HandlerSelector CreateTarget(string tag, string val)
         {
-            var newTarget = new Target(_kernel, _conf, _logger);
+            var newTarget = new HandlerSelector(_kernel, _conf, _logger);
             if (tag == "file")
             {
                 //現在のドキュメンのフルパスからからファイル名を生成する
