@@ -5,10 +5,10 @@ using Bjd.Options;
 
 namespace Bjd.WebServer
 {
-    public class ContentType {
+    public class HttpContentType {
         //readonly OneOption _oneOption;
         readonly Conf _conf;
-        public ContentType(Conf conf) {
+        public HttpContentType(Conf conf) {
             //_oneOption = oneOption;
             _conf = conf;
         }

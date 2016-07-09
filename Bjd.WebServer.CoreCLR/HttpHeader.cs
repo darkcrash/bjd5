@@ -9,18 +9,18 @@ using Bjd.Threading;
 
 namespace Bjd
 {
-    public class Header : IEnumerable<OneHeader>
+    public class HttpHeader : IEnumerable<OneHeader>
     {
         readonly List<OneHeader> _ar = new List<OneHeader>();
 
-        public Header()
+        public HttpHeader()
         {
         }
-        public Header(Header header)
+        public HttpHeader(HttpHeader header)
         {
             _ar = new List<OneHeader>(header);
         }
-        public Header(byte[] buf)
+        public HttpHeader(byte[] buf)
         {
             _ar = new List<OneHeader>();
 
@@ -32,7 +32,7 @@ namespace Bjd
                 Append(key, val);
             }
         }
-        public Header(List<byte[]> lines)
+        public HttpHeader(List<byte[]> lines)
         {
             _ar = new List<OneHeader>();
 

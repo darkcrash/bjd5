@@ -25,10 +25,10 @@ namespace Bjd.WebServer.Outside
         //子プロセスでCGIを実行する場合に使用する
         HandlerSelector _target;
         readonly SockTcp _sockTcp;
-        readonly Request _request;
-        readonly Header _recvHeader;
+        readonly HttpRequest _request;
+        readonly HttpHeader _recvHeader;
 
-        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, Request request, Header recvHeader)
+        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpRequest request, HttpHeader recvHeader)
         {
             _kernel = kernel;
             _logger = logger;

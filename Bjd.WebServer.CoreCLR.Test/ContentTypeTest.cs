@@ -14,7 +14,7 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             internal TestService _service;
-            internal ContentType _contentType;
+            internal HttpContentType _contentType;
 
             public ServerFixture()
             {
@@ -25,7 +25,7 @@ namespace WebServerTest
                 var option = kernel.ListOption.Get("Web-localhost:92");
                 Conf conf = new Conf(option);
 
-                _contentType = new ContentType(conf);
+                _contentType = new HttpContentType(conf);
 
             }
 

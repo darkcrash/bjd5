@@ -61,8 +61,8 @@ namespace WebServerTest
         [InlineData("SystemRoot", "C:\\Windows")]
         public void OtherTest(string key, string val)
         {
-            var request = new Request(null, null);
-            var header = new Header();
+            var request = new HttpRequest(null, null);
+            var header = new HttpHeader();
             var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 90, 3, null);
             const string fileName = "";
             var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
@@ -89,12 +89,12 @@ namespace WebServerTest
         [InlineData("SERVER_ADMIN", "root@localhost")]
         public void OptionTest(string key, string val)
         {
-            var request = new Request(null, null);
+            var request = new HttpRequest(null, null);
 
             var conf = new Conf(_fixture.option);
             conf.Set("documentRoot", val);
 
-            var header = new Header();
+            var header = new HttpHeader();
             var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
             const string fileName = "";
             var env = new Env(_fixture._kernel, conf, request, header, tcpObj, fileName);
@@ -119,8 +119,8 @@ namespace WebServerTest
         {
 
             var conf = new Conf(_fixture.option);
-            var request = new Request(null, null);
-            var header = new Header();
+            var request = new HttpRequest(null, null);
+            var header = new HttpHeader();
             var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
             tcpObj.LocalAddress = new IPEndPoint((new Ip("127.0.0.1")).IPAddress, 80);
             tcpObj.RemoteAddress = new IPEndPoint((new Ip("10.0.0.100")).IPAddress, 5000);
@@ -148,8 +148,8 @@ namespace WebServerTest
         {
 
 
-            var request = new Request(null, null);
-            var header = new Header();
+            var request = new HttpRequest(null, null);
+            var header = new HttpHeader();
             header.Append("Connection", Encoding.ASCII.GetBytes("keep-alive"));
             header.Append("User-Agent", Encoding.ASCII.GetBytes("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"));
             header.Append("Accept", Encoding.ASCII.GetBytes("text/html,application/xhtml"));

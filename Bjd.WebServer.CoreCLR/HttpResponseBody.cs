@@ -13,7 +13,7 @@ using Bjd.Threading;
 
 namespace Bjd.WebServer
 {
-    class ResponseBody
+    class HttpResponseBody
     {
 
         enum KindBuf
@@ -31,7 +31,7 @@ namespace Bjd.WebServer
         long _rangeFrom;
         long _rangeTo;
 
-        public ResponseBody()
+        public HttpResponseBody()
         {
             _kindBuf = KindBuf.Memory;
             _doc = empty;

@@ -16,24 +16,24 @@ namespace Bjd.WebServer
     //********************************************************
     //ドキュメント生成クラス
     //********************************************************
-    class Response
+    class HttpResponse
     {
         readonly Kernel kernel;
         readonly Logger _logger;
         //readonly OneOption _oneOption;
         readonly Conf _conf;
         readonly SockTcp _sockTcp;
-        readonly ContentType _contentType;
+        readonly HttpContentType _contentType;
 
         //byte[] doc = new byte[0];
-        readonly ResponseBody _body;
+        readonly HttpResponseBody _body;
 
         //送信ヘッダ
-        readonly Header _sendHeader;
+        readonly HttpHeader _sendHeader;
 
         public bool SetRangeTo { get; set; }//Rangeヘッダで範囲（終わり）が指定された場合True
 
-        public Response(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, ContentType contentType)
+        public HttpResponse(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpContentType contentType)
         {
             System.Diagnostics.Trace.TraceInformation($"Document..ctor");
             this.kernel = kernel;
@@ -46,12 +46,12 @@ namespace Bjd.WebServer
             SetRangeTo = false;
 
             //送信ヘッダ初期化
-            _sendHeader = new Header();
+            _sendHeader = new HttpHeader();
             _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
             _sendHeader.Replace("MIME-Version", "1.0");
             _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
 
-            _body = new ResponseBody();
+            _body = new HttpResponseBody();
         }
         //Location:ヘッダを含むかどうか
         public bool SearchLocation()
@@ -151,6 +151,7 @@ namespace Bjd.WebServer
             _sendHeader.Replace("Content-Length", _body.Length.ToString());
             _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
         }
+
         // CGIで得られた出力から、SendHeader及びdocを生成する
         public bool CreateFromCgi(byte[] output)
         {
@@ -240,7 +241,7 @@ namespace Bjd.WebServer
         }
 
 
-        public bool CreateFromErrorCode(Request request, int responseCode)
+        public bool CreateFromErrorCode(HttpRequest request, int responseCode)
         {
             //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromErrorCode");
 
@@ -270,7 +271,7 @@ namespace Bjd.WebServer
             foreach (string line in lines)
             {
                 string str = line;
-                str = Util.SwapStr("$MSG", request.StatusMessage(responseCode), str);
+                str = Util.SwapStr("$MSG", WebServerUtil.StatusMessage(responseCode), str);
                 str = Util.SwapStr("$CODE", responseCode.ToString(), str);
                 str = Util.SwapStr("$SERVER", kernel.Enviroment.ApplicationName, str);
                 str = Util.SwapStr("$VER", request.Ver, str);
@@ -283,7 +284,7 @@ namespace Bjd.WebServer
             return true;
 
         }
-        public bool CreateFromIndex(Request request, string path)
+        public bool CreateFromIndex(HttpRequest request, string path)
         {
             //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromIndex");
 

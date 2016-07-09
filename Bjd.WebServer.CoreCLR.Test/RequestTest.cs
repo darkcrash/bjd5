@@ -9,13 +9,13 @@ namespace WebServerTest
     {
 
 
-        Request _request;
+        HttpRequest _request;
 
         public RequestTest()
         {
 
 
-            _request = new Request(null, null);
+            _request = new HttpRequest(null, null);
 
         }
 
@@ -94,7 +94,7 @@ namespace WebServerTest
         [InlineData(-1, "")]
         public void StatusMessageTest(int code, string msg)
         {
-            var s = _request.StatusMessage(code);
+            var s = WebServerUtil.StatusMessage(code);
             Assert.Equal(s, msg);
 
         }

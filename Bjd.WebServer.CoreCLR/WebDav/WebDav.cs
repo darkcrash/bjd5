@@ -32,16 +32,16 @@ namespace Bjd.WebServer.WebDav
         Depth _depth = Depth.Null;
         readonly Logger _logger;
         readonly WebDavDb _webDavDb;
-        readonly Response _document;
+        readonly HttpResponse _document;
         readonly string _fullPath = "";
         readonly string _hrefHost = "";
         readonly string _hrefUri = "";
         readonly WebDavKind _webDavKind;
         readonly TargetKind _targetKind;
-        readonly ContentType _contentType;
+        readonly HttpContentType _contentType;
         readonly bool _useEtag;
 
-        public WebDav(Logger logger, WebDavDb webDavDb, HandlerSelector target, Response document, string urlStr, string depthStr, ContentType contentType, bool useEtag)
+        public WebDav(Logger logger, WebDavDb webDavDb, HandlerSelector target, HttpResponse document, string urlStr, string depthStr, HttpContentType contentType, bool useEtag)
         {
             _logger = logger;
             _webDavDb = webDavDb;
