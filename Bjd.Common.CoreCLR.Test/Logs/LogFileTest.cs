@@ -153,6 +153,8 @@ namespace Bjd.Test.Logs
                 //sut.Dispose();
             }
 
+
+
             const int expected = 1;
 
             //exercise

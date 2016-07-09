@@ -48,8 +48,8 @@ namespace Bjd.Threading
             {
                 if (isRunning)
                     return;
+                isRunning = true;
             }
-            isRunning = true;
             System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
         }
 

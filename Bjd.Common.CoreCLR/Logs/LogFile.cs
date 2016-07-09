@@ -21,6 +21,7 @@ namespace Bjd.Logs
         private readonly bool _useLogFile;
         private bool isDisposed = false;
         private object _lock = new object();
+        private System.Threading.CountdownEvent count = new System.Threading.CountdownEvent(0);
 
 
         private OneLogFile _normalLog; // 通常ログ
@@ -71,6 +72,17 @@ namespace Bjd.Logs
                 return;
             }
 
+            lock (count)
+            {
+                if (count.IsSet)
+                {
+                    count.Reset(1);
+                }
+                else
+                {
+                    count.AddCount();
+                }
+            }
             Action a = () =>
             {
                 try
@@ -93,6 +105,7 @@ namespace Bjd.Logs
             };
 
             var t = new Task(a, TaskCreationOptions.PreferFairness);
+            t.ContinueWith(_ => count.Signal());
             t.Start(sts);
 
         }
@@ -176,6 +189,8 @@ namespace Bjd.Logs
         //オープンしているログファイルを全てクローズする
         private void LogClose()
         {
+            count.Wait();
+
             if (_normalLog != null)
             {
                 _normalLog.Dispose();
@@ -363,6 +378,7 @@ namespace Bjd.Logs
                 }
                 LogClose();
                 LogDelete(); // 過去ログの自動削除
+                count.Dispose();
             }
         }
 
