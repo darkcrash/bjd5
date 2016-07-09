@@ -6,7 +6,7 @@ using System.IO;
 using Bjd;
 using Bjd.Utils;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Inside
 {
     class WebDavDb : IDisposable {
         readonly List<OneWebDavDb> _ar = new List<OneWebDavDb>();

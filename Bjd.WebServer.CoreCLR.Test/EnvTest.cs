@@ -9,6 +9,7 @@ using Bjd.WebServer;
 using Bjd;
 using System.Net;
 using Bjd.Services;
+using Bjd.WebServer.Outside;
 
 namespace WebServerTest
 {

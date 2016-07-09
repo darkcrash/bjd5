@@ -17,6 +17,7 @@ using Bjd.Utils;
 using Bjd.WebServer.IO;
 using Bjd.WebServer.Handlers;
 using Bjd.WebServer.Outside;
+using Bjd.WebServer.Inside;
 
 namespace Bjd.WebServer
 {

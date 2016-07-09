@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using Bjd;
 using Bjd.Utils;
+using Bjd.WebServer.Inside;
 
 namespace Bjd.WebServer
 {

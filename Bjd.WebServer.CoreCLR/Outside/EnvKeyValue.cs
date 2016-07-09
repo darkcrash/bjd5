@@ -1,9 +1,11 @@
-﻿namespace Bjd.WebServer
+﻿namespace Bjd.WebServer.Outside
 {
-    class OneEnv {
+    class EnvKeyValue 
+    {
         public string Key { get; private set; }
         public string Val { get; private set; }
-        public OneEnv(string key, string val) {
+        public EnvKeyValue(string key, string val)
+        {
             Key = key;
             Val = val;
         }
