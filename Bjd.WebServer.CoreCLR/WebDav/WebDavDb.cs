@@ -6,10 +6,10 @@ using System.IO;
 using Bjd;
 using Bjd.Utils;
 
-namespace Bjd.WebServer.Inside
+namespace Bjd.WebServer.WebDav
 {
     class WebDavDb : IDisposable {
-        readonly List<OneWebDavDb> _ar = new List<OneWebDavDb>();
+        readonly List<WebDavDbEntry> _ar = new List<WebDavDbEntry>();
         readonly string _fileName;
         public string NameTag { get; private set; }
         public WebDavDb(Kernel kernel, string nameTag) {
@@ -24,7 +24,7 @@ namespace Bjd.WebServer.Inside
                         string str = sr.ReadLine();
                         if (str == null)
                             break;
-                        var oneWebDavDb = new OneWebDavDb(Inet.TrimCrlf(str));
+                        var oneWebDavDb = new WebDavDbEntry(Inet.TrimCrlf(str));
                         if (oneWebDavDb.Uri != "") {
                             _ar.Add(oneWebDavDb);
                         }
@@ -54,7 +54,7 @@ namespace Bjd.WebServer.Inside
                     _ar.Remove(o);
                     break;
                 }
-                _ar.Add(new OneWebDavDb(uri, nameSpace, name, value));
+                _ar.Add(new WebDavDbEntry(uri, nameSpace, name, value));
             }
         }
         public void Remove(string uri, string nameSpace, string name) {
@@ -74,9 +74,9 @@ namespace Bjd.WebServer.Inside
                 }
             }
         }
-        public List<OneWebDavDb> Get(string uri) {
+        public List<WebDavDbEntry> Get(string uri) {
             lock (this){
-                return _ar.Where(oneWebDavDb => oneWebDavDb.Uri == uri).ToList();
+                return _ar.Where(entry => entry.Uri == uri).ToList();
             }
         }
     }

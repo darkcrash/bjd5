@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.Logs;
 using Bjd.Options;
 using Bjd.Utils;
-using Bjd.WebServer.Inside;
+using Bjd.WebServer.WebDav;
 
 namespace Bjd.WebServer.Handlers
 {

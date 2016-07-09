@@ -4,9 +4,8 @@ using System.IO;
 using System.Xml;
 using Bjd;
 using Bjd.Utils;
-using Bjd.WebServer.Inside;
 
-namespace Bjd.WebServer.Inside
+namespace Bjd.WebServer.WebDav
 {
     //PROPFINDにおいて検索した結果を保存してレスポンスを生成するクラス
     class PropFindResponce

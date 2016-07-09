@@ -1,18 +1,18 @@
-﻿namespace Bjd.WebServer.Inside
+﻿namespace Bjd.WebServer.WebDav
 {
-    class OneWebDavDb {
+    class WebDavDbEntry {
         public string Uri { get; private set; }
         public string NameSpace { get; private set; }
         public string Name { get; private set; }
         public string Value { get; private set; }
-        public OneWebDavDb(string uri, string nameSpace, string name, string value) {
+        public WebDavDbEntry(string uri, string nameSpace, string name, string value) {
             Uri = uri;
             NameSpace = nameSpace;
             Name = name;
             Value = value;
         }
 
-        public OneWebDavDb(string str) {
+        public WebDavDbEntry(string str) {
             var tmp = str.Split('\t');
             if (tmp.Length == 4) {
                 Uri = tmp[0];

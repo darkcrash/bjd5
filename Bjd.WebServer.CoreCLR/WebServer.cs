@@ -17,7 +17,7 @@ using Bjd.Utils;
 using Bjd.WebServer.IO;
 using Bjd.WebServer.Handlers;
 using Bjd.WebServer.Outside;
-using Bjd.WebServer.Inside;
+using Bjd.WebServer.WebDav;
 
 namespace Bjd.WebServer
 {
@@ -364,9 +364,9 @@ namespace Bjd.WebServer
                     //***************************************************************
                     //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
                     //***************************************************************
-                    if (WebDav.IsTarget(contextRequest.HttpRequest.Method))
+                    if (WebDav.WebDav.IsTarget(contextRequest.HttpRequest.Method))
                     {
-                        var webDav = new WebDav(Logger, _webDavDb, target, contextRequest.HttpResponse, contextRequest.Url, contextRequest.HttpHeader.GetVal("Depth"), contextRequest.ContentType, (bool)_conf.Get("useEtag"));
+                        var webDav = new WebDav.WebDav(Logger, _webDavDb, target, contextRequest.HttpResponse, contextRequest.Url, contextRequest.HttpHeader.GetVal("Depth"), contextRequest.ContentType, (bool)_conf.Get("useEtag"));
 
                         var inputBuf = new byte[0];
                         if (contextRequest.InputStream != null)
