@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace Bjd.WebServer
+namespace Bjd.WebServer.Inside
 {
     //PROPPATCHにおいて処理した結果を保存してレスポンスを生成するクラス
     class PropPatchResponce {
