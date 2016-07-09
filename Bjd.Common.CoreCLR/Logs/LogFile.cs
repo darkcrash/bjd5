@@ -21,6 +21,7 @@ namespace Bjd.Logs
         private readonly bool _useLogFile;
         private bool isDisposed = false;
         private object _lock = new object();
+        private object _lockCount = new object();
         private System.Threading.CountdownEvent count = new System.Threading.CountdownEvent(0);
 
 
@@ -72,7 +73,7 @@ namespace Bjd.Logs
                 return;
             }
 
-            lock (count)
+            lock (_lockCount)
             {
                 if (count.IsSet)
                 {
@@ -105,7 +106,7 @@ namespace Bjd.Logs
             };
 
             var t = new Task(a, TaskCreationOptions.PreferFairness);
-            t.ContinueWith(_ => count.Signal());
+            t.ContinueWith(_ => { lock (_lockCount) count.Signal(); });
             t.Start(sts);
 
         }
