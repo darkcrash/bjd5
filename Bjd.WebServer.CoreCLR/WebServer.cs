@@ -17,7 +17,7 @@ using Bjd.Utils;
 
 namespace Bjd.WebServer
 {
-    partial class Server : OneServer
+    partial class WebServer : OneServer
     {
         readonly AttackDb _attackDb;//自動拒否
 
@@ -38,7 +38,7 @@ namespace Bjd.WebServer
         //親クラスは、そのリストの0番目のオブジェクトで初期化する
 
         //コンストラクタ
-        public Server(Kernel kernel, Conf conf, OneBind oneBind)
+        public WebServer(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
 
@@ -139,37 +139,22 @@ namespace Bjd.WebServer
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
 
-            var sockTcp = (SockTcp)sockObj;
-
-            var remoteIp = sockTcp.RemoteIp;
+            // create Connection Context
+            var contextConnection = new HttpConnectionContext();
+            contextConnection.Logger = Logger;
+            contextConnection.Connection = (SockTcp)sockObj;
+            contextConnection.RemoteIp = contextConnection.Connection.RemoteIp;
 
             //opBase 及び loggerはバーチャルホストで変更されるので、
             //このポインタを初期化に使用できない
-
-            bool keepAlive = true;//レスポンスが終了したとき接続を切断しないで継続する 
-
-            //1回目の通信でバーチャルホストの検索を実施する
-            var checkVirtual = true;
-
-            var request = new Request(Logger, sockTcp);//リクエストライン処理クラス
-
-            //受信ヘッダ
-            var recvHeader = new Header();
-
-            //Ver5.1.x
-            string urlStr = null;//http://example.com
-
             //接続が継続している間は、このループの中にいる(継続か否かをkeepAliveで保持する)
             //「continue」は、次のリクエストを待つ　「break」は、接続を切断する事を意味する
 
-            WebStream inputStream = null;
-            var outputStream = new WebStream(-1);
-
-
-            try
+            while (contextConnection.keepAlive && IsLife())
             {
-
-                while (keepAlive && IsLife())
+                // create Request Context
+                var contextRequest = contextConnection.CreateRequestContext();
+                try
                 {
                     int responseCode;
 
@@ -178,41 +163,42 @@ namespace Bjd.WebServer
                     //***************************************************************
                     //リクエスト取得
                     //ここのタイムアウト値は、大きすぎるとブラウザの切断を取得できないでブロックしてしまう
-                    var requestStr = sockTcp.AsciiRecv(TimeoutSec, this);
+                    var requestStr = contextConnection.Connection.AsciiRecv(TimeoutSec, this);
                     if (requestStr == null)
                         break;
-                    
+
                     //\r\nの削除
                     requestStr = Inet.TrimCrlf(requestStr);
                     //Ver5.8.8 リクエストの解釈に失敗した場合に、処理を中断する
                     //request.Init(requestStr);
-                    if (!request.Init(requestStr))
+                    if (!contextRequest.HttpRequest.Init(requestStr))
                     {
                         break;
                     }
 
                     //ヘッダ取得（内部データは初期化される）
-                    if (!recvHeader.Recv(sockTcp, (int)_conf.Get("timeOut"), this))
+                    if (!contextRequest.HttpHeader.Recv(contextConnection.Connection, (int)_conf.Get("timeOut"), this))
                         break;
 
                     {
                         //Ver5.1.x
-                        var hostStr = recvHeader.GetVal("host");
-                        urlStr = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
-                        System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {urlStr}");
+                        var hostStr = contextRequest.HttpHeader.GetVal("host");
+                        contextRequest.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
+                        System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {contextRequest.Url}");
                     }
 
                     //***************************************************************
                     // ドキュメント生成クラスの初期化
                     //***************************************************************
-                    var contentType = new ContentType(_conf);
-                    var document = new Document(_kernel, Logger, _conf, sockTcp, contentType);
+                    //var contentType = new ContentType(_conf);
+                    contextRequest.ContentType = new ContentType(_conf);
+                    var document = new Document(_kernel, Logger, _conf, contextConnection.Connection, contextRequest.ContentType);
 
                     var authrization = new Authorization(_conf, Logger);
                     var authName = "";
 
                     //入力取得（POST及びPUTの場合）
-                    var contentLengthStr = recvHeader.GetVal("Content-Length");
+                    var contentLengthStr = contextRequest.HttpHeader.GetVal("Content-Length");
                     if (contentLengthStr != null)
                     {
                         try
@@ -221,27 +207,27 @@ namespace Bjd.WebServer
                             var max = Convert.ToInt64(contentLengthStr);
                             if (max != 0)
                             {//送信データあり
-                                inputStream = new WebStream((256000 < max) ? -1 : (int)max);
+                                contextRequest.InputStream = new WebStream((256000 < max) ? -1 : (int)max);
                                 var errorCount = 0;
-                                while (inputStream.Length < max && IsLife())
+                                while (contextRequest.InputStream.Length < max && IsLife())
                                 {
 
-                                    var len = max - inputStream.Length;
+                                    var len = max - contextRequest.InputStream.Length;
                                     if (len > 51200000)
                                     {
                                         len = 51200000;
                                     }
-                                    var b = sockTcp.Recv((int)len, (int)_conf.Get("timeOut"), this);
-                                    if (!inputStream.Add(b))
+                                    var b = contextConnection.Connection.Recv((int)len, (int)_conf.Get("timeOut"), this);
+                                    if (!contextRequest.InputStream.Add(b))
                                     {
                                         errorCount++;//エラー蓄積
-                                        Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, inputStream.Length));
+                                        Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, contextRequest.InputStream.Length));
                                     }
                                     else
                                     {
                                         errorCount = 0;//初期化
                                     }
-                                    Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, inputStream.Length));
+                                    Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, contextRequest.InputStream.Length));
                                     if (errorCount > 5)
                                     {//５回連続して受信が無かった場合、サーバエラー
                                         responseCode = 500;
@@ -249,7 +235,7 @@ namespace Bjd.WebServer
                                     }
                                     Thread.Sleep(10);
                                 }
-                                Logger.Set(LogKind.Detail, null, 39, string.Format("Content-Length={0} {1}bytes", max, inputStream.Length));
+                                Logger.Set(LogKind.Detail, null, 39, string.Format("Content-Length={0} {1}bytes", max, contextRequest.InputStream.Length));
                             }
                         }
                         catch (Exception ex)
@@ -279,32 +265,30 @@ namespace Bjd.WebServer
                     //    }
                     //}
 
-
-
                     //***************************************************************
                     //バーチャルホストの検索を実施し、opBase、logger及び webDavDb を置き換える
                     //***************************************************************
-                    if (checkVirtual)
+                    if (contextConnection.checkVirtual)
                     {//初回のみ
-                        ReplaceVirtualHost(recvHeader.GetVal("host"), sockTcp.LocalAddress.Address, sockTcp.LocalAddress.Port);
-                        checkVirtual = false;
+                        ReplaceVirtualHost(contextRequest.HttpHeader.GetVal("host"), contextConnection.Connection.LocalAddress.Address, contextConnection.Connection.LocalAddress.Port);
+                        contextConnection.checkVirtual = false;
                     }
                     //***************************************************************
                     //接続を継続するかどうかの判断 keepAliveの初期化
                     //***************************************************************
                     if (ssl != null)
                     {
-                        keepAlive = false;//SSL通信では、１回づつコネクションが必要
+                        contextConnection.keepAlive = false;//SSL通信では、１回づつコネクションが必要
                     }
                     else
                     {
-                        if (request.Ver == "HTTP/1.1")
+                        if (contextRequest.HttpRequest.Ver == "HTTP/1.1")
                         {//HTTP1.1はデフォルトで keepAlive=true
-                            keepAlive = true;
+                            contextConnection.keepAlive = true;
                         }
                         else
                         { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
-                            keepAlive = recvHeader.GetVal("Connection") == "Keep-Alive";
+                            contextConnection.keepAlive = contextRequest.HttpHeader.GetVal("Connection") == "Keep-Alive";
                         }
                     }
 
@@ -318,27 +302,27 @@ namespace Bjd.WebServer
                     //***************************************************************
                     // ログ
                     //***************************************************************
-                    Logger.Set(LogKind.Normal, sockTcp, ssl != null ? 23 : 24, request.LogStr);
+                    Logger.Set(LogKind.Normal, contextConnection.Connection, ssl != null ? 23 : 24, contextRequest.HttpRequest.LogStr);
 
                     //***************************************************************
                     // 認証
                     //***************************************************************
                     //var authrization = new Authorization(OneOption,Logger);
                     //string authName = "";
-                    if (!authrization.Check(request.Uri, recvHeader.GetVal("authorization"), ref authName))
+                    if (!authrization.Check(contextRequest.HttpRequest.Uri, contextRequest.HttpHeader.GetVal("authorization"), ref authName))
                     {
                         responseCode = 401;
-                        keepAlive = false;//切断
+                        contextConnection.keepAlive = false;//切断
                         goto SEND;
                     }
                     //***************************************************************
                     // 不正なURIに対するエラー処理
                     //***************************************************************
                     //URIを点検して不正な場合はエラーコードを返す
-                    responseCode = CheckUri(sockTcp, request, recvHeader);
+                    responseCode = CheckUri(contextConnection.Connection, contextRequest.HttpRequest, contextRequest.HttpHeader);
                     if (responseCode != 200)
                     {
-                        keepAlive = false;//切断
+                        contextConnection.keepAlive = false;//切断
                         goto SEND;
                     }
 
@@ -348,10 +332,10 @@ namespace Bjd.WebServer
                     var target = new Target(_kernel, _conf, Logger);
                     if (target.DocumentRoot == null)
                     {
-                        Logger.Set(LogKind.Error, sockTcp, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
+                        Logger.Set(LogKind.Error, contextConnection.Connection, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
                         break;//ドキュメントルートが無効な場合は、処理を継続できない
                     }
-                    target.InitFromUri(request.Uri);
+                    target.InitFromUri(contextRequest.HttpRequest.Uri);
 
                     //***************************************************************
                     // 送信ヘッダの追加
@@ -359,13 +343,13 @@ namespace Bjd.WebServer
                     // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
                     if ((bool)_conf.Get("useExpansion"))
                     {
-                        if (recvHeader.GetVal("Host") != null)
+                        if (contextRequest.HttpHeader.GetVal("Host") != null)
                         {
-                            document.AddHeader("RemoteHost", sockTcp.RemoteAddress.Address.ToString());
+                            document.AddHeader("RemoteHost", contextConnection.Connection.RemoteAddress.Address.ToString());
                         }
                     }
                     //受信ヘッダに「PathInfo:」が設定されている場合、送信ヘッダに「PathTranslated」を追加する
-                    var pathInfo = recvHeader.GetVal("PathInfo");
+                    var pathInfo = contextRequest.HttpHeader.GetVal("PathInfo");
                     if (pathInfo != null)
                     {
                         pathInfo = target.DocumentRoot + pathInfo;
@@ -375,17 +359,17 @@ namespace Bjd.WebServer
                     //***************************************************************
                     //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
                     //***************************************************************
-                    if (WebDav.IsTarget(request.Method))
+                    if (WebDav.IsTarget(contextRequest.HttpRequest.Method))
                     {
-                        var webDav = new WebDav(Logger, _webDavDb, target, document, urlStr, recvHeader.GetVal("Depth"), contentType, (bool)_conf.Get("useEtag"));
+                        var webDav = new WebDav(Logger, _webDavDb, target, document, contextRequest.Url, contextRequest.HttpHeader.GetVal("Depth"), contextRequest.ContentType, (bool)_conf.Get("useEtag"));
 
                         var inputBuf = new byte[0];
-                        if (inputStream != null)
+                        if (contextRequest.InputStream != null)
                         {
-                            inputBuf = inputStream.GetBytes();
+                            inputBuf = contextRequest.InputStream.GetBytes();
                         }
 
-                        switch (request.Method)
+                        switch (contextRequest.HttpRequest.Method)
                         {
                             case HttpMethod.Options:
                                 responseCode = webDav.Option();
@@ -410,12 +394,12 @@ namespace Bjd.WebServer
                                 responseCode = 405;
                                 //Destnationで指定されたファイルは書き込み許可されているか？
                                 var dstTarget = new Target(_kernel, _conf, Logger);
-                                string destinationStr = recvHeader.GetVal("Destination");
+                                string destinationStr = contextRequest.HttpHeader.GetVal("Destination");
                                 if (destinationStr != null)
                                 {
                                     if (destinationStr.IndexOf("://") == -1)
                                     {
-                                        destinationStr = urlStr + destinationStr;
+                                        destinationStr = contextRequest.Url + destinationStr;
                                     }
                                     var uri = new Uri(destinationStr);
                                     dstTarget.InitFromUri(uri.LocalPath);
@@ -424,7 +408,7 @@ namespace Bjd.WebServer
                                     if (dstTarget.WebDavKind == WebDavKind.Write)
                                     {
                                         var overwrite = false;
-                                        var overwriteStr = recvHeader.GetVal("Overwrite");
+                                        var overwriteStr = contextRequest.HttpHeader.GetVal("Overwrite");
                                         if (overwriteStr != null)
                                         {
                                             if (overwriteStr == "F")
@@ -432,7 +416,7 @@ namespace Bjd.WebServer
                                                 overwrite = true;
                                             }
                                         }
-                                        responseCode = webDav.MoveCopy(dstTarget, overwrite, request.Method);
+                                        responseCode = webDav.MoveCopy(dstTarget, overwrite, contextRequest.HttpRequest.Method);
                                         document.AddHeader("Location", destinationStr);
                                     }
                                 }
@@ -460,7 +444,7 @@ namespace Bjd.WebServer
                     if (target.TargetKind == TargetKind.Dir)
                     { //ディレクトリ一覧表示の場合
                       //インデックスドキュメントを生成する
-                        if (!document.CreateFromIndex(request, target.FullPath))
+                        if (!document.CreateFromIndex(contextRequest.HttpRequest, target.FullPath))
                             break;
                         goto SEND;
                     }
@@ -474,32 +458,32 @@ namespace Bjd.WebServer
                         {
                             //エラーキュメントを生成する
                             responseCode = 404;
-                            keepAlive = false;//切断
+                            contextConnection.keepAlive = false;//切断
                             goto SEND;
                         }
                     }
 
                     if (target.TargetKind == TargetKind.Cgi || target.TargetKind == TargetKind.Ssi)
                     {
-                        keepAlive = false;//デフォルトで切断
+                        contextConnection.keepAlive = false;//デフォルトで切断
 
                         //環境変数作成
-                        var env = new Env(_kernel, _conf, request, recvHeader, sockTcp, target.FullPath);
+                        var env = new Env(_kernel, _conf, contextRequest.HttpRequest, contextRequest.HttpHeader, contextConnection.Connection, target.FullPath);
 
                         // 詳細ログ
-                        Logger.Set(LogKind.Detail, sockTcp, 18, string.Format("{0} {1}", target.CgiCmd, Path.GetFileName(target.FullPath)));
+                        Logger.Set(LogKind.Detail, contextConnection.Connection, 18, string.Format("{0} {1}", target.CgiCmd, Path.GetFileName(target.FullPath)));
 
                         if (target.TargetKind == TargetKind.Cgi)
                         {
 
                             var cgi = new Cgi();
                             var cgiTimeout = (int)_conf.Get("cgiTimeout");
-                            if (!cgi.Exec(target, request.Param, env, inputStream, out outputStream, cgiTimeout))
+                            if (!cgi.Exec(target, contextRequest.HttpRequest.Param, env, contextRequest.InputStream, out contextRequest.OutputStream, cgiTimeout))
                             {
                                 // エラー出力
-                                var errStr = Encoding.ASCII.GetString(outputStream.GetBytes());
+                                var errStr = Encoding.ASCII.GetString(contextRequest.OutputStream.GetBytes());
 
-                                Logger.Set(LogKind.Error, sockTcp, 16, errStr);
+                                Logger.Set(LogKind.Error, contextConnection.Connection, 16, errStr);
                                 responseCode = 500;
                                 goto SEND;
                             }
@@ -509,11 +493,11 @@ namespace Bjd.WebServer
                             //***************************************************
                             if (Path.GetFileName(target.FullPath).IndexOf("nph-") == 0)
                             {
-                                sockTcp.SendUseEncode(outputStream.GetBytes());//CGI出力をそのまま送信する
+                                contextConnection.Connection.SendUseEncode(contextRequest.OutputStream.GetBytes());//CGI出力をそのまま送信する
                                 break;
                             }
                             // CGIで得られた出力から、本体とヘッダを分離する
-                            if (!document.CreateFromCgi(outputStream.GetBytes()))
+                            if (!document.CreateFromCgi(contextRequest.OutputStream.GetBytes()))
                                 break;
                             // cgi出力で、Location:が含まれる場合、レスポンスコードを302にする
                             if (document.SearchLocation())//Location:ヘッダを含むかどうか
@@ -521,15 +505,15 @@ namespace Bjd.WebServer
                             goto SEND;
                         }
                         //SSI
-                        var ssi = new Ssi(_kernel, Logger, _conf, sockTcp, request, recvHeader);
-                        if (!ssi.Exec(target, env, outputStream))
+                        var ssi = new Ssi(_kernel, Logger, _conf, contextConnection.Connection, contextRequest.HttpRequest, contextRequest.HttpHeader);
+                        if (!ssi.Exec(target, env, contextRequest.OutputStream))
                         {
                             // エラー出力
-                            Logger.Set(LogKind.Error, sockTcp, 22, MLang.GetString(outputStream.GetBytes()));
+                            Logger.Set(LogKind.Error, contextConnection.Connection, 22, MLang.GetString(contextRequest.OutputStream.GetBytes()));
                             responseCode = 500;
                             goto SEND;
                         }
-                        document.CreateFromSsi(outputStream.GetBytes(), target.FullPath);
+                        document.CreateFromSsi(contextRequest.OutputStream.GetBytes(), target.FullPath);
                         goto SEND;
                     }
 
@@ -538,9 +522,9 @@ namespace Bjd.WebServer
                     //********************************************************************
                     //Modified処理
                     //********************************************************************
-                    if (recvHeader.GetVal("If_Modified_Since") != null)
+                    if (contextRequest.HttpHeader.GetVal("If_Modified_Since") != null)
                     {
-                        var dt = Util.Str2Time(recvHeader.GetVal("If-Modified-Since"));
+                        var dt = Util.Str2Time(contextRequest.HttpHeader.GetVal("If-Modified-Since"));
                         if (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
                         {
 
@@ -548,9 +532,9 @@ namespace Bjd.WebServer
                             goto SEND;
                         }
                     }
-                    if (recvHeader.GetVal("If_Unmodified_Since") != null)
+                    if (contextRequest.HttpHeader.GetVal("If_Unmodified_Since") != null)
                     {
-                        var dt = Util.Str2Time(recvHeader.GetVal("If_Unmodified_Since"));
+                        var dt = Util.Str2Time(contextRequest.HttpHeader.GetVal("If_Unmodified_Since"));
                         if (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
                         {
                             responseCode = 412;
@@ -563,13 +547,13 @@ namespace Bjd.WebServer
                     //********************************************************************
                     // (1) useEtagがtrueの場合は、送信時にETagを付加する
                     // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
-                    if ((bool)_conf.Get("useEtag") || recvHeader.GetVal("If-Match") != null || recvHeader.GetVal("If-None-Match") != null)
+                    if ((bool)_conf.Get("useEtag") || contextRequest.HttpHeader.GetVal("If-Match") != null || contextRequest.HttpHeader.GetVal("If-None-Match") != null)
                     {
                         //Ver5.1.5
                         //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
                         var etagStr = WebServerUtil.Etag(target.FileInfo);
                         string str;
-                        if (null != (str = recvHeader.GetVal("If-Match")))
+                        if (null != (str = contextRequest.HttpHeader.GetVal("If-Match")))
                         {
                             if (str != "*" && str != etagStr)
                             {
@@ -578,7 +562,7 @@ namespace Bjd.WebServer
                             }
 
                         }
-                        if (null != (str = recvHeader.GetVal("If-None-Match")))
+                        if (null != (str = contextRequest.HttpHeader.GetVal("If-None-Match")))
                         {
                             if (str != "*" && str == etagStr)
                             {
@@ -595,9 +579,9 @@ namespace Bjd.WebServer
                     document.AddHeader("Accept-Range", "bytes");
                     var rangeFrom = 0L;//デフォルトは最初から
                     var rangeTo = target.FileInfo.Length;//デフォルトは最後まで（ファイルサイズ）
-                    if (recvHeader.GetVal("Range") != null)
+                    if (contextRequest.HttpHeader.GetVal("Range") != null)
                     {//レンジ指定のあるリクエストの場合
-                        var range = recvHeader.GetVal("Range");
+                        var range = contextRequest.HttpHeader.GetVal("Range");
                         //指定範囲を取得する（マルチ指定には未対応）
                         if (range.IndexOf("bytes=") == 0)
                         {
@@ -608,11 +592,11 @@ namespace Bjd.WebServer
                             //Ver5.3.5 ApacheKiller対処
                             if (tmp.Length > 20)
                             {
-                                Logger.Set(LogKind.Secure, sockTcp, 9000054, string.Format("[ Apache Killer ]Range:{0}", range));
+                                Logger.Set(LogKind.Secure, contextConnection.Connection, 9000054, string.Format("[ Apache Killer ]Range:{0}", range));
 
-                                AutoDeny(false, remoteIp);
+                                AutoDeny(false, contextConnection.RemoteIp);
                                 responseCode = 503;
-                                keepAlive = false;//切断
+                                contextConnection.keepAlive = false;//切断
                                 goto SEND;
                             }
 
@@ -672,27 +656,27 @@ namespace Bjd.WebServer
                         }
                     }
                     //通常ファイルのドキュメント
-                    if (request.Method != HttpMethod.Head)
+                    if (contextRequest.HttpRequest.Method != HttpMethod.Head)
                     {
                         if (!document.CreateFromFile(target.FullPath, rangeFrom, rangeTo))
                             break;
                     }
 
-                SEND:
+                    SEND:
                     System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread SEND");
                     //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
                     if (responseCode != 200 && responseCode != 302 && responseCode != 206 && responseCode != 207 && responseCode != 204 && responseCode != 201)
                     {
 
                         //ResponceCodeの応じてエラードキュメントを生成する
-                        if (!document.CreateFromErrorCode(request, responseCode))
+                        if (!document.CreateFromErrorCode(contextRequest.HttpRequest, responseCode))
                             break;
 
                         if (responseCode == 301)
                         {//ターゲットがファイルではなくディレクトの間違いの場合
-                            if (urlStr != null)
+                            if (contextRequest.Url != null)
                             {
-                                var str = string.Format("{0}{1}/", urlStr, request.Uri);
+                                var str = string.Format("{0}{1}/", contextRequest.Url, contextRequest.HttpRequest.Uri);
                                 document.AddHeader("Location", Encoding.UTF8.GetBytes(str));
                             }
                         }
@@ -711,27 +695,24 @@ namespace Bjd.WebServer
                     }
 
                     //Ver5.6.2 request.Send()廃止
-                    var responseStr = request.CreateResponse(responseCode);
-                    sockTcp.AsciiSend(responseStr);//レスポンス送信
-                    Logger.Set(LogKind.Detail, sockTcp, 4, responseStr);//ログ
+                    var responseStr = contextRequest.HttpRequest.CreateResponse(responseCode);
+                    contextConnection.Connection.AsciiSend(responseStr);//レスポンス送信
+                    Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseStr);//ログ
 
 
-                    document.Send(keepAlive, this);//ドキュメント本体送信
+                    document.Send(contextConnection.keepAlive, this);//ドキュメント本体送信
+
+
                 }
-
-            }
-            finally
-            {
-                if (inputStream != null)
-                    inputStream.Dispose();
-                if (outputStream != null)
-                    outputStream.Dispose();
-
-                ////end://このソケット接続の終了
-                //if (sockTcp != null)
-                //{
-                //    sockTcp.Close();
-                //}
+                finally
+                {
+                    if (contextRequest != null)
+                        contextRequest.Dispose();
+                    //if (contextRequest.InputStream != null)
+                    //    contextRequest.InputStream.Dispose();
+                    //if (contextRequest.OutputStream != null)
+                    //    contextRequest.OutputStream.Dispose();
+                }
             }
 
         }

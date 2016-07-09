@@ -23,8 +23,8 @@ namespace WebServerTest
         public class ServerFixture : IDisposable
         {
             internal TestService _service;
-            private Server _v6Sv; //サーバ
-            internal Server _v4Sv; //サーバ
+            private WebServer _v6Sv; //サーバ
+            internal WebServer _v4Sv; //サーバ
 
             public ServerFixture()
             {
@@ -37,10 +37,10 @@ namespace WebServerTest
                 Conf conf = new Conf(option);
 
                 //サーバ起動
-                _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                _v4Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
                 _v4Sv.Start();
 
-                _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                _v6Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
                 _v6Sv.Start();
 
             }

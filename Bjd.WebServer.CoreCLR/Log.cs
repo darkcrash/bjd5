@@ -1,7 +1,7 @@
 ﻿
 namespace Bjd.WebServer
 {
-    partial class Server
+    partial class WebServer
     {
         //BJD.Lang.txtに必要な定義が揃っているかどうかの確認
         protected override void CheckLang()

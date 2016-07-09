@@ -34,14 +34,14 @@ namespace Bjd.WebServer
             switch (path)
             {
                 case "OptionVirtualHost":
-                    return new WebServer.OptionVirtualHost(kernel, path, nameTag);
+                    return new Bjd.WebServer.OptionVirtualHost(kernel, path, nameTag);
             }
-            return new WebServer.Option(kernel, path, nameTag);
+            return new Bjd.WebServer.Option(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)
         {
-            return new WebServer.Server(kernel, conf, oneBind);
+            return new Bjd.WebServer.WebServer(kernel, conf, oneBind);
         }
 
         void IDisposable.Dispose()
