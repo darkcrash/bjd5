@@ -36,7 +36,7 @@ namespace Bjd.WebServer
                 case "OptionVirtualHost":
                     return new Bjd.WebServer.Configurations.OptionVirtualHost(kernel, path, nameTag);
             }
-            return new Bjd.WebServer.Configurations.Option(kernel, path, nameTag);
+            return new Bjd.WebServer.Configurations.WebServerOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

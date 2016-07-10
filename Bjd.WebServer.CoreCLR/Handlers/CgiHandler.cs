@@ -14,10 +14,14 @@ namespace Bjd.WebServer.Handlers
     {
         Kernel _kernel;
         Conf _conf;
+        Cgi cgi;
+        int cgiTimeout;
         public CgiHandler(Kernel kernel, Conf conf)
         {
             _kernel = kernel;
             _conf = conf;
+            cgi = new Cgi();
+            cgiTimeout = (int)_conf.Get("cgiTimeout");
         }
 
 
@@ -34,8 +38,6 @@ namespace Bjd.WebServer.Handlers
             // 詳細ログ
             Logger.Set(LogKind.Detail, connection.Connection, 18, string.Format("{0} {1}", selector.CgiCmd, Path.GetFileName(selector.FullPath)));
 
-            var cgi = new Cgi();
-            var cgiTimeout = (int)_conf.Get("cgiTimeout");
             if (!cgi.Exec(selector, context.Request.Param, env, context.InputStream, out context.OutputStream, cgiTimeout))
             {
                 // エラー出力

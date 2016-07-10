@@ -56,7 +56,7 @@ namespace WebServerTest
         {
             var fileName = string.Format("TEST.{0}", ext);
             var s = _fixture._contentType.Get(fileName);
-            Assert.Equal(s, typeText);
+            Assert.Equal(typeText, s);
         }
 
 

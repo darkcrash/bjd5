@@ -28,7 +28,7 @@ namespace Bjd.Options
                 var myType = this.GetType();
                 MemberLoad(myType, ListVal, this);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError(ex.Message);
                 System.Diagnostics.Trace.TraceError(ex.StackTrace);
@@ -47,14 +47,24 @@ namespace Bjd.Options
                 if (attr == null) continue;
                 if (attr.ControlType == CtrlType.Dat)
                 {
-                    var fType = f.FieldType;
-                    if (fType.DeclaringType == typeof(List<>))
-                    {
-                        fType = fType.GenericTypeArguments[0];
-                    }
                     var value = f.GetValue(instance);
                     var childList = new ListVal();
-                    this.MemberLoad(fType, childList, value);
+                    var fType = f.FieldType;
+                    var gType = fType.GetGenericTypeDefinition();
+                    if (gType == typeof(List<>))
+                    {
+                        fType = fType.GenericTypeArguments[0];
+                        var values = value as System.Collections.IList;
+                        foreach (var v in values)
+                        {
+                            this.MemberLoad(fType, childList, v);
+                        }
+                    }
+                    else
+                    {
+                        this.MemberLoad(fType, childList, value);
+                    }
+
                     var dat = new Dat(childList);
                     var one = attr.Create(f.Name, dat);
                     list.Add(one);

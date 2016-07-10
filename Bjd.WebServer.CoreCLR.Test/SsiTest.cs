@@ -12,6 +12,7 @@ using System.IO;
 using Bjd.WebServer;
 using Bjd.Services;
 using Bjd.Threading;
+using System.Collections.Generic;
 
 namespace WebServerTest
 {
@@ -42,6 +43,7 @@ namespace WebServerTest
 
                 _v6Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
                 _v6Sv.Start();
+
 
             }
 
@@ -138,7 +140,16 @@ namespace WebServerTest
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
             int sec = 2; //CGI処理待ち時間（これで大丈夫?）
-            var lines = Inet.RecvLines(cl, sec, this);
+            //var lines = Inet.RecvLines(cl, sec, this);
+            var lines = new List<string>();
+            while (true)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                lines.Add(text);
+            }
             var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
             Assert.Equal(find, true);
