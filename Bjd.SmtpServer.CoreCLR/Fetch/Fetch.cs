@@ -15,7 +15,7 @@ namespace Bjd.SmtpServer
         private readonly Logger _logger;
         //private Server _server;
 
-          public Fetch(Kernel kernel, MailSave mailSave, String domainName,IEnumerable<OneDat> fetchList, int timeout,int sizeLimit)
+          public Fetch(Kernel kernel, MailSave mailSave, String domainName,IEnumerable<DatRecord> fetchList, int timeout,int sizeLimit)
             : base(kernel, kernel.CreateLogger("FetchThread", true, null)){
             //_server = server;
             _logger = kernel.CreateLogger("Fetch", true, this);
@@ -61,24 +61,24 @@ namespace Bjd.SmtpServer
 
 
         class ListFetchJob : ListBase<OneFetchJob> {
-            public ListFetchJob(Kernel kernel, MailSave mailSave,String domainName,Logger logger,IEnumerable<OneDat> fetchList, int timeout, int sizeLimit) {
+            public ListFetchJob(Kernel kernel, MailSave mailSave,String domainName,Logger logger,IEnumerable<DatRecord> fetchList, int timeout, int sizeLimit) {
                 if (fetchList != null) {
                     foreach (var o in fetchList) {
                         if (o.Enable) {
-                            var interval = Convert.ToInt32(o.StrList[0]); //受信間隔
-                            var host = o.StrList[1]; //サーバ
-                            var port = Convert.ToInt32(o.StrList[2]); //ポート
-                            var user = o.StrList[3]; //ユーザ
-                            var pass = Crypt.Decrypt(o.StrList[4]); //パスワード
-                            var localUser = o.StrList[5]; //ローカルユーザ
+                            var interval = Convert.ToInt32(o.ColumnValueList[0]); //受信間隔
+                            var host = o.ColumnValueList[1]; //サーバ
+                            var port = Convert.ToInt32(o.ColumnValueList[2]); //ポート
+                            var user = o.ColumnValueList[3]; //ユーザ
+                            var pass = Crypt.Decrypt(o.ColumnValueList[4]); //パスワード
+                            var localUser = o.ColumnValueList[5]; //ローカルユーザ
 
 
                             //Ver5.2.7 旧バージョン(5.2以前)との互換のため
                             int synchronize;
                             try {
-                                synchronize = Convert.ToInt32(o.StrList[6]); //同期
+                                synchronize = Convert.ToInt32(o.ColumnValueList[6]); //同期
                             } catch {
-                                var s = o.StrList[6];
+                                var s = o.ColumnValueList[6];
                                 if (s == "サーバに残す" || s == "An email of a server does not eliminate it") {
                                     synchronize = 0;
                                 } else if (s == "メールボックスと同期する" || s == "Synchronize it with a mailbox") {
@@ -89,7 +89,7 @@ namespace Bjd.SmtpServer
                                     continue; //コンバート失敗したので設定データは無効
                                 }
                             }
-                            var keepTime = Convert.ToInt32(o.StrList[7]); //サーバに残す時間
+                            var keepTime = Convert.ToInt32(o.ColumnValueList[7]); //サーバに残す時間
                             var oneFetch = new OneFetch(interval, host, port, user, pass, localUser, synchronize, keepTime);
                             if (oneFetch.Ip == null){
                                 logger.Set(LogKind.Error, null, 0, string.Format("host={0}",host));

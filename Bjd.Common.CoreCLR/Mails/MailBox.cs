@@ -56,7 +56,7 @@ namespace Bjd.Mails
         }
 
         //ユーザリストの初期化
-        private void Init(IEnumerable<OneDat> datUser)
+        private void Init(IEnumerable<DatRecord> datUser)
         {
             _ar.Clear();
             if (datUser != null)
@@ -65,8 +65,8 @@ namespace Bjd.Mails
                 {
                     if (!o.Enable)
                         continue; //有効なデータだけを対象にする
-                    var name = o.StrList[0];
-                    var pass = Crypt.Decrypt(o.StrList[1]);
+                    var name = o.ColumnValueList[0];
+                    var pass = Crypt.Decrypt(o.ColumnValueList[1]);
                     _ar.Add(new OneMailBox(name, pass));
                     //var folder = string.Format("{0}\\{1}", Dir, name);
                     var folder = Path.Combine(Dir, name);

@@ -10,10 +10,10 @@ namespace Bjd.ProxyHttpServer {
     //コンテンツ制限
     internal class LimitString {
         readonly List<string> _ar = new List<string>();
-        public LimitString(IEnumerable<OneDat> dat) {
+        public LimitString(IEnumerable<DatRecord> dat) {
             foreach (var o in dat) {
                 if (o.Enable) { //有効なデータだけを対象にする
-                    _ar.Add(o.StrList[0]);
+                    _ar.Add(o.ColumnValueList[0]);
                 }
             }
         }

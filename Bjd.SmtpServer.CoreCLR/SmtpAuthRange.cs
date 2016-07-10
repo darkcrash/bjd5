@@ -19,7 +19,7 @@ namespace Bjd.SmtpServer
         
         //(Dat)conf.Get("range")
         //(int)conf.Get("enableEsmtp")
-        public SmtpAuthRange(IEnumerable<OneDat> range, int enableEsmtp,Logger logger){
+        public SmtpAuthRange(IEnumerable<DatRecord> range, int enableEsmtp,Logger logger){
 
             _logger = logger;
             
@@ -28,8 +28,8 @@ namespace Bjd.SmtpServer
             if (range != null){
                 foreach (var o in range){
                     if (o.Enable){//有効なデータだけを対象にする
-                        var name = o.StrList[0];
-                        var ipStr = o.StrList[1];
+                        var name = o.ColumnValueList[0];
+                        var ipStr = o.ColumnValueList[1];
 
                         if (ipStr.IndexOf('.') != -1){//IPv4ルール
                             var acl = new AclV4(name, ipStr);

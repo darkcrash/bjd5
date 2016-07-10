@@ -9,11 +9,11 @@ namespace Bjd.FtpServer
 
     public class ListMount : ListBase<OneMount>{
 
-        public ListMount(IEnumerable<OneDat> dat){
+        public ListMount(IEnumerable<DatRecord> dat){
             if (dat != null){
                 //有効なデータだけを対象にする
                 foreach (var o in dat.Where(o => o.Enable)){
-                    Add(o.StrList[0], o.StrList[1]);
+                    Add(o.ColumnValueList[0], o.ColumnValueList[1]);
                 }
             }
         }

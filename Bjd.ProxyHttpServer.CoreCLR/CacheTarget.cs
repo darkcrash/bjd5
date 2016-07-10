@@ -7,11 +7,11 @@ namespace Bjd.ProxyHttpServer {
     internal class CacheTarget {
         readonly List<string> _ar = new List<string>();
         readonly int _enabled;
-        public CacheTarget(IEnumerable<OneDat> dat, int enabled) {
+        public CacheTarget(IEnumerable<DatRecord> dat, int enabled) {
             _enabled = enabled;
             foreach (var o in dat) {
                 if (o.Enable) { //有効なデータだけを対象にする
-                    var str = o.StrList[0];
+                    var str = o.ColumnValueList[0];
                     _ar.Add(str.ToUpper());
                 }
             }

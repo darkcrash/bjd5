@@ -16,7 +16,7 @@ namespace Bjd.SmtpServer
 
         //リストが無い場合は、allowList及びdenyListはnullでもよい
         //テスト用にlogger=nullも可
-        public RelayList(IEnumerable<OneDat> dat,string name,Logger logger) {
+        public RelayList(IEnumerable<DatRecord> dat,string name,Logger logger) {
             if (dat == null){ //リストなし
                 return;
             }
@@ -24,7 +24,7 @@ namespace Bjd.SmtpServer
                 if (!o.Enable){
                     continue;
                 }
-                var ipStr= o.StrList[0];
+                var ipStr= o.ColumnValueList[0];
 
                 if (ipStr.IndexOf('.') != -1) {//IPv4ルール
                     var acl = new AclV4(name,ipStr);

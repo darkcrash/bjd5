@@ -69,8 +69,8 @@ namespace Bjd.SmtpServer
             {
                 if (dat.Enable)
                 {
-                    var name = dat.StrList[0];
-                    var alias = dat.StrList[1];
+                    var name = dat.ColumnValueList[0];
+                    var alias = dat.ColumnValueList[1];
                     Alias.Add(name, alias, Logger);
                 }
             }
@@ -102,11 +102,11 @@ namespace Bjd.SmtpServer
 
             //Ver5.3.3 Ver5.2以前のバージョンのカラムの違いを修正する
             var d = (Dat)_conf.Get("hostList");
-            if (d.Count > 0 && d[0].StrList.Count == 6)
+            if (d.Count > 0 && d[0].ColumnValueList.Count == 6)
             {
                 foreach (var o in d)
                 {
-                    o.StrList.Add("False");
+                    o.ColumnValueList.Add("False");
                 }
                 conf.Set("hostList", d);
                 conf.Save(kernel.Configuration);

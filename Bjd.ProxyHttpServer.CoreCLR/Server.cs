@@ -50,7 +50,7 @@ namespace Bjd.ProxyHttpServer
             {
                 if (o.Enable)
                 {//有効なデータだけを対象にする
-                    _disableAddressList.Add(o.StrList[0]);
+                    _disableAddressList.Add(o.ColumnValueList[0]);
                 }
             }
             //URL制限
@@ -61,15 +61,15 @@ namespace Bjd.ProxyHttpServer
             {
                 foreach (var a in (i == 0) ? allow : deny)
                 {
-                    if (a.Enable && a.StrList[1] == "3")
+                    if (a.Enable && a.ColumnValueList[1] == "3")
                     {//正規表現
                         try
                         {
-                            var regex = new Regex(a.StrList[0]);
+                            var regex = new Regex(a.ColumnValueList[0]);
                         }
                         catch
                         {
-                            Logger.Set(LogKind.Error, null, 28, a.StrList[0]);
+                            Logger.Set(LogKind.Error, null, 28, a.ColumnValueList[0]);
                         }
                     }
                 }

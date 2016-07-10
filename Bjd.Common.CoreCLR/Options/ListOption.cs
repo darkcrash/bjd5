@@ -105,7 +105,7 @@ namespace Bjd.Options
                             {
                                 if (e.Enable)
                                 {
-                                    string name = string.Format("Web-{0}:{1}", e.StrList[1], e.StrList[2]);
+                                    string name = string.Format("Web-{0}:{1}", e.ColumnValueList[1], e.ColumnValueList[2]);
                                     Add(onePlugin.CreateOption(_kernel, "Option", name));
                                 }
                             }
@@ -125,7 +125,7 @@ namespace Bjd.Options
                             {
                                 if (e.Enable)
                                 {
-                                    string name = string.Format("{0}:{1}:{2}:{3}", (e.StrList[0] == "0") ? "TCP" : "UDP", e.StrList[1], e.StrList[2], e.StrList[3]);
+                                    string name = string.Format("{0}:{1}:{2}:{3}", (e.ColumnValueList[0] == "0") ? "TCP" : "UDP", e.ColumnValueList[1], e.ColumnValueList[2], e.ColumnValueList[3]);
                                     Add(onePlugin.CreateOption(_kernel, "Option", String.Format("Tunnel-{0}", name)));
                                 }
                             }
@@ -149,7 +149,7 @@ namespace Bjd.Options
                                 {
                                     if (e.Enable)
                                     {
-                                        Add(onePlugin.CreateOption(_kernel, "OptionDnsResource", String.Format("Resource-{0}", e.StrList[0])));
+                                        Add(onePlugin.CreateOption(_kernel, "OptionDnsResource", String.Format("Resource-{0}", e.ColumnValueList[0])));
                                     }
                                 }
                             }
@@ -169,7 +169,7 @@ namespace Bjd.Options
                                 {
                                     if (e.Enable)
                                     {
-                                        Add(onePlugin.CreateOption(_kernel, "OptionOneMl", String.Format("Ml-{0}", e.StrList[0])));
+                                        Add(onePlugin.CreateOption(_kernel, "OptionOneMl", String.Format("Ml-{0}", e.ColumnValueList[0])));
                                     }
                                 }
                             }

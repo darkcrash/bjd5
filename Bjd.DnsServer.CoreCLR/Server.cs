@@ -61,12 +61,12 @@ namespace Bjd.DnsServer
             if (op != null) {
                 var domainList = (Dat) op.GetValue("domainList");
                 if (domainList != null) {
-                    foreach (OneDat o in domainList) {
+                    foreach (DatRecord o in domainList) {
                         if (o.Enable) {
                             //ドメインごとのリソースの読込
-                            var domainName = o.StrList[0];
+                            var domainName = o.ColumnValueList[0];
                             //Ver6.1.0
-                            var authority = bool.Parse(o.StrList[1]);
+                            var authority = bool.Parse(o.ColumnValueList[1]);
                             var res = _kernel.ListOption.Get("Resource-" + domainName);
                             if (res != null) {
                                 var resource = (Dat) res.GetValue("resourceList");

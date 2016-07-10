@@ -8,16 +8,16 @@ namespace Bjd.ProxyHttpServer {
     internal class LimitUrl {
         readonly List<OneLimit> _allowList = new List<OneLimit>();
         readonly List<OneLimit> _denyList = new List<OneLimit>();
-        public LimitUrl(IEnumerable<OneDat> allow, IEnumerable<OneDat> deny) {
+        public LimitUrl(IEnumerable<DatRecord> allow, IEnumerable<DatRecord> deny) {
             foreach (var o in allow) {
                 if (!o.Enable)
                     continue; //有効なデータだけを対象にする
-                var str = o.StrList[0];
+                var str = o.ColumnValueList[0];
                 int n;
                 try {
-                    n = Convert.ToInt32(o.StrList[1]);
+                    n = Convert.ToInt32(o.ColumnValueList[1]);
                 } catch{
-                    var s = o.StrList[1];
+                    var s = o.ColumnValueList[1];
                     switch (s){
                         case "Front agreement":
                         case "前方一致":
@@ -43,13 +43,13 @@ namespace Bjd.ProxyHttpServer {
             }
             foreach (var o in deny) {
                 if (o.Enable) {//有効なデータだけを対象にする
-                    var str = o.StrList[0];
+                    var str = o.ColumnValueList[0];
 
                     int n;
                     try {
-                        n = Convert.ToInt32(o.StrList[1]);
+                        n = Convert.ToInt32(o.ColumnValueList[1]);
                     } catch{
-                        var s = o.StrList[1];
+                        var s = o.ColumnValueList[1];
                         switch (s){
                             case "Front agreement":
                             case "前方一致":
@@ -61,7 +61,7 @@ namespace Bjd.ProxyHttpServer {
                                 break;
                             case "Part agreement":
                             case "部分一致":
-                                o.StrList[1] = "2";
+                                o.ColumnValueList[1] = "2";
                                 n = 2;
                                 break;
                             case "Regular expression":

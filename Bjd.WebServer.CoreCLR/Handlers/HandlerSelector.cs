@@ -154,9 +154,9 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (!o.Enable) continue;
 
-                    var name = o.StrList[0];
-                    var write = Convert.ToBoolean(o.StrList[1]);//書き込み許可
-                    var dir = o.StrList[2];
+                    var name = o.ColumnValueList[0];
+                    var write = Convert.ToBoolean(o.ColumnValueList[1]);//書き込み許可
+                    var dir = o.ColumnValueList[2];
                     if (uri.ToUpper().IndexOf(name.ToUpper()) == 0)
                     {
                         if (name.Length >= 1)
@@ -182,9 +182,9 @@ namespace Bjd.WebServer.Handlers
                     foreach (var o in db)
                     {
                         if (!o.Enable) continue;
-                        var name = o.StrList[0];
-                        var write = Convert.ToBoolean(o.StrList[1]);//書き込み許可
-                        var dir = o.StrList[2];
+                        var name = o.ColumnValueList[0];
+                        var write = Convert.ToBoolean(o.ColumnValueList[1]);//書き込み許可
+                        var dir = o.ColumnValueList[2];
                         if (exUri.ToUpper().IndexOf(name.ToUpper()) == 0)
                         {
                             if (name.Length >= 1)
@@ -219,8 +219,8 @@ namespace Bjd.WebServer.Handlers
                     if (!o.Enable) continue;
 
                     useCgiPath = true;//有効なCGIパスの定義が存在する
-                    var name = o.StrList[0];
-                    var dir = o.StrList[1];
+                    var name = o.ColumnValueList[0];
+                    var dir = o.ColumnValueList[1];
 
                     if (uri.ToUpper().IndexOf(name.ToUpper()) != 0) continue;
 
@@ -256,8 +256,8 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (!o.Enable) continue;
 
-                    var name = o.StrList[0];
-                    var dir = o.StrList[1];
+                    var name = o.ColumnValueList[0];
+                    var dir = o.ColumnValueList[1];
 
                     if (uri.ToUpper() + "/" == name.ToUpper())
                     {
@@ -378,8 +378,8 @@ namespace Bjd.WebServer.Handlers
                     {
                         if (!o.Enable) continue;
 
-                        var cgiExt = o.StrList[0];
-                        var cgiCmd = o.StrList[1];
+                        var cgiExt = o.ColumnValueList[0];
+                        var cgiCmd = o.ColumnValueList[1];
                         if (cgiExt.ToUpper() == ext.ToUpper())
                         {
                             result.TargetKind = HandlerKind.Cgi;//CGIである

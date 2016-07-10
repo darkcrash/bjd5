@@ -5,21 +5,26 @@ using Bjd.Options;
 
 namespace Bjd.ProxySmtpServer
 {
-    class SpecialUser {
+    class SpecialUser
+    {
         readonly List<OneSpecialUser> _ar = new List<OneSpecialUser>();
-        public SpecialUser(IEnumerable<OneDat> dat) {
-            foreach (var o in dat) {
-                if (o.Enable) {
-                    var before = o.StrList[0];
-                    var server = o.StrList[1];
-                    var port = Convert.ToInt32(o.StrList[2]);
-                    var after = o.StrList[3];
+        public SpecialUser(IEnumerable<DatRecord> dat)
+        {
+            foreach (var o in dat)
+            {
+                if (o.Enable)
+                {
+                    var before = o.ColumnValueList[0];
+                    var server = o.ColumnValueList[1];
+                    var port = Convert.ToInt32(o.ColumnValueList[2]);
+                    var after = o.ColumnValueList[3];
                     _ar.Add(new OneSpecialUser(before, server, port, after));
                 }
             }
         }
 
-        public OneSpecialUser Search(string before){
+        public OneSpecialUser Search(string before)
+        {
             return _ar.FirstOrDefault(oneSpecialUser => oneSpecialUser.Before == before);
         }
     }

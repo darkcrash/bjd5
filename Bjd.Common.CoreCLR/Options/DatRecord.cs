@@ -4,38 +4,38 @@ using System.Text;
 
 namespace Bjd.Options
 {
-    public class OneDat : ValidObj, IDisposable
+    public class DatRecord : ValidObj, IDisposable
     {
         public bool Enable { get; private set; }
-        public List<string> StrList { get; private set; }
+        public List<string> ColumnValueList { get; private set; }
         private readonly bool[] _isSecretList;
 
-        private OneDat()
+        private DatRecord()
         {
             // デフォルトコンストラクタの隠蔽
         }
 
-        public OneDat(bool enable, string[] list, bool[] isSecretList)
+        public DatRecord(bool enable, string[] columnList, bool[] isSecretList)
         {
-            if (list == null)
+            if (columnList == null)
             {
-                throw new ValidObjException("引数に矛盾があります  list=null");
+                throw new ValidObjException("引数に矛盾があります  columnList=null");
             }
             if (isSecretList == null)
             {
                 throw new ValidObjException("引数に矛盾があります  isSecretList == null");
             }
-            if (list.Length != isSecretList.Length)
+            if (columnList.Length != isSecretList.Length)
             {
-                throw new ValidObjException("引数に矛盾があります  list.length != isSecretList.length");
+                throw new ValidObjException("引数に矛盾があります  columnList.length != isSecretList.length");
             }
 
             Enable = enable;
-            _isSecretList = new bool[list.Length];
-            StrList = new List<string>();
-            for (int i = 0; i < list.Length; i++)
+            _isSecretList = new bool[columnList.Length];
+            ColumnValueList = new List<string>();
+            for (int i = 0; i < columnList.Length; i++)
             {
-                StrList.Add(list[i]);
+                ColumnValueList.Add(columnList[i]);
                 _isSecretList[i] = isSecretList[i];
             }
         }
@@ -47,7 +47,7 @@ namespace Bjd.Options
             {
                 sb.Append("#");
             }
-            for (int i = 0; i < StrList.Count; i++)
+            for (int i = 0; i < ColumnValueList.Count; i++)
             {
                 sb.Append('\t');
                 if (isSecret && _isSecretList[i])
@@ -56,7 +56,7 @@ namespace Bjd.Options
                 }
                 else
                 {
-                    sb.Append(StrList[i]);
+                    sb.Append(ColumnValueList[i]);
                 }
             }
             return sb.ToString();
@@ -71,7 +71,7 @@ namespace Bjd.Options
             string[] tmp = str.Split('\t');
 
             //カラム数確認
-            if (tmp.Length != StrList.Count + 1)
+            if (tmp.Length != ColumnValueList.Count + 1)
             {
                 return false;
             }
@@ -89,17 +89,52 @@ namespace Bjd.Options
                     return false;
             }
             //以降の文字列カラム
-            StrList = new List<String>();
+            ColumnValueList = new List<String>();
             for (var i = 1; i < tmp.Length; i++)
             {
-                StrList.Add(tmp[i]);
+                ColumnValueList.Add(tmp[i]);
+            }
+            return true;
+        }
+
+        public bool FromJson(string[] str)
+        {
+            if (str == null)
+            {
+                return false;
+            }
+            string[] tmp = str;
+
+            //カラム数確認
+            if (tmp.Length != ColumnValueList.Count + 1)
+            {
+                return false;
+            }
+
+            //enableカラム
+            switch (tmp[0])
+            {
+                case "":
+                    Enable = true;
+                    break;
+                case "#":
+                    Enable = false;
+                    break;
+                default:
+                    return false;
+            }
+            //以降の文字列カラム
+            ColumnValueList = new List<String>();
+            for (var i = 1; i < tmp.Length; i++)
+            {
+                ColumnValueList.Add(tmp[i]);
             }
             return true;
         }
 
         protected override void Init()
         {
-            StrList.Clear();
+            ColumnValueList.Clear();
         }
 
         // toRegと誤って使用しないように注意

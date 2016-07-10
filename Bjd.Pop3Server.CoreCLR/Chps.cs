@@ -17,9 +17,9 @@ namespace Bjd.Pop3Server
             var dat = (Dat)conf.Get("user");
             foreach (var o in dat)
             {
-                if (o.StrList[0] == user)
+                if (o.ColumnValueList[0] == user)
                 {
-                    o.StrList[1] = Crypt.Encrypt(pass);
+                    o.ColumnValueList[1] = Crypt.Encrypt(pass);
                     conf.Set("user", dat); //データ変更
                     if (mailBox.SetPass(user, pass))
                     {

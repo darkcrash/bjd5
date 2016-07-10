@@ -55,7 +55,7 @@ namespace DnsServerTest
         }
 
         //リフレクションを使用してプライベートメソッドにアクセスする RrDb.addOneDat(string,OneDat)
-        public static void AddOneDat(RrDb sut, string domainName, OneDat oneDat)
+        public static void AddOneDat(RrDb sut, string domainName, DatRecord oneDat)
         {
             var type = sut.GetType();
             var func = type.GetMethod("AddOneDat", BindingFlags.NonPublic | BindingFlags.Instance);

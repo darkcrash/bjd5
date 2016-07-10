@@ -12,7 +12,7 @@ namespace Bjd.SmtpServer
 
         //リストが無い場合は、allowList及びdenyListはnullでもよい
         //テスト用にlogger=nullも可
-        public Relay(IEnumerable<OneDat> allowList,IEnumerable<OneDat> denyList,int order,Logger logger){
+        public Relay(IEnumerable<DatRecord> allowList,IEnumerable<DatRecord> denyList,int order,Logger logger){
             _allowList = new RelayList(allowList, "Allow List", logger);
             _denyList = new RelayList(denyList, "Denyt List", logger);
             _order = order;

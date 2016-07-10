@@ -25,7 +25,7 @@ namespace Bjd.Logs
                     if (o.Enable)
                     {
                         //有効なデータだけを対象にする
-                        tmp.Add(o.StrList[0]);
+                        tmp.Add(o.ColumnValueList[0]);
                     }
                 }
             }

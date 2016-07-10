@@ -13,7 +13,7 @@ namespace Bjd.SmtpServer
         
         //usePopAcountがfalseの時、内部で強制的にmailBoxが無効化される
         //usePopAcountがtrueの時、内部で強制的にesmtpUserListが無効化される
-        public SmtpAuthUserList(bool usePopAccount,MailBox mailBox, IEnumerable<OneDat> esmtpUserList){
+        public SmtpAuthUserList(bool usePopAccount,MailBox mailBox, IEnumerable<DatRecord> esmtpUserList){
             
             _mailBox = mailBox;
             
@@ -22,8 +22,8 @@ namespace Bjd.SmtpServer
                     if (!o.Enable){
                         continue;
                     }
-                    var user = o.StrList[0];
-                    var pass = o.StrList[1];
+                    var user = o.ColumnValueList[0];
+                    var pass = o.ColumnValueList[1];
                     pass = Crypt.Decrypt(pass);
                     _ar.Add(new SmtpAuthOneUser(user, pass));
                 }

@@ -20,7 +20,7 @@ namespace Bjd.Test.Options
         {
             //setUp
             var enable = true; //Enable=TRUE
-            var sut = new OneDat(enable, StrList, IsSecretlList);
+            var sut = new DatRecord(enable, StrList, IsSecretlList);
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
@@ -34,7 +34,7 @@ namespace Bjd.Test.Options
         {
             //setUp
             var enable = false; //Enable=FALSE
-            var sut = new OneDat(enable, StrList, IsSecretlList);
+            var sut = new DatRecord(enable, StrList, IsSecretlList);
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
@@ -48,7 +48,7 @@ namespace Bjd.Test.Options
         public void FromRegで初期化してToRegで出力する(int max, String str)
         {
             //setUp
-            var sut = new OneDat(true, new String[max], new bool[max]);
+            var sut = new DatRecord(true, new String[max], new bool[max]);
             sut.FromReg(str);
             var expected = str;
             //exercise
@@ -66,7 +66,7 @@ namespace Bjd.Test.Options
         public void FromRegに無効な入力があった時falseが帰る(int max, String str)
         {
             //setUp
-            var sut = new OneDat(true, new String[max], new bool[max]);
+            var sut = new DatRecord(true, new String[max], new bool[max]);
             var expected = false;
             //exercise
             var actual = sut.FromReg(str);

@@ -39,9 +39,9 @@ namespace Bjd.DhcpServer
             {
                 if (o.Enable)
                 {//有効なデータだけを対象にする
-                    string macStr = o.StrList[0];//MACアドレス(99-99-99-99-99-99)
+                    string macStr = o.ColumnValueList[0];//MACアドレス(99-99-99-99-99-99)
                     Mac mac = new Mac(macStr);
-                    Ip ip = new Ip(o.StrList[1]);//IPアドレス
+                    Ip ip = new Ip(o.ColumnValueList[1]);//IPアドレス
                     if (ip.ToString() == "255.255.255.255")
                     {
                         ar.Add(new OneLease(ip, mac));//MAC指定ありで全部追加

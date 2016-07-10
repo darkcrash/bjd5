@@ -6,43 +6,41 @@ using System.Collections.Generic;
 
 namespace Bjd.Options
 {
-    public class Dat : ListBase<OneDat>
+    public class Dat : ListBase<DatRecord>
     {
 
         private readonly bool[] _isSecretList;
-        private readonly int _colMax;
-        private readonly ListVal _listVal;
+        private readonly int _columnMax;
+        private readonly ListVal _columnList;
 
         public Dat(CtrlType[] ctrlTypeList)
         {
             //カラム数の初期化
-            _colMax = ctrlTypeList.Length;
+            _columnMax = ctrlTypeList.Length;
+       
             //isSecretListの生成
-            _isSecretList = new bool[_colMax];
-            for (int i = 0; i < _colMax; i++)
+            _isSecretList = new bool[_columnMax];
+
+            for (int i = 0; i < _columnMax; i++)
             {
-                _isSecretList[i] = false;
-                if (ctrlTypeList[i] == CtrlType.Hidden)
-                {
-                    _isSecretList[i] = true;
-                }
+                _isSecretList[i] = (ctrlTypeList[i] == CtrlType.Hidden);
             }
         }
         public Dat(ListVal val)
         {
-            _listVal = val;
             //カラム数の初期化
-            _colMax = val.Count;
+            _columnMax = val.Count;
+
+            _columnList = val;
+            
             //isSecretListの生成
-            _isSecretList = new bool[_colMax];
-            for (int i = 0; i < _colMax; i++)
+            _isSecretList = new bool[_columnMax];
+
+            for (int i = 0; i < _columnMax; i++)
             {
-                _isSecretList[i] = false;
-                if (val[i].IsSecret)
-                {
-                    _isSecretList[i] = true;
-                }
+                _isSecretList[i] = _columnList[i].IsSecret;
             }
+
         }
 
         //文字列によるOneDatの追加
@@ -54,14 +52,14 @@ namespace Bjd.Options
                 return false; //引数にnullが渡されました
             }
             var list = str.Split('\t');
-            if (list.Length != _colMax)
+            if (list.Length != _columnMax)
             {
                 return false; //カラム数が一致しません
             }
-            OneDat oneDat;
+            DatRecord oneDat;
             try
             {
-                oneDat = new OneDat(enable, list, _isSecretList);
+                oneDat = new DatRecord(enable, list, _isSecretList);
             }
             catch (ValidObjException)
             {
@@ -71,14 +69,15 @@ namespace Bjd.Options
             return true;
         }
 
-        public List<OneVal> GetList(List<OneVal> list)
+        public void AddList(List<OneVal> list)
         {
-            if (list == null)
-            {
-                list = new List<OneVal>();
-            }
-            _listVal.GetList(list);
-            return list;
+            _columnList.GetList(list);
+        }
+
+        public List<OneVal> GetList()
+        {
+            var list = new List<OneVal>();
+            return _columnList.GetList(list);
         }
 
         //文字列化
@@ -95,6 +94,11 @@ namespace Bjd.Options
                 sb.Append(o.ToReg(isSecret));
             }
             return sb.ToString();
+        }
+
+        internal List<DatRecord> GetOneDatList()
+        {
+            return Ar;
         }
 
         //文字列による初期化
@@ -121,10 +125,10 @@ namespace Bjd.Options
             {
                 var s = l;
                 //OneDatの生成
-                OneDat oneDat;
+                DatRecord oneDat;
                 try
                 {
-                    oneDat = new OneDat(true, new String[_colMax], _isSecretList);
+                    oneDat = new DatRecord(true, new String[_columnMax], _isSecretList);
                 }
                 catch (ValidObjException)
                 {

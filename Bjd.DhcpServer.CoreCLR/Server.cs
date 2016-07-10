@@ -61,11 +61,11 @@ namespace Bjd.DhcpServer
             //カラム数「名前（表示名)」を増やしたことによる互換性保持
             if (_macAcl.Count > 0)
             {
-                foreach (OneDat t in _macAcl)
+                foreach (DatRecord t in _macAcl)
                 {
-                    if (t.StrList.Count == 2)
+                    if (t.ColumnValueList.Count == 2)
                     {
-                        t.StrList.Add(string.Format("host_{0}", t.StrList[1]));
+                        t.ColumnValueList.Add(string.Format("host_{0}", t.ColumnValueList[1]));
                     }
                 }
             }
@@ -217,9 +217,9 @@ namespace Bjd.DhcpServer
             string macStr = mac.ToString();
             foreach (var m in _macAcl)
             {
-                if (m.StrList[0].ToUpper() == mac.ToString())
+                if (m.ColumnValueList[0].ToUpper() == mac.ToString())
                 {
-                    macStr = string.Format("{0}({1})", mac, m.StrList[2]);
+                    macStr = string.Format("{0}({1})", mac, m.ColumnValueList[2]);
                     break;
                 }
             }

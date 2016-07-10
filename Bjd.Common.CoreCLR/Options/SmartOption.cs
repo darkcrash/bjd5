@@ -36,43 +36,60 @@ namespace Bjd.Options
             }
             _isMemberLoaded = true;
         }
-        private void MemberLoad(Type targetType, ListVal list, object instance)
-        {
-            var myType = targetType;
-            var fields = myType.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 
-            foreach (var f in fields)
+        private struct FiledAndAtribute
+        {
+            public Attributes.ControlAttribute Control;
+            public FieldInfo Field;
+        }
+
+        private List<FiledAndAtribute> GetControlFields(Type t)
+        {
+            var l = new List<FiledAndAtribute>();
+            var fs = t.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (var f in fs)
             {
                 var attr = f.GetCustomAttribute<Attributes.ControlAttribute>(true);
                 if (attr == null) continue;
-                if (attr.ControlType == CtrlType.Dat)
+                var r = new FiledAndAtribute();
+                r.Control = attr;
+                r.Field = f;
+                l.Add(r);
+            }
+            return l;
+        }
+
+        private void MemberLoad(Type targetType, ListVal list, object instance)
+        {
+            var myType = targetType;
+            if (myType.GenericTypeArguments.Length > 0)
+            {
+                var myTypeInGeneric = myType.GetGenericTypeDefinition();
+                if (myTypeInGeneric == typeof(List<>))
                 {
-                    var value = f.GetValue(instance);
+                    myType = myType.GenericTypeArguments[0];
+                    instance = myType.GetConstructor(Type.EmptyTypes).Invoke(null);
+                }
+            }
+
+            foreach (var f in GetControlFields(myType))
+            {
+                if (f.Control.ControlType == CtrlType.Dat)
+                {
+                    var fValue = f.Field.GetValue(instance);
                     var childList = new ListVal();
-                    var fType = f.FieldType;
-                    var gType = fType.GetGenericTypeDefinition();
-                    if (gType == typeof(List<>))
-                    {
-                        fType = fType.GenericTypeArguments[0];
-                        var values = value as System.Collections.IList;
-                        foreach (var v in values)
-                        {
-                            this.MemberLoad(fType, childList, v);
-                        }
-                    }
-                    else
-                    {
-                        this.MemberLoad(fType, childList, value);
-                    }
+                    var fType = f.Field.FieldType;
+
+                    this.MemberLoad(fType, childList, fValue);
 
                     var dat = new Dat(childList);
-                    var one = attr.Create(f.Name, dat);
+                    var one = f.Control.Create(f.Field.Name, dat);
                     list.Add(one);
                 }
                 else
                 {
-                    var value = f.GetValue(instance);
-                    var one = attr.Create(f.Name, value);
+                    var value = f.Field.GetValue(instance);
+                    var one = f.Control.Create(f.Field.Name, value);
                     list.Add(one);
                 }
 

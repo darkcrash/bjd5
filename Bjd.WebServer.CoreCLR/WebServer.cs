@@ -75,7 +75,7 @@ namespace Bjd.WebServer
                 var changed = false;
                 foreach (var o in dat)
                 {
-                    var str = o.StrList[0];
+                    var str = o.ColumnValueList[0];
                     if (str[0] != '/')
                     {
                         changed = true;
@@ -86,7 +86,7 @@ namespace Bjd.WebServer
                         changed = true;
                         str = str + '/';
                     }
-                    o.StrList[0] = str;
+                    o.ColumnValueList[0] = str;
                 }
                 if (changed)
                     _conf.Set(tag, dat);

@@ -202,7 +202,7 @@ namespace Bjd.SmtpServer
             {
                 if (o.Enable)
                 { //有効なデータだけを対象にする
-                    var targetDomain = o.StrList[0];
+                    var targetDomain = o.ColumnValueList[0];
                     var isHit = false;
                     if (targetDomain == "*")
                     { //すべてヒット
@@ -222,12 +222,12 @@ namespace Bjd.SmtpServer
                     }
                     if (isHit)
                     {
-                        targetServer = o.StrList[1];
-                        port = Convert.ToInt32(o.StrList[2]);
-                        useSmtp = Convert.ToBoolean(o.StrList[3]);
-                        user = o.StrList[4];
-                        pass = Crypt.Decrypt(o.StrList[5]);
-                        ssl = Convert.ToBoolean(o.StrList[6]);
+                        targetServer = o.ColumnValueList[1];
+                        port = Convert.ToInt32(o.ColumnValueList[2]);
+                        useSmtp = Convert.ToBoolean(o.ColumnValueList[3]);
+                        user = o.ColumnValueList[4];
+                        pass = Crypt.Decrypt(o.ColumnValueList[5]);
+                        ssl = Convert.ToBoolean(o.ColumnValueList[6]);
 
                         //var ip = new Ip(targetServer);
                         //if (ip.ToString() != "0.0.0.0") {

@@ -34,7 +34,7 @@ namespace Bjd.DnsServer
 
 	    //コンストラクタ
 	    //リソース定義（Dat)で初期化する場合
-        public RrDb(Logger logger, Conf conf, IEnumerable<OneDat> dat, string dname,bool authority){
+        public RrDb(Logger logger, Conf conf, IEnumerable<DatRecord> dat, string dname,bool authority){
             //ドメイン名の初期化
             SetDomainName(dname);
 
@@ -401,20 +401,20 @@ namespace Bjd.DnsServer
         }
 
         //OneDatを追加する 
-        private void AddOneDat(string domainName, OneDat o){
+        private void AddOneDat(string domainName, DatRecord o){
             if (!o.Enable){
                 throw new ValidObjException("isEnable=false");
             }
 
-            var type = Int32.Parse(o.StrList[0]);
-            var name = o.StrList[1];
-            var alias = o.StrList[2];
+            var type = Int32.Parse(o.ColumnValueList[0]);
+            var name = o.ColumnValueList[1];
+            var alias = o.ColumnValueList[2];
             Ip ip = null;
             if (type != 3){
                 //Cnameの時、Ipアドレスが入っていないので、例外が発生する
-                ip = new Ip(o.StrList[3]);
+                ip = new Ip(o.ColumnValueList[3]);
             }
-            var priority = ushort.Parse(o.StrList[4]);
+            var priority = ushort.Parse(o.ColumnValueList[4]);
             const int ttl = 0; //有効期限なし
 
             //最後に.がついていない場合、ドメイン名を追加する

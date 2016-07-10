@@ -16,17 +16,17 @@ namespace Bjd.SmtpServer
         readonly List<MlOneUser> _ar = new List<MlOneUser>();
 
         //通常のコンストラクタ
-        public MlUserList(IEnumerable<OneDat> memberList) {
+        public MlUserList(IEnumerable<DatRecord> memberList) {
             foreach (var d in memberList) {
-                var name = d.StrList[0]; //名前
-                var mailAddress = new MailAddress(d.StrList[1]); //メールアドレス
+                var name = d.ColumnValueList[0]; //名前
+                var mailAddress = new MailAddress(d.ColumnValueList[1]); //メールアドレス
                 if (mailAddress.User == "" || mailAddress.Domain == "") {
                     continue;
                 }
-                var isManager = (d.StrList[2] == "True"); //管理者
-                var isReader = (d.StrList[3] == "True"); //配信する
-                var isContributor = (d.StrList[4] == "True"); //投稿者
-                var password = Crypt.Decrypt(d.StrList[5]) ?? ""; //パスワード
+                var isManager = (d.ColumnValueList[2] == "True"); //管理者
+                var isReader = (d.ColumnValueList[3] == "True"); //配信する
+                var isContributor = (d.ColumnValueList[4] == "True"); //投稿者
+                var password = Crypt.Decrypt(d.ColumnValueList[5]) ?? ""; //パスワード
                 _ar.Add(new MlOneUser(d.Enable, name, mailAddress, isManager, isReader, isContributor,password));
             }
         }

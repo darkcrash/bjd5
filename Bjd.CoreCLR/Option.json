@@ -1,0 +1,855 @@
+﻿{
+  "Basic": {
+    "useExitDlg": false,
+    "useLastSize": true,
+    "isWindowOpen": true,
+    "useAdminPassword": false,
+    "password": "0t9GC1bkpWNzg1uea3drbQ==",
+    "serverName": "",
+    "editBrowse": false,
+    "lang": 0
+  },
+  "Log": {
+    "normalLogKind": 0,
+    "secureLogKind": 2,
+    "saveDirectory": "logs",
+    "useLogFile": true,
+    "useLogClear": false,
+    "saveDays": 31,
+    "linesMax": 3000,
+    "linesDelete": 2000,
+    "isDisplay": 1,
+    "limitString": [
+      {
+        "Enable": true,
+        "Character": "aaa"
+      },
+      {
+        "Enable": false,
+        "Character": "bbb"
+      }
+    ],
+    "useLimitString": false
+  },
+  "Dhcp": {
+    "useServer": false,
+    "protocolKind": "1",
+    "port": 3067,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 10,
+    "leaseTime": 18000,
+    "startIp": "192.168.0.128",
+    "endIp": "192.168.0.200",
+    "maskIp": "255.255.255.0",
+    "gwIp": "192.168.0.1",
+    "dnsIp0": "192.168.0.1",
+    "dnsIp1": "0.0.0.0",
+    "useWpad": false,
+    "wpadUrl": "http://",
+    "useMacAcl": false,
+    "macAcl": []
+  },
+  "Dns": {
+    "useServer": true,
+    "protocolKind": "1",
+    "port": 3053,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 30,
+    "timeOut": 10,
+    "rootCache": "named.ca",
+    "useRD": true,
+    "soaMail": "postmaster",
+    "soaSerial": 1,
+    "soaRefresh": 3600,
+    "soaRetry": 300,
+    "soaExpire": 36000,
+    "soaMinimum": 3600,
+    "GroupSoa": "",
+    "enableAcl": 1,
+    "acl": []
+  },
+  "DnsDomain": {
+    "domainList": [
+      {
+        "Enable": true,
+        "name": "example",
+        "authority": true
+      }
+    ]
+  },
+  "Resource-example": {
+    "resourceList": [
+      {
+        "Enable": true,
+        "type": 0,
+        "name": "host1",
+        "alias": "",
+        "address": "127.0.0.1",
+        "priority": 0
+      },
+      {
+        "Enable": true,
+        "type": 0,
+        "name": "host2",
+        "alias": "",
+        "address": "192.168.9.1",
+        "priority": 0
+      },
+      {
+        "Enable": true,
+        "type": 3,
+        "name": "host1c",
+        "alias": "host1",
+        "address": "",
+        "priority": 0
+      },
+      {
+        "Enable": true,
+        "type": 1,
+        "name": "ns1",
+        "alias": "",
+        "address": "127.0.0.1",
+        "priority": 0
+      }
+    ]
+  },
+  "Ftp": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 3021,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 50,
+    "timeOut": 30,
+    "bannerMessage": "FTP ( $p Version $v ) ready",
+    "useSyst": false,
+    "reservationTime": 5000,
+    "mountList": [],
+    "user": [
+      {
+        "Enable": true,
+        "accessControl": 0,
+        "homeDirectory": "wwwroot",
+        "userName": "user",
+        "password": "GQZSfCBxWFZgdEafqhovCg=="
+      }
+    ],
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Pop3": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 3110,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 30,
+    "bannerMessage": "$p (Version $v) ready",
+    "authType": 2,
+    "authTimeout": 30,
+    "useChps": false,
+    "minimumLength": 8,
+    "disableJoe": true,
+    "groupNeed": "",
+    "useAutoAcl": false,
+    "autoAclLabel": "「ACL」設定で「指定するアドレスからのアクセスのみを」-「禁止する」にチェックされている必要があります",
+    "autoAclMax": 5,
+    "autoAclSec": 60,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "ProxyFtp": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8021,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "idleTime": 1,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "ProxyHttp": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8080,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 300,
+    "timeOut": 60,
+    "useRequestLog": true,
+    "anonymousFtp": "",
+    "useBrowserHedaer": false,
+    "addHeaderRemoteHost": true,
+    "addHeaderXForwardedFor": true,
+    "addHeaderForwarded": true,
+    "groupAddHeader": "",
+    "useUpperProxy": false,
+    "upperProxyServer": "",
+    "upperProxyPort": 8080,
+    "upperProxyUseAuth": false,
+    "upperProxyAuthName": "",
+    "upperProxyAuthPass": "0t9GC1bkpWNzg1uea3drbQ==",
+    "disableAddress": [],
+    "useCache": true,
+    "cacheDir": "ProxyHttpCache",
+    "testTime": 3,
+    "memorySize": 1000,
+    "diskSize": 5000,
+    "expires": 24,
+    "maxSize": 1200,
+    "enableHost": 1,
+    "cacheHost": [],
+    "enableExt": 1,
+    "cacheExt": [],
+    "limitUrlAllow": [],
+    "limitUrlDeny": [],
+    "limitString": [],
+    "enableAcl": 1,
+    "acl": []
+  },
+  "ProxyPop3": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8110,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "targetPort": 110,
+    "targetServer": "localhost",
+    "idleTime": 1,
+    "specialUserList": [],
+    "enableAcl": 1,
+    "acl": []
+  },
+  "ProxySmtp": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8025,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "targetPort": 25,
+    "targetServer": "localhost",
+    "idleTime": 1,
+    "specialUser": [],
+    "enableAcl": 1,
+    "acl": []
+  },
+  "ProxyTelnet": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8023,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Remote": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 10001,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 1,
+    "timeOut": 60,
+    "password": "0t9GC1bkpWNzg1uea3drbQ==",
+    "enableAcl": 0,
+    "acl": []
+  },
+  "Sip": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 5060,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 30,
+    "timeOut": 30,
+    "sampleText": "Sample Server : ",
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Smtp": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 3025,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 30,
+    "domainName": "example.com",
+    "bannerMessage": "$s SMTP $p $v; $d",
+    "receivedHeader": "from $h ([$a]) by $s with SMTP id $i for <$t>; $d",
+    "sizeLimit": 5000,
+    "errorFrom": "root@local",
+    "useNullFrom": false,
+    "useNullDomain": false,
+    "usePopBeforeSmtp": false,
+    "timePopBeforeSmtp": 10,
+    "useCheckFrom": false,
+    "useEsmtp": false,
+    "groupAuthKind": "",
+    "usePopAcount": false,
+    "esmtpUserList": [],
+    "enableEsmtp": 0,
+    "range": [],
+    "order": 0,
+    "allowList": [],
+    "denyList": [],
+    "always": true,
+    "threadSpan": 300,
+    "retryMax": 5,
+    "threadMax": 5,
+    "mxOnly": false,
+    "hostList": [],
+    "patternList": [],
+    "appendList": [],
+    "aliasList": [],
+    "fetchList": [],
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Ml": {
+    "mlList": []
+  },
+  "Tftp": {
+    "useServer": true,
+    "protocolKind": "1",
+    "port": 3069,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "workDir": "Tftp",
+    "read": true,
+    "write": true,
+    "override": true,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Tunnel": {
+    "useServer": false,
+    "protocolKind": "Tcp",
+    "port": 0,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "targetPort": 0,
+    "targetServer": "",
+    "idleTime": 1,
+    "enableAcl": 0,
+    "acl": []
+  },
+  "TunnelList": {
+    "tunnelList": [
+      {
+        "Enable": true,
+        "protocol": 0,
+        "srcPort": 8090,
+        "server": "localhost",
+        "dstPort": 3080
+      }
+    ]
+  },
+  "Tunnel-TCP:8090:localhost:3080": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 8090,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 60,
+    "targetPort": 80,
+    "targetServer": "localhost",
+    "idleTime": 1,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "WebApi": {
+    "useServer": true,
+    "protocolKind": "0",
+    "port": 5050,
+    "bindAddress2": "V46Dual,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 30,
+    "enableAcl": 1,
+    "acl": []
+  },
+  "Web": {
+    "enableAcl": 0,
+    "acl": [],
+    "useServer": false,
+    "protocol": 0,
+    "protocolKind": "Tcp",
+    "port": 80,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 10,
+    "timeOut": 3,
+    "documentRoot": "",
+    "welcomeFileName": "index.html",
+    "useHidden": false,
+    "useDot": false,
+    "useExpansion": false,
+    "useDirectoryEnum": false,
+    "serverHeader": "BlackJumboDog .NET Core Version $v",
+    "useEtag": false,
+    "serverAdmin": "",
+    "useCgi": false,
+    "cgiCmd": [
+      {
+        "Enable": false,
+        "cgiExtension": "pl",
+        "Program": "C:\\xampp\\perl\\bin\\perl.exe"
+      },
+      {
+        "Enable": false,
+        "cgiExtension": "cgi",
+        "Program": "C:\\xampp\\perl\\bin\\perl.exe"
+      },
+      {
+        "Enable": false,
+        "cgiExtension": "php",
+        "Program": "C:\\xampp\\php\\php-cgi.exe"
+      },
+      {
+        "Enable": false,
+        "cgiExtension": "bin",
+        "Program": "C:\\Windows\\System32\\cmd.exe"
+      }
+    ],
+    "cgiTimeout": 10,
+    "cgiPath": [],
+    "useSsi": false,
+    "ssiExt": "shtml,shtm",
+    "useExec": false,
+    "useWebDav": false,
+    "webDavPath": [],
+    "aliaseList": [],
+    "mime": [
+      {
+        "Enable": true,
+        "mimeExtension": "txt",
+        "mimeType": "text/plain"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "shtml",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "html",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "htm",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "gif",
+        "mimeType": "image/gif"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "jpg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "sht",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "map",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "jpeg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mid",
+        "mimeType": "audio/x-midi"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mov",
+        "mimeType": "video/quicktime"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "class",
+        "mimeType": "application/octet-stream"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "pdf",
+        "mimeType": "application/pdf"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dxr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dir",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dcr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "xbm",
+        "mimeType": "image/s-sbitmap"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "css",
+        "mimeType": "text/css"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "js",
+        "mimeType": "text/javascript"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "xml",
+        "mimeType": "text/xml"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "vbs",
+        "mimeType": "text/vbscript"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "zip",
+        "mimeType": "application/zip"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "z",
+        "mimeType": "application/x-compress"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "gz",
+        "mimeType": "application/x-gzip"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "tgz",
+        "mimeType": "application/x-compressed"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "tar",
+        "mimeType": "application/x-tar"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mpg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mpeg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "avi",
+        "mimeType": "video/x-msvideo"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "qt",
+        "mimeType": "video/quicktime"
+      }
+    ],
+    "authList": [],
+    "userList": [],
+    "groupList": [],
+    "encode": 0,
+    "indexDocument": "<html>\t<head>\t<title>Index of $URI</title>\t</head>\t<body>\t<h2>Index of $URI</h2>\t<hr>\t<table border=0>\t<!--$LOOP--><tr><td width=250><a href=$HREF>$NAME</a><td width=250>$DATE<td width=250>$SIZE\t</table>\t<hr>\t<br>From server at: $SERVER\t<br>Running: $VER\t</body>\t</html>",
+    "errorDocument": "<html>\t<head>\t<title>Error</title>\t</head>\t<body>\tError...Your request could not be honored.\t<hr>\t<h2>$CODE $MSG</h2>\t<br>From server at: $SERVER\t<br>Running: $VER\t<br>RequestUri: $URI\t\t</body>\t</html>",
+    "useAutoAcl": false,
+    "autoAclLabel": "「ACL」設定で「指定するアドレスからのアクセスのみを」-「禁止する」にチェックされている必要があります",
+    "autoAclGroup": []
+  },
+  "VirtualHost": {
+    "hostList": [
+      {
+        "Enable": true,
+        "protocol": 0,
+        "host": "0.0.0.0",
+        "port": 3080
+      }
+    ],
+    "groupHttps": ""
+  },
+  "Web-0.0.0.0:3080": {
+    "enableAcl": 1,
+    "acl": [],
+    "useServer": true,
+    "protocol": 0,
+    "protocolKind": "0",
+    "port": 3080,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": true,
+    "multiple": 50,
+    "timeOut": 3,
+    "documentRoot": "wwwroot",
+    "welcomeFileName": "index.html",
+    "useHidden": false,
+    "useDot": false,
+    "useExpansion": false,
+    "useDirectoryEnum": false,
+    "serverHeader": "BlackJumboDog - .NET Core Version $v",
+    "useEtag": false,
+    "serverAdmin": "",
+    "useCgi": true,
+    "cgiCmd": [
+      {
+        "Enable": true,
+        "cgiExtension": "pl",
+        "Program": "C:\\Perl64\\bin\\perl.exe"
+      },
+      {
+        "Enable": true,
+        "cgiExtension": "cgi",
+        "Program": "C:\\Perl64\\bin\\perl.exe"
+      },
+      {
+        "Enable": true,
+        "cgiExtension": "php",
+        "Program": "D:\\xampp\\php\\php-cgi.exe"
+      },
+      {
+        "Enable": false,
+        "cgiExtension": "bin",
+        "Program": "C:\\Windows\\System32\\cmd.exe"
+      }
+    ],
+    "cgiTimeout": 10,
+    "cgiPath": [],
+    "useSsi": true,
+    "ssiExt": "shtml,shtm",
+    "useExec": true,
+    "useWebDav": false,
+    "webDavPath": [],
+    "aliaseList": [],
+    "mime": [
+      {
+        "Enable": true,
+        "mimeExtension": "txt",
+        "mimeType": "text/plain"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "shtml",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "html",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "htm",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "gif",
+        "mimeType": "image/gif"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "jpg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "sht",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "map",
+        "mimeType": "text/html"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "jpeg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mid",
+        "mimeType": "audio/x-midi"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mov",
+        "mimeType": "video/quicktime"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "class",
+        "mimeType": "application/octet-stream"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "pdf",
+        "mimeType": "application/pdf"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dxr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dir",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "dcr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "xbm",
+        "mimeType": "image/s-sbitmap"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "css",
+        "mimeType": "text/css"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "js",
+        "mimeType": "text/javascript"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "xml",
+        "mimeType": "text/xml"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "vbs",
+        "mimeType": "text/vbscript"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "zip",
+        "mimeType": "application/zip"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "z",
+        "mimeType": "application/x-compress"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "gz",
+        "mimeType": "application/x-gzip"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "tgz",
+        "mimeType": "application/x-compressed"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "tar",
+        "mimeType": "application/x-tar"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mpg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "mpeg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "avi",
+        "mimeType": "video/x-msvideo"
+      },
+      {
+        "Enable": true,
+        "mimeExtension": "qt",
+        "mimeType": "video/quicktime"
+      }
+    ],
+    "authList": [],
+    "userList": [],
+    "groupList": [],
+    "encode": 0,
+    "indexDocument": "<html>\t<head>\t<title>Index of $URI</title>\t</head>\t<body>\t<h2>Index of $URI</h2>\t<hr>\t<table border=0>\t<!--$LOOP--><tr><td width=250><a href=$HREF>$NAME</a><td width=250>$DATE<td width=250>$SIZE\t</table>\t<hr>\t<br>From server at: $SERVER\t<br>Running: $VER\t</body>\t</html>",
+    "errorDocument": "<html>\t<head>\t<title>Error</title>\t</head>\t<body>\tError...Your request could not be honored.\t<hr>\t<h2>$CODE $MSG</h2>\t<br>From server at: $SERVER\t<br>Running: $VER\t<br>RequestUri: $URI\t\t</body>\t</html>",
+    "useAutoAcl": false,
+    "autoAclLabel": "「ACL」設定で「指定するアドレスからのアクセスのみを」-「禁止する」にチェックされている必要があります",
+    "autoAclGroup": []
+  },
+  "MailBox": {
+    "dir": "mailbox",
+    "useDetailsLog": false,
+    "user": [
+      {
+        "Enable": true,
+        "userName": "user",
+        "password": "GQZSfCBxWFZgdEafqhovCg=="
+      }
+    ]
+  }
+}

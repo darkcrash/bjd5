@@ -21,17 +21,17 @@ namespace Bjd.SmtpServer
                     if (!o2.Enable)
                         continue;
                     //メーリングリスト名の読込
-                    var mlName = o2.StrList[0];
+                    var mlName = o2.ColumnValueList[0];
                     var op = kernel.ListOption.Get("Ml-" + mlName);
                     var logger = kernel.CreateLogger(mlName, (bool) op.GetValue("useDetailsLog"), server);
                     var mlOption = new MlOption(kernel,op);
                     //無効なメンバ指定の確認と警告
                     foreach (var d in mlOption.MemberList){
-                        var mailAddress = new MailAddress(d.StrList[1]); //メールアドレス
+                        var mailAddress = new MailAddress(d.ColumnValueList[1]); //メールアドレス
                         if (mailAddress.User != "" && mailAddress.Domain != "")
                             continue;
                         if (logger != null){
-                            logger.Set(LogKind.Error, null, 53, string.Format("{0}", d.StrList[1]));
+                            logger.Set(LogKind.Error, null, 53, string.Format("{0}", d.ColumnValueList[1]));
                         }
                     }
                     if (mlOption.MemberList.Count == 0){

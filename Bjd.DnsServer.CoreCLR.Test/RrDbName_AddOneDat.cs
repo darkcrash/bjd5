@@ -46,7 +46,7 @@ namespace DnsServerTest
 
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(true, new[] { "0", "www", "alias", "192.168.0.1", "10" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "0", "www", "alias", "192.168.0.1", "10" }, _isSecret);
             //exercise
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
@@ -62,7 +62,7 @@ namespace DnsServerTest
         {
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(true, new[] { "4", "www", "alias", "fe80::f509:c5be:437b:3bc5", "10" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "4", "www", "alias", "fe80::f509:c5be:437b:3bc5", "10" }, _isSecret);
             //exercise
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
@@ -77,7 +77,7 @@ namespace DnsServerTest
         {
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(true, new[] { "2", "smtp", "alias", "210.10.2.250", "15" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "2", "smtp", "alias", "210.10.2.250", "15" }, _isSecret);
             //exercise
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
@@ -93,7 +93,7 @@ namespace DnsServerTest
         {
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(true, new[] { "1", "ns", "alias", "111.3.255.0", "0" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "1", "ns", "alias", "111.3.255.0", "0" }, _isSecret);
             //exercise
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
@@ -109,7 +109,7 @@ namespace DnsServerTest
         {
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(true, new[] { "3", "cname", "alias", "255.254.253.252", "0" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "3", "cname", "alias", "255.254.253.252", "0" }, _isSecret);
             //exercise
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
@@ -126,7 +126,7 @@ namespace DnsServerTest
 
             //setUp
             var sut = new RrDb();
-            var oneDat = new OneDat(false, new[] { "0", "www", "alias", "192.168.0.1", "10" }, _isSecret);
+            var oneDat = new DatRecord(false, new[] { "0", "www", "alias", "192.168.0.1", "10" }, _isSecret);
             //exercise
             Assert.Throws<ValidObjException>(() =>
                RrDbTest.AddOneDat(sut, DomainName, oneDat)
@@ -145,7 +145,7 @@ namespace DnsServerTest
             //setUp
             var sut = new RrDb();
             //IPv6のAレコード
-            var oneDat = new OneDat(true, new[] { "0", "www", "alias", "::1", "0" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "0", "www", "alias", "::1", "0" }, _isSecret);
             //exercise
             Assert.Throws<ValidObjException>(() =>
                 RrDbTest.AddOneDat(sut, DomainName, oneDat)
@@ -165,7 +165,7 @@ namespace DnsServerTest
             //setUp
             var sut = new RrDb();
             //IPv4のAAAAレコード
-            var oneDat = new OneDat(true, new[] { "4", "www", "alias", "127.0.0.1", "0" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "4", "www", "alias", "127.0.0.1", "0" }, _isSecret);
             //exercise
             Assert.Throws<ValidObjException>(() =>
                     RrDbTest.AddOneDat(sut, DomainName, oneDat)
@@ -185,7 +185,7 @@ namespace DnsServerTest
             //setUp
             var sut = new RrDb();
             //タイプは0~4まで
-            var oneDat = new OneDat(true, new[] { "5", "www", "alias", "127.0.0.1", "0" }, _isSecret);
+            var oneDat = new DatRecord(true, new[] { "5", "www", "alias", "127.0.0.1", "0" }, _isSecret);
             //exercise
             Assert.Throws<ValidObjException>(() =>
                     RrDbTest.AddOneDat(sut, DomainName, oneDat)

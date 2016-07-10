@@ -27,9 +27,9 @@ namespace Bjd.WebServer
             string mimeType = null;
             if(ext!=null){
                 foreach (var o in mimeList) {
-                    if (o.StrList[0].ToUpper() != ext.ToUpper())
+                    if (o.ColumnValueList[0].ToUpper() != ext.ToUpper())
                         continue;
-                    mimeType = o.StrList[1];
+                    mimeType = o.ColumnValueList[1];
                     break;
                 }
             }
@@ -40,8 +40,8 @@ namespace Bjd.WebServer
                 //DOTO  Dat2.Valの実装をやめたのので動作確認が必要
                 //mimeType = (string)mimeList.Val(0,".",1);
                 //mimeType = null;
-                foreach (var o in mimeList.Where(o => o.StrList[0] == ".")){
-                    mimeType = o.StrList[1];
+                foreach (var o in mimeList.Where(o => o.ColumnValueList[0] == ".")){
+                    mimeType = o.ColumnValueList[1];
                     break;
                 }
                 if(mimeType == null)

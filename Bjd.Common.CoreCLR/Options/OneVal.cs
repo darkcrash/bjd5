@@ -78,7 +78,7 @@ namespace Bjd.Options
             }
             if (this.ValueType == typeof(Dat) && (this.Value as Dat != null))
             {
-                ((Dat)this.Value).GetList(list);
+                ((Dat)this.Value).AddList(list);
             }
             list.Add(this);
             return list;

@@ -151,9 +151,9 @@ namespace Bjd.WebServer
                 {
                     if (!o.Enable)
                         continue;
-                    string uri = o.StrList[0];
-                    string authName = o.StrList[1];
-                    string requires = o.StrList[2];
+                    string uri = o.ColumnValueList[0];
+                    string authName = o.ColumnValueList[1];
+                    string requires = o.ColumnValueList[2];
                     _ar.Add(new OneAuth(uri, authName, requires));
                 }
             }
@@ -217,8 +217,8 @@ namespace Bjd.WebServer
                 {
                     if (!o.Enable)
                         continue;
-                    var user = o.StrList[0];
-                    var pass = Crypt.Decrypt(o.StrList[1]);
+                    var user = o.ColumnValueList[0];
+                    var pass = Crypt.Decrypt(o.ColumnValueList[1]);
                     _ar.Add(new OneUser(user, pass));
                 }
             }
@@ -262,8 +262,8 @@ namespace Bjd.WebServer
                 {
                     if (!o.Enable)
                         continue;
-                    var group = o.StrList[0];
-                    var users = o.StrList[1];
+                    var group = o.ColumnValueList[0];
+                    var users = o.ColumnValueList[1];
                     _ar.Add(new OneGroup(group, users));
                 }
             }

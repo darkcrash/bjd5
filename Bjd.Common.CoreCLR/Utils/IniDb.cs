@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Linq;
 using Bjd.Controls;
 using Bjd.Options;
 
@@ -15,6 +16,7 @@ namespace Bjd.Utils
         private readonly String _fileIni;
         private readonly String _fileDef;
         private readonly String _fileTxt;
+        private readonly String _fileIniJson;
 
         public IniDb(String progDir, String fileName)
         {
@@ -24,6 +26,7 @@ namespace Bjd.Utils
             _fileIni = System.IO.Path.Combine(progDir, fileName + ".ini");
             _fileDef = System.IO.Path.Combine(progDir, fileName + ".def");
             _fileTxt = System.IO.Path.Combine(progDir, fileName + ".txt");
+            _fileIniJson = System.IO.Path.Combine(progDir, fileName + ".json");
 
         }
 
@@ -120,7 +123,22 @@ namespace Bjd.Utils
             return new LineObject(nameTag, name, valStr);
         }
 
-        private bool Read(String fileName, String nameTag, ListVal listVal)
+        private bool ReadJson(string fileName, string nameTag, ListVal listVal)
+        {
+            if (!File.Exists(fileName))
+                return false;
+            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (var reader = new StreamReader(fs))
+            {
+                var jsonReader = new Newtonsoft.Json.JsonTextReader(reader);
+                var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+            }
+
+            return true;
+
+        }
+
+        private bool Read(string fileName, string nameTag, ListVal listVal)
         {
             if (!File.Exists(fileName))
                 return false;
@@ -235,6 +253,7 @@ namespace Bjd.Utils
                 var n = nameTag.Split('-')[0];
                 Read(_fileDef, n, listVal); //デフォルト設定値を読み込む
             }
+            SaveJson(nameTag, listVal);
         }
 
 
@@ -290,6 +309,138 @@ namespace Bjd.Utils
                 File.WriteAllLines(target, lines.ToArray(), enc.GetEncoding(932));
             }
         }
+
+        private bool SaveJson(string nameTag, ListVal listVal)
+        {
+            var numberList = new List<Type> { typeof(int) };
+            var boolList = new List<Type> { typeof(bool) };
+
+            // read json object from file
+            Newtonsoft.Json.Linq.JObject jObject = null;
+            if (File.Exists(_fileIniJson))
+            {
+                try
+                {
+                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read))
+                    using (var reader = new StreamReader(fs))
+                    {
+                        var jsonReader = new Newtonsoft.Json.JsonTextReader(reader);
+                        var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+                        var o = jsonSerializer.Deserialize(jsonReader);
+                        jObject = o as Newtonsoft.Json.Linq.JObject;
+                        jObject.Remove(nameTag);
+                    }
+                }
+                catch { }
+
+            }
+
+            // create json object
+            if (jObject == null)
+            {
+                jObject = new Newtonsoft.Json.Linq.JObject();
+            }
+
+            // write file from json object
+            using (var fs = new FileStream(_fileIniJson, FileMode.Create, FileAccess.Write))
+            using (var writer = new StreamWriter(fs, Encoding.UTF8))
+            {
+                var jsonWriter = new Newtonsoft.Json.JsonTextWriter(writer);
+                var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+
+                // cast value to ValueType
+                Func<OneVal, string, object> OneValToValue =
+                    (o, v) =>
+                    {
+                        if (numberList.Contains(o.ValueType))
+                        {
+                            return Convert.ToInt32(v);
+                        }
+                        else if (boolList.Contains(o.ValueType))
+                        {
+                            return Convert.ToBoolean(v);
+                        }
+                        return v;
+                    };
+
+                // Dat to Json
+                Func<List<OneVal>, List<DatRecord>, Newtonsoft.Json.Linq.JArray> CreateJObjectArray = null;
+                CreateJObjectArray = (lv, ld) =>
+                {
+                    Newtonsoft.Json.Linq.JArray value = new Newtonsoft.Json.Linq.JArray();
+                    foreach (var rec in ld)
+                    {
+                        Newtonsoft.Json.Linq.JObject inlineObject = new Newtonsoft.Json.Linq.JObject();
+
+                        Newtonsoft.Json.Linq.JProperty inlineObjectEnable = new Newtonsoft.Json.Linq.JProperty("Enable", rec.Enable);
+                        inlineObject.Add(inlineObjectEnable);
+
+                        for (var i = 0; i < lv.Count; i++)
+                        {
+                            var currentOneVal = lv[i];
+                            var v = OneValToValue(currentOneVal, rec.ColumnValueList[i]);
+                            Newtonsoft.Json.Linq.JProperty inlineObjectProp = new Newtonsoft.Json.Linq.JProperty(currentOneVal.Name, v);
+                            inlineObject.Add(inlineObjectProp);
+                        }
+
+                        value.Add(inlineObject);
+                    }
+
+                    return value;
+                };
+
+                // to json
+                Func<List<OneVal>, Newtonsoft.Json.Linq.JObject> CreateJObject = null;
+                CreateJObject = (lv) =>
+                {
+                    Newtonsoft.Json.Linq.JObject value = new Newtonsoft.Json.Linq.JObject();
+                    // 対象のValListを書き込む
+                    foreach (var o in lv)
+                    {
+                        Newtonsoft.Json.Linq.JProperty childProperty;
+                        if (o.CtrlType == CtrlType.TabPage)
+                        {
+                            continue;
+                        }
+                        else if (o.CtrlType == CtrlType.Dat)
+                        {
+                            var d = o.Value as Dat;
+
+                            var dList = d.GetList();
+                            var valList = d.GetOneDatList();
+
+                            var childKey = o.Name;
+                            var childObject = CreateJObjectArray(dList, valList);
+
+                            childProperty = new Newtonsoft.Json.Linq.JProperty(childKey, childObject);
+                        }
+                        else
+                        {
+                            var v = OneValToValue(o, o.ToReg(false));
+                            childProperty = new Newtonsoft.Json.Linq.JProperty(o.Name, v);
+                        }
+                        value.Add(childProperty);
+                    }
+                    return value;
+                };
+
+                // create json object
+                var obj = CreateJObject(listVal.GetSaveList(null));
+                var prop = new Newtonsoft.Json.Linq.JProperty(nameTag, obj);
+                jObject.Add(prop);
+
+                // serialize with indented formatting
+                jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+                jsonSerializer.Serialize(jsonWriter, jObject);
+                jsonWriter.Flush();
+
+            }
+
+            return true;
+
+        }
+
+
 
         // 設定ファイルから"lang"の値を読み出す
         public bool IsJp()

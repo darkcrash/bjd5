@@ -25,7 +25,7 @@ namespace Bjd.Acls
         //Dat dat==null　で初期化された場合、全てenableNumで指定したものになる
         //dat=null enableNum=0(不許可) => All Deny
         //dat=null enableNum=1(許可) => All Allow
-        public AclList(IEnumerable<OneDat> dat, int enableNum, Logger logger)
+        public AclList(IEnumerable<DatRecord> dat, int enableNum, Logger logger)
         {
             _enable = (enableNum == 1);
             _logger = logger;
@@ -40,8 +40,8 @@ namespace Bjd.Acls
                     continue;
                 }
                 //有効なデータだけを対象にする
-                var name = o.StrList[0];
-                var ipStr = o.StrList[1];
+                var name = o.ColumnValueList[0];
+                var ipStr = o.ColumnValueList[1];
 
                 if (ipStr == "*")
                 {
