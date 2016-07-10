@@ -52,7 +52,7 @@ namespace Bjd.WebServer.Configurations
             if (tmp.Length == 2)
             {
                 port = Convert.ToInt32(tmp[1]);
-                protocol = (port == 443) ? 1 : 0;
+                protocol = (port == 443) ? WebProtocolKind.https : WebProtocolKind.http;
             }
 
             PageAcl();
@@ -73,7 +73,7 @@ namespace Bjd.WebServer.Configurations
         }
 
         [ComboBox]
-        public int protocol = 0;
+        public WebProtocolKind protocol = WebProtocolKind.http;
 
         [ComboBox(Crlf.Contonie)]
         public ProtocolKind protocolKind = ProtocolKind.Tcp;
@@ -209,7 +209,7 @@ namespace Bjd.WebServer.Configurations
         }
 
         [ComboBox]
-        public int encode = 0;
+        public EncodingKind encode = EncodingKind.Utf8;
         [Memo]
         public string indexDocument = "";
         [Memo]

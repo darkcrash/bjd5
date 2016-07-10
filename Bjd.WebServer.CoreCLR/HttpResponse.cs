@@ -211,17 +211,17 @@ namespace Bjd.WebServer
             encoding = Encoding.UTF8;
             var enc = _conf.Get("encode");
             if (enc == null) return false;
-            if (enc is int)
+            if (enc is EncodingKind)
             {
-                switch ((int)enc)
+                switch ((EncodingKind)enc)
                 {
-                    case 0://UTF-8
+                    case EncodingKind.Utf8://UTF-8
                         return true;
-                    case 1://shift-jis
+                    case EncodingKind.ShiftJis://shift-jis
                         charset = "Shift-JIS";
                         encoding = CodePagesEncodingProvider.Instance.GetEncoding("shift-jis");
                         return true;
-                    case 2://eyc
+                    case EncodingKind.EucJp://euc
                         charset = "euc-jp";
                         encoding = CodePagesEncodingProvider.Instance.GetEncoding("euc-jp");
                         return true;

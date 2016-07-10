@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Linq;
 using Bjd.Controls;
 using Bjd.Options;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Bjd.Utils
 {
@@ -123,18 +124,109 @@ namespace Bjd.Utils
             return new LineObject(nameTag, name, valStr);
         }
 
-        private bool ReadJson(string fileName, string nameTag, ListVal listVal)
+        private bool ReadJson(string nameTag, ListVal listVal)
         {
-            if (!File.Exists(fileName))
+            if (!File.Exists(_fileIniJson))
                 return false;
-            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-            using (var reader = new StreamReader(fs))
+            var isRead = false;
+
+            // read json object from file
+            JObject jObject = null;
+            if (File.Exists(_fileIniJson))
             {
-                var jsonReader = new Newtonsoft.Json.JsonTextReader(reader);
-                var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+                try
+                {
+                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read))
+                    using (var reader = new StreamReader(fs))
+                    {
+                        var jsonReader = new JsonTextReader(reader);
+                        var jsonSerializer = new JsonSerializer();
+                        var o = jsonSerializer.Deserialize(jsonReader);
+                        jObject = o as JObject;
+                    }
+                }
+                catch { }
+
             }
 
-            return true;
+            // create json object
+            if (jObject == null)
+                return false;
+
+            foreach (var childToken in jObject.Children())
+            {
+                // The permitted childToken is only property
+                if (childToken.Type != JTokenType.Property) continue;
+
+                // The permitted value is only object-type
+                var childProperty = (JProperty)childToken;
+                if (childProperty.Value.Type != JTokenType.Object) continue;
+
+                var jsonnameTag = childProperty.Name;
+
+                if (!(jsonnameTag == nameTag || jsonnameTag == nameTag + "Server"))
+                    continue;
+
+                var childObject = (JObject)childProperty.Value;
+
+                foreach (var valToken in childObject.Children())
+                {
+                    // The permitted childToken is only property
+                    if (valToken.Type != JTokenType.Property) continue;
+                    var valProperty = (JProperty)valToken;
+                    var valName = valProperty.Name;
+
+                    var oneVal = listVal.Search(valName);
+                    if (oneVal == null) continue;
+
+                    try
+                    {
+
+                        switch (oneVal.CtrlType)
+                        {
+                            case CtrlType.Dat:
+                                var valArray = (JArray)valProperty.Value;
+                                oneVal.FromJson(valArray);
+                                break;
+                            case CtrlType.CheckBox:
+                                var valBool = valProperty.Value.Value<bool>();
+                                oneVal.FromJson(valBool);
+                                break;
+                            case CtrlType.Int:
+                            case CtrlType.Radio:
+                                var valInt = valProperty.Value.Value<int>();
+                                oneVal.FromJson(valInt);
+                                break;
+                            case CtrlType.ComboBox:
+                            case CtrlType.AddressV4:
+                            case CtrlType.AddressV6:
+                            case CtrlType.BindAddr:
+                            case CtrlType.File:
+                            case CtrlType.Folder:
+                            case CtrlType.Font:
+                            case CtrlType.Label:
+                            case CtrlType.Memo:
+                            case CtrlType.TextBox:
+                                var valString = valProperty.Value.Value<string>();
+                                oneVal.FromJson(valString);
+                                break;
+                            default:
+                                continue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.TraceInformation($"IniDbRead:Exception {ex.Message}");
+                        continue;
+                    }
+
+                    isRead = true; // 1件でもデータを読み込んだ場合にtrue
+                }
+
+
+            }
+
+            return isRead;
 
         }
 
@@ -238,6 +330,10 @@ namespace Bjd.Utils
             {
                 File.Delete(_fileIni);
             }
+            if (File.Exists(_fileIniJson))
+            {
+                File.Delete(_fileIniJson);
+            }
         }
 
 
@@ -253,6 +349,10 @@ namespace Bjd.Utils
                 var n = nameTag.Split('-')[0];
                 Read(_fileDef, n, listVal); //デフォルト設定値を読み込む
             }
+            //var isReadJson = ReadJson(nameTag, listVal);
+            //if (!isReadJson)
+            //{
+            //}
             SaveJson(nameTag, listVal);
         }
 
@@ -316,7 +416,7 @@ namespace Bjd.Utils
             var boolList = new List<Type> { typeof(bool) };
 
             // read json object from file
-            Newtonsoft.Json.Linq.JObject jObject = null;
+            JObject jObject = null;
             if (File.Exists(_fileIniJson))
             {
                 try
@@ -324,10 +424,10 @@ namespace Bjd.Utils
                     using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read))
                     using (var reader = new StreamReader(fs))
                     {
-                        var jsonReader = new Newtonsoft.Json.JsonTextReader(reader);
-                        var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+                        var jsonReader = new JsonTextReader(reader);
+                        var jsonSerializer = new JsonSerializer();
                         var o = jsonSerializer.Deserialize(jsonReader);
-                        jObject = o as Newtonsoft.Json.Linq.JObject;
+                        jObject = o as JObject;
                         jObject.Remove(nameTag);
                     }
                 }
@@ -338,21 +438,25 @@ namespace Bjd.Utils
             // create json object
             if (jObject == null)
             {
-                jObject = new Newtonsoft.Json.Linq.JObject();
+                jObject = new JObject();
             }
 
             // write file from json object
             using (var fs = new FileStream(_fileIniJson, FileMode.Create, FileAccess.Write))
             using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
-                var jsonWriter = new Newtonsoft.Json.JsonTextWriter(writer);
-                var jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+                var jsonWriter = new JsonTextWriter(writer);
+                var jsonSerializer = new JsonSerializer();
 
                 // cast value to ValueType
                 Func<OneVal, string, object> OneValToValue =
                     (o, v) =>
                     {
-                        if (numberList.Contains(o.ValueType))
+                        if ( o.CtrlType == CtrlType.ComboBox)
+                        {
+                            return v;
+                        }
+                        else if (numberList.Contains(o.ValueType))
                         {
                             return Convert.ToInt32(v);
                         }
@@ -364,22 +468,23 @@ namespace Bjd.Utils
                     };
 
                 // Dat to Json
-                Func<List<OneVal>, List<DatRecord>, Newtonsoft.Json.Linq.JArray> CreateJObjectArray = null;
+                Func<List<OneVal>, List<DatRecord>, JArray> CreateJObjectArray = null;
                 CreateJObjectArray = (lv, ld) =>
                 {
-                    Newtonsoft.Json.Linq.JArray value = new Newtonsoft.Json.Linq.JArray();
+                    JArray value = new JArray();
                     foreach (var rec in ld)
                     {
-                        Newtonsoft.Json.Linq.JObject inlineObject = new Newtonsoft.Json.Linq.JObject();
+                        JObject inlineObject = new JObject();
 
-                        Newtonsoft.Json.Linq.JProperty inlineObjectEnable = new Newtonsoft.Json.Linq.JProperty("Enable", rec.Enable);
+                        JProperty inlineObjectEnable = new JProperty("enable", rec.Enable);
                         inlineObject.Add(inlineObjectEnable);
 
                         for (var i = 0; i < lv.Count; i++)
                         {
                             var currentOneVal = lv[i];
+                            //var v2 = currentOneVal.ToJson(false);
                             var v = OneValToValue(currentOneVal, rec.ColumnValueList[i]);
-                            Newtonsoft.Json.Linq.JProperty inlineObjectProp = new Newtonsoft.Json.Linq.JProperty(currentOneVal.Name, v);
+                            JProperty inlineObjectProp = new JProperty(currentOneVal.Name, v);
                             inlineObject.Add(inlineObjectProp);
                         }
 
@@ -390,18 +495,16 @@ namespace Bjd.Utils
                 };
 
                 // to json
-                Func<List<OneVal>, Newtonsoft.Json.Linq.JObject> CreateJObject = null;
+                Func<List<OneVal>, JObject> CreateJObject = null;
                 CreateJObject = (lv) =>
                 {
-                    Newtonsoft.Json.Linq.JObject value = new Newtonsoft.Json.Linq.JObject();
+                    JObject value = new JObject();
                     // 対象のValListを書き込む
                     foreach (var o in lv)
                     {
-                        Newtonsoft.Json.Linq.JProperty childProperty;
-                        if (o.CtrlType == CtrlType.TabPage)
-                        {
-                            continue;
-                        }
+                        JProperty childProperty;
+                        if (o.CtrlType == CtrlType.TabPage) continue;
+                        if (o.CtrlType == CtrlType.Group) continue;
                         else if (o.CtrlType == CtrlType.Dat)
                         {
                             var d = o.Value as Dat;
@@ -412,12 +515,11 @@ namespace Bjd.Utils
                             var childKey = o.Name;
                             var childObject = CreateJObjectArray(dList, valList);
 
-                            childProperty = new Newtonsoft.Json.Linq.JProperty(childKey, childObject);
+                            childProperty = new JProperty(childKey, childObject);
                         }
                         else
                         {
-                            var v = OneValToValue(o, o.ToReg(false));
-                            childProperty = new Newtonsoft.Json.Linq.JProperty(o.Name, v);
+                            childProperty = new JProperty(o.Name, o.ToJson(false));
                         }
                         value.Add(childProperty);
                     }
@@ -426,11 +528,11 @@ namespace Bjd.Utils
 
                 // create json object
                 var obj = CreateJObject(listVal.GetSaveList(null));
-                var prop = new Newtonsoft.Json.Linq.JProperty(nameTag, obj);
+                var prop = new JProperty(nameTag, obj);
                 jObject.Add(prop);
 
                 // serialize with indented formatting
-                jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+                jsonWriter.Formatting = Formatting.Indented;
                 jsonSerializer.Serialize(jsonWriter, jObject);
                 jsonWriter.Flush();
 
@@ -446,7 +548,7 @@ namespace Bjd.Utils
         public bool IsJp()
         {
             var listVal = new ListVal{
-                new OneVal(CtrlType.ComboBox, "lang", 2, Crlf.Nextline)
+                new OneVal(CtrlType.ComboBox, "lang", LangKind.Jp, Crlf.Nextline)
             };
             Read("Basic", listVal);
             var oneVal = listVal.Search("lang");

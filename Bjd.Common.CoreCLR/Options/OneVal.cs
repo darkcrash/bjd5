@@ -6,6 +6,7 @@ using System.Text;
 using Bjd.Controls;
 using Bjd.Net;
 using Bjd.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace Bjd.Options
 {
@@ -13,9 +14,8 @@ namespace Bjd.Options
     //ListValと共に再帰処理が可能になっている<br>
     public class OneVal : IDisposable
     {
-
-        public String Name { get; private set; }
-        public Object Value { get; private set; }
+        public string Name { get; private set; }
+        public object Value { get; private set; }
         public Crlf Crlf { get; private set; }
 
         public CtrlType CtrlType { get; private set; }
@@ -37,6 +37,10 @@ namespace Bjd.Options
             this.IsSecret = isSecret;
             if (value != null)
                 this.ValueType = value.GetType();
+            if (CtrlType == CtrlType.ComboBox)
+            {
+                this.ValueType = value.GetType();
+            }
 
 
             //*************************************************************
@@ -163,6 +167,55 @@ namespace Bjd.Options
             return this.Value.ToString();
         }
 
+        public object ToJson(bool isSecret)
+        {
+            switch (this.CtrlType)
+            {
+                case CtrlType.CheckBox:
+                    return (bool)Value;
+                case CtrlType.Label:
+                case CtrlType.TextBox:
+                case CtrlType.Font:
+                case CtrlType.File:
+                case CtrlType.Folder:
+                    if (this.Value == null) return null;
+                    return (string)Value;
+                case CtrlType.Hidden:
+                    if (isSecret)
+                    {
+                        return "***";
+                    }
+                    try
+                    {
+                        return Crypt.Encrypt((String)Value);
+                    }
+                    catch (Exception)
+                    {
+                        return "ERROR";
+                    }
+                case CtrlType.Memo:
+                    return Util.SwapStr("\r\n", "\t", (string)Value);
+                case CtrlType.Int:
+                case CtrlType.Radio:
+                    return (int)Value;
+                case CtrlType.AddressV4:
+                case CtrlType.AddressV6:
+                case CtrlType.BindAddr:
+                case CtrlType.ComboBox:
+                    return Value.ToString();
+                case CtrlType.TabPage:
+                case CtrlType.Group:
+                case CtrlType.Dat:
+                default:
+                    break;
+            }
+
+            if (this.Value == null)
+                return null;
+
+            return this.Value.ToString();
+        }
+
         public string ToCtrlString()
         {
             return this.CtrlType.GetControlTypeString();
@@ -210,6 +263,26 @@ namespace Bjd.Options
                         }
                         break;
                     case CtrlType.ComboBox:
+                        object valCombo;
+                        try
+                        {
+                            valCombo = Enum.Parse(ValueType, str);
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                valCombo = Enum.Parse(ValueType, str);
+                            }
+                            catch
+                            {
+                                valCombo = Enum.GetValues(ValueType).GetValue(0);
+                                Value = valCombo;
+                                return false;
+                            }
+                        }
+                        Value = valCombo;
+                        break;
                     case CtrlType.Radio:
                         Int32 valRadio;
                         if (!Int32.TryParse(str, out valRadio))
@@ -287,6 +360,147 @@ namespace Bjd.Options
             return true;
         }
 
+        public bool FromJson(JArray val)
+        {
+            try
+            {
+                switch (this.CtrlType)
+                {
+                    case CtrlType.Dat:
+                        var dat = (Dat)this.Value;
+                        dat.FromJson(val);
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                Value = null;
+                return false;
+            }
+            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            return true;
+        }
+
+        public bool FromJson(int val)
+        {
+            try
+            {
+                switch (this.CtrlType)
+                {
+                    case CtrlType.Radio:
+                    case CtrlType.Int:
+                        Value = val;
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                Value = null;
+                return false;
+            }
+            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            return true;
+        }
+
+        public bool FromJson(bool val)
+        {
+            try
+            {
+                switch (this.CtrlType)
+                {
+                    case CtrlType.CheckBox:
+                        Value = val;
+                        break;
+                    default:
+                        return false;
+                }
+
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                Value = null;
+                return false;
+            }
+            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            return true;
+        }
+
+        public bool FromJson(string str)
+        {
+            if (str == null)
+            {
+                Value = null;
+                return false;
+            }
+            try
+            {
+                switch (this.CtrlType)
+                {
+                    case CtrlType.ComboBox:
+                        Value = Enum.Parse(ValueType, str);
+                        break;
+                    case CtrlType.Memo:
+                        Value = Util.SwapStr("\t", "\r\n", str);
+                        break;
+                    case CtrlType.File:
+                    case CtrlType.Folder:
+                    case CtrlType.TextBox:
+                        Value = str;
+                        break;
+                    case CtrlType.Hidden:
+                        try
+                        {
+                            Value = Crypt.Decrypt(str);
+                        }
+                        catch (Exception)
+                        {
+                            Value = "";
+                            return false;
+                        }
+                        break;
+                    case CtrlType.BindAddr:
+                        try
+                        {
+                            Value = new BindAddr(str);
+                        }
+                        catch (ValidObjException)
+                        {
+                            Value = 0;
+                            return false;
+                        }
+                        break;
+                    case CtrlType.AddressV4:
+                        try
+                        {
+                            Value = new Ip(str);
+                        }
+                        catch (ValidObjException)
+                        {
+                            Value = null;
+                            return false;
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({str})");
+                Value = null;
+                return false;
+            }
+            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            return true;
+        }
 
     }
 

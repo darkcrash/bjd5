@@ -89,10 +89,10 @@ namespace Bjd.Pop3Server
             Add(new OneVal(CtrlType.CheckBox, "disableJoe", true, Crlf.Nextline));
 
             var list = new ListVal();
-            list.Add(new OneVal(CtrlType.CheckBox, "useNum", true, Crlf.Contonie));
-            list.Add(new OneVal(CtrlType.CheckBox, "useSmall", true, Crlf.Contonie));
-            list.Add(new OneVal(CtrlType.CheckBox, "useLarge", true, Crlf.Contonie));
-            list.Add(new OneVal(CtrlType.CheckBox, "useSign", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useNum", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useSmall", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useLarge", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useSign", true, Crlf.Nextline));
             Add(new OneVal(CtrlType.Group, "groupNeed", new Dat(list), Crlf.Nextline));
 
             return onePage;

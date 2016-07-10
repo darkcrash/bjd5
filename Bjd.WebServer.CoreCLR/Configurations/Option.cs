@@ -212,7 +212,7 @@ namespace Bjd.WebServer.Configurations
             Add(new OneVal(CtrlType.CheckBox, "useAutoAcl", false, Crlf.Nextline));
             Add(new OneVal(CtrlType.Label, "autoAclLabel", Lang.Value("autoAclLabel" + "1"), Crlf.Nextline));
             var l = new ListVal();
-            l.Add(new OneVal(CtrlType.CheckBox, "AutoAclApacheKiller", false, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "AutoAclApacheKiller", false, Crlf.Nextline));
             //onePage.Add(new OneVal("autoAclGroup", new Dat(l), Crlf.Nextline));
             Add(new OneVal(CtrlType.Group, "autoAclGroup", new Dat(l), Crlf.Nextline));
             return onePage;

@@ -73,7 +73,7 @@ namespace Bjd.FtpServer
             var listVal = new ListVal();
             //var key = "accessControl";
             //listVal.Add(new OneVal(key, 0, Crlf.Nextline, new CtrlComboBox(Lang.Value(key), new[] { "FULL", "DOWN", "UP" }, 100)));
-            listVal.Add(new OneVal(CtrlType.ComboBox, "accessControl", 0, Crlf.Nextline));
+            listVal.Add(new OneVal(CtrlType.ComboBox, "accessControl", FtpAcl.Full, Crlf.Nextline));
             //key = "homeDirectory";
             //listVal.Add(new OneVal(key, "", Crlf.Nextline, new CtrlFolder(Lang.Value(key), 60, kernel)));
             listVal.Add(new OneVal(CtrlType.Folder, "homeDirectory", "", Crlf.Nextline));

@@ -112,17 +112,18 @@ namespace Bjd.Options
             }
 
             //enableカラム
-            switch (tmp[0])
+            var enableString = tmp[0];
+            bool enableBool;
+            if (bool.TryParse(enableString, out enableBool))
             {
-                case "":
-                    Enable = true;
-                    break;
-                case "#":
-                    Enable = false;
-                    break;
-                default:
-                    return false;
+                Enable = enableBool;
             }
+            else
+            {
+                return false;
+            }
+
+
             //以降の文字列カラム
             ColumnValueList = new List<String>();
             for (var i = 1; i < tmp.Length; i++)

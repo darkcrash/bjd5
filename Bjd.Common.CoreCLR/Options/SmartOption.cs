@@ -43,6 +43,11 @@ namespace Bjd.Options
             public FieldInfo Field;
         }
 
+        /// <summary>
+        /// get fields from granted ControlAttribute
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         private List<FiledAndAtribute> GetControlFields(Type t)
         {
             var l = new List<FiledAndAtribute>();
@@ -59,9 +64,17 @@ namespace Bjd.Options
             return l;
         }
 
+        /// <summary>
+        /// add options from members by Reflection
+        /// </summary>
+        /// <param name="targetType"></param>
+        /// <param name="list"></param>
+        /// <param name="instance"></param>
         private void MemberLoad(Type targetType, ListVal list, object instance)
         {
             var myType = targetType;
+
+            // support generic List<> type
             if (myType.GenericTypeArguments.Length > 0)
             {
                 var myTypeInGeneric = myType.GetGenericTypeDefinition();
@@ -80,7 +93,8 @@ namespace Bjd.Options
                     var childList = new ListVal();
                     var fType = f.Field.FieldType;
 
-                    this.MemberLoad(fType, childList, fValue);
+                    // Recursive
+                    MemberLoad(fType, childList, fValue);
 
                     var dat = new Dat(childList);
                     var one = f.Control.Create(f.Field.Name, dat);
@@ -98,7 +112,6 @@ namespace Bjd.Options
         }
 
 
-
         //レジストリへ保存
         public override void Save(IniDb iniDb)
         {
@@ -109,6 +122,7 @@ namespace Bjd.Options
         //レジストリからの読み込み
         public override void Read(IniDb iniDb)
         {
+            // add options from members by Reflection
             MemberLoad();
             iniDb.Read(NameTag, ListVal);
         }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using Bjd.Utils;
 using Bjd.Controls;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Bjd.Options
 {
@@ -17,7 +19,7 @@ namespace Bjd.Options
         {
             //カラム数の初期化
             _columnMax = ctrlTypeList.Length;
-       
+
             //isSecretListの生成
             _isSecretList = new bool[_columnMax];
 
@@ -32,7 +34,7 @@ namespace Bjd.Options
             _columnMax = val.Count;
 
             _columnList = val;
-            
+
             //isSecretListの生成
             _isSecretList = new bool[_columnMax];
 
@@ -154,5 +156,63 @@ namespace Bjd.Options
             }
             return true;
         }
+
+        public bool FromJson(JArray array)
+        {
+            Ar.Clear();
+            if (array == null || !array.HasValues)
+            {
+                return false;
+            }
+
+            // 各行処理
+            if (array.Count <= 0)
+            {
+                return false; //"lines.length <= 0"
+            }
+
+            var children = array.Children<JObject>();
+            foreach (var l in children)
+            {
+                var properties = l.Children<JProperty>();
+                var count = properties.Count();
+
+
+                //OneDatの生成
+                DatRecord oneDat;
+                try
+                {
+                    oneDat = new DatRecord(true, new String[_columnMax], _isSecretList);
+                }
+                catch (ValidObjException)
+                {
+                    return false;
+                }
+
+                if (count != _isSecretList.Length + 1)
+                {
+                    // +1はenableカラムの分
+                    //カラム数の不一致
+                    return false;
+                }
+
+                var enableProp = properties.Where(_ => _.Name == "enable").FirstOrDefault();
+                var enable = Enumerable.Repeat(enableProp.Value.Value<string>(), 1).Select(_ => _);
+                var keyValue = _columnList.Select(_ => properties.Where(__ => __.Name == _.Name).FirstOrDefault().Value.Value<string>());
+                var values = enable.Concat(keyValue).ToArray();
+
+                //fromRegによる初期化
+                if (oneDat.FromJson(values))
+                {
+                    Ar.Add(oneDat);
+                    continue; // 処理成功
+                }
+                //処理失敗
+                Ar.Clear();
+                return false;
+            }
+            return true;
+        }
+
     }
 }

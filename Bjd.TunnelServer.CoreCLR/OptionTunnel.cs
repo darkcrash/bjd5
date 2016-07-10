@@ -3,6 +3,7 @@
 using Bjd;
 using Bjd.Controls;
 using Bjd.Options;
+using Bjd.Net;
 
 namespace Bjd.TunnelServer
 {
@@ -40,7 +41,7 @@ namespace Bjd.TunnelServer
             //onePage.Add(new OneVal("tunnelList", null, Crlf.Nextline, new CtrlDat("", l, 380, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal(CtrlType.ComboBox, "protocol", 0, Crlf.Nextline));
+            l.Add(new OneVal(CtrlType.ComboBox, "protocol", ProtocolKind.Tcp, Crlf.Nextline));
             l.Add(new OneVal(CtrlType.Int, "srcPort", 0, Crlf.Nextline));
             l.Add(new OneVal(CtrlType.TextBox, "server", "", Crlf.Nextline));
             l.Add(new OneVal(CtrlType.Int, "dstPort", 0, Crlf.Nextline));

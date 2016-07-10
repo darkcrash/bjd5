@@ -137,9 +137,9 @@ namespace Bjd.SmtpServer
 
             Add(new OneVal(CtrlType.CheckBox, "useEsmtp", false, Crlf.Nextline));
             var list1 = new ListVal();
-            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthCramMD5", true, Crlf.Contonie));
-            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthPlain", true, Crlf.Contonie));
-            list1.Add(new OneVal(CtrlType.CheckBox, "useAuthLogin", true, Crlf.Nextline));
+            Add(new OneVal(CtrlType.CheckBox, "useAuthCramMD5", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useAuthPlain", true, Crlf.Contonie));
+            Add(new OneVal(CtrlType.CheckBox, "useAuthLogin", true, Crlf.Nextline));
             Add(new OneVal(CtrlType.Group, "groupAuthKind", new Dat(list1), Crlf.Nextline));
             Add(new OneVal(CtrlType.CheckBox, "usePopAcount", false, Crlf.Nextline));
 
@@ -317,7 +317,7 @@ namespace Bjd.SmtpServer
             l.Add(new OneVal(CtrlType.TextBox, "fetchUser", "", Crlf.Contonie));
             l.Add(new OneVal(CtrlType.Hidden, "fetchPass", "", Crlf.Nextline, true));
             l.Add(new OneVal(CtrlType.TextBox, "fetchLocalUser", "", Crlf.Nextline));
-            l.Add(new OneVal(CtrlType.ComboBox, "fetchSynchronize", 0, Crlf.Contonie));
+            l.Add(new OneVal(CtrlType.ComboBox, "fetchSynchronize", FetchSynchronizeKind.KeepEmailOnServer, Crlf.Contonie));
             l.Add(new OneVal(CtrlType.Int, "fetchTime", 0, Crlf.Nextline));
             Add(new OneVal(CtrlType.Dat, "fetchList", new Dat(l), Crlf.Nextline));
 

@@ -84,8 +84,8 @@ namespace Bjd.ProxyHttpServer
             Add(new OneVal(CtrlType.CheckBox, "useRequestLog", false, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal(CtrlType.TextBox, "anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
-            list1.Add(new OneVal(CtrlType.TextBox, "serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
+            Add(new OneVal(CtrlType.TextBox, "serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
             Add(new OneVal(CtrlType.Group, "anonymousFtp", new Dat(list1), Crlf.Nextline));
 
             Add(new OneVal(CtrlType.CheckBox, "useBrowserHedaer", false, Crlf.Nextline));
@@ -219,12 +219,12 @@ namespace Bjd.ProxyHttpServer
 
             var list1 = new ListVal();
             list1.Add(new OneVal(CtrlType.TextBox, "allowUrl", "", Crlf.Contonie));
-            list1.Add(new OneVal(CtrlType.ComboBox, "allowMatching", 0, Crlf.Nextline));
+            list1.Add(new OneVal(CtrlType.ComboBox, "allowMatching", Matching.beginsWithMatch, Crlf.Nextline));
             Add(new OneVal(CtrlType.Dat, "limitUrlAllow", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
             list2.Add(new OneVal(CtrlType.TextBox, "denyUrl", "", Crlf.Contonie));
-            list2.Add(new OneVal(CtrlType.ComboBox, "denyMatching", 0, Crlf.Nextline));
+            list2.Add(new OneVal(CtrlType.ComboBox, "denyMatching", Matching.beginsWithMatch, Crlf.Nextline));
             Add(new OneVal(CtrlType.Dat, "limitUrlDeny", new Dat(list2), Crlf.Nextline));
 
             return onePage;

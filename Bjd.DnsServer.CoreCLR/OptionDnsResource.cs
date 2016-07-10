@@ -42,7 +42,7 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal("priority", 10, Crlf.Nextline, new CtrlInt("Priority", 5)));
             //onePage.Add(new OneVal("resourceList", null, Crlf.Nextline, new CtrlOrgDat("", list, 350, Lang.LangKind)));
 
-            list.Add(new OneVal(CtrlType.ComboBox, "type", 0, Crlf.Nextline));
+            list.Add(new OneVal(CtrlType.ComboBox, "type", DnsType.A, Crlf.Nextline));
             list.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Contonie));
             list.Add(new OneVal(CtrlType.TextBox, "alias", "", Crlf.Nextline));
             list.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Contonie));
