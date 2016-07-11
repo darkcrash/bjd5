@@ -25,7 +25,8 @@ namespace Bjd.WebServer
     partial class WebServer : OneServer
     {
         private HandlerSelector _Selector;
-        private HttpContentType _contentType; 
+        private HttpContentType _contentType;
+        private Authorization _authorization;
 
         //通常は各ポートごと１種類のサーバが起動するのでServerTread.option を使用するが、
         //バーチェルホストの場合、１つのポートで複数のサーバが起動するのでオプションリスト（webOptionList）
@@ -109,6 +110,7 @@ namespace Bjd.WebServer
 
             _Selector = new HandlerSelector(_kernel, _conf, Logger);
             _contentType = new HttpContentType(_conf);
+            _authorization = new Authorization(_conf, Logger);
 
         }
         //終了処理
@@ -204,7 +206,7 @@ namespace Bjd.WebServer
             request.Response = new HttpResponse(_kernel, Logger, _conf, connection.Connection, request.ContentType);
 
             //var authrization = new Authorization(_conf, Logger);
-            request.Auth = new Authorization(_conf, Logger);
+            request.Auth = _authorization;
             //var authName = "";
             request.AuthName = "";
 
@@ -299,7 +301,7 @@ namespace Bjd.WebServer
             //***************************************************************
             //var authrization = new Authorization(OneOption,Logger);
             //string authName = "";
-            request.Auth = new Authorization(_conf, Logger);
+            //request.Auth = new Authorization(_conf, Logger);
             if (!request.Auth.Check(request.Request.Uri, request.Header.GetVal("authorization"), ref request.AuthName))
             {
                 request.ResponseCode = 401;

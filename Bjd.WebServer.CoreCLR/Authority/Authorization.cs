@@ -13,6 +13,9 @@ namespace Bjd.WebServer.Authority
         //readonly OneOption _oneOption;
         readonly Conf _conf;
         readonly Logger _logger;
+        private AuthList _authList;
+        private GroupList _groupList;
+        private UserList _userList;
 
         public Authorization(Conf conf, Logger logger)
         {
@@ -20,6 +23,10 @@ namespace Bjd.WebServer.Authority
             //_oneOption = oneOption;
             _conf = conf;
             _logger = logger;
+            //認証リスト
+            _authList = new AuthList((Dat)_conf.Get("authList"));
+            _groupList = new GroupList((Dat)_conf.Get("groupList"));
+            _userList = new UserList((Dat)_conf.Get("userList"));
 
         }
 
@@ -56,7 +63,8 @@ namespace Bjd.WebServer.Authority
         {
             System.Diagnostics.Trace.TraceInformation($"Authorization.Check {uri}");
             //認証リスト
-            var authList = new AuthList((Dat)_conf.Get("authList"));
+            //var authList = new AuthList((Dat)_conf.Get("authList"));
+            var authList = _authList;
 
             //認証リストにヒットしているかどうかの確認
             var oneAuth = authList.Search(uri);
@@ -75,7 +83,8 @@ namespace Bjd.WebServer.Authority
                 var find = false;//グループリストからユーザが検索できるかどうか
                 //認証リストで直接ユーザ名を見つけられなかった場合、グループリストを検索する
                 //グループリスト
-                var groupList = new GroupList((Dat)_conf.Get("groupList"));
+                //var groupList = new GroupList((Dat)_conf.Get("groupList"));
+                var groupList = _groupList;
                 foreach (OneGroup o in groupList)
                 {
                     if (!oneAuth.Seartch(o.Group))
@@ -92,7 +101,8 @@ namespace Bjd.WebServer.Authority
                 }
             }
             //パスワードの確認
-            var userList = new UserList((Dat)_conf.Get("userList"));
+            //var userList = new UserList((Dat)_conf.Get("userList"));
+            var userList = _userList;
             var oneUser = userList.Search(user);
             if (oneUser == null)
             {
