@@ -18,6 +18,7 @@ using Bjd.WebServer.IO;
 using Bjd.WebServer.Handlers;
 using Bjd.WebServer.Outside;
 using Bjd.WebServer.WebDav;
+using Bjd.WebServer.Authority;
 
 namespace Bjd.WebServer
 {

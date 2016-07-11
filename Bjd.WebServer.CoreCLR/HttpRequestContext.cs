@@ -1,5 +1,6 @@
 ﻿using Bjd.Net;
 using Bjd.Net.Sockets;
+using Bjd.WebServer.Authority;
 using Bjd.WebServer.IO;
 using System;
 using System.Collections.Generic;
