@@ -311,8 +311,6 @@ namespace Bjd.Servers
                                 Decrement();
                             }
 
-                            // 各実装へ
-                            this.SubThread(child);
                         }
                         finally
                         {
