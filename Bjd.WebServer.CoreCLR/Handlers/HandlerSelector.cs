@@ -41,7 +41,7 @@ namespace Bjd.WebServer.Handlers
             }
             if (!Directory.Exists(DocumentRoot))
             {
-                System.Diagnostics.Trace.TraceError($"Target..ctor DocumentRoot not exists ");
+                System.Diagnostics.Trace.TraceError($"HandlerSelector..ctor DocumentRoot not exists ");
                 DocumentRoot = null;//ドキュメントルート無効
             }
 
@@ -87,20 +87,21 @@ namespace Bjd.WebServer.Handlers
         //uriによる初期化
         public HandlerSelectorResult InitFromUri(string uri)
         {
+            System.Diagnostics.Trace.TraceInformation($"HandlerSelector.InitFromUri {uri}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
 
-            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri {uri}");
             Init(result, uri);
-            System.Diagnostics.Trace.TraceInformation($"Target.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
 
             SetHandler(result);
+            System.Diagnostics.Trace.TraceInformation($"HandlerSelector.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
             return result;
         }
         //filenameによる初期化
         public HandlerSelectorResult InitFromFile(string file)
         {
+            System.Diagnostics.Trace.TraceInformation($"HandlerSelector.InitFromFile {file}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -124,6 +125,7 @@ namespace Bjd.WebServer.Handlers
         //コマンドによる初期化
         public HandlerSelectorResult InitFromCmd(string fullPath)
         {
+            System.Diagnostics.Trace.TraceInformation($"HandlerSelector.InitFromCmd {fullPath}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
