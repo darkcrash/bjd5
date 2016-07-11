@@ -35,7 +35,7 @@ namespace Bjd.WebServer
 
         public HttpResponse(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpContentType contentType)
         {
-            System.Diagnostics.Trace.TraceInformation($"Document..ctor");
+            System.Diagnostics.Trace.TraceInformation($"HttpResponse..ctor");
             this.kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;

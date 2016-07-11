@@ -24,6 +24,7 @@ namespace Bjd.WebServer
     partial class WebServer : OneServer
     {
         private HandlerSelector _Selector;
+        private HttpContentType _contentType; 
 
         //通常は各ポートごと１種類のサーバが起動するのでServerTread.option を使用するが、
         //バーチェルホストの場合、１つのポートで複数のサーバが起動するのでオプションリスト（webOptionList）
@@ -106,6 +107,7 @@ namespace Bjd.WebServer
             }
 
             _Selector = new HandlerSelector(_kernel, _conf, Logger);
+            _contentType = new HttpContentType(_conf);
 
         }
         //終了処理
@@ -196,7 +198,7 @@ namespace Bjd.WebServer
             // ドキュメント生成クラスの初期化
             //***************************************************************
             //var contentType = new ContentType(_conf);
-            request.ContentType = new HttpContentType(_conf);
+            request.ContentType = _contentType;
             //var res = new Response(_kernel, Logger, _conf, contextConnection.Connection, contextRequest.ContentType);
             request.Response = new HttpResponse(_kernel, Logger, _conf, connection.Connection, request.ContentType);
 
