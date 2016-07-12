@@ -111,14 +111,14 @@ namespace ProxyHttpServerTest
 
             //setUp
             //ダミーWebサーバ
-            const int webPort = 1778;
+            const int webPort = 3778;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
             var kernel = _fixture._service.Kernel;
 
             var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
             //var lines = Inet.RecvLines(cl, 3, this);
@@ -153,14 +153,14 @@ namespace ProxyHttpServerTest
         {
             //setUp
             //ダミーWebサーバ
-            const int webPort = 1779;
+            const int webPort = 3779;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
             var kernel = _fixture._service.Kernel;
 
             var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:1779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
             //exercise
             //var lines = Inet.RecvLines(cl, 3, this);

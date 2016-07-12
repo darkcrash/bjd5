@@ -136,7 +136,7 @@ namespace Bjd.Utils
             {
                 try
                 {
-                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read))
+                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read,  FileShare.Write))
                     using (var reader = new StreamReader(fs))
                     {
                         var jsonReader = new JsonTextReader(reader);
