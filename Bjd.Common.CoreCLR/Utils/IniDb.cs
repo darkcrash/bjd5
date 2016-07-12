@@ -341,19 +341,19 @@ namespace Bjd.Utils
         // 読込み
         public void Read(string nameTag, ListVal listVal)
         {
-            var isRead = Read(_fileIni, nameTag, listVal);
-            if (!isRead)
+            var isReadJson = ReadJson(nameTag, listVal);
+            if (!isReadJson)
             {
-                //１件も読み込まなかった場合
-                //defファイルには、Web-local:80のうちのWeb (-の前の部分)がtagとなっている
-                var n = nameTag.Split('-')[0];
-                Read(_fileDef, n, listVal); //デフォルト設定値を読み込む
+                var isRead = Read(_fileIni, nameTag, listVal);
+                if (!isRead)
+                {
+                    //１件も読み込まなかった場合
+                    //defファイルには、Web-local:80のうちのWeb (-の前の部分)がtagとなっている
+                    var n = nameTag.Split('-')[0];
+                    Read(_fileDef, n, listVal); //デフォルト設定値を読み込む
+                }
             }
-            //var isReadJson = ReadJson(nameTag, listVal);
-            //if (!isReadJson)
-            //{
-            //}
-            SaveJson(nameTag, listVal);
+            //SaveJson(nameTag, listVal);
         }
 
 
@@ -452,7 +452,7 @@ namespace Bjd.Utils
                 Func<OneVal, string, object> OneValToValue =
                     (o, v) =>
                     {
-                        if ( o.CtrlType == CtrlType.ComboBox)
+                        if (o.CtrlType == CtrlType.ComboBox)
                         {
                             return v;
                         }
