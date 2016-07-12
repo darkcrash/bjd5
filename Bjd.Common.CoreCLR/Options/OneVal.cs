@@ -270,16 +270,9 @@ namespace Bjd.Options
                         }
                         catch
                         {
-                            try
-                            {
-                                valCombo = Enum.Parse(ValueType, str);
-                            }
-                            catch
-                            {
-                                valCombo = Enum.GetValues(ValueType).GetValue(0);
-                                Value = valCombo;
-                                return false;
-                            }
+                            valCombo = Enum.GetValues(ValueType).GetValue(0);
+                            Value = valCombo;
+                            return false;
                         }
                         Value = valCombo;
                         break;

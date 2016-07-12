@@ -250,7 +250,7 @@ namespace Bjd.Test.Utils
 
                         if (val == null)
                         {
-                            val = 0;
+                            val = ProtocolKind.Udp;
                         }
                         //oneCtrl = new CtrlComboBox(help, new string[]{"1", "2"}, 10);
                         break;
