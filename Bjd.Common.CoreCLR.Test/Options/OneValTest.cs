@@ -71,7 +71,7 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.Dat, "\tn1\tn2\b\tn1#\tn2")]
         [InlineData(CtrlType.BindAddr, "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT")]
         [InlineData(CtrlType.BindAddr, "V6Only,198.168.0.1,ffe0::1")]
-        [InlineData(CtrlType.ComboBox, "1")]
+        [InlineData(CtrlType.ComboBox, "Udp")]
         public void FromRegで設定した値をtoRegで取り出す(CtrlType ctrlType, string str)
         {
             //setUp
@@ -160,7 +160,7 @@ namespace Bjd.Test.Options
         //[InlineData(CtrlType.AddressV4, new Ip(IpKind.V6Localhost))] //追加
         //×[InlineData(CtrlType.Dat, new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox }))]
         //[InlineData(CtrlType.BindAddr, new BindAddr())]
-        [InlineData(CtrlType.ComboBox, 0)]
+        [InlineData(CtrlType.ComboBox, ProtocolKind.Tcp)]
         public void ReadCtrlFalseでデフォルトの値に戻るかどうかのテスト(CtrlType ctrlType, object value)
         {
             //setUp
@@ -284,7 +284,8 @@ namespace Bjd.Test.Options
                     if (val == null)
                     {
                         //val =  new[] { "1", "2" };
-                        val = "1";
+                        //val = "1";
+                        val = ProtocolKind.Tcp;
                     }
                     //oneCtrl = new CtrlComboBox(help, new[] { "1", "2" }, 10);
                     break;

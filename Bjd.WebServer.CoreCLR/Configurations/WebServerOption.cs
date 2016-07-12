@@ -220,12 +220,12 @@ namespace Bjd.WebServer.Configurations
         public bool useAutoAcl = false;
         [Label]
         public string autoAclLabel = "";
-        [Dat]
+        [CheckBox]
+        public bool AutoAclApacheKiller = false;
+        [Group]
         public List<autoAclGroupClass> autoAclGroup = new List<autoAclGroupClass>() { new autoAclGroupClass() };
         public class autoAclGroupClass
         {
-            [CheckBox]
-            public bool AutoAclApacheKiller = false;
         }
 
 

@@ -332,7 +332,7 @@ namespace Bjd.Options
 
                         if (this.ValueType == typeof(Dat))
                         {
-                            ((Dat)this.Value).FromReg(str);
+                            return ((Dat)this.Value).FromReg(str);
                         }
                         else if (this.ValueType.GetTypeInfo().IsEnum)
                         {

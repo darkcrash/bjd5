@@ -34,7 +34,7 @@ namespace Bjd.WebServer
             switch (path)
             {
                 case "OptionVirtualHost":
-                    return new Bjd.WebServer.Configurations.OptionVirtualHost(kernel, path, nameTag);
+                    return new Bjd.WebServer.Configurations.VirtualHostOption(kernel, path, nameTag);
             }
             return new Bjd.WebServer.Configurations.WebServerOption(kernel, path, nameTag);
         }

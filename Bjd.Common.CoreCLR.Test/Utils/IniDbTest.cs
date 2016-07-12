@@ -61,7 +61,7 @@ namespace Bjd.Test.Utils
         [Theory]
         [InlineData(CtrlType.Int, "123", "INT=Basic\bname=123")]
         [InlineData(CtrlType.TextBox, "123", "STRING=Basic\bname=123")]
-        [InlineData(CtrlType.ComboBox, "1", "LIST=Basic\bname=1")]
+        [InlineData(CtrlType.ComboBox, "Udp", "LIST=Basic\bname=Udp")]
         [InlineData(CtrlType.File, "c:\\1.txt", "FILE=Basic\bname=c:\\1.txt")]
         [InlineData(CtrlType.Folder, "c:\\tmp", "FOLDER=Basic\bname=c:\\tmp")]
         [InlineData(CtrlType.CheckBox, "true", "BOOL=Basic\bname=true")]
