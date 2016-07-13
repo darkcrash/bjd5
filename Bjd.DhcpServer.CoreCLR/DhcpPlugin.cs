@@ -28,7 +28,7 @@ namespace Bjd.DhcpServer
 
         OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new DhcpServer.Option(kernel, path, nameTag);
+            return new DhcpServer.DhcpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)
