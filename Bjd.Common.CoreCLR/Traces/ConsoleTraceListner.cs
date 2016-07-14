@@ -104,6 +104,12 @@ namespace Bjd.Traces
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
+            if (this.Filter != null)
+            {
+                if (!this.Filter.ShouldTrace(eventCache, source, eventType, id, message, null, null, null))
+                    return;
+            }
+
             var ind = this.NeedIndent;
             Action tAct = () =>
             {

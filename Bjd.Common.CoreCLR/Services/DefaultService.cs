@@ -17,7 +17,11 @@ namespace Bjd.Services
             System.Diagnostics.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
             Trace.TraceInformation("DefaultService.ServiceMain Start");
 
+#if DEBUG
+            var f = new EventTypeFilter(SourceLevels.All);
+#else
             var f = new EventTypeFilter(SourceLevels.Warning);
+#endif
             foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
             {
                 l.Filter = f;
