@@ -18,6 +18,7 @@ namespace Bjd.Logs
             _fileName = fileName;
             _fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             _sw = new StreamWriter(_fs, Encoding.UTF8);
+            _fs.Seek(0, SeekOrigin.End);
         }
 
         public void Dispose()
@@ -41,7 +42,6 @@ namespace Bjd.Logs
 
         public void Set(String str)
         {
-            _fs.Seek(0, SeekOrigin.End);
             _sw.WriteLine(str);
             _sw.Flush();
         }
