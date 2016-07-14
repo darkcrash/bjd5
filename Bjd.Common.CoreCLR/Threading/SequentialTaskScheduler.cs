@@ -31,8 +31,11 @@ namespace Bjd.Threading
                         }
                     }
                 }
-                _q.TryDequeue(out t);
-                if (t != null) this.TryExecuteTask(t);
+                if (_q.TryDequeue(out t))
+                {
+                    this.TryExecuteTask(t);
+                    t.Wait();
+                }
             }
         }
 
