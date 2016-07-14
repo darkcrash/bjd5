@@ -273,6 +273,8 @@ namespace Bjd.Logs
 
         private void Tail(String fileName, int saveDays, DateTime now)
         {
+            count.Wait();
+
             var lines = new List<string>();
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
