@@ -1,59 +1,15 @@
-cd Bjd.Common.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.DhcpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.DnsServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.FtpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.Pop3Server.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.ProxyFtpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.ProxyHttpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.ProxyPop3Server.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.ProxySmtpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.ProxyTelnetServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.SmtpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.TftpServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.TunnelServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.WebApiServer.CoreCLR
-dotnet pack
-cd ..
-
-cd Bjd.WebServer.CoreCLR
-dotnet pack
-cd ..
+dotnet pack Bjd.Common.CoreCLR -o . 
+dotnet pack Bjd.DhcpServer.CoreCLR -o . 
+dotnet pack Bjd.DnsServer.CoreCLR -o . 
+dotnet pack Bjd.FtpServer.CoreCLR -o . 
+dotnet pack Bjd.Pop3Server.CoreCLR -o . 
+dotnet pack Bjd.ProxyFtpServer.CoreCLR -o . 
+dotnet pack Bjd.ProxyHttpServer.CoreCLR -o . 
+dotnet pack Bjd.ProxyPop3Server.CoreCLR -o . 
+dotnet pack Bjd.ProxySmtpServer.CoreCLR -o . 
+dotnet pack Bjd.ProxyTelnetServer.CoreCLR -o . 
+dotnet pack Bjd.SmtpServer.CoreCLR -o . 
+dotnet pack Bjd.TftpServer.CoreCLR -o . 
+dotnet pack Bjd.TunnelServer.CoreCLR -o . 
+dotnet pack Bjd.WebApiServer.CoreCLR -o . 
+dotnet pack Bjd.WebServer.CoreCLR -o . 
