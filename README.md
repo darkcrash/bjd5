@@ -3,8 +3,10 @@ BlackJumboDog
 
 [Apache License Version 2.0](LICENSE)
 
+## Build Status
+[![blackjumbodog-core MyGet Build Status](https://www.myget.org/BuildSource/Badge/blackjumbodog-core?identifier=d28a64e2-3864-4cb0-b9b5-cf1a83cc77e8)](https://www.myget.org/)
 
-## future
+## Future
 * shift-jis be abolished. to utf-8.
 * *.ini be abolished. to json.
 * WebUI
@@ -20,9 +22,11 @@ BlackJumboDog
 
 
 ## TargetFramework
-* Microsoft.NETCore.App 1.0.0-rc2-3002702
+* NETStandard.Library 1.6
+* Microsoft.NETCore.App 1.0.0
+* .NET Core sdk 1.0.0-preview2-003121
 
-## deployments
+## Deployments
 * Windows10
 * Ubuntu (14.04)
 * Docker
