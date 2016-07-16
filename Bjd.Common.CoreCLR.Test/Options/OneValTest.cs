@@ -117,7 +117,7 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.BindAddr, "XXX", false)] //不正入力
         [InlineData(CtrlType.ComboBox, "XXX", false)] //不正入力
         [InlineData(CtrlType.ComboBox, null, false)] //不正入力
-        [InlineData(CtrlType.ComboBox, "2", false)] //不正入力 list.size()オーバー
+        [InlineData(CtrlType.ComboBox, "3", false)] //不正入力 list.size()オーバー
         public void FromRegの不正パラメータ判定(CtrlType ctrlType, string str, bool expected)
         {
             //setUp

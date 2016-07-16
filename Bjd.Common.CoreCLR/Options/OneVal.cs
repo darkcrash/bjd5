@@ -266,7 +266,26 @@ namespace Bjd.Options
                         object valCombo;
                         try
                         {
+
                             valCombo = Enum.Parse(ValueType, str);
+                            var values = Enum.GetValues(ValueType);
+                            bool isMatch = false;
+                            object firstValue = null;
+                            foreach (var v in values)
+                            {
+                                if (firstValue == null) firstValue = v;
+                                if (valCombo == v)
+                                {
+                                    isMatch = true;
+                                    break;
+                                }
+                            }
+                            if (!isMatch)
+                            {
+                                valCombo = firstValue;
+                                return false;
+                            }
+
                         }
                         catch
                         {
