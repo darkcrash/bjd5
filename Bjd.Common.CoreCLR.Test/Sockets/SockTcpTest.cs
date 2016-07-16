@@ -187,7 +187,7 @@ namespace Bjd.Test.Sockets
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var actual = sut.StringRecv("UTF-8", 1, this);
+            var actual = sut.StringRecv("UTF-8", 5, this);
 
             //verify
             Assert.Equal(expected, actual);
@@ -213,7 +213,7 @@ namespace Bjd.Test.Sockets
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var bytes = sut.LineRecv(1, this);
+            var bytes = sut.LineRecv(5, this);
             var actual = Encoding.UTF8.GetString(bytes);
 
             //verify
@@ -245,7 +245,7 @@ namespace Bjd.Test.Sockets
                 var expected = "本日は晴天なり\r\n";
 
                 //exercise
-                var bytes = sut.LineRecv(2, this);
+                var bytes = sut.LineRecv(5, this);
                 var actual = Encoding.UTF8.GetString(bytes);
 
                 //verify
@@ -280,7 +280,7 @@ namespace Bjd.Test.Sockets
                 for (var i = 0; i < 1000; i++)
                 {
                     //exercise
-                    var bytes = sut.LineRecv(2, this);
+                    var bytes = sut.LineRecv(5, this);
                     var actual = Encoding.UTF8.GetString(bytes);
                     //verify
                     Assert.Equal(expected, actual);
