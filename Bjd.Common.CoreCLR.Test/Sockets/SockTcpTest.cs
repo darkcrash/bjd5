@@ -91,7 +91,7 @@ namespace Bjd.Test.Sockets
             }
         }
         [Fact]
-        public void Echoサーバに送信して溜まったデータサイズ_lengthを確認する()
+        public void EchoServerSendCheckSockQueueLength()
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -106,9 +106,15 @@ namespace Bjd.Test.Sockets
                 sut.Send(new byte[max]);
             }
 
-            Thread.Sleep(500);
 
             int expected = max * 3;
+
+            for (var i = 0; i < 20; i++)
+            {
+                if (sut.Length() == expected) break;
+                Thread.Sleep(125);
+            }
+
 
             //exercise
             var actual = sut.Length();
@@ -122,7 +128,7 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void Echoサーバにsendで送信てtcpQueueのlength分ずつRecvする()
+        public void EchoServerSendTcpQueueRecvPerLength()
         {
             const string addr = "127.0.0.1";
             const int port = 9981;
@@ -172,7 +178,7 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void EchoサーバにstringSendで1行送信してstringRecvで1行受信する()
+        public void EchoServerStringSendTextLineStringRecvTextLine()
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -187,7 +193,7 @@ namespace Bjd.Test.Sockets
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var actual = sut.StringRecv("UTF-8", 5, this);
+            var actual = sut.StringRecv("UTF-8", 7, this);
 
             //verify
             Assert.Equal(expected, actual);
@@ -198,7 +204,7 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void EchoサーバにlineSendで1行送信してlineRecvで1行受信する()
+        public void EchoServerLineSendTextLineLineRecvTextLine()
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -213,7 +219,7 @@ namespace Bjd.Test.Sockets
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var bytes = sut.LineRecv(5, this);
+            var bytes = sut.LineRecv(7, this);
             var actual = Encoding.UTF8.GetString(bytes);
 
             //verify
@@ -228,7 +234,7 @@ namespace Bjd.Test.Sockets
         [InlineData(10)]
         [InlineData(50)]
         [InlineData(100)]
-        public void EchoサーバにlineSend(int count)
+        public void EchoServerLineSend(int count)
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -245,7 +251,7 @@ namespace Bjd.Test.Sockets
                 var expected = "本日は晴天なり\r\n";
 
                 //exercise
-                var bytes = sut.LineRecv(5, this);
+                var bytes = sut.LineRecv(7, this);
                 var actual = Encoding.UTF8.GetString(bytes);
 
                 //verify
@@ -258,7 +264,7 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void EchoサーバにlineSendOverQueue()
+        public void EchoServerToLineSendOverQueue()
         {
             //setUp
             const string addr = "127.0.0.1";
@@ -280,7 +286,7 @@ namespace Bjd.Test.Sockets
                 for (var i = 0; i < 1000; i++)
                 {
                     //exercise
-                    var bytes = sut.LineRecv(5, this);
+                    var bytes = sut.LineRecv(7, this);
                     var actual = Encoding.UTF8.GetString(bytes);
                     //verify
                     Assert.Equal(expected, actual);
