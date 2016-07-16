@@ -133,7 +133,7 @@ namespace Bjd.Test.Servers
         }
 
         [Fact]
-        public void start_stopの繰り返し_負荷テスト()
+        public void RepeatStartStop_TCP()
         {
             var kernel = _service.Kernel;
 
@@ -166,7 +166,7 @@ namespace Bjd.Test.Servers
         }
 
         [Fact]
-        public void start_stopの繰り返し_負荷テスト_UDP()
+        public void RepeatStartStop_UDP()
         {
             var kernel = _service.Kernel;
 
@@ -199,7 +199,7 @@ namespace Bjd.Test.Servers
 
 
         [Fact]
-        public void new及びstart_stop_disposeの繰り返し_負荷テスト()
+        public void RepeatNewStartStopDispose_TCP()
         {
             var kernel = _service.Kernel;
 
@@ -229,7 +229,7 @@ namespace Bjd.Test.Servers
         }
 
         [Fact]
-        public void new及びstart_stop_disposeの繰り返し_負荷テスト_UDP()
+        public void RepeatNewStartStopDispose_UDP()
         {
             var kernel = _service.Kernel;
 
