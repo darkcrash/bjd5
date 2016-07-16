@@ -148,9 +148,9 @@ namespace Bjd.Net.Sockets
         //Connect/bindで使用する
         protected void Set(SockState sockState, IPEndPoint localAddress, IPEndPoint remoteAddress)
         {
-            SockState = sockState;
             LocalAddress = localAddress;
             RemoteAddress = remoteAddress;
+            SockState = sockState;
         }
 
         //****************************************************************

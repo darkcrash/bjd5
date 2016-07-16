@@ -148,7 +148,7 @@ namespace Bjd.Test.Servers
 
             var myServer = new MyServer(kernel, conf, oneBind);
 
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 10; i++)
             {
                 // Start
                 myServer.Start();
@@ -181,7 +181,7 @@ namespace Bjd.Test.Servers
 
             var myServer = new MyServer(kernel, conf, oneBind);
 
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 10; i++)
             {
                 // Start
                 myServer.Start();
@@ -212,17 +212,17 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var myServer = new MyServer(kernel, conf, oneBind);
 
                 myServer.Start();
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
-                Assert.Equal(myServer.SockState, SockState.Bind);
+                Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                Assert.Equal(SockState.Bind, myServer.SockState);
 
                 myServer.Stop();
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
-                Assert.Equal(myServer.SockState, SockState.Error);
+                Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                Assert.Equal(SockState.Error, myServer.SockState);
 
                 myServer.Dispose();
             }
@@ -242,7 +242,7 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var myServer = new MyServer(kernel, conf, oneBind);
 
