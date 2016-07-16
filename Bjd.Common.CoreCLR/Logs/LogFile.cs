@@ -73,34 +73,35 @@ namespace Bjd.Logs
                 return;
             }
 
-            lock (_lockCount)
+            lock (_lock)
             {
-                if (count.IsSet)
+                lock (_lockCount)
                 {
-                    count.Reset(1);
-                }
-                else
-                {
-                    count.AddCount();
+                    if (count.IsSet)
+                    {
+                        count.Reset(1);
+                    }
+                    else
+                    {
+                        count.AddCount();
+                    }
                 }
             }
+
             Action a = () =>
             {
                 try
                 {
-                    lock (_lock)
+                    // セキュリティログは、表示制限に関係なく書き込む
+                    if (_secureLog != null && oneLog.IsSecure())
                     {
-                        // セキュリティログは、表示制限に関係なく書き込む
-                        if (_secureLog != null && oneLog.IsSecure())
-                        {
-                            _secureLog.Set(oneLog.ToString());
-                        }
-                        // 通常ログの場合
-                        if (_normalLog != null)
-                        {
-                            // ルール適用除外　もしくは　表示対象になっている場合
-                            _normalLog.Set(oneLog.ToString());
-                        }
+                        _secureLog.Set(oneLog.ToString());
+                    }
+                    // 通常ログの場合
+                    if (_normalLog != null)
+                    {
+                        // ルール適用除外　もしくは　表示対象になっている場合
+                        _normalLog.Set(oneLog.ToString());
                     }
                 }
                 catch (IOException)
@@ -193,7 +194,6 @@ namespace Bjd.Logs
         //オープンしているログファイルを全てクローズする
         private void LogClose()
         {
-            count.Wait();
 
             if (_normalLog != null)
             {
@@ -355,8 +355,10 @@ namespace Bjd.Logs
             if (_lastDelete.Ticks != 0 && _lastDelete.Day == now.Day)
                 return;
 
+
             lock (_lock)
             {
+                count.Wait();
                 if (isDisposed) return;
                 LogClose(); //クローズ
                 LogDelete(); //過去ログの自動削除
@@ -372,6 +374,7 @@ namespace Bjd.Logs
         {
             lock (_lock)
             {
+                count.Wait();
                 isDisposed = true;
 
                 if (_timer != null)
