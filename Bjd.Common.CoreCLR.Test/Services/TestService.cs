@@ -150,7 +150,6 @@ namespace Bjd.Services
         public void SetOption(params string[] paths)
         {
             var src = Path.Combine(paths);
-            //var filename = Path.GetFileName(src);
             Copy(this.env, src, "Option.ini");
         }
 
@@ -185,6 +184,7 @@ namespace Bjd.Services
         {
             get
             {
+                //return System.IO.Directory.GetCurrentDirectory();
                 var parent = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
                 parent = System.IO.Path.GetDirectoryName(parent);
                 parent = System.IO.Path.GetDirectoryName(parent);
@@ -199,10 +199,11 @@ namespace Bjd.Services
             var dir = Path.GetDirectoryName(dst);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            if (File.Exists(src))
+            if (!File.Exists(src))
             {
-                File.Copy(src, dst, true);
+                throw new Exception($"file not found.{src}");
             }
+                File.Copy(src, dst, true);
             return dst;
         }
 

@@ -289,7 +289,7 @@ namespace Bjd.WebServer.Handlers
             // uriから物理的なパス名を生成する
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
-            result.FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, DocumentRoot + uri);
+            result.FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
             System.Diagnostics.Trace.TraceInformation($"Target.Init {result.FullPath}");
 
             /*************************************************/

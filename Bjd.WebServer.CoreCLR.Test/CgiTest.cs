@@ -17,6 +17,7 @@ namespace WebServerTest
 
     public class CgiTest : ILife, IClassFixture<CgiTest.ServerFixture>
     {
+        const int port = 7188;
 
         public class ServerFixture : IDisposable
         {
@@ -70,14 +71,23 @@ namespace WebServerTest
         public void EnvCgiTestv4()
         {
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 7188, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\n"));
             //cl.Send(Encoding.ASCII.GetBytes("Connection: keep-alive\n"));
             cl.Send(Encoding.ASCII.GetBytes("Host: localhost\n"));
             cl.Send(Encoding.ASCII.GetBytes("\n"));
-            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
+            //var lines = new List<string>();
+            //for (var i = 0; i < 78; i++)
+            //{
+            //    var result = cl.LineRecv(sec, this);
+            //    if (result == null) break;
+            //    result = Inet.TrimCrlf(result);
+            //    var text = Encoding.ASCII.GetString(result);
+            //    lines.Add(text);
+            //}
             const string pattern = "<b>SERVER_NAME</b>";
             var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
@@ -93,13 +103,13 @@ namespace WebServerTest
         public void EnvCgiTestv6()
         {
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 7188, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\n"));
             //cl.Send(Encoding.ASCII.GetBytes("Connection: keep-alive\n"));
             cl.Send(Encoding.ASCII.GetBytes("Host: localhost\n"));
             cl.Send(Encoding.ASCII.GetBytes("\n"));
-            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
             var lines = Inet.RecvLines(cl, sec, this);
             const string pattern = "<b>SERVER_NAME</b>";
             var find = lines.Any(l => l.IndexOf(pattern) != -1);

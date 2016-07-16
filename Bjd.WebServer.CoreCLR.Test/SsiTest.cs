@@ -85,9 +85,6 @@ namespace WebServerTest
         }
 
         [Theory]
-        [InlineData("ExecCgi.html", "100+200=300")]
-        [InlineData("Include.html", "Hello world.(SSL Include)")]
-        //[InlineData("FSize.html", "179")]
         [InlineData("FSize.html", "179")]
         [InlineData("Echo.html", "DOCUMENT_NAME = Echo.html")]
         [InlineData("Echo.html", "LAST_MODIFIED = $")]
@@ -101,7 +98,8 @@ namespace WebServerTest
         {
 
             //var path = string.Format("{0}\\SsiTest\\Echo.html", _fixture._v4Sv.DocumentRoot);
-            var path = Path.Combine(_fixture._service.Kernel.Enviroment.ExecutableDirectory, _fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
+            var dir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
+            var path = Path.Combine(dir, _fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
 
             if (pattern == "LAST_MODIFIED = $")
             {
@@ -153,6 +151,58 @@ namespace WebServerTest
             var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
             Assert.Equal(find, true);
+
+            cl.Close();
+
+        }
+
+        [Fact]
+        public void SsiRequestExecCgi()
+        {
+            var expected = "100+200=300";
+
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+
+            cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/ExecCgi.html HTTP/1.1\nHost: ws00\n\n"));
+            int sec = 5;
+
+            var lines = new List<string>();
+            for (var i = 0; i < 21; i++)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                lines.Add(text);
+            }
+            Assert.Equal(21, lines.Count);
+            Assert.Equal(expected, lines[18]);
+
+            cl.Close();
+
+        }
+
+        [Fact]
+        public void SsiRequestIncludeHtml()
+        {
+            var expected = "Hello world.(SSL Include)";
+
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+
+            cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/Include.html HTTP/1.1\nHost: ws00\n\n"));
+            int sec = 5;
+
+            var lines = new List<string>();
+            for (var i = 0; i < 19; i++)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                lines.Add(text);
+            }
+            Assert.Equal(19, lines.Count);
+            Assert.Equal(expected, lines[16]);
 
             cl.Close();
 

@@ -88,10 +88,9 @@ namespace Bjd.Net.Sockets
         public SockTcp Select(ILife iLife)
         {
             System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
-            this.SockState = SockState.Bind;
-
             try
             {
+                this.SockState = SockState.Bind;
                 while (true)
                 {
                     if (_socket == null) return null;

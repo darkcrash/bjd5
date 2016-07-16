@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.WebServer.Outside
 {
@@ -13,11 +14,16 @@ namespace Bjd.WebServer.Outside
         WebStream _inputStream;
         readonly WebStream _outputStream = new WebStream(-1);
         bool _finish;//inputデータの終了フラグ
+        Task readThread;
+        Task writeThread;
+
 
         public ExecProcess(string cmd, string param, string dir, Env env)
         {
 
             _finish = false;
+            readThread = new Task(ReadThread, TaskCreationOptions.LongRunning);
+            writeThread = new Task(WriteThread, TaskCreationOptions.LongRunning);
 
             _info = new ProcessStartInfo
             {
@@ -69,12 +75,16 @@ namespace Bjd.WebServer.Outside
                 StartInfo = _info
             };
             _p.Start();
-            StartThread();// 標準入出力のRead/Writeスレッド起動
-            while (!_finish)
-            {
-                Thread.Sleep(10);
-            }
+            //StartThread();// 標準入出力のRead/Writeスレッド起動
+            readThread.Start();
+            writeThread.Start();
+            writeThread.Wait();
+            //while (!_finish)
+            //{
+            //    Thread.Sleep(10);
+            //}
             _p.WaitForExit();//終了待ち
+            readThread.Wait();
 
             var ret = true;
             if (_p.ExitCode != 0)
@@ -132,29 +142,31 @@ namespace Bjd.WebServer.Outside
                         break;
                     }
                     sw.Write(buf, 0, len);
-                    Thread.Sleep(1);
+                    //Thread.Sleep(1);
                 }
                 _p.StandardInput.Flush();
                 //_p.StandardInput.Close();
                 _p.StandardInput.Dispose();
-                Thread.Sleep(0);
+                //Thread.Sleep(0);
             }
             _finish = true;
         }
 
         void StartThread()
         {
-            var readThread = new ThreadStart(ReadThread);
-            var writeThread = new ThreadStart(WriteThread);
-            var rThread = new Thread(readThread);
-            var wThread = new Thread(writeThread);
-            rThread.Name = "ReadThread";
-            wThread.Name = "WriteThread";
-            rThread.Start();
-            wThread.Start();
 
-            wThread.Join();
-            rThread.Join();
+
+            //var readThread = new ThreadStart(ReadThread);
+            //var writeThread = new ThreadStart(WriteThread);
+            //var rThread = new Thread(readThread);
+            //var wThread = new Thread(writeThread);
+            //rThread.Name = "ReadThread";
+            //wThread.Name = "WriteThread";
+            //rThread.Start();
+            //wThread.Start();
+
+            //wThread.Join();
+            //rThread.Join();
         }
 
     }

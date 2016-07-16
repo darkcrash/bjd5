@@ -251,6 +251,7 @@ namespace Bjd.Servers
         private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
         {
             System.Diagnostics.Trace.TraceInformation($"{this.GetType().FullName}._sockServerTcp_SocketStateChanged  ");
+            if (_sockServerTcp.SockState == SockState.Idle) return;
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
         }
