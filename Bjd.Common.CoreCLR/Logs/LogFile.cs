@@ -358,8 +358,8 @@ namespace Bjd.Logs
 
             lock (_lock)
             {
-                count.Wait();
                 if (isDisposed) return;
+                count.Wait();
                 LogClose(); //クローズ
                 LogDelete(); //過去ログの自動削除
                 LogOpen(); //オープン
