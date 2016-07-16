@@ -9,17 +9,11 @@ namespace Bjd.Threading
     public class SequentialTaskScheduler : System.Threading.Tasks.TaskScheduler
     {
         ConcurrentQueue<Task> _q = new ConcurrentQueue<Task>();
-        //object Lock = new object();
         bool isRunning = false;
-        EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
-        Thread worker;
+        object Lock = new object();
 
         public SequentialTaskScheduler() : base()
         {
-            worker = new Thread(WaitCallback);
-            worker.IsBackground = true;
-            worker.Name = this.GetType().Name;
-            worker.Start();
         }
 
         private void WaitCallback(object state)
@@ -29,11 +23,14 @@ namespace Bjd.Threading
             {
                 if (_q.IsEmpty)
                 {
-                    isRunning = false;
-                    waitHandle.Reset();
-                    waitHandle.WaitOne(1000);
-                    isRunning = true;
-                    continue;
+                    lock (Lock)
+                    {
+                        if (_q.IsEmpty)
+                        {
+                            isRunning = false;
+                            return;
+                        }
+                    }
                 }
                 while (_q.TryDequeue(out t))
                 {
@@ -50,15 +47,13 @@ namespace Bjd.Threading
         protected override void QueueTask(Task task)
         {
             _q.Enqueue(task);
-            if (isRunning) return;
-            waitHandle.Set();
-            //lock (Lock)
-            //{
-            //    if (isRunning)
-            //        return;
-            //    isRunning = true;
-            //}
-            //System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
+            lock (Lock)
+            {
+                if (isRunning)
+                    return;
+                isRunning = true;
+            }
+            System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
@@ -76,5 +71,6 @@ namespace Bjd.Threading
                 return 1;
             }
         }
+
     }
 }
