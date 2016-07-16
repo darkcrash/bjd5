@@ -274,7 +274,7 @@ namespace Bjd.Options
                             foreach (var v in values)
                             {
                                 if (firstValue == null) firstValue = v;
-                                if (valCombo == v)
+                                if (Enum.Equals(valCombo, v))
                                 {
                                     isMatch = true;
                                     break;

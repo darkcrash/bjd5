@@ -106,7 +106,7 @@ namespace Bjd.Test.Sockets
                 sut.Send(new byte[max]);
             }
 
-            Thread.Sleep(200);
+            Thread.Sleep(500);
 
             int expected = max * 3;
 
@@ -245,7 +245,7 @@ namespace Bjd.Test.Sockets
                 var expected = "本日は晴天なり\r\n";
 
                 //exercise
-                var bytes = sut.LineRecv(1, this);
+                var bytes = sut.LineRecv(2, this);
                 var actual = Encoding.UTF8.GetString(bytes);
 
                 //verify
@@ -280,7 +280,7 @@ namespace Bjd.Test.Sockets
                 for (var i = 0; i < 1000; i++)
                 {
                     //exercise
-                    var bytes = sut.LineRecv(1, this);
+                    var bytes = sut.LineRecv(2, this);
                     var actual = Encoding.UTF8.GetString(bytes);
                     //verify
                     Assert.Equal(expected, actual);

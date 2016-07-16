@@ -4,30 +4,36 @@ using Bjd.Mails;
 using Xunit;
 using System.IO;
 using System.Reflection;
+using Bjd.Services;
 
 namespace Bjd.Test.Mails
 {
-
     public class MailInfoTest : IDisposable
     {
 
         private string _dfFile;
-
+        private TestService service;
         public MailInfoTest()
         {
+            var srcFile = "DF_MailInfoTest.dat";
+            service = TestService.CreateTestService();
+            service.ContentFile(srcFile);
+            var dir = service.Kernel.Enviroment.ExecutableDirectory;
+            _dfFile = Path.Combine(dir, srcFile);
+
             //const string srcDir = "C:\\tmp2\\bjd5\\BJDTest";
-            const string srcDir = ".";
+            //const string srcDir = ".";
             //テンポラリテストデータの準備
             //ファイルの内容が変更されるので、テンポラリファイルで作業する
-            var src = "DF_MailInfoTest.dat";
-            _dfFile = string.Format("{0}\\$$$", srcDir);
-            File.Copy(src, _dfFile);
+            //_dfFile = string.Format("{0}\\$$$", srcDir);
+            //File.Copy(src, _dfFile);
         }
 
         public void Dispose()
         {
             //テンポラリテストデータの削除
-            File.Delete(_dfFile);//テンポラリ削除
+            //File.Delete(_dfFile);//テンポラリ削除
+            service.Dispose();
         }
 
         [Theory]
