@@ -83,13 +83,16 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(_service.Kernel, conf, oneBind);
-            myServer.Start();
-            for (var i = 10; i > 0; i--)
+            using (var myServer = new MyServer(_service.Kernel, conf, oneBind))
             {
-                Thread.Sleep(1);
+                myServer.Start();
+                for (var i = 10; i > 0; i--)
+                {
+                    Thread.Sleep(1);
+                }
+                myServer.Stop();
             }
-            myServer.Dispose();
+
         }
     }
 }

@@ -58,68 +58,72 @@ namespace Bjd.Test
         public void Startする前はThreadBaseKindはBeforeとなる()
         {
             //setUp
-            var sut = new MyThread(_service.Kernel);
-            //var expected = ThreadBaseKind.Before;
-            //exercise
-            var actual = sut.ThreadBaseKind;
-            //verify
-            Assert.Equal(ThreadBaseKind.Before, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new MyThread(_service.Kernel))
+            {
+                //var expected = ThreadBaseKind.Before;
+                //exercise
+                var actual = sut.ThreadBaseKind;
+                //verify
+                Assert.Equal(ThreadBaseKind.Before, actual);
+                //tearDown
+            }
         }
 
         [Fact]
         public void StartするとThreadBaseKindはRunningとなる()
         {
             //setUp
-            var sut = new MyThread(_service.Kernel);
-            //var expected = ThreadBaseKind.Running;
-            //exercise
-            sut.Start();
-            var actual = sut.ThreadBaseKind;
-            //verify
-            Assert.Equal(ThreadBaseKind.Running, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new MyThread(_service.Kernel))
+            {
+                //var expected = ThreadBaseKind.Running;
+                //exercise
+                sut.Start();
+                var actual = sut.ThreadBaseKind;
+                //verify
+                Assert.Equal(ThreadBaseKind.Running, actual);
+                //tearDown
+            }
         }
 
         [Fact]
         public void Startは重複しても問題ない()
         {
             //setUp
-            var sut = new MyThread(_service.Kernel);
-            //var expected = ThreadBaseKind.Running;
-            //exercise
-            sut.Start();
-            sut.Start();
-            sut.Start();
-            sut.Start(); //重複
-            var actual = sut.ThreadBaseKind;
-            //verify
-            Assert.Equal(ThreadBaseKind.Running, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new MyThread(_service.Kernel))
+            {
+                //var expected = ThreadBaseKind.Running;
+                //exercise
+                sut.Start();
+                sut.Start();
+                sut.Start();
+                sut.Start(); //重複
+                var actual = sut.ThreadBaseKind;
+                //verify
+                Assert.Equal(ThreadBaseKind.Running, actual);
+                //tearDown
+            }
         }
 
         [Fact]
         public void Stopは重複しても問題ない()
         {
             //setUp
-            var sut = new MyThread(_service.Kernel);
-            //var expected = ThreadBaseKind.After;
-            //exercise
-            sut.Stop(); //重複
-            sut.Start();
-            sut.Stop();
-            sut.Stop();
-            sut.Stop();
-            sut.Stop();
-            sut.Stop(); //重複
-            var actual = sut.ThreadBaseKind;
-            //verify
-            Assert.Equal(ThreadBaseKind.After, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new MyThread(_service.Kernel))
+            {
+                //var expected = ThreadBaseKind.After;
+                //exercise
+                sut.Stop(); //重複
+                sut.Start();
+                sut.Stop();
+                sut.Stop();
+                sut.Stop();
+                sut.Stop();
+                sut.Stop(); //重複
+                var actual = sut.ThreadBaseKind;
+                //verify
+                Assert.Equal(ThreadBaseKind.After, actual);
+                //tearDown
+            }
         }
 
         [Fact]
@@ -127,17 +131,18 @@ namespace Bjd.Test
         {
 
             //setUp
-            var sut = new MyThread(_service.Kernel);
-            //exercise verify 
-            for (var i = 0; i < 20; i++)
+            using (var sut = new MyThread(_service.Kernel))
             {
-                sut.Start();
-                Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
-                sut.Stop();
-                Assert.Equal(ThreadBaseKind.After, sut.ThreadBaseKind);
+                //exercise verify 
+                for (var i = 0; i < 20; i++)
+                {
+                    sut.Start();
+                    Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
+                    sut.Stop();
+                    Assert.Equal(ThreadBaseKind.After, sut.ThreadBaseKind);
+                }
+                //tearDown
             }
-            //tearDown
-            sut.Dispose();
         }
 
         [Fact]

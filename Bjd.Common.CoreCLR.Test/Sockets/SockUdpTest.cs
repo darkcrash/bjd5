@@ -13,7 +13,7 @@ namespace Bjd.Test.Sockets
     // Echoサーバを使用したテスト
     //**************************************************
 
-    public class SockUdpTest :IDisposable
+    public class SockUdpTest : IDisposable
     {
         TestService _service;
 
@@ -108,38 +108,40 @@ namespace Bjd.Test.Sockets
             //setUp
             const string addr = "127.0.0.1";
             const int port = 9053;
-            var echoServer = new EchoServer(_service.Kernel, addr, port);
-            echoServer.Start();
-
-            const int timeout = 5;
-
-            const int max = 1500;
-            const int loop = 5;
-            var tmp = new byte[max];
-            for (int i = 0; i < max; i++)
+            using (var echoServer = new EchoServer(_service.Kernel, addr, port))
             {
-                tmp[i] = (byte)i;
-            }
+                echoServer.Start();
 
-            var ip = new Ip(addr);
-            for (var i = 0; i < loop; i++)
-            {
-                var sockUdp = new SockUdp(_service.Kernel, ip, port, null, tmp);
-                //                while (sockUdp.Length() == 0){
-                //                    Thread.Sleep(10);
-                //                }
-                var b = sockUdp.Recv(timeout);
+                const int timeout = 5;
 
-                //verify
-                for (var m = 0; m < max; m += 10)
+                const int max = 1500;
+                const int loop = 5;
+                var tmp = new byte[max];
+                for (int i = 0; i < max; i++)
                 {
-                    Assert.Equal(b[m], tmp[m]); //送信したデータと受信したデータが同一かどうかのテスト
+                    tmp[i] = (byte)i;
                 }
-                sockUdp.Close();
-            }
 
-            //TearDown
-            echoServer.Stop();
+                var ip = new Ip(addr);
+                for (var i = 0; i < loop; i++)
+                {
+                    var sockUdp = new SockUdp(_service.Kernel, ip, port, null, tmp);
+                    //                while (sockUdp.Length() == 0){
+                    //                    Thread.Sleep(10);
+                    //                }
+                    var b = sockUdp.Recv(timeout);
+
+                    //verify
+                    for (var m = 0; m < max; m += 10)
+                    {
+                        Assert.Equal(b[m], tmp[m]); //送信したデータと受信したデータが同一かどうかのテスト
+                    }
+                    sockUdp.Close();
+                }
+
+                //TearDown
+                echoServer.Stop();
+            }
         }
     }
 }

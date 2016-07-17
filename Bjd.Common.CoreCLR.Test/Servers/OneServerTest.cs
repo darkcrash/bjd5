@@ -147,23 +147,24 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(kernel, conf, oneBind);
-
-            for (var i = 0; i < 10; i++)
+            using (var myServer = new MyServer(kernel, conf, oneBind))
             {
-                // Start
-                myServer.Start();
-                Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Bind, myServer.SockState);
 
-                // Stop
-                myServer.Stop();
-                Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Error, myServer.SockState);
+                for (var i = 0; i < 10; i++)
+                {
+                    // Start
+                    myServer.Start();
+                    Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Bind, myServer.SockState);
+
+                    // Stop
+                    myServer.Stop();
+                    Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Error, myServer.SockState);
+
+                }
 
             }
-
-            myServer.Dispose();
         }
 
         [Fact]
@@ -181,22 +182,23 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(kernel, conf, oneBind);
-
-            for (var i = 0; i < 10; i++)
+            using (var myServer = new MyServer(kernel, conf, oneBind))
             {
-                // Start
-                myServer.Start();
-                Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Bind, myServer.SockState);
 
-                // Stop
-                myServer.Stop();
-                Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Error, myServer.SockState);
+                for (var i = 0; i < 10; i++)
+                {
+                    // Start
+                    myServer.Start();
+                    Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Bind, myServer.SockState);
+
+                    // Stop
+                    myServer.Stop();
+                    Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Error, myServer.SockState);
+                }
+
             }
-
-            myServer.Dispose();
         }
 
 
@@ -217,17 +219,18 @@ namespace Bjd.Test.Servers
 
             for (var i = 0; i < 10; i++)
             {
-                var myServer = new MyServer(kernel, conf, oneBind);
+                using (var myServer = new MyServer(kernel, conf, oneBind))
+                {
 
-                myServer.Start();
-                Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Bind, myServer.SockState);
+                    myServer.Start();
+                    Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Bind, myServer.SockState);
 
-                myServer.Stop();
-                Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
-                Assert.Equal(SockState.Error, myServer.SockState);
+                    myServer.Stop();
+                    Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Error, myServer.SockState);
 
-                myServer.Dispose();
+                }
             }
         }
 
@@ -248,17 +251,17 @@ namespace Bjd.Test.Servers
 
             for (var i = 0; i < 10; i++)
             {
-                var myServer = new MyServer(kernel, conf, oneBind);
+                using (var myServer = new MyServer(kernel, conf, oneBind))
+                {
+                    myServer.Start();
+                    Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                    Assert.Equal(myServer.SockState, SockState.Bind);
 
-                myServer.Start();
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
-                Assert.Equal(myServer.SockState, SockState.Bind);
+                    myServer.Stop();
+                    Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                    Assert.Equal(myServer.SockState, SockState.Error);
 
-                myServer.Stop();
-                Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
-                Assert.Equal(myServer.SockState, SockState.Error);
-
-                myServer.Dispose();
+                }
             }
         }
 
@@ -284,29 +287,32 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", 3);
 
-            var myServer = new MyServer(kernel, conf, oneBind);
-            myServer.Start();
-
             var ar = new List<MyClient>();
-
-            for (int i = 0; i < multiple + 5; i++)
+            using (var myServer = new MyServer(kernel, conf, oneBind))
             {
-                var myClient = new MyClient(address, port);
-                myClient.Connet();
-                ar.Add(myClient);
+
+                myServer.Start();
+
+                for (int i = 0; i < multiple + 5; i++)
+                {
+                    var myClient = new MyClient(address, port);
+                    myClient.Connet();
+                    ar.Add(myClient);
+                }
+                Thread.Sleep(500);
+
+                //multiple以上は接続できない
+                Assert.Equal(multiple, myServer.Count);
+
+                myServer.Stop();
+
             }
-            Thread.Sleep(500);
-
-            //multiple以上は接続できない
-            Assert.Equal(multiple, myServer.Count);
-
-            myServer.Stop();
-            myServer.Dispose();
 
             foreach (var c in ar)
             {
                 c.Dispose();
             }
+
         }
     }
 }

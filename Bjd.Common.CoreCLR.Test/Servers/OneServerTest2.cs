@@ -120,38 +120,40 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", timeout);
 
-            var echoServer = new EchoServer(_service.Kernel, conf, oneBind);
-            echoServer.Start();
-
-            //TCPクライアント
-
-            const int max = 10000;
-            var buf = new byte[max];
-            buf[8] = 100; //CheckData
-            for (int i = 0; i < 3; i++)
+            using (var echoServer = new EchoServer(_service.Kernel, conf, oneBind))
             {
-                var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                echoServer.Start();
 
-                sockTcp.Send(buf);
+                //TCPクライアント
 
-                while (sockTcp.Length() == 0)
+                const int max = 10000;
+                var buf = new byte[max];
+                buf[8] = 100; //CheckData
+                for (int i = 0; i < 3; i++)
                 {
-                    Thread.Sleep(2);
+                    var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
+
+                    sockTcp.Send(buf);
+
+                    while (sockTcp.Length() == 0)
+                    {
+                        Thread.Sleep(2);
+                    }
+
+                    var len = sockTcp.Length();
+                    if (0 < len)
+                    {
+                        var b = sockTcp.Recv(len, timeout, this);
+                        Assert.Equal(b[8], buf[8]);//CheckData
+                    }
+                    Assert.Equal(max, len);
+
+                    sockTcp.Close();
+
                 }
 
-                var len = sockTcp.Length();
-                if (0 < len)
-                {
-                    var b = sockTcp.Recv(len, timeout, this);
-                    Assert.Equal(b[8], buf[8]);//CheckData
-                }
-                Assert.Equal(max, len);
-
-                sockTcp.Close();
-
+                echoServer.Stop();
             }
-
-            echoServer.Dispose();
 
         }
 
@@ -180,26 +182,28 @@ namespace Bjd.Test.Servers
             conf.Set("enableAcl", 1);
             conf.Set("timeOut", timeout);
 
-            var echoServer = new EchoServer(_service.Kernel, conf, oneBind);
-            echoServer.Start();
-
-            //TCPクライアント
-
-            const int max = 1600;
-            var buf = new byte[max];
-            buf[8] = 100; //CheckData
-
-            for (int i = 0; i < 3; i++)
+            using (var echoServer = new EchoServer(_service.Kernel, conf, oneBind))
             {
-                var sockUdp = new SockUdp(_service.Kernel, ip, port, null, buf);
-                var b = sockUdp.Recv(timeout);
-                Assert.Equal(b[8], buf[8]); //CheckData
-                Assert.Equal(max, b.Length);
+                echoServer.Start();
 
-                sockUdp.Close();
+                //TCPクライアント
+
+                const int max = 1600;
+                var buf = new byte[max];
+                buf[8] = 100; //CheckData
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var sockUdp = new SockUdp(_service.Kernel, ip, port, null, buf);
+                    var b = sockUdp.Recv(timeout);
+                    Assert.Equal(b[8], buf[8]); //CheckData
+                    Assert.Equal(max, b.Length);
+
+                    sockUdp.Close();
+                }
+
+                echoServer.Stop();
             }
-
-            echoServer.Dispose();
 
         }
 

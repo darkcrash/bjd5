@@ -102,21 +102,22 @@ namespace Bjd.Test.Servers
             const int enableAcl = 0; //指定したアドレスからのアクセスのみを許可する
             var acl = new Dat(new CtrlType[0]); //許可リストなし
 
-            var sut = StartServer(ip, port, enableAcl, acl);
-            var cl = StartClient(ip, port);
-            var expected = 0; //　Deny
+            using (var sut = StartServer(ip, port, enableAcl, acl))
+            {
+                var cl = StartClient(ip, port);
+                var expected = 0; //　Deny
 
-            //exercise
-            var actual = sut.Count;
+                //exercise
+                var actual = sut.Count;
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            cl.Close();
-            sut.Stop();
-            sut.Dispose();
-            
+                //tearDown
+                cl.Close();
+                sut.Stop();
+            }
+
         }
 
 
@@ -130,20 +131,21 @@ namespace Bjd.Test.Servers
             const int enableAcl = 1; //指定したアドレスからのアクセスのみを禁止する
             var acl = new Dat(new CtrlType[0]); //許可リストなし
 
-            var sut = StartServer(ip, port, enableAcl, acl);
-            var cl = StartClient(ip, port);
-            var expected = 1; //　Allow
+            using (var sut = StartServer(ip, port, enableAcl, acl))
+            {
+                var cl = StartClient(ip, port);
+                var expected = 1; //　Allow
 
-            //exercise
-            var actual = sut.Count;
+                //exercise
+                var actual = sut.Count;
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            cl.Close();
-            sut.Stop();
-            sut.Dispose();
+                //tearDown
+                cl.Close();
+                sut.Stop();
+            }
         }
 
         [Fact]
@@ -159,20 +161,21 @@ namespace Bjd.Test.Servers
             acl.Add(true, "NAME\t127.0.0.1");
 
 
-            var sut = StartServer(ip, port, enableAcl, acl);
-            var cl = StartClient(ip, port);
-            var expected = 1; //　Allow
+            using (var sut = StartServer(ip, port, enableAcl, acl))
+            {
+                var cl = StartClient(ip, port);
+                var expected = 1; //　Allow
 
-            //exercise
-            var actual = sut.Count;
+                //exercise
+                var actual = sut.Count;
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            cl.Close();
-            sut.Stop();
-            sut.Dispose();
+                //tearDown
+                cl.Close();
+                sut.Stop();
+            }
 
         }
 
@@ -188,20 +191,21 @@ namespace Bjd.Test.Servers
             var acl = new Dat(new[] { CtrlType.TextBox, CtrlType.TextBox }); //許可リストあり
             acl.Add(true, "NAME\t127.0.0.1");
 
-            var sut = StartServer(ip, port, enableAcl, acl);
-            var cl = StartClient(ip, port);
-            var expected = 0; //　Deny
+            using (var sut = StartServer(ip, port, enableAcl, acl))
+            {
+                var cl = StartClient(ip, port);
+                var expected = 0; //　Deny
 
-            //exercise
-            var actual = sut.Count;
+                //exercise
+                var actual = sut.Count;
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            cl.Close();
-            sut.Stop();
-            sut.Dispose();
+                //tearDown
+                cl.Close();
+                sut.Stop();
+            }
 
         }
 

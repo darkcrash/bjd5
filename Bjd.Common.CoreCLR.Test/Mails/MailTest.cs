@@ -20,7 +20,7 @@ namespace Bjd.Test.Mails
 
         public void Dispose()
         {
-
+            sut.Dispose();
         }
 
         [Fact]
