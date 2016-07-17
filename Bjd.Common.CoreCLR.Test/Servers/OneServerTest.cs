@@ -16,7 +16,7 @@ using Bjd.Threading;
 namespace Bjd.Test.Servers
 {
 
-    public class OneServerTest :IDisposable
+    public class OneServerTest : IDisposable
     {
 
         TestService _service;
@@ -138,9 +138,10 @@ namespace Bjd.Test.Servers
             var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
+            var port = _service.GetAvailablePort(ip, 9997);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             Conf conf = TestUtil.CreateConf("OptionSample");
-            conf.Set("port", 9997);
+            conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);
@@ -171,9 +172,10 @@ namespace Bjd.Test.Servers
             var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
+            var port = _service.GetAvailableUdpPort(ip, 9991);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
             Conf conf = TestUtil.CreateConf("OptionSample");
-            conf.Set("port", 9991);
+            conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);
@@ -204,9 +206,10 @@ namespace Bjd.Test.Servers
             var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
+            var port = _service.GetAvailablePort(ip, 88);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             Conf conf = TestUtil.CreateConf("OptionSample");
-            conf.Set("port", 88);
+            conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);
@@ -234,9 +237,10 @@ namespace Bjd.Test.Servers
             var kernel = _service.Kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
+            var port = _service.GetAvailableUdpPort(ip, 88);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
             Conf conf = TestUtil.CreateConf("OptionSample");
-            conf.Set("port", 88);
+            conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);
@@ -260,18 +264,19 @@ namespace Bjd.Test.Servers
 
 
         [Theory]
-        [InlineData(1, 8701)]
-        [InlineData(5, 8702)]
-        [InlineData(10, 8703)]
-        [InlineData(20, 8704)]
-        [InlineData(50, 8705)]
-        public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple, int port)
+        [InlineData(1)]
+        [InlineData(5)]
+        [InlineData(10)]
+        [InlineData(20)]
+        [InlineData(50)]
+        public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple)
         {
             var kernel = _service.Kernel;
 
             //const int port = 8889;
             const string address = "127.0.0.1";
             var ip = new Ip(address);
+            var port = _service.GetAvailablePort(ip, 8701);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             Conf conf = TestUtil.CreateConf("OptionSample");
             conf.Set("port", port);

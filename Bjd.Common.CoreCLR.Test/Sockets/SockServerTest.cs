@@ -112,7 +112,7 @@ namespace Bjd.Test.Sockets
                 var bindIp = new Ip(IpKind.V4Localhost);
                 var life = new Life();
                 //const int port = 8881;
-                int port = _service.GetAvailablePort(bindIp, 8881);
+                int port = _service.GetAvailableUdpPort(bindIp, 8881);
                 Ssl ssl = null;
 
                 var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);
@@ -186,7 +186,7 @@ namespace Bjd.Test.Sockets
                 var bindIp = new Ip(IpKind.V4Localhost);
                 var life = new Life();
                 //const int port = 9991;
-                int port = _service.GetAvailablePort(bindIp, 9991);
+                int port = _service.GetAvailableUdpPort(bindIp, 9991);
                 Ssl ssl = null;
 
                 var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);

@@ -62,6 +62,24 @@ namespace Bjd.Net.Sockets
                 sockServer.Dispose();
             }
         }
+        public static bool IsAvailableUdp(Kernel kernel, Ip ip, int port)
+        {
+            System.Diagnostics.Trace.TraceInformation($"SockUtil.IsAvailable");
+            var sockServer = new SockServerUdp(kernel, ProtocolKind.Udp, null);
+            try
+            {
+                if (sockServer.SockState == SockState.Error) return false;
+
+                if (sockServer.Bind(ip, port)) return true;
+
+                return false;
+            }
+            finally
+            {
+                sockServer.Close();
+                sockServer.Dispose();
+            }
+        }
 
 
     }

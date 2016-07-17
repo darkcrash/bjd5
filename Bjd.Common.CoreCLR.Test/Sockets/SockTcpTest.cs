@@ -95,7 +95,8 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9982;
+            //const int port = 9982;
+            int port = _service.GetAvailablePort(addr, 9982);
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
 
@@ -131,7 +132,8 @@ namespace Bjd.Test.Sockets
         public void EchoServerSendTcpQueueRecvPerLength()
         {
             const string addr = "127.0.0.1";
-            const int port = 9981;
+            //const int port = 9981;
+            int port = _service.GetAvailablePort(addr, 9981);
 
             var echoServer = new EchoServer(_service.Kernel, addr, port);
             echoServer.Start();
@@ -182,7 +184,8 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9993;
+            //const int port = 9993;
+            int port = _service.GetAvailablePort(addr, 9993);
 
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
@@ -208,7 +211,8 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9994;
+            //const int port = 9994;
+            int port = _service.GetAvailablePort(addr, 9994);
 
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
@@ -238,7 +242,8 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9995;
+            //const int port = 9995;
+            int port = _service.GetAvailablePort(addr, 9995);
 
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();
@@ -268,7 +273,8 @@ namespace Bjd.Test.Sockets
         {
             //setUp
             const string addr = "127.0.0.1";
-            const int port = 9996;
+            //const int port = 9996;
+            int port = _service.GetAvailablePort(addr, 9996);
 
             var sv = new EchoServer(_service.Kernel, addr, port);
             sv.Start();

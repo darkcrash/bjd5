@@ -246,6 +246,11 @@ namespace Bjd.Services
             return filename;
         }
 
+        public int GetAvailablePort(string address, int port)
+        {
+            var ipobj = new Ip(address);
+            return GetAvailablePort(ipobj, port);
+        }
         public int GetAvailablePort(IpKind ip, int port)
         {
             var ipobj = new Ip(ip);
@@ -256,6 +261,26 @@ namespace Bjd.Services
             for (var i = port; i < 65000; i++)
             {
                 if (SockUtil.IsAvailable(Kernel, ip, i))
+                    return i;
+            }
+            throw new Exception($"Available port not found {port}");
+        }
+
+        public int GetAvailableUdpPort(string address, int port)
+        {
+            var ipobj = new Ip(address);
+            return GetAvailableUdpPort(ipobj, port);
+        }
+        public int GetAvailableUdpPort(IpKind ip, int port)
+        {
+            var ipobj = new Ip(ip);
+            return GetAvailableUdpPort(ipobj, port);
+        }
+        public int GetAvailableUdpPort(Ip ip, int port)
+        {
+            for (var i = port; i < 65000; i++)
+            {
+                if (SockUtil.IsAvailableUdp(Kernel, ip, i))
                     return i;
             }
             throw new Exception($"Available port not found {port}");
