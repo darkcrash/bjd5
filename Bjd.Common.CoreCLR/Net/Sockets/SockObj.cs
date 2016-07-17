@@ -64,6 +64,8 @@ namespace Bjd.Net.Sockets
         protected void OnSocketStateChanged()
         {
             if (this.SocketStateChanged == null) return;
+            try { this.SocketStateChanged(this, EventArgs.Empty); }
+            catch { }
             var t = System.Threading.Tasks.Task.Factory.StartNew(() => this.SocketStateChanged(this, EventArgs.Empty));
         }
 
