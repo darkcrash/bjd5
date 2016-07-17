@@ -129,7 +129,7 @@ namespace Bjd.Test
             //setUp
             var sut = new MyThread(_service.Kernel);
             //exercise verify 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 20; i++)
             {
                 sut.Start();
                 Assert.Equal(ThreadBaseKind.Running, sut.ThreadBaseKind);
@@ -144,7 +144,7 @@ namespace Bjd.Test
         public void new及びstart_stop_disposeしてisRunnigの状態を確認する_負荷テスト()
         {
             //exercise verify 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var sut = new MyThread(_service.Kernel);
                 Assert.Equal(ThreadBaseKind.Before, sut.ThreadBaseKind);
@@ -160,7 +160,7 @@ namespace Bjd.Test
         public void new及びstart_disposeしてisRunnigの状態を確認する_負荷テスト()
         {
             //exercise verify 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var sut = new MyThread(_service.Kernel);
                 Assert.Equal(ThreadBaseKind.Before, sut.ThreadBaseKind);
