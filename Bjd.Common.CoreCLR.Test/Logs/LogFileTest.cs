@@ -4,24 +4,36 @@ using System.Linq;
 using System.Reflection;
 using Bjd.Logs;
 using Xunit;
+using Bjd.Services;
 
 namespace Bjd.Test.Logs
 {
-    public class LogFileTest
+    public class LogFileTest : IDisposable
     {
         //テンポラリディレクトリ名
-        const String TmpDir = "LogFileTest";
+        const string TmpDir = "LogFileTest";
+        TestService service;
 
-        //テンポラリのフォルダの削除
-        //このクラスの最後に１度だけ実行される
-        // 個々のテストでは、例外終了等で完全に削除出来ないので、ここで最後にディレクトリごと削除する
-        //[TearDown]
-        //[TestFixtureTearDown]
-        public static void AfterClass()
+        public LogFileTest()
         {
-            var dir = TestUtil.GetTmpDir(TmpDir);
-            Directory.Delete(dir, true);
+            service = TestService.CreateTestService();
         }
+
+        public void Dispose()
+        {
+            service.Dispose();
+        }
+
+        ////テンポラリのフォルダの削除
+        ////このクラスの最後に１度だけ実行される
+        //// 個々のテストでは、例外終了等で完全に削除出来ないので、ここで最後にディレクトリごと削除する
+        ////[TearDown]
+        ////[TestFixtureTearDown]
+        //public void AfterClass()
+        //{
+        //    var dir = TestUtil.GetTmpDir(TmpDir);
+        //    Directory.Delete(dir, true);
+        //}
 
         [Fact]
         public void ログの種類日別で予想されたパターンのファイルが２つ生成される()
@@ -31,7 +43,8 @@ namespace Bjd.Test.Logs
             const string pattern = "*.????.??.??.log";
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             using (var sut = new LogFile(dir, logKind, logKind, 0, true))
             {
@@ -56,7 +69,8 @@ namespace Bjd.Test.Logs
             const string pattern = "*.????.??.log";
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             using (var sut = new LogFile(dir, logKind, logKind, 0, true))
             {
@@ -82,7 +96,8 @@ namespace Bjd.Test.Logs
             const string pattern = "*.Log";
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             using (var sut = new LogFile(dir, logKind, logKind, 0, true))
             {
@@ -101,30 +116,32 @@ namespace Bjd.Test.Logs
         }
 
         [Fact]
-        public void Appendで３行ログを追加すると通常ログが3行になる()
+        public void Appendで３行ログを追加すると通常ログが4行になる()
         {
 
             const int logKind = 2; //固定ログの種類
             const string fileName = "BlackJumboDog.Log";
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             using (var sut = new LogFile(dir, logKind, logKind, 0, true))
             {
-                sut.Append(
+                sut.AppendAsync(
                     new OneLog("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
+                sut.AppendAsync(
                     new OneLog("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
+                var r = sut.AppendAsync(
                     new OneLog("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                r.Wait();
                 //sut.Dispose();
             }
 
-            const int expected = 3;
+            const int expected = 4;
 
             //exercise
-            var lines = File.ReadAllLines(String.Format("{0}\\{1}", dir, fileName));
+            var lines = File.ReadAllLines(Path.Combine(dir, fileName));
             var actual = lines.Length;
 
             //verify
@@ -133,32 +150,34 @@ namespace Bjd.Test.Logs
         }
 
         [Fact]
-        public void Appendで３行ログを追加するとセキュアログが1行になる()
+        public void Appendで３行ログを追加するとセキュアログが2行になる()
         {
 
             const int logKind = 2; //固定ログの種類
             const string fileName = "secure.Log";
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             using (var sut = new LogFile(dir, logKind, logKind, 0, true))
             {
-                sut.Append(
+                sut.AppendAsync(
                     new OneLog("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
+                sut.AppendAsync(
                     new OneLog("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
-                    new OneLog("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                var r = sut.AppendAsync(
+                     new OneLog("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                r.Wait();
                 //sut.Dispose();
             }
 
 
 
-            const int expected = 1;
+            const int expected = 2;
 
             //exercise
-            var lines = File.ReadAllLines(String.Format("{0}\\{1}", dir, fileName));
+            var lines = File.ReadAllLines(Path.Combine(dir, fileName));
 
             var actual = lines.Length;
 
@@ -175,7 +194,8 @@ namespace Bjd.Test.Logs
             //encService.GetEncoding(932);
 
             //setUp
-            var dir = TestUtil.GetTmpPath(TmpDir);
+            //var dir = TestUtil.GetTmpPath(TmpDir);
+            var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
             //var path = string.Format("{0}\\BlackJumboDog.Log", dir);
             var path = Path.Combine(dir, "BlackJumboDog.Log");
@@ -184,21 +204,22 @@ namespace Bjd.Test.Logs
             //最初は、保存期間指定なしで起動する
             using (var logFile = new LogFile(dir, 2, 2, 0, true))
             {
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                logFile.AppendAsync(
                     new OneLog("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
+                var r = logFile.AppendAsync(
                     new OneLog("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
 
+                r.Wait();
 
                 //exercise
                 //リフレクションを使用してprivateメソッドにアクセスする
@@ -212,7 +233,7 @@ namespace Bjd.Test.Logs
 
                 //logFile.Dispose();
             }
-            const int expected = 2;
+            const int expected = 3;
             var actual = File.ReadAllLines(path).Length;
 
             //verify

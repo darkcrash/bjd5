@@ -91,7 +91,8 @@ namespace Bjd.Services
             var instance = new TestService();
 
             // set executable directory
-            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}";
+            var rdval =  rd.Next(0, int.MaxValue);
+            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}";
 
             instance.env = new Enviroments();
             var dir = instance.env.ExecutableDirectory;
@@ -215,6 +216,33 @@ namespace Bjd.Services
             return dst;
         }
 
+
+        //テンポラリディレクトリの作成<br>
+        //最初に呼ばれたとき、ディレクトリが存在しないので、新規に作成される
+        public  string GetTmpDir(string tmpDir)
+        {
+            var dir = Path.Combine(env.ExecutableDirectory, tmpDir);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            return dir;
+        }
+
+        //指定したテンポラリディレクトリ(tmpDir)の中での作成可能なテンポラリファイル(もしくはディレクトリ)名を生成する
+        //return テンポラリファイル（ディレクトリ）名(パス)
+        public string GetTmpPath(string tmpDir)
+        {
+
+            //var filename = string.Format("{0}\\{1}", GetTmpDir(tmpDir), Path.GetRandomFileName());
+            var filename = Path.Combine(GetTmpDir(tmpDir), Path.GetRandomFileName());
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
+            return filename;
+        }
 
     }
 

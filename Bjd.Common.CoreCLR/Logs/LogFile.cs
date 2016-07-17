@@ -62,58 +62,62 @@ namespace Bjd.Logs
             //_timer.Enabled = true;
         }
 
-        //ログファイルへの追加
-        //oneLog 保存するログ（１行）
-        //return 失敗した場合はfalseが返される
         public void Append(OneLog oneLog)
         {
             //コンストラクタで初期化に失敗している場合、falseを返す
-            if (_timer == null)
-            {
-                return;
-            }
+            if (_timer == null) return;
 
-            lock (_lock)
+            try
             {
-                lock (_lockCount)
+                lock (_lock)
                 {
-                    if (count.IsSet)
+                    lock (_lockCount)
                     {
-                        count.Reset(1);
+                        if (count.IsSet)
+                        {
+                            count.Reset(1);
+                        }
+                        else
+                        {
+                            count.AddCount();
+                        }
                     }
-                    else
-                    {
-                        count.AddCount();
-                    }
+                }
+
+                if (isDisposed) return;
+
+                // セキュリティログは、表示制限に関係なく書き込む
+                if (_secureLog != null && oneLog.IsSecure())
+                {
+                    _secureLog.Set(oneLog.ToString());
+                }
+                // 通常ログの場合
+                if (_normalLog != null)
+                {
+                    // ルール適用除外　もしくは　表示対象になっている場合
+                    _normalLog.Set(oneLog.ToString());
                 }
             }
-
-            Action a = () =>
+            catch (IOException) { }
+            finally
             {
-                try
-                {
-                    // セキュリティログは、表示制限に関係なく書き込む
-                    if (_secureLog != null && oneLog.IsSecure())
-                    {
-                        _secureLog.Set(oneLog.ToString());
-                    }
-                    // 通常ログの場合
-                    if (_normalLog != null)
-                    {
-                        // ルール適用除外　もしくは　表示対象になっている場合
-                        _normalLog.Set(oneLog.ToString());
-                    }
-                }
-                catch (IOException)
-                {
-                }
-            };
-
-            var t = new Task(a, TaskCreationOptions.PreferFairness);
-            t.ContinueWith(_ => { lock (_lockCount) count.Signal(); });
-            t.Start(sts);
-
+                lock (_lockCount) count.Signal();
+            }
         }
+
+        //ログファイルへの追加
+        //oneLog 保存するログ（１行）
+        //return 失敗した場合はfalseが返される
+        public Task AppendAsync(OneLog oneLog)
+        {
+            Action a = () => Append(oneLog);
+
+            var t1 = new Task(a, TaskCreationOptions.PreferFairness);
+            t1.Start(sts);
+
+            return t1;
+        }
+
 
         private void LogOpen()
         {
@@ -355,7 +359,6 @@ namespace Bjd.Logs
             if (_lastDelete.Ticks != 0 && _lastDelete.Day == now.Day)
                 return;
 
-
             lock (_lock)
             {
                 if (isDisposed) return;
@@ -372,6 +375,9 @@ namespace Bjd.Logs
         //過去ログの自動削除が行われる
         public void Dispose()
         {
+            var log = new OneLog(DateTime.Now, LogKind.Secure, "Log", 0, "local", 0, "LogFile.Dispose()", "last mesasage");
+            AppendAsync(log).Wait();
+
             lock (_lock)
             {
                 count.Wait();

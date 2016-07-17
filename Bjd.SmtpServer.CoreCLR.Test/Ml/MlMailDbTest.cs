@@ -5,13 +5,29 @@ using Xunit;
 using Bjd.SmtpServer;
 using Bjd;
 using System.IO;
+using System;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test {
-    public class MlMailDbTest {
-        
+    public class MlMailDbTest : IDisposable
+    {
+        TestService service;
+
+        public MlMailDbTest()
+        {
+            service = TestService.CreateTestService();
+        }
+
+        public void Dispose()
+        {
+            service.Dispose();
+        }
+
+
         [Fact]
         public void SaveReadTest(){
-            var tmpDir = TestUtil.GetTmpDir("$tmp");
+            //var tmpDir = TestUtil.GetTmpDir("$tmp");
+            var tmpDir = service.GetTmpDir("$tmp");
             var logger = new Logger();
 
 

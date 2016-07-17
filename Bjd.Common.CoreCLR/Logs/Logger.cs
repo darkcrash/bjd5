@@ -356,13 +356,13 @@ namespace Bjd.Logs
                     if (isDisplay)
                     {
                         //isDisplayの結果に従う
-                        _logFile.Append(oneLog);
+                        _logFile.AppendAsync(oneLog);
                     }
                 }
                 else
                 {
                     //表示制限が無効な場合は、すべて保存される
-                    _logFile.Append(oneLog);
+                    _logFile.AppendAsync(oneLog);
                 }
             }
         }

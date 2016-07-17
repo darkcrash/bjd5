@@ -23,43 +23,44 @@ namespace Bjd.Test
             return System.IO.Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).FullName;
         }
 
-        //テンポラリディレクトリの作成<br>
-        //最初に呼ばれたとき、ディレクトリが存在しないので、新規に作成される
-        public static String GetTmpDir(String tmpDir)
-        {
-            //            String currentDir = new File(".").getAbsoluteFile().getParent(); // カレントディレクトリ
-            //            String dir = string.Format("%s\\%s", currentDir, tmpDir);
-            //            File file = new File(dir);
-            //            if (!file.exists()){
-            //                file.mkdir();
-            //            }
-            var dir = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), tmpDir);
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+        ////テンポラリディレクトリの作成<br>
+        ////最初に呼ばれたとき、ディレクトリが存在しないので、新規に作成される
+        //public static String GetTmpDir(String tmpDir)
+        //{
+        //    //            String currentDir = new File(".").getAbsoluteFile().getParent(); // カレントディレクトリ
+        //    //            String dir = string.Format("%s\\%s", currentDir, tmpDir);
+        //    //            File file = new File(dir);
+        //    //            if (!file.exists()){
+        //    //                file.mkdir();
+        //    //            }
+        //    var dir = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), tmpDir);
+        //    if (!Directory.Exists(dir))
+        //    {
+        //        Directory.CreateDirectory(dir);
+        //    }
 
-            return dir;
-        }
+        //    return dir;
+        //}
 
-        //指定したテンポラリディレクトリ(tmpDir)の中での作成可能なテンポラリファイル(もしくはディレクトリ)名を生成する
-        //return テンポラリファイル（ディレクトリ）名(パス)
-        public static String GetTmpPath(String tmpDir)
-        {
-            //            String prefix = "test";
-            //            String suffix = ".ts";
-            //            File file = File.CreateTempFile(prefix, suffix, new File(getTmpDir(tmpDir)));
-            //            if (file.exists()){
-            //                file.delete();
-            //            }
+        ////指定したテンポラリディレクトリ(tmpDir)の中での作成可能なテンポラリファイル(もしくはディレクトリ)名を生成する
+        ////return テンポラリファイル（ディレクトリ）名(パス)
+        //public static String GetTmpPath(String tmpDir)
+        //{
+        //    //            String prefix = "test";
+        //    //            String suffix = ".ts";
+        //    //            File file = File.CreateTempFile(prefix, suffix, new File(getTmpDir(tmpDir)));
+        //    //            if (file.exists()){
+        //    //                file.delete();
+        //    //            }
 
-            var filename = string.Format("{0}\\{1}", GetTmpDir(tmpDir), Path.GetRandomFileName());
-            if (File.Exists(filename))
-            {
-                File.Delete(filename);
-            }
-            return filename;
-        }
+        //    //var filename = string.Format("{0}\\{1}", GetTmpDir(tmpDir), Path.GetRandomFileName());
+        //    var filename = Path.Combine(GetTmpDir(tmpDir), Path.GetRandomFileName());
+        //    if (File.Exists(filename))
+        //    {
+        //        File.Delete(filename);
+        //    }
+        //    return filename;
+        //}
 
         //テスト用のダミーのConf生成
         public static Conf CreateConf(String optionName)
