@@ -180,79 +180,79 @@ namespace WebServerTest
             _v4Cl.Close();
         }
 
-        [Theory]
-        [InlineData("?")]
-        [InlineData(",")]
-        [InlineData(".")]
-        [InlineData("aaa")]
-        [InlineData("")]
-        [InlineData("_")]
-        [InlineData("????")]
-        public void 無効なURIは処理されない(string uri)
-        {
-            var kernel = _service.Kernel;
+        //[Theory]
+        //[InlineData("?")]
+        //[InlineData(",")]
+        //[InlineData(".")]
+        //[InlineData("aaa")]
+        //[InlineData("")]
+        //[InlineData("_")]
+        //[InlineData("????")]
+        //public void 無効なURIは処理されない(string uri)
+        //{
+        //    var kernel = _service.Kernel;
 
-            //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
-            byte[] expected = null;
+        //    //setUp
+        //    var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
+        //    byte[] expected = null;
 
-            //exercise
-            _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("GET {0} HTTP/1.0\n\n", uri)));
-            var actual = _v4Cl.LineRecv(3, this);
-            //verify
-            Assert.Equal(expected, actual);
+        //    //exercise
+        //    _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("GET {0} HTTP/1.0\n\n", uri)));
+        //    var actual = _v4Cl.LineRecv(3, this);
+        //    //verify
+        //    Assert.Equal(expected, actual);
 
-            //tearDoen
-            _v4Cl.Close();
-        }
+        //    //tearDoen
+        //    _v4Cl.Close();
+        //}
 
-        [Theory]
-        [InlineData("SET")]
-        [InlineData("POP")]
-        [InlineData("")]
-        public void 無効なメソッドは処理されない(string method)
-        {
-            var kernel = _service.Kernel;
+        //[Theory]
+        //[InlineData("SET")]
+        //[InlineData("POP")]
+        //[InlineData("")]
+        //public void 無効なメソッドは処理されない(string method)
+        //{
+        //    var kernel = _service.Kernel;
 
-            //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
-            byte[] expected = null;
+        //    //setUp
+        //    var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
+        //    byte[] expected = null;
 
-            //exercise
-            _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("{0} / HTTP/1.0\n\n", method)));
-            var actual = _v4Cl.LineRecv(3, this);
-            //verify
-            Assert.Equal(expected, actual);
+        //    //exercise
+        //    _v4Cl.Send(Encoding.ASCII.GetBytes(string.Format("{0} / HTTP/1.0\n\n", method)));
+        //    var actual = _v4Cl.LineRecv(3, this);
+        //    //verify
+        //    Assert.Equal(expected, actual);
 
-            //tearDoen
-            _v4Cl.Close();
-        }
+        //    //tearDoen
+        //    _v4Cl.Close();
+        //}
 
-        [Theory]
-        [InlineData("GET / HTTP/111")]
-        [InlineData("GET /")]
-        [InlineData("GET")]
-        [InlineData("HTTP/1.0")]
-        [InlineData("XXX / HTTP/1.0")]
-        [InlineData("GET_/_HTTP/1.0")]
-        [InlineData("")]
-        public void 無効なリクエストは処理されない(string reauest)
-        {
-            var kernel = _service.Kernel;
+        //[Theory]
+        //[InlineData("GET / HTTP/111")]
+        //[InlineData("GET /")]
+        //[InlineData("GET")]
+        //[InlineData("HTTP/1.0")]
+        //[InlineData("XXX / HTTP/1.0")]
+        //[InlineData("GET_/_HTTP/1.0")]
+        //[InlineData("")]
+        //public void 無効なリクエストは処理されない(string reauest)
+        //{
+        //    var kernel = _service.Kernel;
 
-            //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
-            byte[] expected = null;
+        //    //setUp
+        //    var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
+        //    byte[] expected = null;
 
-            //exercise
-            _v4Cl.Send(Encoding.ASCII.GetBytes(reauest));
-            var actual = _v4Cl.LineRecv(3, this);
-            //verify
-            Assert.Equal(expected, actual);
+        //    //exercise
+        //    _v4Cl.Send(Encoding.ASCII.GetBytes(reauest));
+        //    var actual = _v4Cl.LineRecv(3, this);
+        //    //verify
+        //    Assert.Equal(expected, actual);
 
-            //tearDoen
-            _v4Cl.Close();
-        }
+        //    //tearDoen
+        //    _v4Cl.Close();
+        //}
 
 
 
