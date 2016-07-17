@@ -67,9 +67,8 @@ namespace Bjd.Test.Servers
             protected override void CheckLang() { }
         }
 
-        EchoServer StartServer(int port, int enableAcl, Dat acl)
+        EchoServer StartServer(Ip ip, int port, int enableAcl, Dat acl)
         {
-            var ip = TestUtil.CreateIp("127.0.0.1");
             const int timeout = 300;
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             var conf = TestUtil.CreateConf("OptionSample");
@@ -84,10 +83,9 @@ namespace Bjd.Test.Servers
             return sv;
         }
 
-        SockTcp StartClient(int port)
+        SockTcp StartClient(Ip ip, int port)
         {
 
-            var ip = TestUtil.CreateIp("127.0.0.1");
             var cl = new SockTcp(_service.Kernel, ip, port, 300, null);
             Thread.Sleep(300);
             return cl;
@@ -98,12 +96,14 @@ namespace Bjd.Test.Servers
         {
 
             //setUp
-            const int port = 9986;
+            var ip = TestUtil.CreateIp("127.0.0.1");
+            //const int port = 9986;
+            int port = _service.GetAvailablePort(ip, 9986);
             const int enableAcl = 0; //指定したアドレスからのアクセスのみを許可する
             var acl = new Dat(new CtrlType[0]); //許可リストなし
 
-            var sut = StartServer(port, enableAcl, acl);
-            var cl = StartClient(port);
+            var sut = StartServer(ip, port, enableAcl, acl);
+            var cl = StartClient(ip, port);
             var expected = 0; //　Deny
 
             //exercise
@@ -124,12 +124,14 @@ namespace Bjd.Test.Servers
         public void 許可リスト無し_のみ禁止する_Allow()
         {
             //setUp
-            const int port = 9987;
+            var ip = TestUtil.CreateIp("127.0.0.1");
+            //const int port = 9987;
+            int port = _service.GetAvailablePort(ip, 9987);
             const int enableAcl = 1; //指定したアドレスからのアクセスのみを禁止する
             var acl = new Dat(new CtrlType[0]); //許可リストなし
 
-            var sut = StartServer(port, enableAcl, acl);
-            var cl = StartClient(port);
+            var sut = StartServer(ip, port, enableAcl, acl);
+            var cl = StartClient(ip, port);
             var expected = 1; //　Allow
 
             //exercise
@@ -149,14 +151,16 @@ namespace Bjd.Test.Servers
         {
 
             //setUp
-            const int port = 9988;
+            var ip = TestUtil.CreateIp("127.0.0.1");
+            //const int port = 9988;
+            int port = _service.GetAvailablePort(ip, 9988);
             const int enableAcl = 0; //指定したアドレスからのアクセスのみを許可する
             var acl = new Dat(new[] { CtrlType.TextBox, CtrlType.TextBox }); //許可リストあり
             acl.Add(true, "NAME\t127.0.0.1");
 
 
-            var sut = StartServer(port, enableAcl, acl);
-            var cl = StartClient(port);
+            var sut = StartServer(ip, port, enableAcl, acl);
+            var cl = StartClient(ip, port);
             var expected = 1; //　Allow
 
             //exercise
@@ -177,13 +181,15 @@ namespace Bjd.Test.Servers
         {
 
             //setUp
-            const int port = 9989;
+            var ip = TestUtil.CreateIp("127.0.0.1");
+            //const int port = 9989;
+            int port = _service.GetAvailablePort(ip, 9989);
             const int enableAcl = 1; //指定したアドレスからのアクセスのみを禁止する
             var acl = new Dat(new[] { CtrlType.TextBox, CtrlType.TextBox }); //許可リストあり
             acl.Add(true, "NAME\t127.0.0.1");
 
-            var sut = StartServer(port, enableAcl, acl);
-            var cl = StartClient(port);
+            var sut = StartServer(ip, port, enableAcl, acl);
+            var cl = StartClient(ip, port);
             var expected = 0; //　Deny
 
             //exercise

@@ -29,15 +29,15 @@ namespace Bjd.Test.Sockets
         {
             //private readonly SockServer _sockServer;
             private readonly SockServerTcp _sockServer;
-            private readonly String _addr;
+            private readonly Ip _ip;
             private readonly int _port;
             private readonly Ssl _ssl = null;
 
-            public EchoServer(Kernel kernel, String addr, int port) : base(kernel, null)
+            public EchoServer(Kernel kernel, Ip ip, int port) : base(kernel, null)
             {
                 //_sockServer = new SockServer(new Kernel(),ProtocolKind.Tcp,_ssl);
                 _sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, _ssl);
-                _addr = addr;
+                _ip = ip;
                 _port = port;
             }
 
@@ -58,16 +58,7 @@ namespace Bjd.Test.Sockets
 
             protected override void OnRunThread()
             {
-                Ip ip = null;
-                try
-                {
-                    ip = new Ip(_addr);
-                }
-                catch (ValidObjException ex)
-                {
-                    Assert.False(true, ex.Message);
-                }
-                if (_sockServer.Bind(ip, _port, 1))
+                if (_sockServer.Bind(_ip, _port, 1))
                 {
                     //[C#]
                     ThreadBaseKind = ThreadBaseKind.Running;
@@ -94,13 +85,13 @@ namespace Bjd.Test.Sockets
         public void EchoServerSendCheckSockQueueLength()
         {
             //setUp
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9982;
-            int port = _service.GetAvailablePort(addr, 9982);
-            var sv = new EchoServer(_service.Kernel, addr, port);
+            int port = _service.GetAvailablePort(ip, 9982);
+            var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
 
-            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
             const int max = 1000;
             for (int i = 0; i < 3; i++)
             {
@@ -131,23 +122,14 @@ namespace Bjd.Test.Sockets
         [Fact]
         public void EchoServerSendTcpQueueRecvPerLength()
         {
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9981;
-            int port = _service.GetAvailablePort(addr, 9981);
+            int port = _service.GetAvailablePort(ip, 9981);
 
-            var echoServer = new EchoServer(_service.Kernel, addr, port);
+            var echoServer = new EchoServer(_service.Kernel, ip, port);
             echoServer.Start();
 
             const int timeout = 100;
-            Ip ip = null;
-            try
-            {
-                ip = new Ip(addr);
-            }
-            catch (ValidObjException ex)
-            {
-                Assert.False(true, ex.Message);
-            }
             var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
             const int max = 1000;
@@ -183,13 +165,13 @@ namespace Bjd.Test.Sockets
         public void EchoServerStringSendTextLineStringRecvTextLine()
         {
             //setUp
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9993;
-            int port = _service.GetAvailablePort(addr, 9993);
+            int port = _service.GetAvailablePort(ip, 9993);
 
-            var sv = new EchoServer(_service.Kernel, addr, port);
+            var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
             sut.StringSend("本日は晴天なり", "UTF-8");
             Thread.Sleep(10);
 
@@ -210,13 +192,13 @@ namespace Bjd.Test.Sockets
         public void EchoServerLineSendTextLineLineRecvTextLine()
         {
             //setUp
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9994;
-            int port = _service.GetAvailablePort(addr, 9994);
+            int port = _service.GetAvailablePort(ip, 9994);
 
-            var sv = new EchoServer(_service.Kernel, addr, port);
+            var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
             sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
             Thread.Sleep(10);
 
@@ -236,18 +218,18 @@ namespace Bjd.Test.Sockets
 
         [Theory]
         [InlineData(10)]
-        [InlineData(50)]
-        [InlineData(100)]
+        [InlineData(20)]
+        [InlineData(30)]
         public void EchoServerLineSend(int count)
         {
             //setUp
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9995;
-            int port = _service.GetAvailablePort(addr, 9995);
+            int port = _service.GetAvailablePort(ip, 9995);
 
-            var sv = new EchoServer(_service.Kernel, addr, port);
+            var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
 
             for (var i = 0; i < count; i++)
             {
@@ -272,13 +254,13 @@ namespace Bjd.Test.Sockets
         public void EchoServerToLineSendOverQueue()
         {
             //setUp
-            const string addr = "127.0.0.1";
+            var ip = new Ip("127.0.0.1");
             //const int port = 9996;
-            int port = _service.GetAvailablePort(addr, 9996);
+            int port = _service.GetAvailablePort(ip, 9996);
 
-            var sv = new EchoServer(_service.Kernel, addr, port);
+            var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, new Ip(addr), port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
             var expected = "本日は晴天なり\r\n";
             var data = Encoding.UTF8.GetBytes("本日は晴天なり");
 

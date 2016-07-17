@@ -73,10 +73,11 @@ namespace Bjd.Test.Servers
         public void A001()
         {
             var ip = new Ip(IpKind.V4Localhost);
+            var port = _service.GetAvailablePort(ip, 8888);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             var conf = TestUtil.CreateConf("OptionSample");
             conf.Set("protocolKind", (int)ProtocolKind.Tcp);
-            conf.Set("port", 8888);
+            conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
             conf.Set("enableAcl", 1);

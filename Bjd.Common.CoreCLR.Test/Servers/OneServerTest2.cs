@@ -100,7 +100,8 @@ namespace Bjd.Test.Servers
         {
 
             const string addr = "127.0.0.1";
-            const int port = 9999;
+            //const int port = 9999;
+            int port = _service.GetAvailablePort(addr, 9999);
             const int timeout = 300;
             Ip ip = null;
             try
@@ -159,7 +160,8 @@ namespace Bjd.Test.Servers
         {
 
             const string addr = "127.0.0.1";
-            const int port = 9992;
+            //const int port = 9992;
+            int port = _service.GetAvailableUdpPort(addr, 9992);
             const int timeout = 8;
             Ip ip = null;
             try
