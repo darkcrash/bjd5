@@ -57,7 +57,7 @@ namespace Bjd.Test.Servers
             {
                 while (IsLife())
                 {
-                    Thread.Sleep(0); //これが無いと、別スレッドでlifeをfalseにできない
+                    Thread.Sleep(10); //これが無いと、別スレッドでlifeをfalseにできない
                     if (sockObj.SockState != SockState.Connect)
                     {
                         Console.WriteLine(@">>>>>sockAccept.getSockState()!=SockState.CONNECT");
@@ -98,7 +98,7 @@ namespace Bjd.Test.Servers
                 //接続完了まで少し時間が必要
                 while (_s == null || !_s.Connected)
                 {
-                    Thread.Sleep(2);
+                    Thread.Sleep(10);
                 }
 
             }
@@ -108,7 +108,7 @@ namespace Bjd.Test.Servers
                 _s.Connect(_addr, _port);
                 while (_life)
                 {
-                    Thread.Sleep(2);
+                    Thread.Sleep(10);
                 }
 
             }
@@ -125,7 +125,7 @@ namespace Bjd.Test.Servers
                 _life = false;
                 while (_t.IsAlive)
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(10);
                 }
                 //_s.Close();
                 _s.Dispose();
@@ -268,7 +268,6 @@ namespace Bjd.Test.Servers
         [InlineData(5)]
         [InlineData(10)]
         [InlineData(20)]
-        [InlineData(50)]
         public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple)
         {
             var kernel = _service.Kernel;
@@ -276,7 +275,7 @@ namespace Bjd.Test.Servers
             //const int port = 8889;
             const string address = "127.0.0.1";
             var ip = new Ip(address);
-            var port = _service.GetAvailablePort(ip, 8701);
+            var port = _service.GetAvailablePort(ip, 8889);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             Conf conf = TestUtil.CreateConf("OptionSample");
             conf.Set("port", port);
@@ -290,7 +289,7 @@ namespace Bjd.Test.Servers
 
             var ar = new List<MyClient>();
 
-            for (int i = 0; i < multiple * 2; i++)
+            for (int i = 0; i < multiple + 5; i++)
             {
                 var myClient = new MyClient(address, port);
                 myClient.Connet();
