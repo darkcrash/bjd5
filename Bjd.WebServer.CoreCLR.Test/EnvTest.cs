@@ -14,57 +14,46 @@ using Bjd.WebServer.Outside;
 namespace WebServerTest
 {
 
-    public class EnvTest : IDisposable, IClassFixture<EnvTest.ServerFixture>
+    public class EnvTest : IDisposable
     {
+        internal Kernel _kernel;
+        internal TestService _service;
+        internal OneOption option;
+        internal Conf conf;
+        internal int port = 90;
 
-        public class ServerFixture : IDisposable
+        public EnvTest()
         {
-            internal Kernel _kernel;
-            internal TestService _service;
-            internal OneOption option;
 
-            public ServerFixture()
-            {
-                _service = TestService.CreateTestService();
-                _service.SetOption("EnvTest.ini");
-                _service.ContentDirectory("public_html");
+            _service = TestService.CreateTestService();
+            _service.SetOption("EnvTest.ini");
+            _service.ContentDirectory("public_html");
 
-                _kernel = _service.Kernel;
-                option = _kernel.ListOption.Get("Web-localhost:90");
-
-            }
-
-            public void Dispose()
-            {
-                _service.Dispose();
-            }
-
-        }
-
-        private ServerFixture _fixture;
-
-        public EnvTest(ServerFixture fixture)
-        {
-            _fixture = fixture;
+            _kernel = _service.Kernel;
+            option = _kernel.ListOption.Get("Web-localhost:90");
+            conf = new Conf(option);
 
         }
 
         public void Dispose()
         {
+            _service.Dispose();
         }
 
         [Fact]
         //[InlineData("PATHEXT", ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC")]
         public void PATHEXT()
         {
+            var ip = new Ip(IpKind.V4_0);
+            port = _service.GetAvailablePort(ip, conf);
             var key = "PATHEXT";
             var val = ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
 
             var request = new HttpRequest(null, null);
             var header = new HttpHeader();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 90, 3, null);
+            var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";
-            var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
+            var env = new Env(_kernel, conf, request, header, tcpObj, fileName);
             foreach (var e in env)
             {
                 if (e.Key == key)
@@ -85,11 +74,13 @@ namespace WebServerTest
         [InlineData("SystemRoot", "C:\\Windows")]
         public void OtherTest(string key, string val)
         {
+            var ip = new Ip(IpKind.V4_0);
+            port = _service.GetAvailablePort(ip, conf);
             var request = new HttpRequest(null, null);
             var header = new HttpHeader();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 90, 3, null);
+            var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";
-            var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
+            var env = new Env(_kernel, conf, request, header, tcpObj, fileName);
             foreach (var e in env)
             {
                 if (e.Key == key)
@@ -113,15 +104,16 @@ namespace WebServerTest
         [InlineData("SERVER_ADMIN", "root@localhost")]
         public void OptionTest(string key, string val)
         {
+            var ip = new Ip("0.0.0.0");
+            port = _service.GetAvailablePort(ip, conf);
             var request = new HttpRequest(null, null);
 
-            var conf = new Conf(_fixture.option);
             conf.Set("documentRoot", val);
 
             var header = new HttpHeader();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
+            var tcpObj = new SockTcp(_kernel, ip, port, 1, null);
             const string fileName = "";
-            var env = new Env(_fixture._kernel, conf, request, header, tcpObj, fileName);
+            var env = new Env(_kernel, conf, request, header, tcpObj, fileName);
             foreach (var e in env)
             {
                 if (e.Key == key)
@@ -141,15 +133,15 @@ namespace WebServerTest
         [InlineData("SERVER_PORT", "80")]
         public void TcpObjTest(string key, string val)
         {
-
-            var conf = new Conf(_fixture.option);
+            var ip = new Ip("0.0.0.0");
+            port = _service.GetAvailablePort(ip, conf);
             var request = new HttpRequest(null, null);
             var header = new HttpHeader();
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 1, null);
+            var tcpObj = new SockTcp(_kernel, ip, port, 1, null);
             tcpObj.LocalAddress = new IPEndPoint((new Ip("127.0.0.1")).IPAddress, 80);
             tcpObj.RemoteAddress = new IPEndPoint((new Ip("10.0.0.100")).IPAddress, 5000);
             const string fileName = "";
-            var env = new Env(_fixture._kernel, conf, request, header, tcpObj, fileName);
+            var env = new Env(_kernel, conf, request, header, tcpObj, fileName);
 
             foreach (var e in env)
             {
@@ -170,6 +162,8 @@ namespace WebServerTest
         [InlineData("HTTP_CONNECTION", "keep-alive")]
         public void HeaderTest(string key, string val)
         {
+            var ip = new Ip("0.0.0.0");
+            port = _service.GetAvailablePort(ip, conf);
 
 
             var request = new HttpRequest(null, null);
@@ -182,9 +176,9 @@ namespace WebServerTest
             header.Append("Accept-Charset", Encoding.ASCII.GetBytes("Shift_JIS,utf-8;q=0.7,*;q=0.3"));
             header.Append("Cache-Control", Encoding.ASCII.GetBytes("max-age=0"));
 
-            var tcpObj = new SockTcp(_fixture._kernel, new Ip("0.0.0.0"), 90, 3, null);
+            var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";
-            var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
+            var env = new Env(_kernel, new Conf(option), request, header, tcpObj, fileName);
             foreach (var e in env)
             {
                 if (e.Key == key)

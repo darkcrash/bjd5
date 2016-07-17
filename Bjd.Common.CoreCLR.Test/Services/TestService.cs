@@ -249,9 +249,14 @@ namespace Bjd.Services
 
         public int GetAvailablePort(IpKind ip, Conf conf)
         {
-            var port = (int)conf.Get("port");
             var ipobj = new Ip(ip);
-            port = GetAvailablePort(ipobj, port);
+            return GetAvailablePort(ipobj, conf);
+        }
+
+        public int GetAvailablePort(Ip ip, Conf conf)
+        {
+            var port = (int)conf.Get("port");
+            port = GetAvailablePort(ip, port);
             conf.Set("port", port);
             return port;
         }

@@ -13,68 +13,58 @@ using Bjd.Threading;
 namespace WebServerTest
 {
 
-    public class HttpServerTest : ILife, IDisposable, IClassFixture<HttpServerTest.ServerFixture>
+    public class HttpServerTest : ILife, IDisposable
     {
-        const int port = 7088;
+         int portv4 = 7088;
+         int portv6 = 7088;
+        internal TestService _service;
+        internal WebServer _v6Sv; //サーバ
+        internal WebServer _v4Sv; //サーバ
 
-        public class ServerFixture : IDisposable
+        public HttpServerTest()
         {
-            internal TestService _service;
-            internal WebServer _v6Sv; //サーバ
-            internal WebServer _v4Sv; //サーバ
+            _service = TestService.CreateTestService();
+            _service.SetOption("WebServerTest.ini");
+            _service.ContentDirectory("public_html");
 
-            public ServerFixture()
-            {
-                _service = TestService.CreateTestService();
-                _service.SetOption("WebServerTest.ini");
-                _service.ContentDirectory("public_html");
+            var kernel = _service.Kernel;
+            var option = kernel.ListOption.Get("Web-localhost:7088");
+            Conf conf = new Conf(option);
+            var ipv4 = new Ip(IpKind.V4Localhost);
+            var ipv6 = new Ip(IpKind.V6Localhost);
+            portv4 = _service.GetAvailablePort(ipv4, conf);
+            portv6 = _service.GetAvailablePort(ipv6, conf);
 
-                var kernel = _service.Kernel;
-                var option = kernel.ListOption.Get("Web-localhost:7088");
-                Conf conf = new Conf(option);
+            //サーバ起動
+            _v4Sv = new WebServer(kernel, conf, new OneBind(ipv4, ProtocolKind.Tcp));
+            _v4Sv.Start();
 
-                //サーバ起動
-                _v4Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
-                _v4Sv.Start();
-
-                _v6Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
-                _v6Sv.Start();
-
-            }
-
-            public void Dispose()
-            {
-                //サーバ停止
-                _v4Sv.Stop();
-                _v6Sv.Stop();
-
-                _v4Sv.Dispose();
-                _v6Sv.Dispose();
-
-                _service.Dispose();
-
-            }
-
-        }
-
-        private ServerFixture _fixture;
-
-        public HttpServerTest(ServerFixture fixture)
-        {
-            _fixture = fixture;
+            _v6Sv = new WebServer(kernel, conf, new OneBind(ipv6, ProtocolKind.Tcp));
+            _v6Sv.Start();
 
         }
 
         public void Dispose()
         {
+
+            //サーバ停止
+            _v4Sv.Stop();
+            _v6Sv.Stop();
+
+            _v4Sv.Dispose();
+            _v6Sv.Dispose();
+
+            _service.Dispose();
+
+
         }
 
 
         [Fact]
         public void ステータス情報_ToString_の出力確認_V4()
         {
-            var sv = _fixture._v4Sv;
-            var expected = "+ サービス中 \t  Web-localhost:7088\t[127.0.0.1\t:TCP 7088]\tThread";
+            var sv = _v4Sv;
+            var expected = $"+ サービス中 \t  Web-localhost:7088\t[127.0.0.1\t:TCP {portv4}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 58);
@@ -87,8 +77,8 @@ namespace WebServerTest
         public void ステータス情報_ToString_の出力確認_V6()
         {
 
-            var sv = _fixture._v6Sv;
-            var expected = "+ サービス中 \t  Web-localhost:7088\t[::1\t:TCP 7088]\tThread";
+            var sv = _v6Sv;
+            var expected = $"+ サービス中 \t  Web-localhost:7088\t[::1\t:TCP {portv6}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 52);
@@ -101,10 +91,10 @@ namespace WebServerTest
         [Fact]
         public void Http10Test()
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             var expected = "HTTP/1.0 200 Document follows\r\n";
 
             //exercise
@@ -123,10 +113,10 @@ namespace WebServerTest
         [Fact]
         public void Http11Test()
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             var expected = "HTTP/1.1 400 Missing Host header or incompatible headers detected.\r\n";
 
             //exercise
@@ -148,10 +138,10 @@ namespace WebServerTest
         [InlineData("?")]
         public void サポート外バージョンのリクエストは処理されない(string ver)
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -174,10 +164,10 @@ namespace WebServerTest
         [InlineData("*")]
         public void 無効なプロトコルのリクエストは処理されない(string protocol)
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -200,10 +190,10 @@ namespace WebServerTest
         [InlineData("????")]
         public void 無効なURIは処理されない(string uri)
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -222,10 +212,10 @@ namespace WebServerTest
         [InlineData("")]
         public void 無効なメソッドは処理されない(string method)
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             byte[] expected = null;
 
             //exercise
@@ -248,10 +238,10 @@ namespace WebServerTest
         [InlineData("")]
         public void 無効なリクエストは処理されない(string reauest)
         {
-            var kernel = _fixture._service.Kernel;
+            var kernel = _service.Kernel;
 
             //setUp
-            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), portv4, 10, null);
             byte[] expected = null;
 
             //exercise
