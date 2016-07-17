@@ -230,9 +230,9 @@ namespace Bjd.Test.Sockets
         }
 
         [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
         [InlineData(10)]
-        [InlineData(20)]
-        [InlineData(30)]
         public void EchoServerLineSend(int count)
         {
             //setUp
