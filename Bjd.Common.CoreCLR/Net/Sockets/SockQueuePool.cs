@@ -11,42 +11,56 @@ namespace Bjd.Net.Sockets
         public readonly static SockQueuePool Instance = new SockQueuePool();
         const int poolSize = 20;
 
-        private ConcurrentQueue<SockQueue> _queue = new ConcurrentQueue<SockQueue>();
+        private ConcurrentBag<SockQueue> _queue = new ConcurrentBag<SockQueue>();
         private CancellationTokenSource cancel = new CancellationTokenSource();
+        private int _leaseCount = 0;
 
         private SockQueuePool()
         {
-            Task.Factory.StartNew(() => Cleanup());
+            for (int i = 0; i < poolSize; i++)
+            {
+                _queue.Add(new SockQueue());
+            }
+            Cleanup();
         }
+
+        ~SockQueuePool()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            cancel.Cancel();
+            while (!_queue.IsEmpty)
+            {
+                SockQueue outQ;
+                if (_queue.TryTake(out outQ)) outQ.Dispose();
+            }
+        }
+
 
         private void Cleanup()
         {
+            if (cancel.IsCancellationRequested) return;
             try
             {
-                var q = _queue.Count;
+                if (_leaseCount > 0) return;
 
-                int create = poolSize - q;
-                if (create > 0)
-                {
-                    for (int i = 0; i < create; i++)
-                    {
-                        _queue.Enqueue(new SockQueue());
-                    }
-                    return;
-                }
+                var q = _queue.Count;
 
                 int delete = q - poolSize;
                 if (delete > 0)
                 {
                     SockQueue outQ;
-                    while (!_queue.TryDequeue(out outQ)) ;
+                    while (!_queue.TryTake(out outQ)) ;
                     outQ.Dispose();
                 }
 
             }
             finally
             {
-                var t = Task.Delay(10000);
+                var t = Task.Delay(1000);
                 t.ContinueWith(_ => Cleanup(), cancel.Token);
             }
 
@@ -54,29 +68,25 @@ namespace Bjd.Net.Sockets
 
         public SockQueue Get()
         {
-            if (_queue.Count > 0)
+            Interlocked.Increment(ref _leaseCount);
+            SockQueue outQ;
+            if (_queue.TryTake(out outQ))
             {
-                SockQueue outQ;
-                while (!_queue.TryDequeue(out outQ)) ;
                 return outQ;
             }
             return new SockQueue();
-
         }
 
         public void Pool(ref SockQueue q)
         {
+            Interlocked.Decrement(ref _leaseCount);
             q.Initialize();
-            _queue.Enqueue(q);
+            _queue.Add(q);
             q = null;
 
         }
 
 
-        public void Dispose()
-        {
-            cancel.Cancel();
-        }
     }
 }
 

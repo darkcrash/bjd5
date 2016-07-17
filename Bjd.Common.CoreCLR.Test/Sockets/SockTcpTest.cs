@@ -13,6 +13,7 @@ namespace Bjd.Test.Sockets
 
     public class SockTcpTest : ILife, IDisposable
     {
+        const int timeout = 20;
         TestService _service;
         public SockTcpTest()
         {
@@ -72,7 +73,7 @@ namespace Bjd.Test.Sockets
                             var len = child.Length();
                             if (len > 0)
                             {
-                                var buf = child.Recv(len, 100, this);
+                                var buf = child.Recv(len, timeout, this);
                                 child.Send(buf);
                             }
                         }
@@ -91,7 +92,7 @@ namespace Bjd.Test.Sockets
             var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
 
-            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
             const int max = 1000;
             for (int i = 0; i < 3; i++)
             {
@@ -129,7 +130,6 @@ namespace Bjd.Test.Sockets
             var echoServer = new EchoServer(_service.Kernel, ip, port);
             echoServer.Start();
 
-            const int timeout = 100;
             var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
             const int max = 1000;
@@ -171,14 +171,14 @@ namespace Bjd.Test.Sockets
 
             var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
             sut.StringSend("本日は晴天なり", "UTF-8");
             Thread.Sleep(10);
 
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var actual = sut.StringRecv("UTF-8", 7, this);
+            var actual = sut.StringRecv("UTF-8", timeout, this);
 
             //verify
             Assert.Equal(expected, actual);
@@ -198,14 +198,14 @@ namespace Bjd.Test.Sockets
 
             var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
             sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
             Thread.Sleep(10);
 
             var expected = "本日は晴天なり\r\n";
 
             //exercise
-            var bytes = sut.LineRecv(7, this);
+            var bytes = sut.LineRecv(timeout, this);
             var actual = Encoding.UTF8.GetString(bytes);
 
             //verify
@@ -229,7 +229,7 @@ namespace Bjd.Test.Sockets
 
             var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
             for (var i = 0; i < count; i++)
             {
@@ -238,7 +238,7 @@ namespace Bjd.Test.Sockets
                 var expected = "本日は晴天なり\r\n";
 
                 //exercise
-                var bytes = sut.LineRecv(7, this);
+                var bytes = sut.LineRecv(timeout, this);
                 var actual = Encoding.UTF8.GetString(bytes);
 
                 //verify
@@ -260,7 +260,7 @@ namespace Bjd.Test.Sockets
 
             var sv = new EchoServer(_service.Kernel, ip, port);
             sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, 100, null);
+            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
             var expected = "本日は晴天なり\r\n";
             var data = Encoding.UTF8.GetBytes("本日は晴天なり");
 
@@ -274,7 +274,7 @@ namespace Bjd.Test.Sockets
                 for (var i = 0; i < 1000; i++)
                 {
                     //exercise
-                    var bytes = sut.LineRecv(7, this);
+                    var bytes = sut.LineRecv(timeout, this);
                     var actual = Encoding.UTF8.GetString(bytes);
                     //verify
                     Assert.Equal(expected, actual);
