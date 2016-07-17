@@ -114,7 +114,7 @@ namespace Bjd.Test.Sockets
             const int timeout = 5;
 
             const int max = 1500;
-            const int loop = 10;
+            const int loop = 5;
             var tmp = new byte[max];
             for (int i = 0; i < max; i++)
             {

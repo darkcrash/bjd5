@@ -4,6 +4,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using Bjd.Test;
 using System.IO;
+using Bjd.Net.Sockets;
+using Bjd.Net;
 
 namespace Bjd.Services
 {
@@ -91,7 +93,7 @@ namespace Bjd.Services
             var instance = new TestService();
 
             // set executable directory
-            var rdval =  rd.Next(0, int.MaxValue);
+            var rdval = rd.Next(0, int.MaxValue);
             var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}";
 
             instance.env = new Enviroments();
@@ -204,7 +206,7 @@ namespace Bjd.Services
             {
                 throw new Exception($"file not found.{src}");
             }
-                File.Copy(src, dst, true);
+            File.Copy(src, dst, true);
             return dst;
         }
 
@@ -219,7 +221,7 @@ namespace Bjd.Services
 
         //テンポラリディレクトリの作成<br>
         //最初に呼ばれたとき、ディレクトリが存在しないので、新規に作成される
-        public  string GetTmpDir(string tmpDir)
+        public string GetTmpDir(string tmpDir)
         {
             var dir = Path.Combine(env.ExecutableDirectory, tmpDir);
             if (!Directory.Exists(dir))
@@ -242,6 +244,21 @@ namespace Bjd.Services
                 File.Delete(filename);
             }
             return filename;
+        }
+
+        public int GetAvailablePort(IpKind ip, int port)
+        {
+            var ipobj = new Ip(ip);
+            return GetAvailablePort(ipobj, port);
+        }
+        public int GetAvailablePort(Ip ip, int port)
+        {
+            for (var i = port; i < 65000; i++)
+            {
+                if (SockUtil.IsAvailable(Kernel, ip, i))
+                    return i;
+            }
+            throw new Exception($"Available port not found {port}");
         }
 
     }
