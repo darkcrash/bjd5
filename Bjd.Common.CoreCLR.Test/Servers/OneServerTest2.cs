@@ -67,7 +67,7 @@ namespace Bjd.Test.Servers
             {
                 while (IsLife() && sockTcp.SockState == SockState.Connect)
                 {
-                    Thread.Sleep(0); //これが無いと、別スレッドでlifeをfalseにできない
+                    Thread.Sleep(10); //これが無いと、別スレッドでlifeをfalseにできない
                     var len = sockTcp.Length();
                     if (0 < len)
                     {

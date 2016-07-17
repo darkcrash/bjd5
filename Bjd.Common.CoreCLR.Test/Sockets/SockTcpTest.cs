@@ -251,39 +251,48 @@ namespace Bjd.Test.Sockets
         }
 
         [Fact]
-        public void EchoServerToLineSendOverQueue()
+        public void EchoServerToSendOverQueue()
         {
             //setUp
             var ip = new Ip("127.0.0.1");
             //const int port = 9996;
             int port = _service.GetAvailablePort(ip, 9996);
+            int size = 2000000;
 
-            var sv = new EchoServer(_service.Kernel, ip, port);
-            sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
-            var expected = "本日は晴天なり\r\n";
-            var data = Encoding.UTF8.GetBytes("本日は晴天なり");
-
-            for (var p = 0; p < 100; p++)
+            using (var sv = new EchoServer(_service.Kernel, ip, port))
             {
-                for (var i = 0; i < 1000; i++)
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                var expectedText = new StringBuilder();
+                for(var s= 0; s < 10000; s++)
                 {
-                    sut.LineSend(data);
+                    expectedText.Append("本日は晴天なり");
+                }
+                expectedText.Append("\r\n");
+                var expected = Encoding.UTF8.GetBytes(expectedText.ToString());
+                var dataLength = expected.Length;
+
+                for (var p = 0; p < 2; p++)
+                {
+                    for (var i = 0; i < size; i += dataLength)
+                    {
+                        sut.Send(expected);
+                    }
+
+                    for (var i = 0; i < size; i += dataLength)
+                    {
+                        //exercise
+                        var actual = sut.LineRecv(timeout, this);
+                        //verify
+                        Assert.Equal(expected, actual);
+                    }
                 }
 
-                for (var i = 0; i < 1000; i++)
-                {
-                    //exercise
-                    var bytes = sut.LineRecv(timeout, this);
-                    var actual = Encoding.UTF8.GetString(bytes);
-                    //verify
-                    Assert.Equal(expected, actual);
-                }
+                //tearDown
+                sut.Close();
+                sv.Stop();
             }
 
-            //tearDown
-            sut.Close();
-            sv.Stop();
         }
 
 
