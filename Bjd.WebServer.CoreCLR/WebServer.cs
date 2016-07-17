@@ -52,13 +52,18 @@ namespace Bjd.WebServer
             WebOptionList = new List<OneOption>();
             foreach (var o in kernel.ListOption)
             {
-                if (o.NameTag.IndexOf("Web-") == 0)
+                if (o.NameTag == _conf.NameTag)
+                {
+                    WebOptionList.Add(o);
+                }
+                else if (o.NameTag.IndexOf("Web-") == 0)
                 {
                     if ((int)o.GetValue("port") == (int)_conf.Get("port"))
                     {
                         WebOptionList.Add(o);
                     }
                 }
+
             }
             //WebDAVリストの初期化
             foreach (var o in WebOptionList)

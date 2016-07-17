@@ -6,6 +6,7 @@ using Bjd.Test;
 using System.IO;
 using Bjd.Net.Sockets;
 using Bjd.Net;
+using Bjd.Options;
 
 namespace Bjd.Services
 {
@@ -244,6 +245,15 @@ namespace Bjd.Services
                 File.Delete(filename);
             }
             return filename;
+        }
+
+        public int GetAvailablePort(IpKind ip, Conf conf)
+        {
+            var port = (int)conf.Get("port");
+            var ipobj = new Ip(ip);
+            port = GetAvailablePort(ipobj, port);
+            conf.Set("port", port);
+            return port;
         }
 
         public int GetAvailablePort(string address, int port)
