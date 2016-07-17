@@ -89,7 +89,14 @@ namespace Bjd.Test.Sockets
                     ThreadStart action = () =>
                     {
                         sockServer.Bind(bindIp, port, listenMax);
-                        try { while (true) sockServer.Select(life); }
+                        try
+                        {
+                            while (true)
+                            {
+                                var c = sockServer.Select(life);
+                                if (c == null) break;
+                            }
+                        }
                         catch { }
                     };
 
@@ -125,7 +132,14 @@ namespace Bjd.Test.Sockets
                     ThreadStart action = () =>
                     {
                         sockServer.Bind(bindIp, port);
-                        try { while (true) sockServer.Select(life); }
+                        try
+                        {
+                            while (true)
+                            {
+                                var c = sockServer.Select(life);
+                                if (c == null) break;
+                            }
+                        }
                         catch { }
                     };
 
@@ -159,7 +173,14 @@ namespace Bjd.Test.Sockets
                     ThreadStart action = () =>
                     {
                         sockServer.Bind(bindIp, port, listenMax);
-                        try { while (true) sockServer.Select(life); }
+                        try
+                        {
+                            while (true)
+                            {
+                                var c = sockServer.Select(life);
+                                if (c == null) break;
+                            }
+                        }
                         catch { }
                     };
 
@@ -200,7 +221,14 @@ namespace Bjd.Test.Sockets
                     ThreadStart action = () =>
                     {
                         sockServer.Bind(bindIp, port);
-                        try { while (true) sockServer.Select(life); }
+                        try
+                        {
+                            while (true)
+                            {
+                                var c = sockServer.Select(life);
+                                if (c == null) break;
+                            }
+                        }
                         catch { }
                     };
 
