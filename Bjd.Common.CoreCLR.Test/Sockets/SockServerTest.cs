@@ -81,28 +81,31 @@ namespace Bjd.Test.Sockets
                 const int listenMax = 10;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl);
-
-                Assert.Equal(sockServer.SockState, SockState.Idle);
-
-                ThreadStart action = () =>
+                using (var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl))
                 {
-                    sockServer.Bind(bindIp, port, listenMax);
-                    try { while (true) sockServer.Select(life); }
-                    catch { }
-                };
 
-                var _t = new Thread(action) { IsBackground = true };
-                _t.Start();
+                    Assert.Equal(sockServer.SockState, SockState.Idle);
+
+                    ThreadStart action = () =>
+                    {
+                        sockServer.Bind(bindIp, port, listenMax);
+                        try { while (true) sockServer.Select(life); }
+                        catch { }
+                    };
+
+                    var _t = new Thread(action) { IsBackground = true };
+                    _t.Start();
 
 
-                while (sockServer.SockState == SockState.Idle)
-                {
-                    Thread.Sleep(100);
+                    while (sockServer.SockState == SockState.Idle)
+                    {
+                        Thread.Sleep(100);
+                    }
+                    Assert.Equal(sockServer.SockState, SockState.Bind);
+                    sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
+                    Assert.Equal(sockServer.SockState, SockState.Error);
+
                 }
-                Assert.Equal(sockServer.SockState, SockState.Bind);
-                sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
-                Assert.Equal(sockServer.SockState, SockState.Error);
 
             }
 
@@ -115,29 +118,30 @@ namespace Bjd.Test.Sockets
                 int port = _service.GetAvailableUdpPort(bindIp, 8881);
                 Ssl ssl = null;
 
-                var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);
-
-                Assert.Equal(sockServer.SockState, SockState.Idle);
-
-                ThreadStart action = () =>
+                using (var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl))
                 {
-                    sockServer.Bind(bindIp, port);
-                    try { while (true) sockServer.Select(life); }
-                    catch { }
-                };
+                    Assert.Equal(sockServer.SockState, SockState.Idle);
 
-                var _t = new Thread(action) { IsBackground = true };
-                _t.Start();
+                    ThreadStart action = () =>
+                    {
+                        sockServer.Bind(bindIp, port);
+                        try { while (true) sockServer.Select(life); }
+                        catch { }
+                    };
+
+                    var _t = new Thread(action) { IsBackground = true };
+                    _t.Start();
 
 
-                while (sockServer.SockState == SockState.Idle)
-                {
-                    Thread.Sleep(100);
+                    while (sockServer.SockState == SockState.Idle)
+                    {
+                        Thread.Sleep(100);
+                    }
+                    Assert.Equal(sockServer.SockState, SockState.Bind);
+                    sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
+                    Assert.Equal(sockServer.SockState, SockState.Error);
+
                 }
-                Assert.Equal(sockServer.SockState, SockState.Bind);
-                sockServer.Close(); //bind()にThreadBaseのポインタを送っていないため、isLifeでブレイクできないので、selectで例外を発生させて終了する
-                Assert.Equal(sockServer.SockState, SockState.Error);
-
             }
 
             public void getLocalAddressTcp(String title)
@@ -150,33 +154,34 @@ namespace Bjd.Test.Sockets
                 const int listenMax = 10;
                 Ssl ssl = null;
 
-                var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl);
-
-                ThreadStart action = () =>
+                using (var sockServer = new SockServerTcp(_service.Kernel, ProtocolKind.Tcp, ssl))
                 {
-                    sockServer.Bind(bindIp, port, listenMax);
-                    try { while (true) sockServer.Select(life); }
-                    catch { }
-                };
+                    ThreadStart action = () =>
+                    {
+                        sockServer.Bind(bindIp, port, listenMax);
+                        try { while (true) sockServer.Select(life); }
+                        catch { }
+                    };
 
 
-                var _t = new Thread(action) { IsBackground = true };
-                _t.Start();
+                    var _t = new Thread(action) { IsBackground = true };
+                    _t.Start();
 
-                while (sockServer.SockState == SockState.Idle)
-                {
-                    Thread.Sleep(200);
+                    while (sockServer.SockState == SockState.Idle)
+                    {
+                        Thread.Sleep(200);
+                    }
+
+                    var localAddress = sockServer.LocalAddress;
+                    Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
+                    //bind()後 localAddressの取得が可能になる
+
+                    var remoteAddress = sockServer.RemoteAddress;
+                    Assert.Null(remoteAddress);
+                    //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
+
+                    sockServer.Close();
                 }
-
-                var localAddress = sockServer.LocalAddress;
-                Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
-                //bind()後 localAddressの取得が可能になる
-
-                var remoteAddress = sockServer.RemoteAddress;
-                Assert.Null(remoteAddress);
-                //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
-
-                sockServer.Close();
 
             }
 
@@ -189,33 +194,36 @@ namespace Bjd.Test.Sockets
                 int port = _service.GetAvailableUdpPort(bindIp, 9991);
                 Ssl ssl = null;
 
-                var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl);
-
-                ThreadStart action = () =>
+                using (var sockServer = new SockServerUdp(_service.Kernel, ProtocolKind.Udp, ssl))
                 {
-                    sockServer.Bind(bindIp, port);
-                    try { while (true) sockServer.Select(life); }
-                    catch { }
-                };
+
+                    ThreadStart action = () =>
+                    {
+                        sockServer.Bind(bindIp, port);
+                        try { while (true) sockServer.Select(life); }
+                        catch { }
+                    };
 
 
-                var _t = new Thread(action) { IsBackground = true };
-                _t.Start();
+                    var _t = new Thread(action) { IsBackground = true };
+                    _t.Start();
 
-                while (sockServer.SockState == SockState.Idle)
-                {
-                    Thread.Sleep(200);
+                    while (sockServer.SockState == SockState.Idle)
+                    {
+                        Thread.Sleep(200);
+                    }
+
+                    var localAddress = sockServer.LocalAddress;
+                    Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
+                    //bind()後 localAddressの取得が可能になる
+
+                    var remoteAddress = sockServer.RemoteAddress;
+                    Assert.Null(remoteAddress);
+                    //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
+
+                    sockServer.Close();
+
                 }
-
-                var localAddress = sockServer.LocalAddress;
-                Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
-                //bind()後 localAddressの取得が可能になる
-
-                var remoteAddress = sockServer.RemoteAddress;
-                Assert.Null(remoteAddress);
-                //SockServerでは、remoteＡｄｄｒｅｓｓは常にnullになる
-
-                sockServer.Close();
 
             }
 

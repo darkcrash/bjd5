@@ -10,6 +10,7 @@ namespace Bjd.Test.Net
 
     public class SockQueueTest
     {
+        const int waitTimeout = 10;
 
         [Fact]
         public void 生成時のlengthは0になる()
@@ -108,17 +109,16 @@ namespace Bjd.Test.Net
         [InlineData(0, 2000001, 2000001)]
         public void NotifyWriteDequeueWait(int expected, int writeLength, int dequeueLength)
         {
-            const int waitTimeout = 10;
             //setUp
             var sut = new SockQueue();
             var cancel = new System.Threading.CancellationTokenSource();
             var seg = sut.GetWriteSegment();
 
-            var tWait = Task.Delay(25);
+            var tWait = Task.Delay(5);
             tWait.ContinueWith(_ => sut.NotifyWrite(writeLength));
 
             //exercise
-            var actual = sut.DequeueWait(dequeueLength, waitTimeout, cancel.Token).Length;
+            var actual = sut.DequeueWait(dequeueLength, waitTimeout + 100, cancel.Token).Length;
 
             //verify
             Assert.Equal(expected, actual);
@@ -449,7 +449,6 @@ namespace Bjd.Test.Net
         public void SockQueueMaxDequeueLineWait()
         {
             const int max = 2000000;
-            const int waitTimeout = 10;
 
             var sockQueu = new SockQueue();
             var cancel = new System.Threading.CancellationTokenSource();
