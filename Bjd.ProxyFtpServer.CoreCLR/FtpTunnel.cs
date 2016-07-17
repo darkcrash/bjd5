@@ -83,7 +83,7 @@ namespace Bjd.ProxyFtpServer
                 int listenPort = 0;
                 while (iLife.IsLife()){
                     _dataPort++;
-                    if (SockServerTcp.IsAvailable(_kernel, listenIp, _dataPort)){
+                    if (SockUtil.IsAvailable(_kernel, listenIp, _dataPort)){
                         listenPort = _dataPort;
                         break;
                     }
@@ -128,7 +128,7 @@ namespace Bjd.ProxyFtpServer
                 int listenPort = 0;
                 while (iLife.IsLife()){
                     _dataPort++;
-                    if (SockServerTcp.IsAvailable(_kernel,listenIp,_dataPort)){
+                    if (SockUtil.IsAvailable(_kernel,listenIp,_dataPort)){
                         listenPort = _dataPort;
                         break;
                     }

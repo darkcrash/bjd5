@@ -541,7 +541,7 @@ namespace FtpServerTest
 
             int port = 256; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("PORT 127,0,0,1,0,256");
-            SockTcp dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            SockTcp dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             dl.Close();
@@ -614,7 +614,7 @@ namespace FtpServerTest
 
             var port = 252; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("EPRT |2|::1|252|");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V6Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V6Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 EPRT command successful.\r\n");
 
             dl.Close();
@@ -725,7 +725,7 @@ namespace FtpServerTest
             //port
             var port = 24250;
             cl.StringSend("PORT 127,0,0,1,0,24250");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -750,7 +750,7 @@ namespace FtpServerTest
             //port
             var port = 20350;
             cl.StringSend("PORT 127,0,0,1,0,20350");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -773,7 +773,7 @@ namespace FtpServerTest
             //port
             var port = 20249;
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(2, this));
 
             //stor
@@ -803,7 +803,7 @@ namespace FtpServerTest
             //port
             var port = 20349;
             cl.StringSend("PORT 127,0,0,1,0,20349");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -834,7 +834,7 @@ namespace FtpServerTest
             //port
             var port = 20450;
             cl.StringSend("PORT 127,0,0,1,0,20450");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -860,7 +860,7 @@ namespace FtpServerTest
             //port
             var port = 20451;
             cl.StringSend("PORT 127,0,0,1,0,20451");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -944,7 +944,7 @@ namespace FtpServerTest
             //port
             var port = 20549;
             cl.StringSend("PORT 127,0,0,1,0,20549");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -965,7 +965,7 @@ namespace FtpServerTest
             //port
             var port = 20548;
             cl.StringSend("PORT 127,0,0,1,0,20548");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //stor
@@ -1014,7 +1014,7 @@ namespace FtpServerTest
             //port
             var port = 20650;
             cl.StringSend("PORT 127,0,0,1,0,20650");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -1039,7 +1039,7 @@ namespace FtpServerTest
             //port
             var port = 20651;
             cl.StringSend("PORT 127,0,0,1,0,20651");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
@@ -1124,7 +1124,7 @@ namespace FtpServerTest
             //port
             var port = 20751;
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //list
@@ -1153,7 +1153,7 @@ namespace FtpServerTest
             //port
             var port = 20752;
             cl.StringSend("PORT 127,0,0,1,0,20752");
-            var dl = SockServerTcp.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //list

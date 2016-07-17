@@ -120,52 +120,6 @@ namespace Bjd.Net.Sockets
         }
 
 
-        //指定したアドレス・ポートで待ち受けて、接続されたら、そのソケットを返す
-        //失敗した時nullが返る
-        //Ver5.9.2 Java fix
-        //public static SockTcp CreateConnection(Kernel kernel,Ip ip, int port,ILife iLife){
-        public static SockTcp CreateConnection(Kernel kernel, Ip ip, int port, Ssl ssl, ILife iLife)
-        {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.CreateConnection");
-            //Ver5.9.2 Java fix
-            //var sockServer = new SockServer(kernel,ProtocolKind.Tcp);
-            var sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, ssl);
-            if (sockServer.SockState != SockState.Error)
-            {
-                const int listenMax = 1;
-                if (sockServer.Bind(ip, port, listenMax))
-                {
-                    while (iLife.IsLife())
-                    {
-                        var child = sockServer.Select(iLife);
-                        if (child == null) break;
-                        //sockServer.Close(); //これ大丈夫？
-                        return child;
-                    }
-                }
-            }
-            sockServer.Close();
-            return null;
-        }
-
-        //bindが可能かどうかの確認
-        public static bool IsAvailable(Kernel kernel, Ip ip, int port)
-        {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.IsAvailable");
-            var sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, null);
-            if (sockServer.SockState != SockState.Error)
-            {
-                const int listenMax = 1;
-                if (sockServer.Bind(ip, port, listenMax))
-                {
-                    sockServer.Close();
-                    return true;
-                }
-            }
-            sockServer.Close();
-            return false;
-        }
-
     }
 
 }

@@ -627,7 +627,7 @@ namespace Bjd.FtpServer
                     port = 2010;
                 }
                 //バインド可能かどうかの確認
-                if (SockServerTcp.IsAvailable(_kernel, ip, port))
+                if (SockUtil.IsAvailable(_kernel, ip, port))
                 {
                     //成功
                     if (ftpCmd == FtpCmd.Epsv)
@@ -644,7 +644,7 @@ namespace Bjd.FtpServer
                         session.StringSend(string.Format("227 Entering Passive Mode ({0},{1},{2})", ipStr.Replace('.', ','), port / 256, port % 256));
                     }
                     //指定したアドレス・ポートで待ち受ける
-                    var sockData = SockServerTcp.CreateConnection(_kernel, ip, port, null, this);
+                    var sockData = SockUtil.CreateConnection(_kernel, ip, port, null, this);
                     if (sockData == null)
                     {
                         //接続失敗

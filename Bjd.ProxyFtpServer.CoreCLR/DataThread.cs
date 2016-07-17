@@ -39,11 +39,11 @@ namespace Bjd.ProxyFtpServer {
             _sock[CS.Server] = null;
 
             if (serverPort != 0) { //サーバ側がListen状態の場合 PASV
-                _sock[CS.Server] = SockServerTcp.CreateConnection(kernel,bindAddr,serverPort,null,this);
+                _sock[CS.Server] = SockUtil.CreateConnection(kernel,bindAddr,serverPort,null,this);
                 if (_sock[CS.Server] == null)
                     return;
             } else if (clientPort != 0) { //クライアント側がListen状態の場合 PORT
-                _sock[CS.Client] = SockServerTcp.CreateConnection(kernel,bindAddr, clientPort, null,this);
+                _sock[CS.Client] = SockUtil.CreateConnection(kernel,bindAddr, clientPort, null,this);
                 if (_sock[CS.Client] == null)
                     return;
             }
