@@ -89,35 +89,37 @@ namespace Bjd.Test.Sockets
             var ip = new Ip("127.0.0.1");
             //const int port = 9982;
             int port = _service.GetAvailablePort(ip, 9982);
-            var sv = new EchoServer(_service.Kernel, ip, port);
-            sv.Start();
-
-            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
-            const int max = 1000;
-            for (int i = 0; i < 3; i++)
+            using (var sv = new EchoServer(_service.Kernel, ip, port))
             {
-                sut.Send(new byte[max]);
+                sv.Start();
+
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                const int max = 1000;
+                for (int i = 0; i < 3; i++)
+                {
+                    sut.Send(new byte[max]);
+                }
+
+
+                int expected = max * 3;
+
+                for (var i = 0; i < 20; i++)
+                {
+                    if (sut.Length() == expected) break;
+                    Thread.Sleep(125);
+                }
+
+                //exercise
+                var actual = sut.Length();
+
+                //verify
+                Assert.Equal(expected, actual);
+
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
             }
-
-
-            int expected = max * 3;
-
-            for (var i = 0; i < 20; i++)
-            {
-                if (sut.Length() == expected) break;
-                Thread.Sleep(125);
-            }
-
-
-            //exercise
-            var actual = sut.Length();
-
-            //verify
-            Assert.Equal(expected, actual);
-
-            //tearDown
-            sut.Close();
-            sv.Stop();
         }
 
         [Fact]
@@ -127,38 +129,41 @@ namespace Bjd.Test.Sockets
             //const int port = 9981;
             int port = _service.GetAvailablePort(ip, 9981);
 
-            var echoServer = new EchoServer(_service.Kernel, ip, port);
-            echoServer.Start();
-
-            var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
-
-            const int max = 1000;
-            const int loop = 3;
-            var tmp = new byte[max];
-            for (var i = 0; i < max; i++)
+            using (var echoServer = new EchoServer(_service.Kernel, ip, port))
             {
-                tmp[i] = (byte)i;
-            }
+                echoServer.Start();
 
-            int recvCount = 0;
-            for (var i = 0; i < loop; i++)
-            {
-                var len = sockTcp.Send(tmp);
-                Assert.Equal(len, tmp.Length);
+                var sockTcp = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
-                Thread.Sleep(10);
-
-                var b = sockTcp.Recv(len, timeout, this);
-                recvCount += b.Length;
-                for (int m = 0; m < max; m += 10)
+                const int max = 1000;
+                const int loop = 3;
+                var tmp = new byte[max];
+                for (var i = 0; i < max; i++)
                 {
-                    Assert.Equal(b[m], tmp[m]); //送信したデータと受信したデータが同一かどうかのテスト
+                    tmp[i] = (byte)i;
                 }
-            }
-            Assert.Equal(loop * max, recvCount); //送信したデータ数と受信したデータ数が一致するかどうかのテスト
 
-            sockTcp.Close();
-            echoServer.Stop();
+                int recvCount = 0;
+                for (var i = 0; i < loop; i++)
+                {
+                    var len = sockTcp.Send(tmp);
+                    Assert.Equal(len, tmp.Length);
+
+                    Thread.Sleep(10);
+
+                    var b = sockTcp.Recv(len, timeout, this);
+                    recvCount += b.Length;
+                    for (int m = 0; m < max; m += 10)
+                    {
+                        Assert.Equal(b[m], tmp[m]); //送信したデータと受信したデータが同一かどうかのテスト
+                    }
+                }
+                Assert.Equal(loop * max, recvCount); //送信したデータ数と受信したデータ数が一致するかどうかのテスト
+
+                sockTcp.Close();
+                sockTcp.Dispose();
+                echoServer.Stop();
+            }
         }
 
         [Fact]
@@ -169,23 +174,27 @@ namespace Bjd.Test.Sockets
             //const int port = 9993;
             int port = _service.GetAvailablePort(ip, 9993);
 
-            var sv = new EchoServer(_service.Kernel, ip, port);
-            sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
-            sut.StringSend("本日は晴天なり", "UTF-8");
-            Thread.Sleep(10);
+            using (var sv = new EchoServer(_service.Kernel, ip, port))
+            {
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                sut.StringSend("本日は晴天なり", "UTF-8");
+                Thread.Sleep(10);
 
-            var expected = "本日は晴天なり\r\n";
+                var expected = "本日は晴天なり\r\n";
 
-            //exercise
-            var actual = sut.StringRecv("UTF-8", timeout, this);
+                //exercise
+                var actual = sut.StringRecv("UTF-8", timeout, this);
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            sut.Close();
-            sv.Stop();
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
+            }
+
         }
 
         [Fact]
@@ -196,24 +205,28 @@ namespace Bjd.Test.Sockets
             //const int port = 9994;
             int port = _service.GetAvailablePort(ip, 9994);
 
-            var sv = new EchoServer(_service.Kernel, ip, port);
-            sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
-            sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
-            Thread.Sleep(10);
+            using (var sv = new EchoServer(_service.Kernel, ip, port))
+            {
 
-            var expected = "本日は晴天なり\r\n";
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
+                Thread.Sleep(10);
 
-            //exercise
-            var bytes = sut.LineRecv(timeout, this);
-            var actual = Encoding.UTF8.GetString(bytes);
+                var expected = "本日は晴天なり\r\n";
 
-            //verify
-            Assert.Equal(expected, actual);
+                //exercise
+                var bytes = sut.LineRecv(timeout, this);
+                var actual = Encoding.UTF8.GetString(bytes);
 
-            //tearDown
-            sut.Close();
-            sv.Stop();
+                //verify
+                Assert.Equal(expected, actual);
+
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
+            }
         }
 
         [Theory]
@@ -227,27 +240,30 @@ namespace Bjd.Test.Sockets
             //const int port = 9995;
             int port = _service.GetAvailablePort(ip, 9995);
 
-            var sv = new EchoServer(_service.Kernel, ip, port);
-            sv.Start();
-            var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
-
-            for (var i = 0; i < count; i++)
+            using (var sv = new EchoServer(_service.Kernel, ip, port))
             {
-                sut.LineSend(Encoding.UTF8.GetBytes("本日は晴天なり"));
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
 
-                var expected = "本日は晴天なり\r\n";
+                var data = Encoding.UTF8.GetBytes("本日は晴天なり");
+                var expected = Encoding.UTF8.GetBytes("本日は晴天なり\r\n");
 
-                //exercise
-                var bytes = sut.LineRecv(timeout, this);
-                var actual = Encoding.UTF8.GetString(bytes);
+                for (var i = 0; i < count; i++)
+                {
+                    sut.LineSend(data);
 
-                //verify
-                Assert.Equal(expected, actual);
+                    //exercise
+                    var actual = sut.LineRecv(timeout, this);
+
+                    //verify
+                    Assert.Equal(expected, actual);
+                }
+
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
             }
-
-            //tearDown
-            sut.Close();
-            sv.Stop();
         }
 
         [Fact]
@@ -264,7 +280,7 @@ namespace Bjd.Test.Sockets
                 sv.Start();
                 var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
                 var expectedText = new StringBuilder();
-                for(var s= 0; s < 10000; s++)
+                for (var s = 0; s < 10000; s++)
                 {
                     expectedText.Append("本日は晴天なり");
                 }
@@ -290,6 +306,7 @@ namespace Bjd.Test.Sockets
 
                 //tearDown
                 sut.Close();
+                sut.Dispose();
                 sv.Stop();
             }
 

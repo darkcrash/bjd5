@@ -88,9 +88,9 @@ namespace Bjd.Net.Sockets
             // UDP
             var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
             var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
-            this.SockState = SockState.Bind;
             var ts = TaskScheduler.Current;
             tUdp.ContinueWith(_ => this.Receive(_), this.CancelToken, TaskContinuationOptions.LongRunning, ts);
+            this.SockState = SockState.Bind;
         }
 
 

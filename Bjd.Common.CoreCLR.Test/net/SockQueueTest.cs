@@ -92,7 +92,7 @@ namespace Bjd.Test.Net
             sut.Enqueue(new byte[writeLength], writeLength);
 
             //exercise
-            var actual = sut.DequeueWait(dequeueLength, 1000, cancel.Token).Length;
+            var actual = sut.DequeueWait(dequeueLength, 10, cancel.Token).Length;
 
             //verify
             Assert.Equal(expected, actual);
@@ -108,6 +108,7 @@ namespace Bjd.Test.Net
         [InlineData(0, 2000001, 2000001)]
         public void NotifyWriteDequeueWait(int expected, int writeLength, int dequeueLength)
         {
+            const int waitTimeout = 10;
             //setUp
             var sut = new SockQueue();
             var cancel = new System.Threading.CancellationTokenSource();
@@ -117,7 +118,7 @@ namespace Bjd.Test.Net
             tWait.ContinueWith(_ => sut.NotifyWrite(writeLength));
 
             //exercise
-            var actual = sut.DequeueWait(dequeueLength, 1000, cancel.Token).Length;
+            var actual = sut.DequeueWait(dequeueLength, waitTimeout, cancel.Token).Length;
 
             //verify
             Assert.Equal(expected, actual);
@@ -448,6 +449,7 @@ namespace Bjd.Test.Net
         public void SockQueueMaxDequeueLineWait()
         {
             const int max = 2000000;
+            const int waitTimeout = 10;
 
             var sockQueu = new SockQueue();
             var cancel = new System.Threading.CancellationTokenSource();
@@ -466,15 +468,15 @@ namespace Bjd.Test.Net
             Assert.Equal(max - lines.Length - sendbuf.Length, sockQueu.Space);
             Assert.Equal(max, sockQueu.Length);
 
-            var recvbuf1 = sockQueu.DequeueLineWait(2000, cancel.Token);
+            var recvbuf1 = sockQueu.DequeueLineWait(waitTimeout, cancel.Token);
             //sockQueue.dequeuLine()=\"1/r/n\" 1行目取得
             Assert.Equal(new byte[] { 0x61, 0x0d, 0x0a }, recvbuf1);
 
             //sockQueue.dequeuLine()=\"2/r/n\" 2行目取得 
-            var recvbuf2 = sockQueu.DequeueLineWait(2000, cancel.Token);
+            var recvbuf2 = sockQueu.DequeueLineWait(waitTimeout, cancel.Token);
             Assert.Equal(new byte[] { 0x62, 0x0d, 0x0a }, recvbuf2);
 
-            var recvbuf3 = sockQueu.DequeueLineWait(2000, cancel.Token);
+            var recvbuf3 = sockQueu.DequeueLineWait(waitTimeout, cancel.Token);
             //sockQueue.dequeuLine()=\"\" 3行目の取得は失敗する
             Assert.Equal(new byte[0], recvbuf3);
 
@@ -482,11 +484,11 @@ namespace Bjd.Test.Net
             sockQueu.Enqueue(lines, lines.Length);
             //"sockQueue.enqueu(/r/n) 改行のみ追加
 
-            var recvbuf4 = sockQueu.DequeueWait(sendbuf.Length, 2000, cancel.Token);
+            var recvbuf4 = sockQueu.DequeueWait(sendbuf.Length, waitTimeout, cancel.Token);
             Assert.Equal(sendbuf, recvbuf4);
 
 
-            var recvbuf5 = sockQueu.DequeueLineWait(2000, cancel.Token);
+            var recvbuf5 = sockQueu.DequeueLineWait(waitTimeout, cancel.Token);
             //sockQueue.dequeuLine()=\"3\" 3行目の取得に成功する"
             Assert.Equal(new byte[] { 0x63, 0x0d, 0x0a }, recvbuf5);
         }
