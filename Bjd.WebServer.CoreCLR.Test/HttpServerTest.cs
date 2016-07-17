@@ -109,7 +109,7 @@ namespace WebServerTest
 
             //exercise
             _v4Cl.Send(Encoding.ASCII.GetBytes("GET / HTTP/1.0\n\n"));
-            var buf = _v4Cl.LineRecv(5, this);
+            var buf = _v4Cl.LineRecv(10, this);
             var actual = Encoding.ASCII.GetString(buf);
             //verify
             Assert.Equal(expected, actual);

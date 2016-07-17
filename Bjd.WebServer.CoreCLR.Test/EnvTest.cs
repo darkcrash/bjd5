@@ -53,8 +53,32 @@ namespace WebServerTest
         {
         }
 
+        [Fact]
+        //[InlineData("PATHEXT", ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC")]
+        public void PATHEXT()
+        {
+            var key = "PATHEXT";
+            var val = ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
+
+            var request = new HttpRequest(null, null);
+            var header = new HttpHeader();
+            var tcpObj = new SockTcp(_fixture._kernel, new Ip(IpKind.V4_0), 90, 3, null);
+            const string fileName = "";
+            var env = new Env(_fixture._kernel, new Conf(_fixture.option), request, header, tcpObj, fileName);
+            foreach (var e in env)
+            {
+                if (e.Key == key)
+                {
+                    Assert.StartsWith(val.ToLower(), e.Val.ToLower());
+
+                    return;
+                }
+            }
+            Assert.Equal(key, "");
+        }
+
         [Theory]
-        [InlineData("PATHEXT", ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC")]
+        //[InlineData("PATHEXT", ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC")]
         [InlineData("WINDIR", "C:\\Windows")]
         [InlineData("COMSPEC", "C:\\Windows\\system32\\cmd.exe")]
         [InlineData("SERVER_SOFTWARE", "BlackJumboDog .net core/1.0.0.0 (windows)")]
@@ -72,11 +96,11 @@ namespace WebServerTest
                 {
                     if (e.Key == "SERVER_SOFTWARE" && e.Val.IndexOf(".1478") > 0)
                     {
-                        Assert.Equal(e.Val.ToLower(), "BlackJumboDog/7.1.2000.1478 (Windows)".ToLower());
+                        Assert.Equal("BlackJumboDog/7.1.2000.1478 (Windows)".ToLower(), e.Val.ToLower());
                     }
                     else
                     {
-                        Assert.Equal(e.Val.ToLower(), val.ToLower());
+                        Assert.Equal(val.ToLower(), e.Val.ToLower());
                     }
                     return;
                 }
