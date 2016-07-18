@@ -8,6 +8,8 @@ using Bjd.Net.Sockets;
 using Bjd.Net;
 using Bjd.Options;
 using System.Collections.Generic;
+using Xunit.Abstractions;
+using Bjd.Test.Logs;
 
 namespace Bjd.Services
 {
@@ -128,6 +130,12 @@ namespace Bjd.Services
 
             Trace.TraceInformation("TestService.ServiceTest End");
             return instance;
+        }
+
+        List<TestOutputService> tos = new List<TestOutputService>();
+        public void AddOutput(ITestOutputHelper output)
+        {
+            tos.Add(TestOutputService.CreateListener(output));
         }
 
         public void ContentFile(params string[] paths)
