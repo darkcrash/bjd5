@@ -36,6 +36,14 @@ namespace Bjd.Services
                     {
                         this._kernel.Dispose();
                     }
+                    if (tos != null)
+                    {
+                        foreach(var item in tos)
+                        {
+                            item.Dispose();
+                        }
+                        tos = null;
+                    }
                     this._kernel = null;
                     try { Directory.Delete(this.env.ExecutableDirectory, true); } catch { };
                     try { Directory.Delete(this.env.ConfigurationDirectory, true); } catch { };
@@ -135,7 +143,7 @@ namespace Bjd.Services
         List<TestOutputService> tos = new List<TestOutputService>();
         public void AddOutput(ITestOutputHelper output)
         {
-            tos.Add(TestOutputService.CreateListener(output));
+            tos.Add(new TestOutputService(output));
         }
 
         public void ContentFile(params string[] paths)
