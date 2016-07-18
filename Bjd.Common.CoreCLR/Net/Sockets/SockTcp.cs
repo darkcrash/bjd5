@@ -156,8 +156,8 @@ namespace Bjd.Net.Sockets
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.StackTrace}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.BeginReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"SockTcp.BeginReceive {ex.StackTrace}");
                 this.SetErrorReceive();
             }
         }
@@ -170,6 +170,7 @@ namespace Bjd.Net.Sockets
             {
                 System.Diagnostics.Trace.TraceError(result.Exception.Message);
                 System.Diagnostics.Trace.TraceError(result.Exception.StackTrace);
+                System.Diagnostics.Trace.TraceError($"ReceiveSize:{result.Result}");
                 this.SetErrorReceive();
                 return;
             }
