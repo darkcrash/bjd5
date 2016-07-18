@@ -152,8 +152,7 @@ namespace Bjd.Net.Sockets
                 {
                     tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
-                var ts = TaskScheduler.Current;
-                tReceive.ContinueWith(_ => this.EndReceive(_), this.CancelToken, TaskContinuationOptions.LongRunning, ts);
+                tReceive.ContinueWith(_ => this.EndReceive(_), TaskContinuationOptions.LongRunning);
             }
             catch (Exception ex)
             {

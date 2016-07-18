@@ -12,19 +12,22 @@ using Bjd.WebServer;
 using Bjd.Services;
 using Bjd.Threading;
 using Bjd.Net.Sockets;
+using Xunit.Abstractions;
+using Bjd.Test.Logs;
 
 namespace WebServerTest
 {
 
-    public class CgiTest : ILife
+    public class CgiTest : ILife, IDisposable
     {
         private TestService _service;
         private Kernel _kernel;
         private OneOption _option;
 
-        public CgiTest()
+        public CgiTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _service.SetOption("CgiTest.ini");
             _service.ContentDirectory("public_html");
             _kernel = _service.Kernel;
@@ -47,7 +50,6 @@ namespace WebServerTest
             using (var sv = new WebServer(_kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp)))
             {
                 sv.Start();
-                System.Threading.Thread.Sleep(500);
 
                 SockTcp cl = null;
                 for (var r = 0; r < 10; r++)
