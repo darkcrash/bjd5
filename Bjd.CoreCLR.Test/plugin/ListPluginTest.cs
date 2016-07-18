@@ -17,7 +17,7 @@ namespace Bjd.Common.Test.plugin
             using (TestService service = TestService.CreateTestService())
             {
                 service.SetOption("Option.ini");
-                service.ContentDirectory("mailbox");
+                //service.ContentDirectory("mailbox");
 
                 //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
@@ -38,7 +38,7 @@ namespace Bjd.Common.Test.plugin
             using (TestService service = TestService.CreateTestService())
             {
                 service.SetOption("Option.ini");
-                service.ContentDirectory("mailbox");
+                //service.ContentDirectory("mailbox");
 
                 //var kernel = new Kernel();
                 var kernel = service.Kernel;
