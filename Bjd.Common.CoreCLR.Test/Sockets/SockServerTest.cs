@@ -194,7 +194,7 @@ namespace Bjd.Test.Sockets
                     }
 
                     var localAddress = sockServer.LocalAddress;
-                    Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
+                    Assert.Equal($"127.0.0.1:{port}", localAddress.ToString());
                     //bind()後 localAddressの取得が可能になる
 
                     var remoteAddress = sockServer.RemoteAddress;
@@ -242,7 +242,7 @@ namespace Bjd.Test.Sockets
                     }
 
                     var localAddress = sockServer.LocalAddress;
-                    Assert.Equal(localAddress.ToString(), "127.0.0.1:9991");
+                    Assert.Equal($"127.0.0.1:{port}", localAddress.ToString());
                     //bind()後 localAddressの取得が可能になる
 
                     var remoteAddress = sockServer.RemoteAddress;
