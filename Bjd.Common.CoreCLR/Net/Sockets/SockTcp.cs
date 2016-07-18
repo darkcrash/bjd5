@@ -41,7 +41,8 @@ namespace Bjd.Net.Sockets
             try
             {
                 var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
-                tConnect.ContinueWith(_ => CallbackConnect(), this.CancelToken);
+                var result = tConnect.ContinueWith(_ => CallbackConnect(), this.CancelToken);
+                result.Wait();
             }
             catch
             {
@@ -170,7 +171,6 @@ namespace Bjd.Net.Sockets
             {
                 System.Diagnostics.Trace.TraceError(result.Exception.Message);
                 System.Diagnostics.Trace.TraceError(result.Exception.StackTrace);
-                System.Diagnostics.Trace.TraceError($"ReceiveSize:{result.Result}");
                 this.SetErrorReceive();
                 return;
             }
@@ -234,6 +234,7 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueWait(len, toutms, this.CancelToken);
             if (result.Length == 0 && SockState != SockState.Connect) return null;
+            System.Diagnostics.Trace.TraceInformation($"SockTcp.Recv {result.Length}");
             return result;
         }
 
@@ -244,6 +245,7 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
+            System.Diagnostics.Trace.TraceInformation($"SockTcp.LineRecv {result.Length}");
             return result;
         }
 
@@ -279,6 +281,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(byte[] buf, int length)
         {
+            System.Diagnostics.Trace.TraceInformation($"SockTcp.Send {length}");
             try
             {
                 if (buf.Length != length)

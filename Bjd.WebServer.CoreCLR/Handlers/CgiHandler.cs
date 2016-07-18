@@ -55,13 +55,17 @@ namespace Bjd.WebServer.Handlers
             //***************************************************
             if (Path.GetFileName(selector.FullPath).IndexOf("nph-") == 0)
             {
+                System.Diagnostics.Trace.TraceInformation("CgiHandler.Request nph");
                 connection.Connection.SendUseEncode(context.OutputStream.GetBytes());//CGI出力をそのまま送信する
                 return false;
             }
 
             // CGIで得られた出力から、本体とヘッダを分離する
             if (!context.Response.CreateFromCgi(context.OutputStream.GetBytes()))
+            {
                 return false;
+            }
+            System.Diagnostics.Trace.TraceInformation("CgiHandler.CreateFromCgi ");
 
             // cgi出力で、Location:が含まれる場合、レスポンスコードを302にする
             if (context.Response.SearchLocation())//Location:ヘッダを含むかどうか
