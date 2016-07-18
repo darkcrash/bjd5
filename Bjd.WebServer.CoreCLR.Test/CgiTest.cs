@@ -82,7 +82,7 @@ namespace WebServerTest
         public void EnvCgiTestv6()
         {
             var conf = new Conf(_option);
-            var port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
+            var port = _service.GetAvailablePort(IpKind.V6Localhost, conf);
             //サーバ起動
             using (var sv = new WebServer(_kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp)))
             {

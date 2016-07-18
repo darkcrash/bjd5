@@ -7,13 +7,15 @@ using System.IO;
 using Bjd.Net.Sockets;
 using Bjd.Net;
 using Bjd.Options;
+using System.Collections.Generic;
 
 namespace Bjd.Services
 {
     public class TestService : IDisposable
     {
         private static Random rd = new Random();
-
+        private static List<int> useTcpPortList = new List<int>();
+        private static List<int> useUdpPortList = new List<int>();
         private TestService()
         {
         }
@@ -275,8 +277,16 @@ namespace Bjd.Services
         {
             for (var i = port; i < 65000; i++)
             {
-                if (SockUtil.IsAvailable(Kernel, ip, i))
-                    return i;
+                lock (useTcpPortList)
+                {
+                    if (useTcpPortList.Contains(i)) continue;
+                    if (SockUtil.IsAvailable(Kernel, ip, i))
+                    {
+                        useTcpPortList.Add(i);
+                        return i;
+                    }
+                }
+
             }
             throw new Exception($"Available port not found {port}");
         }
@@ -295,8 +305,15 @@ namespace Bjd.Services
         {
             for (var i = port; i < 65000; i++)
             {
-                if (SockUtil.IsAvailableUdp(Kernel, ip, i))
-                    return i;
+                lock (useTcpPortList)
+                {
+                    if (useUdpPortList.Contains(i)) continue;
+                    if (SockUtil.IsAvailableUdp(Kernel, ip, i))
+                    {
+                        useUdpPortList.Add(i);
+                        return i;
+                    }
+                }
             }
             throw new Exception($"Available port not found {port}");
         }

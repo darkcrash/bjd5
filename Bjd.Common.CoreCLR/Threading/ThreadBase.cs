@@ -121,7 +121,7 @@ namespace Bjd.Threading
                 _t.Start();
 
                 //スレッドが起動してステータスがRUNになるまで待機する
-                RunningWait.Wait();
+                RunningWait.Wait(60000);
 
             }
             catch (Exception ex)

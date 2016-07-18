@@ -20,6 +20,7 @@ namespace WebServerTest
             internal TestService _service;
             private WebServer _v6Sv; //サーバ
             internal WebServer _v4Sv; //サーバ
+            internal int port = 7091;
 
 
             public ServerFixture()
@@ -33,12 +34,16 @@ namespace WebServerTest
 
                 Kernel kernel = _service.Kernel;
                 option = kernel.ListOption.Get("Web-localhost:7091");
+                Conf conf = new Conf(option);
+                var ipv4 = new Ip(IpKind.V4Localhost);
+                var ipv6 = new Ip(IpKind.V6Localhost);
+                port = _service.GetAvailablePort(ipv4, conf);
 
                 //サーバ起動
-                _v4Sv = new WebServer(kernel, new Conf(option), new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                _v4Sv = new WebServer(kernel, new Conf(option), new OneBind(ipv4, ProtocolKind.Tcp));
                 _v4Sv.Start();
 
-                _v6Sv = new WebServer(kernel, new Conf(option), new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                _v6Sv = new WebServer(kernel, new Conf(option), new OneBind(ipv6, ProtocolKind.Tcp));
                 _v6Sv.Start();
 
 

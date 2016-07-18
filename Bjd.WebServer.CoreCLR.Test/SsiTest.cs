@@ -19,10 +19,11 @@ namespace WebServerTest
 
     public class SsiTest : ILife, IDisposable, IClassFixture<SsiTest.ServerFixture>
     {
-        const int port = 7089;
-
+        bool isLife = true;
         public class ServerFixture : IDisposable
         {
+            internal int portv4 = 7089;
+            internal int portv6 = 7089;
             internal TestService _service;
             private WebServer _v6Sv; //サーバ
             internal WebServer _v4Sv; //サーバ
@@ -36,14 +37,18 @@ namespace WebServerTest
                 var kernel = _service.Kernel;
                 var option = kernel.ListOption.Get("Web-localhost:7089");
                 Conf conf = new Conf(option);
+                var ipv4 = new Ip(IpKind.V4Localhost);
+                var ipv6 = new Ip(IpKind.V6Localhost);
+                portv4 = _service.GetAvailablePort(ipv4, conf);
+                portv6 = portv4;
+
 
                 //サーバ起動
-                _v4Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                _v4Sv = new WebServer(kernel, conf, new OneBind(ipv4, ProtocolKind.Tcp));
                 _v4Sv.Start();
 
-                _v6Sv = new WebServer(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                _v6Sv = new WebServer(kernel, conf, new OneBind(ipv6, ProtocolKind.Tcp));
                 _v6Sv.Start();
-
 
             }
 
@@ -73,7 +78,7 @@ namespace WebServerTest
 
         public void Dispose()
         {
-
+            isLife = false;
         }
 
 
@@ -134,7 +139,7 @@ namespace WebServerTest
                 pattern = string.Format("FLASTMOD = {0}", Date2Str(File.GetLastWriteTime(path)));
             }
 
-            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
             int sec = 2; //CGI処理待ち時間（これで大丈夫?）
@@ -161,7 +166,7 @@ namespace WebServerTest
         {
             var expected = "100+200=300";
 
-            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/ExecCgi.html HTTP/1.1\nHost: ws00\n\n"));
             int sec = 5;
@@ -187,7 +192,7 @@ namespace WebServerTest
         {
             var expected = "Hello world.(SSL Include)";
 
-            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/Include.html HTTP/1.1\nHost: ws00\n\n"));
             int sec = 5;
@@ -213,7 +218,7 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
@@ -233,7 +238,7 @@ namespace WebServerTest
         {
             //SetUp
             var kernel = _fixture._service.Kernel;
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));
@@ -251,7 +256,7 @@ namespace WebServerTest
 
         public bool IsLife()
         {
-            return true;
+            return isLife;
         }
     }
 }
