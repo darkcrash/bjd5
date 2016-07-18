@@ -11,6 +11,7 @@ using Xunit;
 using Bjd.WebServer;
 using Bjd.Services;
 using Bjd.Threading;
+using Bjd.Net.Sockets;
 
 namespace WebServerTest
 {
@@ -46,24 +47,31 @@ namespace WebServerTest
             using (var sv = new WebServer(_kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp)))
             {
                 sv.Start();
+                System.Threading.Thread.Sleep(500);
 
-                var cl = Inet.Connect(_kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+                SockTcp cl = null;
+                for (var r = 0; r < 10; r++)
+                {
+                    cl = Inet.Connect(_kernel, new Ip(IpKind.V4Localhost), port, 20, null);
+                    if (cl.SockState == Bjd.Net.Sockets.SockState.Connect) break;
+                }
 
                 cl.Send(Encoding.ASCII.GetBytes("GET /CgiTest/env.cgi HTTP/1.1\n"));
                 //cl.Send(Encoding.ASCII.GetBytes("Connection: keep-alive\n"));
                 cl.Send(Encoding.ASCII.GetBytes("Host: localhost\n"));
                 cl.Send(Encoding.ASCII.GetBytes("\n"));
                 int sec = 10; //CGI処理待ち時間（これで大丈夫?）
-                var lines = Inet.RecvLines(cl, sec, this);
-                //var lines = new List<string>();
-                //for (var i = 0; i < 78; i++)
-                //{
-                //    var result = cl.LineRecv(sec, this);
-                //    if (result == null) break;
-                //    result = Inet.TrimCrlf(result);
-                //    var text = Encoding.ASCII.GetString(result);
-                //    lines.Add(text);
-                //}
+
+                //var lines = Inet.RecvLines(cl, sec, this);
+                var lines = new List<string>();
+                for (var i = 0; i < 78; i++)
+                {
+                    var result = cl.LineRecv(sec, this);
+                    if (result == null) break;
+                    result = Inet.TrimCrlf(result);
+                    var text = Encoding.ASCII.GetString(result);
+                    lines.Add(text);
+                }
                 const string pattern = "<b>SERVER_NAME</b>";
                 var find = lines.Any(l => l.IndexOf(pattern) != -1);
                 //Assert.Equal(find, true, string.Format("not found {0}", pattern));

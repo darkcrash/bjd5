@@ -203,6 +203,8 @@ namespace Bjd.Net.Sockets
             while ((_sockQueue.Space) == 0)
             {
                 Thread.Sleep(10); //他のスレッドに制御を譲る  
+                if (disposedValue) return;
+                if (CancelToken.IsCancellationRequested) return;
                 if (SockState != SockState.Connect)
                 {
                     System.Diagnostics.Trace.TraceInformation($"SockTcp.EndReceive Not Connected");
@@ -242,7 +244,6 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
-            if (SockState != SockState.Connect) return null;
             return result;
         }
 
