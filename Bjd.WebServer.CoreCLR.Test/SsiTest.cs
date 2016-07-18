@@ -142,20 +142,26 @@ namespace WebServerTest
             var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
-            int sec = 2; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
             //var lines = Inet.RecvLines(cl, sec, this);
             var lines = new List<string>();
+            var isMatch = false;
             while (true)
             {
                 var result = cl.LineRecv(sec, this);
                 if (result == null) break;
                 result = Inet.TrimCrlf(result);
                 var text = Encoding.ASCII.GetString(result);
+                if (text.IndexOf(pattern) != -1)
+                {
+                    isMatch = true;
+                    break;
+                }
                 lines.Add(text);
             }
-            var find = lines.Any(l => l.IndexOf(pattern) != -1);
+            //var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
-            Assert.Equal(find, true);
+            Assert.Equal(isMatch, true);
 
             cl.Close();
 
@@ -222,8 +228,19 @@ namespace WebServerTest
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
-            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
-            var lines = Inet.RecvLines(cl, sec, this);
+            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            //var lines = Inet.RecvLines(cl, sec, this);
+
+            var lines = new List<string>();
+            for (var i = 0; i < 16; i++)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                lines.Add(text);
+            }
+
             var expected = "<html>";
             var actual = lines[8];
             //verify
@@ -242,8 +259,19 @@ namespace WebServerTest
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));
-            int sec = 5; //CGI処理待ち時間（これで大丈夫?）
-            var lines = Inet.RecvLines(cl, sec, this);
+            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            //var lines = Inet.RecvLines(cl, sec, this);
+
+            var lines = new List<string>();
+            for (var i = 0; i < 10; i++)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                lines.Add(text);
+            }
+
             var expected = "100+200=300";
             var actual = lines[8];
             //verify
