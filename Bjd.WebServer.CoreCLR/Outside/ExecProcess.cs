@@ -104,13 +104,13 @@ namespace Bjd.WebServer.Outside
                 ret = false;
             }
             outputStream = _outputStream;
+            Trace.TraceInformation($"ExecProcess: outputLength{outputStream.Length}");
             return ret;
         }
 
         //outputをファイル化するスレッド
         void ReadThread()
         {
-
             const int max = 6553500;
             var tmp = new byte[max];
             while (true)
@@ -120,7 +120,7 @@ namespace Bjd.WebServer.Outside
                 {
                     if (_finish)
                         break;
-                    Thread.Sleep(10);
+                    Thread.Sleep(5);
                 }
                 _outputStream.Add2(tmp, 0, len);
             }

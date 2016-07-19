@@ -32,7 +32,7 @@ namespace Bjd.Net.Sockets
 
         public SockServerTcp(Kernel kernel, ProtocolKind protocolKind, Ssl ssl) : base(kernel)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
+            System.Diagnostics.Trace.TraceInformation($"SockServerTcp..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
             var pool = SockQueuePool.Instance;
@@ -55,7 +55,7 @@ namespace Bjd.Net.Sockets
         //TCP用
         public bool Bind(Ip bindIp, int port, int listenMax)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.Bind TCP Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
+            System.Diagnostics.Trace.TraceInformation($"SockServerTcp.Bind TCP Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
             _bindIp = bindIp;
             _bindPort = port;
             try
@@ -81,13 +81,13 @@ namespace Bjd.Net.Sockets
             }
             finally
             {
-                System.Diagnostics.Trace.TraceInformation("SockServer.Bind End");
+                System.Diagnostics.Trace.TraceInformation("SockServerTcp.Bind End");
             }
         }
 
         public SockTcp Select(ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
+            System.Diagnostics.Trace.TraceInformation($"SockServerTcp.Select");
             try
             {
                 this.SockState = SockState.Bind;
@@ -109,7 +109,7 @@ namespace Bjd.Net.Sockets
             }
             catch (OperationCanceledException)
             {
-                System.Diagnostics.Trace.TraceInformation("SockServer.Select OperationCanceledException");
+                System.Diagnostics.Trace.TraceInformation("SockServerTcp.Select OperationCanceledException");
             }
             catch (Exception ex)
             {

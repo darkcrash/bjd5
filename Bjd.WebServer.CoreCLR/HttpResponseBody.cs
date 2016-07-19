@@ -54,6 +54,7 @@ namespace Bjd.WebServer
             _kindBuf = KindBuf.Memory;
             _doc = new byte[buf.Length];
             Buffer.BlockCopy(buf, 0, _doc, 0, buf.Length);
+            System.Diagnostics.Trace.TraceInformation($"HttpResponseBody.Set Length={buf.Length}");
         }
 
         public long Length
@@ -70,7 +71,7 @@ namespace Bjd.WebServer
         //public bool Send(SockTcp tcpObj,bool encode,ref bool life){
         public bool Send(SockTcp tcpObj, bool encode, ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"Document.Body.Send");
+            System.Diagnostics.Trace.TraceInformation($"HttpResponseBody.Send encode={encode}");
             if (_kindBuf == KindBuf.Memory)
             {
                 if (encode)

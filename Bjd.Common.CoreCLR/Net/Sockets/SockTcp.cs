@@ -19,6 +19,7 @@ namespace Bjd.Net.Sockets
         private OneSsl _oneSsl;
         private SockQueue _sockQueue;
         private bool isSsl = false;
+        private int hash;
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -36,30 +37,23 @@ namespace Bjd.Net.Sockets
             //SSL通信を使用する場合は、このオブジェクトがセットされる 通常の場合は、null
             _ssl = ssl;
             isSsl = _ssl != null;
+            hash = this.GetHashCode();
 
             _socket = new Socket((ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            _socket.SendTimeout = timeout * 1000;
+            _socket.ReceiveTimeout = timeout * 1000;
             try
             {
-                var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
-                var result = tConnect.ContinueWith(_ => CallbackConnect(), this.CancelToken);
-                result.Wait();
-            }
-            catch
-            {
-                SetError("BeginConnect() faild");
-            }
-            //[C#] 接続が完了するまで待機する
-            while (SockState == SockState.Idle)
-            {
-                Thread.Sleep(10);
-            }
-            //ここまでくると接続が完了している
-        }
+                //var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
+                //tConnect.Wait();
+                _socket.Connect(ip.IPAddress, port);
 
-        private void CallbackConnect()
-        {
-            if (_socket.Connected)
-            {
+                if (!_socket.Connected)
+                {
+                    SetError("CallbackConnect() faild");
+                    return;
+                }
+
                 //ここまでくると接続が完了している
                 if (isSsl)
                 {
@@ -71,13 +65,24 @@ namespace Bjd.Net.Sockets
                         return;
                     }
                 }
-                SetConnectionInfo();
-                BeginReceive(); //接続完了処理（受信待機開始）
+
             }
-            else
+            catch
             {
-                SetError("CallbackConnect() faild");
+                SetError("BeginConnect() faild");
             }
+            ////[C#] 接続が完了するまで待機する
+            //while (SockState == SockState.Idle)
+            //{
+            //    Thread.Sleep(10);
+            //}
+            //ここまでくると接続が完了している
+
+            SetConnectionInfo();
+            //var t = new Task(BeginReceive, this.CancelToken, TaskCreationOptions.LongRunning);
+            //t.Start();
+            BeginReceive(); //接続完了処理（受信待機開始）
+
         }
 
         //ACCEPT
@@ -89,6 +94,7 @@ namespace Bjd.Net.Sockets
             _socket = s;
             _ssl = ssl;
             isSsl = _ssl != null;
+            hash = this.GetHashCode();
 
             //既に接続を完了している
             if (isSsl)
@@ -103,10 +109,12 @@ namespace Bjd.Net.Sockets
             }
 
             SetConnectionInfo();
-            //read待機
-            //接続完了処理（受信待機開始）
-            var t = new Task(() => { BeginReceive(); }, this.CancelToken, TaskCreationOptions.LongRunning);
-            t.Start();
+            ////read待機
+            ////接続完了処理（受信待機開始）
+            //var t = new Task(BeginReceive, this.CancelToken, TaskCreationOptions.LongRunning);
+            //t.Start();
+            BeginReceive(); //接続完了処理（受信待機開始）
+
         }
 
         public int Length()
@@ -122,6 +130,8 @@ namespace Bjd.Net.Sockets
 
             try
             {
+                _socket.NoDelay = true;
+
                 //Ver5.6.0
                 Set(SockState.Connect, (IPEndPoint)_socket.LocalEndPoint, (IPEndPoint)_socket.RemoteEndPoint);
             }
@@ -135,7 +145,7 @@ namespace Bjd.Net.Sockets
         //接続完了処理（受信待機開始）
         private void BeginReceive()
         {
-            System.Diagnostics.Trace.TraceInformation("SockTcp.BeginReceive");
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.BeginReceive");
 
             // Using the LocalEndPoint property.
             //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -153,24 +163,45 @@ namespace Bjd.Net.Sockets
                 {
                     tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
-                tReceive.ContinueWith(_ => this.EndReceive(_), TaskContinuationOptions.LongRunning);
+                tReceive.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"SockTcp.BeginReceive {ex.Message}");
-                System.Diagnostics.Trace.TraceError($"SockTcp.BeginReceive {ex.StackTrace}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
                 this.SetErrorReceive();
             }
         }
 
         public void EndReceive(Task<int> result)
         {
-            System.Diagnostics.Trace.TraceInformation("SockTcp.EndReceive");
 
-            if (result.IsFaulted || !result.IsCompleted)
+            if (result.IsCanceled)
             {
-                System.Diagnostics.Trace.TraceError(result.Exception.Message);
-                System.Diagnostics.Trace.TraceError(result.Exception.StackTrace);
+                System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive IsCanceled=true");
+                return;
+            }
+
+            if (result.IsFaulted)
+            {
+                var ex = result.Exception.InnerException as SocketException;
+                if (ex != null)
+                {
+                    System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.SocketErrorCode:{ex.SocketErrorCode}");
+                }
+
+                // 一部のエラーでは再試行する
+                switch(ex.SocketErrorCode)
+                {
+                    case SocketError.OperationAborted:
+                        this.BeginReceive();
+                        return;
+                }
+
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionType:{result.Exception.InnerException.GetType().FullName}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.InnerException.Message}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.Message}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.StackTrace:{result.Exception.StackTrace}");
                 this.SetErrorReceive();
                 return;
             }
@@ -181,6 +212,7 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 int bytesRead = result.Result;
+                System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive Length={bytesRead}");
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
@@ -193,7 +225,7 @@ namespace Bjd.Net.Sockets
             catch (Exception ex)
             {
                 //受信待機のままソケットがクローズされた場合は、ここにくる
-                System.Diagnostics.Trace.TraceError($"SockTcp.EndReceive {ex.Message}");
+                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
                 this.SetErrorReceive();
                 return;
             }
@@ -207,7 +239,7 @@ namespace Bjd.Net.Sockets
                 if (CancelToken.IsCancellationRequested) return;
                 if (SockState != SockState.Connect)
                 {
-                    System.Diagnostics.Trace.TraceInformation($"SockTcp.EndReceive Not Connected");
+                    System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive Not Connected");
                     this.SetErrorReceive();
                     return;
                 }
@@ -222,7 +254,7 @@ namespace Bjd.Net.Sockets
         {
             //err: //エラー発生
             //【2009.01.12 追加】相手が存在しなくなっている
-            SetError("disconnect");
+            SetError($"{hash} SockTcp.disconnect");
             //state = SocketObjState.Disconnect;
             //Close();クローズは外部から明示的に行う
         }
@@ -245,7 +277,7 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
-            System.Diagnostics.Trace.TraceInformation($"SockTcp.LineRecv {result.Length}");
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.LineRecv {result.Length}");
             return result;
         }
 
@@ -281,7 +313,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(byte[] buf, int length)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockTcp.Send {length}");
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.Send {length}");
             try
             {
                 if (buf.Length != length)
@@ -373,6 +405,7 @@ namespace Bjd.Net.Sockets
         //RemoteObj.Send()では、こちらを使用する
         public int SendNoTrace(byte[] buffer)
         {
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.SendNoTrace {buffer.Length}");
             try
             {
                 if (isSsl)
@@ -385,14 +418,13 @@ namespace Bjd.Net.Sockets
                     var arry = new ArraySegment<byte>(buffer, 0, buffer.Length);
                     var result = _socket.SendAsync(arry, SocketFlags.None);
                     result.Wait(this.CancelToken);
-                    if (result.IsCompleted)
-                        return result.Result;
+                    return result.Result;
                     //return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
                 }
             }
             catch (Exception ex)
             {
-                SetError($"SendNoTrace Length={buffer.Length} {ex.Message}");
+                SetError($"{hash} SendNoTrace Length={buffer.Length} {ex.Message}");
                 //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
             }
             return -1;
@@ -418,7 +450,7 @@ namespace Bjd.Net.Sockets
             }
             catch (Exception ex)
             {
-                SetError($"SendNoTrace Length={buffer.Count} {ex.Message}");
+                SetError($"{hash} SendNoTrace Length={buffer.Count} {ex.Message}");
                 //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
             }
             return -1;
@@ -523,7 +555,7 @@ namespace Bjd.Net.Sockets
                 if (_socket != null)
                 {
                     //_socket.Close();
-                    _socket.Poll(500000, SelectMode.SelectRead);
+                    _socket.Poll(10000000, SelectMode.SelectRead);
                     _socket.Dispose();
                     _socket = null;
                 }
