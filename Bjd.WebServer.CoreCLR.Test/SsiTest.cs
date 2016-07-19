@@ -13,6 +13,8 @@ using Bjd.WebServer;
 using Bjd.Services;
 using Bjd.Threading;
 using System.Collections.Generic;
+using Xunit.Abstractions;
+using Bjd.Test.Logs;
 
 namespace WebServerTest
 {
@@ -69,16 +71,18 @@ namespace WebServerTest
         }
 
         private ServerFixture _fixture;
+        private TestOutputService _output;
 
-        public SsiTest(ServerFixture fixture)
+        public SsiTest(ServerFixture fixture, ITestOutputHelper helper)
         {
             _fixture = fixture;
-
+            _output = new TestOutputService(helper);
         }
 
         public void Dispose()
         {
             isLife = false;
+            _output.Dispose();
         }
 
 
