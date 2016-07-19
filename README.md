@@ -14,6 +14,8 @@ BlackJumboDog
 | Projects | AppVeyor Project Status |
 |---|:-----:|
 |Bjd.Common.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/p8i96er4tg3j8fbd?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5)|
+|Bjd.DnsServer.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/xwv7m92c86qb3c85?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-3cwig)|
+|Bjd.SmtpServer.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/hv9pu705wpb5l7ri?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qqab7)|
 |Bjd.WebServer.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/8769awquopw95l59?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qhoq4)|
 |Bjd.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/by5u3anq3g2gjb05?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-p6o91)|
 
