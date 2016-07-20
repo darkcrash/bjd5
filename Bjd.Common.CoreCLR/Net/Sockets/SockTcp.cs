@@ -191,7 +191,7 @@ namespace Bjd.Net.Sockets
                 }
 
                 // 一部のエラーでは再試行する
-                switch(ex.SocketErrorCode)
+                switch (ex.SocketErrorCode)
                 {
                     case SocketError.OperationAborted:
                         this.BeginReceive();
@@ -266,7 +266,8 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueWait(len, toutms, this.CancelToken);
             if (result.Length == 0 && SockState != SockState.Connect) return null;
-            System.Diagnostics.Trace.TraceInformation($"SockTcp.Recv {result.Length}");
+            var length = (result != null ? result.Length.ToString() : "null");
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.Recv {length}");
             return result;
         }
 
@@ -277,7 +278,8 @@ namespace Bjd.Net.Sockets
             var toutms = sec * 1000;
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.LineRecv {result.Length}");
+            var length = (result != null ? result.Length.ToString() : "null");
+            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.LineRecv {length}");
             return result;
         }
 
