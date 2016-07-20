@@ -5,6 +5,7 @@ using System.Reflection;
 using Bjd.Logs;
 using Xunit;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Logs
 {
@@ -13,14 +14,17 @@ namespace Bjd.Test.Logs
         //テンポラリディレクトリ名
         const string TmpDir = "LogFileTest";
         TestService service;
+        TestOutputService _output;
 
-        public LogFileTest()
+        public LogFileTest(ITestOutputHelper output)
         {
             service = TestService.CreateTestService();
+            _output = new TestOutputService(output);
         }
 
         public void Dispose()
         {
+            _output.Dispose();
             service.Dispose();
         }
 
