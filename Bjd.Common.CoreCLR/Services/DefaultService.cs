@@ -22,10 +22,12 @@ namespace Bjd.Services
 #else
             var f = new EventTypeFilter(SourceLevels.Warning);
 #endif
+            // filter Trace
             foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
             {
                 l.Filter = f;
             }
+            Trace.UseGlobalLock = false;
 
             // Define Initialize
             Define.Initialize();
