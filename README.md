@@ -8,6 +8,7 @@ BlackJumboDog
 |   | Status |
 |---|:-----:|
 |MyGet pack|[![blackjumbodog-core MyGet Build Status](https://www.myget.org/BuildSource/Badge/blackjumbodog-core?identifier=d28a64e2-3864-4cb0-b9b5-cf1a83cc77e8)](https://www.myget.org/)|
+|Packages|[![MyGet](https://img.shields.io/myget/blackjumbodog-core/v/Bjd.Common.CoreCLR.svg?maxAge=2592000?style=plastic)](https://www.myget.org/feed/Packages/blackjumbodog-core)|
 
 ## Test Status
 
@@ -100,6 +101,8 @@ publish
 
 [darkcrash/blackjumbodog-dotnet-core](https://hub.docker.com/r/darkcrash/blackjumbodog-dotnet-core/)
 
+[![Docker Stars](https://img.shields.io/docker/stars/darkcrash/blackjumbodog-dotnet-core.svg?maxAge=2592000?style=plastic)](https://hub.docker.com/r/darkcrash/blackjumbodog-dotnet-core/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/darkcrash/blackjumbodog-dotnet-core.svg?maxAge=2592000?style=plastic)](https://hub.docker.com/r/darkcrash/blackjumbodog-dotnet-core/)
 
 TAG
 
