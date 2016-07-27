@@ -53,17 +53,17 @@ namespace Bjd.SmtpServer.Test
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return new PopClient(kernel, new Ip(IpKind.V4Localhost), 9112, 3, this);
+                return new PopClient(kernel, new Ip(IpKind.V4Localhost), _testServer.port, 3, this);
             }
-            return new PopClient(kernel, new Ip(IpKind.V6Localhost), 9112, 3, this);
+            return new PopClient(kernel, new Ip(IpKind.V6Localhost), _testServer.port, 3, this);
         }
 
 
 
 
         [Theory]
-        [InlineData(InetKind.V4, "127.0.0.1", 9115)]
-        [InlineData(InetKind.V6, "::1", 9115)]
+        [InlineData(InetKind.V4, "127.0.0.1", 9110)]
+        [InlineData(InetKind.V6, "::1", 9110)]
         public void 接続失敗_ポート間違い(InetKind inetKind, String addr, int port)
         {
             var kernel = _testServer._service.Kernel;

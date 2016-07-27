@@ -45,9 +45,9 @@ namespace Bjd.SmtpServer.Test
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
-                return new SmtpClient(kernel, new Ip(IpKind.V4Localhost), 9025, 3, this);
+                return new SmtpClient(kernel, new Ip(IpKind.V4Localhost), _testServer.port, 3, this);
             }
-            return new SmtpClient(kernel, new Ip(IpKind.V6Localhost), 9025, 3, this);
+            return new SmtpClient(kernel, new Ip(IpKind.V6Localhost), _testServer.port, 3, this);
         }
 
         [Theory]

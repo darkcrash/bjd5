@@ -21,6 +21,7 @@ namespace Bjd.SmtpServer.Test
         public TestService _service;
         public Server _v4Sv; //サーバ
         public Server _v6Sv; //サーバ
+        public int port;
 
         public class ServerFixture : IDisposable
         {
@@ -54,6 +55,8 @@ namespace Bjd.SmtpServer.Test
             var kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Smtp");
             var conf = new Conf(option);
+            port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
+
 
             //サーバ起動
             _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -93,7 +96,6 @@ namespace Bjd.SmtpServer.Test
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            int port = 8825;  //ウイルススキャンにかかるため25を避ける
             if (inetKind == InetKind.V4)
             {
                 return Inet.Connect(_service.Kernel, new Ip(IpKind.V4Localhost), port, 10, null);

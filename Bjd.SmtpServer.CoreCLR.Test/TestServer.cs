@@ -23,6 +23,7 @@ namespace Bjd.SmtpServer.Test
         public readonly TestService _service;
         private readonly OneServer _v6Sv; //サーバ
         private readonly OneServer _v4Sv; //サーバ
+        public readonly int port;
 
         public TestServer(TestServerType type, string iniOption)
         {
@@ -34,6 +35,7 @@ namespace Bjd.SmtpServer.Test
             var kernel = _service.Kernel;
             var option = kernel.ListOption.Get(confName);
             var conf = new Conf(option);
+            port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
 
 
             //サーバ起動

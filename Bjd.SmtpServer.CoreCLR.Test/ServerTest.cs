@@ -20,7 +20,7 @@ namespace Bjd.SmtpServer.Test
 
         public class SmtpTestServer : TestServer
         {
-            public SmtpTestServer() : base(TestServerType.Smtp,  "ServerTest.ini")
+            public SmtpTestServer() : base(TestServerType.Smtp, "ServerTest.ini")
             {
                 _service.CreateMailbox("user1");
             }
@@ -43,7 +43,7 @@ namespace Bjd.SmtpServer.Test
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            const int port = 8826; //ウイルススキャンにかかるため25を避ける
+            int port = _testServer.port; //ウイルススキャンにかかるため25を避ける
             var kernel = _testServer._service.Kernel;
             if (inetKind == InetKind.V4)
             {
@@ -101,7 +101,7 @@ namespace Bjd.SmtpServer.Test
             var line2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
             var line3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
             var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
-          
+
             Assert.Equal(line1, str);
             Assert.Equal(line2, "250-8BITMIME");
             Assert.Equal(line3, "250-SIZE=5000");
