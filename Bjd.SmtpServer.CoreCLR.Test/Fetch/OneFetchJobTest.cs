@@ -9,7 +9,7 @@ using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class OneFetchJobTest : ILife, IDisposable, IClassFixture<OneFetchJobTest.ServerFixture>
+    public class OneFetchJobTest : ILife, IDisposable
     {
 
         public class ServerFixture : TestServer, IDisposable
@@ -31,9 +31,9 @@ namespace Bjd.SmtpServer.Test
         private ServerFixture _testServer;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public OneFetchJobTest(ServerFixture fixture)
+        public OneFetchJobTest()
         {
-            _testServer = fixture;
+            _testServer = new ServerFixture();
 
 
         }
@@ -41,7 +41,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
-            //_testServer.Dispose();
+            _testServer.Dispose();
         }
 
 
@@ -55,7 +55,8 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user1", "user1", "localuser", synchronize, keepTime);
+            var port = _testServer.port;
+            var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
             //var sut = new OneFetchJob(new Kernel(), mailSave, domainName, oneFetch, 3, 1000);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = true;
@@ -76,8 +77,9 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
+            var port = _testServer.port;
             //不正ホスト名 xxxxx
-            var oneFetch = new OneFetch(interval, "xxxxx", 9111, "user1", "user1", "localuser", synchronize, keepTime);
+            var oneFetch = new OneFetch(interval, "xxxxx", port, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = false;
             //exercise
@@ -98,7 +100,8 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user1", "user1", "localuser", synchronize, keepTime);
+            var port = _testServer.port;
+            var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = false;
             //exercise
@@ -121,7 +124,8 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", 9111, "user2", "user2", "localuser", synchronize, keepTime);
+            var port = _testServer.port;
+            var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user2", "user2", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = true;
             //exercise

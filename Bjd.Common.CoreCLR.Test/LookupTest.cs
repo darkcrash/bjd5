@@ -54,7 +54,7 @@ namespace Bjd.Test
             var o = Lookup.QueryMx(target, dnsServer);
             Assert.NotEqual(o.Count, 0);
 
-            if (o.Any(s => s == answer))
+            if (o.Any(s => s.ToLower() == answer))
             {
                 return;
             }

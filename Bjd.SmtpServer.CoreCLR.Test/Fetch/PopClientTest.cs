@@ -14,7 +14,7 @@ using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class PopClientTest : ILife, IDisposable, IClassFixture<PopClientTest.ServerFixture>
+    public class PopClientTest : ILife, IDisposable
     {
 
         public class ServerFixture : TestServer, IDisposable
@@ -33,9 +33,9 @@ namespace Bjd.SmtpServer.Test
         private ServerFixture _testServer;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public PopClientTest(ServerFixture fixture)
+        public PopClientTest()
         {
-            _testServer = fixture;
+            _testServer = new ServerFixture();
 
             //usrr2のメールボックスへの２通のメールをセット
             _testServer.SetMail("user2", "00635026511425888292");
@@ -46,6 +46,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
+            _testServer.Dispose();
         }
 
         private PopClient CreatePopClient(InetKind inetKind)
