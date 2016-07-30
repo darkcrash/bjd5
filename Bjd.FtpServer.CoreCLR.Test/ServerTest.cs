@@ -195,7 +195,7 @@ namespace FtpServerTest
 
             // Assert.Equal(cl.StringRecv(1, this), "215 Microsoft Windows NT 6.2.9200.0\r\n");
             var actual = cl.StringRecv(1, this);
-            Assert.Equal("215 Windows 10", actual.Substring(0, 14));
+            Assert.Equal($"215 {_fixture._service.Kernel.Enviroment.OperatingSystem}", actual.Substring(0, 14));
 
         }
 
@@ -212,7 +212,7 @@ namespace FtpServerTest
 
             // Assert.Equal(cl.StringRecv(1, this), "215 Microsoft Windows NT 6.2.9200.0\r\n");
             var actual = cl.StringRecv(1, this);
-            Assert.Equal("215 Windows 10", actual.Substring(0, 14));
+            Assert.Equal($"215 {_fixture._service.Kernel.Enviroment.OperatingSystem}", actual.Substring(0, 14));
 
         }
 

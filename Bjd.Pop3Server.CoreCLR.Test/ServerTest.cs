@@ -727,7 +727,7 @@ namespace Pop3ServerTest
             var actual = Inet.RecvLines(cl, 2, this);
 
             //verify
-            Assert.Equal(actual.Count, 13);
+            Assert.Equal(13, actual.Count);
             Assert.Equal(actual[0], "+OK 317 octets");
             Assert.Equal(actual[5], "Message-ID: <bjd.00635026511425808252.000@example.com>");
             Assert.Equal(actual[6], "From: <1@1>");

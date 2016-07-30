@@ -128,7 +128,7 @@ namespace Bjd.SmtpServer.Test
         {
 
             //var sv = _v6Sv;
-            var expected = "+ サービス中 \t                Smtp\t[::1\t:TCP 8826]\tThread";
+            var expected = $"+ サービス中 \t                Smtp\t[::1\t:TCP {_testServer.port}]\tThread";
 
             //exercise
             var actual = _testServer.ToString(InetKind.V6).Substring(0, 52);
