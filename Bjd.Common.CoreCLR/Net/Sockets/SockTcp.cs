@@ -284,7 +284,7 @@ namespace Bjd.Net.Sockets
         }
 
         //１行のString受信
-        public string StringRecv(string charsetName, int sec, ILife iLife)
+        public string StringRecv(Encoding enc, int sec, ILife iLife)
         {
             try
             {
@@ -295,9 +295,6 @@ namespace Bjd.Net.Sockets
                 {
                     return null;
                 }
-                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                if (enc == null)
-                    enc = Encoding.GetEncoding(charsetName);
                 return enc.GetString(bytes);
             }
             catch (Exception e)
@@ -307,11 +304,28 @@ namespace Bjd.Net.Sockets
             return null;
         }
 
-        //１行受信(ASCII)
+        //１行のString受信(ASCII)
         public string StringRecv(int sec, ILife iLife)
         {
-            return StringRecv("ASCII", sec, iLife);
+            return StringRecv(Encoding.ASCII, sec, iLife);
         }
+        //１行のString受信
+        public string StringRecv(string charsetName, int sec, ILife iLife)
+        {
+            try
+            {
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                if (enc == null)
+                    enc = Encoding.GetEncoding(charsetName);
+                return StringRecv(enc, sec, iLife);
+            }
+            catch (Exception e)
+            {
+                Util.RuntimeException(e.Message);
+            }
+            return null;
+        }
+
 
         public int Send(byte[] buf, int length)
         {
@@ -364,20 +378,11 @@ namespace Bjd.Net.Sockets
             return Send(b);
         }
 
-        //１行のString送信(ASCII)  (\r\nが付加される)
-        public bool StringSend(String str)
-        {
-            return StringSend(str, "ASCII");
-        }
-
         //１行のString送信 (\r\nが付加される)
-        public bool StringSend(string str, string charsetName)
+        public bool StringSend(string str, Encoding enc)
         {
             try
             {
-                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                if (enc == null)
-                    enc = Encoding.GetEncoding(charsetName);
                 var buf = enc.GetBytes(str);
                 //byte[] buf = str.getBytes(charsetName);
                 LineSend(buf);
@@ -389,12 +394,29 @@ namespace Bjd.Net.Sockets
             }
             return false;
         }
-
-        //１行送信(ASCII)  (\r\nが付加される)
-        public bool SstringSend(string str)
+        //１行のString送信(ASCII)  (\r\nが付加される)
+        public bool StringSend(string str)
         {
-            return StringSend(str, "ASCII");
+            return StringSend(str, Encoding.ASCII);
         }
+
+        //１行のString送信 (\r\nが付加される)
+        public bool StringSend(string str, string charsetName)
+        {
+            try
+            {
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                if (enc == null)
+                    enc = Encoding.GetEncoding(charsetName);
+                return StringSend(str, enc);
+            }
+            catch (Exception e)
+            {
+                Util.RuntimeException(e.Message);
+            }
+            return false;
+        }
+
 
         public override void Close()
         {
@@ -548,16 +570,16 @@ namespace Bjd.Net.Sockets
         {
             if (!disposedValue)
             {
-                //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
                 try { this.Cancel(); }
                 catch { }
-                //TCPのサーバソケットをシャットダウンするとエラーになる（無視する）
+                //TCPのソケットをシャットダウンするとエラーになる（無視する）
                 try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
                 catch { }
                 if (_socket != null)
                 {
                     //_socket.Close();
-                    _socket.Poll(10000000, SelectMode.SelectRead);
+                    if (this._socket.Connected)
+                        _socket.Poll(1000000, SelectMode.SelectRead);
                     _socket.Dispose();
                     _socket = null;
                 }

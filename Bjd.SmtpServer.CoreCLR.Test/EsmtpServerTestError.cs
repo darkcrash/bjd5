@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
+    public class EsmtpServerTestError : ILife, IDisposable, IClassFixture<EsmtpServerTestError.ServerFixture>
     {
         public class ServerFixture : IDisposable
         {
@@ -70,8 +70,7 @@ namespace Bjd.SmtpServer.Test
         public TestService _service;
         public int port;
 
-
-        public EsmtpServerTest(ServerFixture fixture)
+        public EsmtpServerTestError(ServerFixture fixture)
         {
             _server = fixture;
             _service = fixture._service;
@@ -81,17 +80,6 @@ namespace Bjd.SmtpServer.Test
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
-        }
-
-
-        //DFファイルの一覧を取得する
-        private string[] GetDf(string user)
-        {
-            //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
-            //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
-            var dir = Path.Combine(_service.MailboxPath, user);
-            var files = Directory.GetFiles(dir, "DF*");
-            return files;
         }
 
         //クライアントの生成
@@ -137,65 +125,90 @@ namespace Bjd.SmtpServer.Test
 
         }
 
-        [Theory]
-        [InlineData(InetKind.V4)]
-        [InlineData(InetKind.V6)]
-        public void EHLOコマンド(InetKind inetKind)
-        {
-            //setUp
-            var cl = CreateClient(inetKind);
-
-            //exercise verify
-            Ehlo(cl);
-
-            //tearDown
-            cl.Close();
-        }
-
 
         [Theory]
         [InlineData(InetKind.V4)]
         [InlineData(InetKind.V6)]
-        public void 正常系メール送信(InetKind inetKind)
+        public void 認証前の無効コマンド(InetKind inetKind)
         {
-            var expected = GetDf("user1").Length + 1;
-
             //setUp
             var cl = CreateClient(inetKind);
             Ehlo(cl);
-
-
-            //exercise
-            cl.StringSend("AUTH PLAIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
-            cl.StringSend(Base64.Encode("user1\0user1\0user1"));
-            Assert.Equal(cl.StringRecv(3, this), "235 Authentication successful.\r\n");
-
-
-            cl.StringSend("MAIL From:1@1");
-            var s = cl.StringRecv(3, this);
-
-            cl.StringSend("RCPT To:user1@example.com");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend("DATA");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend(".");
-            s = cl.StringRecv(3, this);
-
+            var expected = "500 command not understood: XXX\r\n";
 
             //exercise
-            var actual = GetDf("user1").Length;
+            cl.StringSend("XXX");
+            var actual = cl.StringRecv(3, this);
 
             //verify
             Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
-
         }
 
+        [Theory]
+        [InlineData(InetKind.V4)]
+        [InlineData(InetKind.V6)]
+        public void 無効なAUTHコマンド(InetKind inetKind)
+        {
+            //setUp
+            var cl = CreateClient(inetKind);
+            Ehlo(cl);
+            var expected = "504 Unrecognized authentication type.\r\n";
+
+            //exercise
+            cl.StringSend("AUTH XXX");
+            var actual = cl.StringRecv(3, this);
+
+            //verify
+            Assert.Equal(expected, actual);
+
+            //tearDown
+            cl.Close();
+        }
+
+        [Theory]
+        [InlineData(InetKind.V4)]
+        [InlineData(InetKind.V6)]
+        public void EHLOのパラメータ不足(InetKind inetKind)
+        {
+            //setUp
+            var cl = CreateClient(inetKind);
+            var banner = cl.StringRecv(3, this);
+            var expected = "501 EHLO requires domain address\r\n";
+
+            //exercise
+            cl.StringSend("EHLO");
+            var actual = cl.StringRecv(3, this);
+
+            //verify
+            Assert.Equal(expected, actual);
+
+            //tearDown
+            cl.Close();
+        }
+
+        [Theory]
+        [InlineData(InetKind.V4)]
+        [InlineData(InetKind.V6)]
+        public void 認証前にMAILコマンドを送るとエラーになる(InetKind inetKind)
+        {
+            //setUp
+            var cl = CreateClient(inetKind);
+            Ehlo(cl);
+            var expected = "530 Authentication required.\r\n";
+
+            //exercise
+            cl.StringSend("MAIL From:1@1");
+            var actual = cl.StringRecv(3, this);
+
+            //verify
+            Assert.Equal(expected, actual);
+
+            //tearDown
+            cl.Close();
+        }
 
         public bool IsLife()
         {

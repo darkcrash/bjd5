@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
+    public class EsmtpServerTestAuthPlain : ILife, IDisposable, IClassFixture<EsmtpServerTestAuthPlain.ServerFixture>
     {
         public class ServerFixture : IDisposable
         {
@@ -70,8 +70,7 @@ namespace Bjd.SmtpServer.Test
         public TestService _service;
         public int port;
 
-
-        public EsmtpServerTest(ServerFixture fixture)
+        public EsmtpServerTestAuthPlain(ServerFixture fixture)
         {
             _server = fixture;
             _service = fixture._service;
@@ -81,17 +80,6 @@ namespace Bjd.SmtpServer.Test
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
-        }
-
-
-        //DFファイルの一覧を取得する
-        private string[] GetDf(string user)
-        {
-            //var dir = string.Format("c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox\\{0}", user);
-            //var dir = Path.Combine(TestDefine.Instance.TestMailboxPath, user);
-            var dir = Path.Combine(_service.MailboxPath, user);
-            var files = Directory.GetFiles(dir, "DF*");
-            return files;
         }
 
         //クライアントの生成
@@ -140,62 +128,63 @@ namespace Bjd.SmtpServer.Test
         [Theory]
         [InlineData(InetKind.V4)]
         [InlineData(InetKind.V6)]
-        public void EHLOコマンド(InetKind inetKind)
+        public void AUTH_PLAIN認証_正常(InetKind inetKind)
         {
-            //setUp
-            var cl = CreateClient(inetKind);
-
-            //exercise verify
-            Ehlo(cl);
-
-            //tearDown
-            cl.Close();
-        }
-
-
-        [Theory]
-        [InlineData(InetKind.V4)]
-        [InlineData(InetKind.V6)]
-        public void 正常系メール送信(InetKind inetKind)
-        {
-            var expected = GetDf("user1").Length + 1;
-
             //setUp
             var cl = CreateClient(inetKind);
             Ehlo(cl);
 
+
+            var expected = "235 Authentication successful.\r\n";
 
             //exercise
             cl.StringSend("AUTH PLAIN");
             Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
-            cl.StringSend(Base64.Encode("user1\0user1\0user1"));
-            Assert.Equal(cl.StringRecv(3, this), "235 Authentication successful.\r\n");
 
+            //UserID\0UserID\0Password」をBase64でエンコード
+            var str = string.Format("user1\0user1\0user1");
+            str = Base64.Encode(str);
 
-            cl.StringSend("MAIL From:1@1");
-            var s = cl.StringRecv(3, this);
-
-            cl.StringSend("RCPT To:user1@example.com");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend("DATA");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend(".");
-            s = cl.StringRecv(3, this);
-
-
-            //exercise
-            var actual = GetDf("user1").Length;
+            cl.StringSend(str);
+            var actual = cl.StringRecv(3, this);
 
             //verify
             Assert.Equal(expected, actual);
 
             //tearDown
             cl.Close();
-
         }
 
+        [Theory]
+        [InlineData(InetKind.V4)]
+        [InlineData(InetKind.V6)]
+        public void AUTH_PLAIN認証_異常(InetKind inetKind)
+        {
+            //setUp
+            var cl = CreateClient(inetKind);
+            Ehlo(cl);
+
+
+            //↓これは、後ほど仕様変更が必要
+            var expected = "500 command not understood: dXNlcjEAdXNlcjEAdXNlcjFYWFg=\r\n";
+
+            //exercise
+            cl.StringSend("AUTH PLAIN");
+            Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
+
+            //UserID\0UserID\0Password」をBase64でエンコード
+            var str = string.Format("user1\0user1\0user1");
+            str = Base64.Encode(str + "XXX"); //<=ゴミデータ追加
+
+            cl.StringSend(str);
+            var actual = cl.StringRecv(3, this);
+
+            //verify
+            Assert.Equal(expected, actual);
+
+            //tearDown
+            cl.Close();
+        }
 
         public bool IsLife()
         {

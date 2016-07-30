@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
+    public class EsmtpServerTestAuthCram : ILife, IDisposable, IClassFixture<EsmtpServerTestAuthCram.ServerFixture>
     {
         public class ServerFixture : IDisposable
         {
@@ -71,7 +71,7 @@ namespace Bjd.SmtpServer.Test
         public int port;
 
 
-        public EsmtpServerTest(ServerFixture fixture)
+        public EsmtpServerTestAuthCram(ServerFixture fixture)
         {
             _server = fixture;
             _service = fixture._service;
@@ -140,60 +140,50 @@ namespace Bjd.SmtpServer.Test
         [Theory]
         [InlineData(InetKind.V4)]
         [InlineData(InetKind.V6)]
-        public void EHLOコマンド(InetKind inetKind)
+        public void AUTH_CRAM_MD5認証_正常(InetKind inetKind)
         {
             //setUp
             var cl = CreateClient(inetKind);
-
-            //exercise verify
             Ehlo(cl);
 
-            //tearDown
-            cl.Close();
-        }
 
+            var expected = "235 Authentication successful.\r\n";
+
+            //exercise
+            cl.StringSend("AUTH CRAM-MD5");
+            var recvStr = cl.StringRecv(3, this);
+            recvStr = Inet.TrimCrlf(recvStr);
+            Assert.Equal(recvStr.Substring(0, 3), "334");
+            var hash = Md5.Hash("user1", Base64.Decode(recvStr.Substring(4)));
+            cl.StringSend(Base64.Encode(string.Format("user1 {0}", hash)));
+            var actual = cl.StringRecv(3, this);
+
+            //verify
+            Assert.Equal(expected, actual);
+        }
 
         [Theory]
         [InlineData(InetKind.V4)]
         [InlineData(InetKind.V6)]
-        public void 正常系メール送信(InetKind inetKind)
+        public void AUTH_CRAM_MD5認証_異常(InetKind inetKind)
         {
-            var expected = GetDf("user1").Length + 1;
-
             //setUp
             var cl = CreateClient(inetKind);
             Ehlo(cl);
 
+            String expected = null;
 
             //exercise
-            cl.StringSend("AUTH PLAIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
-            cl.StringSend(Base64.Encode("user1\0user1\0user1"));
-            Assert.Equal(cl.StringRecv(3, this), "235 Authentication successful.\r\n");
-
-
-            cl.StringSend("MAIL From:1@1");
-            var s = cl.StringRecv(3, this);
-
-            cl.StringSend("RCPT To:user1@example.com");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend("DATA");
-            s = cl.StringRecv(3, this);
-
-            cl.StringSend(".");
-            s = cl.StringRecv(3, this);
-
-
-            //exercise
-            var actual = GetDf("user1").Length;
+            cl.StringSend("AUTH CRAM-MD5");
+            var recvStr = cl.StringRecv(3, this);
+            recvStr = Inet.TrimCrlf(recvStr);
+            Assert.Equal(recvStr.Substring(0, 3), "334");
+            var hash = Md5.Hash("user1", Base64.Decode(recvStr.Substring(4)));
+            cl.StringSend(Base64.Encode(string.Format("user1 {0}", hash)) + "XXX"); //<=ゴミデータ追加
+            var actual = cl.StringRecv(3, this);
 
             //verify
             Assert.Equal(expected, actual);
-
-            //tearDown
-            cl.Close();
-
         }
 
 

@@ -88,8 +88,9 @@ namespace Bjd.SmtpServer.Test
         public void 接続失敗_アドレス間違い(InetKind inetKind, String addr)
         {
             var kernel = _testServer._service.Kernel;
+            var port = _testServer.port;
             //setUp
-            var sut = new PopClient(kernel, new Ip(addr), 9112, 3, this);
+            var sut = new PopClient(kernel, new Ip(addr), port, 3, this);
             var expected = false;
 
             //exercise
@@ -211,7 +212,7 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             Assert.Equal(expected, actual);
-            Assert.Equal(mail.GetBytes().Length, 308);
+            Assert.Equal(308, mail.GetBytes().Length);
             //tearDown
             sut.Dispose();
         }
@@ -234,7 +235,7 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             Assert.Equal(expected, actual);
-            Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
+            Assert.Equal("Not Found +OK in PopClient RecvStatus()", sut.GetLastError());
             //tearDown
             sut.Dispose();
         }
