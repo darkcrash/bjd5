@@ -25,15 +25,12 @@ namespace Bjd.SmtpServer.Test
         {
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
-            //var tsDir = new TsDir();
             _service = TestService.CreateTestService();
             _service.SetOption("MlSummaryTest.ini");
-            _service.ContentDirectory("TestDir");
 
             var kernel = _service.Kernel;
             var logger = new Logger();
-            //var manageDir = TestUtil.GetTmpDir("TestDir");
-            var manageDir = Path.Combine(kernel.Enviroment.ExecutableDirectory, "TestDir");
+            var manageDir = _service.GetTmpDir("TestDir");
 
 
             _tsMailSave = new TsMailSave();//MailSaveのモックオブジェクト

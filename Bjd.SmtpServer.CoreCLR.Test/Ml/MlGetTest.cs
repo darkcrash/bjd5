@@ -31,14 +31,10 @@ namespace Bjd.SmtpServer.Test
             //var tsDir = new TsDir();
             _service = TestService.CreateTestService();
             _service.SetOption("MlGetTest.ini");
-            _service.ContentDirectory("TestDir");
 
             var kernel = _service.Kernel;
             var logger = new Logger();
-            //var manageDir = TestUtil.GetTmpDir("TestDir");
-            var manageDir = Path.Combine(kernel.Enviroment.ExecutableDirectory, "TestDir");
-
-
+            var manageDir = _service.GetTmpDir("TestDir");
 
             _tsMailSave = new TsMailSave();//MailSaveのモックオブジェクト
 

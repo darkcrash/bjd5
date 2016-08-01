@@ -26,13 +26,10 @@ namespace Bjd.SmtpServer.Test
             var domainList = new List<string> { "example.com" };
             _service = TestService.CreateTestService();
             _service.SetOption("MlPostTest.ini");
-            _service.ContentDirectory("TestDir");
 
             var kernel = _service.Kernel;
             var logger = new Logger();
-            //var manageDir = TestUtil.GetTmpDir("TestDir");
-            var manageDir = Path.Combine(kernel.Enviroment.ExecutableDirectory, "TestDir");
-
+            var manageDir = _service.GetTmpDir("TestDir");
 
             _tsMailSave = new TsMailSave();//MailSaveのモックオブジェクト
 

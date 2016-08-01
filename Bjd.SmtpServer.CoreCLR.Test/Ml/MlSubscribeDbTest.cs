@@ -20,11 +20,8 @@ namespace Bjd.SmtpServer.Test
         {
             _service = TestService.CreateTestService();
             _service.SetOption("MlSubscribeDbTest.ini");
-            _service.ContentDirectory("TestDir");
 
-            //var tsDir = new TsDir();
-            //var manageDir = TestUtil.GetTmpDir("TestDir");
-            var manageDir = Path.Combine(_service.Kernel.Enviroment.ExecutableDirectory, "TestDir");
+            var manageDir = _service.GetTmpDir("TestDir");
 
             const string mlName = "1ban";
             _mlSubscribeDb = new MlSubscribeDb(manageDir, mlName, EffectiveMsec);

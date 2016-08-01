@@ -74,7 +74,8 @@ namespace Bjd.SmtpServer.Test {
         public void CtorTest(string folder, bool exists,bool status) {
             //Testプロジェクトの下に、TEST用フォルダを作成する
 
-            var dir = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), folder);
+            //var dir = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), folder);
+            var dir = Path.Combine(service.Kernel.Enviroment.ExecutableDirectory, folder);
 
             if (!exists){//存在しないフォルダをTESTする場合は、フォルダをあらかじめ削除してお
                 if (Directory.Exists(dir)) {

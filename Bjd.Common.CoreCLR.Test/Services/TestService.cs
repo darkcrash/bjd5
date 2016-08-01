@@ -107,7 +107,7 @@ namespace Bjd.Services
 
             // set executable directory
             var rdval = rd.Next(0, int.MaxValue);
-            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}";
+            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}_{instance.GetHashCode()}";
 
             instance.env = new Enviroments();
             var dir = instance.env.ExecutableDirectory;
@@ -307,6 +307,13 @@ namespace Bjd.Services
             throw new Exception($"Available port not found {port}");
         }
 
+        public int GetAvailableUdpPort(Ip ip, Conf conf)
+        {
+            var port = (int)conf.Get("port");
+            port = GetAvailableUdpPort(ip, port);
+            conf.Set("port", port);
+            return port;
+        }
         public int GetAvailableUdpPort(string address, int port)
         {
             var ipobj = new Ip(address);
