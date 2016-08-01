@@ -50,6 +50,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
+            _output.Dispose();
             _testServer.Dispose();
         }
 
