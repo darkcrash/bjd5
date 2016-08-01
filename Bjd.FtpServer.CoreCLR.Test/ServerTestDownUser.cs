@@ -136,8 +136,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 20549;
-            cl.StringSend("PORT 127,0,0,1,0,20549");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20549);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -157,8 +157,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 20548;
-            cl.StringSend("PORT 127,0,0,1,0,20548");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20548);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -206,8 +206,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 20650;
-            cl.StringSend("PORT 127,0,0,1,0,20650");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20650);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -215,7 +215,11 @@ namespace FtpServerTest
             cl.StringSend("RETR 3.txt");
             Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
 
-            Thread.Sleep(10);
+            for (var i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10);
+                if (dl.Length() >= 24) break;
+            }
             Assert.Equal(dl.Length(), 24);
 
             dl.Close();
@@ -231,8 +235,8 @@ namespace FtpServerTest
             Login("user3", cl);
 
             //port
-            var port = 20651;
-            cl.StringSend("PORT 127,0,0,1,0,20651");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20651);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
@@ -240,7 +244,11 @@ namespace FtpServerTest
             cl.StringSend("RETR 3.txt");
             Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
 
-            Thread.Sleep(10);
+            for (var i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10);
+                if (dl.Length() >= 24) break;
+            }
             Assert.Equal(dl.Length(), 24);
 
             dl.Close();

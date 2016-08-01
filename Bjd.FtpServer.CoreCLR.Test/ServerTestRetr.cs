@@ -136,16 +136,20 @@ namespace ServerTestRetr
             Login("user1", cl);
 
             //port
-            var port = 24250;
-            cl.StringSend("PORT 127,0,0,1,0,24250");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 24250);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
             cl.StringSend("RETR 3.txt");
             Assert.Equal("150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n", cl.StringRecv(1, this));
-            Thread.Sleep(10);
-            Assert.Equal(dl.Length(), 24);
+            for (var i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10);
+                if (dl.Length() >= 24) break;
+            }
+            Assert.Equal(24, dl.Length());
 
             dl.Close();
         }
@@ -161,16 +165,21 @@ namespace ServerTestRetr
             Login("user1", cl);
 
             //port
-            var port = 20350;
-            cl.StringSend("PORT 127,0,0,1,0,20350");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20350);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             //retr
             cl.StringSend("RETR 3.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
-            Thread.Sleep(10);
-            Assert.Equal(dl.Length(), 24);
+            Assert.Equal("150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n", cl.StringRecv(1, this));
+
+            for (var i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10);
+                if (dl.Length() >= 24) break;
+            }
+            Assert.Equal(24, dl.Length());
 
             dl.Close();
         }

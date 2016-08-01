@@ -180,12 +180,12 @@ namespace Bjd.SmtpServer
 
         //.行までを受信する
         byte [] RecvData(){
-            var dt = DateTime.Now;
+            var dt = DateTime.Now.AddSeconds(_sec);
             var line = new byte[0];
 
             while (_iLife.IsLife()){
                 var now = DateTime.Now;
-                if (dt.AddSeconds(_sec) < now) {
+                if (dt < now) {
                     return null; //タイムアウト
                 }
                 var len = _sockTcp.Length();
@@ -196,7 +196,7 @@ namespace Bjd.SmtpServer
                 if (buf == null) {
                     return null; //切断された
                 }
-                dt = now;
+                dt = now.AddSeconds(_sec);
 
                 var tmp = new byte[line.Length + buf.Length];
                 Buffer.BlockCopy(line, 0, tmp, 0, line.Length);

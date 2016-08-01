@@ -63,8 +63,8 @@ namespace Bjd.SmtpServer.Test
 
 
         [Theory]
-        [InlineData(InetKind.V4, "127.0.0.1", 9110)]
-        [InlineData(InetKind.V6, "::1", 9110)]
+        [InlineData(InetKind.V4, "127.0.0.1", 1)]
+        [InlineData(InetKind.V6, "::1", 1)]
         public void 接続失敗_ポート間違い(InetKind inetKind, String addr, int port)
         {
             var kernel = _testServer._service.Kernel;
@@ -210,6 +210,12 @@ namespace Bjd.SmtpServer.Test
 
             var mail = new Mail();
             var actual = sut.Retr(0, mail);
+
+            for (var i = 0; i < 10; i++)
+            {
+                Thread.Sleep(100);
+                if (mail.GetBytes().Length >= 24) break;
+            }
 
             //verify
             Assert.Equal(expected, actual);

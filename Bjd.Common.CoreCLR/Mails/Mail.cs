@@ -378,10 +378,10 @@ namespace Bjd.Mails
                 pos += d.Length;
             });
             //区切り
-            buf[pos] = 0x0d;
-            pos++;
-            buf[pos] = 0x0a;
-            pos++;
+            buf[pos++] = 0x0d;
+            //pos++;
+            buf[pos++] = 0x0a;
+            //pos++;
             //本文
             _body.ForEach(d =>
             {

@@ -209,21 +209,26 @@ namespace Bjd.Test.Logs
             using (var logFile = new LogFile(dir, 2, 2, 0, true))
             {
                 logFile.AppendAsync(
-                    new OneLog("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new OneLog("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new OneLog("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new OneLog("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new OneLog("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new OneLog("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                var r = logFile.AppendAsync(
-                    new OneLog("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-
-                r.Wait();
+                    new OneLog("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
+                logFile.AppendAsync(
+                    new OneLog("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    .Wait();
 
                 //exercise
                 //リフレクションを使用してprivateメソッドにアクセスする

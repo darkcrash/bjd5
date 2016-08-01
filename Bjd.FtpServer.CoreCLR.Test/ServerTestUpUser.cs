@@ -137,8 +137,8 @@ namespace FtpServerTest
             Login("user2", cl);
 
             //port
-            var port = 20451;
-            cl.StringSend("PORT 127,0,0,1,0,20451");
+            var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20451);
+            cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
