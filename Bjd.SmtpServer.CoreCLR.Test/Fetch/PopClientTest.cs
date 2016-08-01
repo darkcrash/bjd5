@@ -214,7 +214,7 @@ namespace Bjd.SmtpServer.Test
             for (var i = 0; i < 10; i++)
             {
                 Thread.Sleep(100);
-                if (mail.GetBytes().Length >= 24) break;
+                if (mail.GetBytes().Length >= 308) break;
             }
 
             //verify

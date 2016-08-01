@@ -77,6 +77,14 @@ namespace Bjd.Mails
                 AppendLine(l);
             }
         }
+        public void Init2(ArraySegment<byte> buf)
+        {
+            var lines = Inet.GetLines(buf);
+            foreach (var l in lines)
+            {
+                AppendLine(l);
+            }
+        }
 
         //行追加　\r\nを含むままで追加する
         //ヘッダと本文の区切りを見つけた時、return true;
@@ -379,9 +387,7 @@ namespace Bjd.Mails
             });
             //区切り
             buf[pos++] = 0x0d;
-            //pos++;
             buf[pos++] = 0x0a;
-            //pos++;
             //本文
             _body.ForEach(d =>
             {

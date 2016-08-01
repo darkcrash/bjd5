@@ -11,7 +11,8 @@ using Bjd.Threading;
 
 namespace Bjd.SmtpServer
 {
-    class PopClient : LastError,IDisposable{
+    class PopClient : LastError, IDisposable
+    {
         private readonly int _port;
         private readonly Ip _ip;
         private readonly ILife _iLife;
@@ -22,7 +23,8 @@ namespace Bjd.SmtpServer
 
         public PopClientStatus Status { get; private set; }
 
-        public PopClient(Kernel kernel,Ip ip,int port,int sec,ILife iLife){
+        public PopClient(Kernel kernel, Ip ip, int port, int sec, ILife iLife)
+        {
             _kernel = kernel;
             _ip = ip;
             _port = port;
@@ -32,21 +34,28 @@ namespace Bjd.SmtpServer
             Status = PopClientStatus.Idle;
 
         }
-        
+
         //接続
-        public bool Connect(){
-            if (Status != PopClientStatus.Idle){
+        public bool Connect()
+        {
+            if (Status != PopClientStatus.Idle)
+            {
                 SetLastError("Connect() Status != Idle");
                 return false;
             }
-            if (_ip.InetKind == InetKind.V4){
-                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec+3, null);
-            } else{
-                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec+3, null);
+            if (_ip.InetKind == InetKind.V4)
+            {
+                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec + 3, null);
             }
-            if (_sockTcp.SockState == SockState.Connect){
+            else
+            {
+                _sockTcp = Inet.Connect(_kernel, _ip, _port, _sec + 3, null);
+            }
+            if (_sockTcp.SockState == SockState.Connect)
+            {
                 //+OK受信
-                if (!RecvStatus()) {
+                if (!RecvStatus())
+                {
                     return false;
                 }
                 Status = PopClientStatus.Authorization;
@@ -57,44 +66,54 @@ namespace Bjd.SmtpServer
         }
 
         //ログイン
-        public bool Login(String user, String pass) {
+        public bool Login(String user, String pass)
+        {
             //切断中の場合はエラー
-            if (Status != PopClientStatus.Authorization) {
+            if (Status != PopClientStatus.Authorization)
+            {
                 SetLastError("Login() Status != Authorization");
                 return false;
             }
             //USER送信
-            if (!SendCmd(String.Format("USER {0}",user))) {
+            if (!SendCmd(String.Format("USER {0}", user)))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()) {
+            if (!RecvStatus())
+            {
                 return false;
             }
             //PASS送信
-            if (!SendCmd(String.Format("PASS {0}", pass))) {
+            if (!SendCmd(String.Format("PASS {0}", pass)))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()) {
+            if (!RecvStatus())
+            {
                 return false;
             }
             Status = PopClientStatus.Transaction;
             return true;
         }
 
-        public bool Quit(){
+        public bool Quit()
+        {
             //切断中の場合はエラー
-            if (Status == PopClientStatus.Idle) {
+            if (Status == PopClientStatus.Idle)
+            {
                 SetLastError("Quit() Status == PIdle");
                 return false;
             }
             //QUIT送信
-            if (!SendCmd("QUIT")){
+            if (!SendCmd("QUIT"))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()){
+            if (!RecvStatus())
+            {
                 return false;
             }
             //切断
@@ -104,74 +123,90 @@ namespace Bjd.SmtpServer
             return true;
         }
 
-        public bool Uidl(List<String> lines) {
+        public bool Uidl(List<String> lines)
+        {
             lines.Clear();
 
             //切断中の場合はエラー
-            if (Status != PopClientStatus.Transaction) {
+            if (Status != PopClientStatus.Transaction)
+            {
                 SetLastError("Uidl() Status != Transaction");
                 return false;
             }
             //QUIT送信
-            if (!SendCmd("UIDL")) {
+            if (!SendCmd("UIDL"))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()){
+            if (!RecvStatus())
+            {
                 return false;
             }
             //.までの行を受信
             var buf = RecvData();
-            if (buf == null){
+            if (buf == null)
+            {
                 return false;
             }
             var s = Encoding.ASCII.GetString(buf);
-            if (s.Length >= 5){
+            if (s.Length >= 5)
+            {
                 //<CR><LF>.<CR><LF>を削除
                 lines.AddRange(Inet.GetLines(s.Substring(0, s.Length - 5)));
             }
             return true;
         }
 
-        public bool Retr(int n, Mail mail) {
+        public bool Retr(int n, Mail mail)
+        {
             //切断中の場合はエラー
-            if (Status != PopClientStatus.Transaction) {
+            if (Status != PopClientStatus.Transaction)
+            {
                 SetLastError("Retr() Status != Transaction");
                 return false;
             }
             //RETR送信
-            if (!SendCmd(string.Format("RETR {0}",n+1))) {
+            if (!SendCmd(string.Format("RETR {0}", n + 1)))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()) {
+            if (!RecvStatus())
+            {
                 return false;
             }
             //.までの行を受信
             var buf = RecvData();
-            if (buf == null) {
+            if (buf == null)
+            {
                 return false;
             }
-            var tmp = new byte[buf.Length-3];
-            Buffer.BlockCopy(buf,0,tmp,0,buf.Length-3);
-            mail.Init2(tmp);
-            
+            //var tmp = new byte[buf.Length-3];
+            //Buffer.BlockCopy(buf,0,tmp,0,buf.Length-3);
+            //mail.Init2(tmp);
+            mail.Init2(new ArraySegment<byte>(buf, 0, buf.Length - 3));
+
             return true;
 
         }
-        
-        public bool Dele(int n) {
+
+        public bool Dele(int n)
+        {
             //切断中の場合はエラー
-            if (Status != PopClientStatus.Transaction) {
+            if (Status != PopClientStatus.Transaction)
+            {
                 SetLastError("Dele() Status != Transaction");
                 return false;
             }
             //DELE送信
-            if (!SendCmd(string.Format("DELE {0}", n + 1))) {
+            if (!SendCmd(string.Format("DELE {0}", n + 1)))
+            {
                 return false;
             }
             //+OK受信
-            if (!RecvStatus()) {
+            if (!RecvStatus())
+            {
                 return false;
             }
             return true;
@@ -179,60 +214,72 @@ namespace Bjd.SmtpServer
 
 
         //.行までを受信する
-        byte [] RecvData(){
+        byte[] RecvData()
+        {
             var dt = DateTime.Now.AddSeconds(_sec);
             var line = new byte[0];
 
-            while (_iLife.IsLife()){
+            while (_iLife.IsLife())
+            {
                 var now = DateTime.Now;
-                if (dt < now) {
+                if (dt < now)
+                {
                     return null; //タイムアウト
                 }
                 var len = _sockTcp.Length();
-                if (len == 0) {
+                if (len == 0)
+                {
                     continue;
                 }
                 var buf = _sockTcp.Recv(len, _sec, _iLife);
-                if (buf == null) {
+                if (buf == null)
+                {
                     return null; //切断された
                 }
                 dt = now.AddSeconds(_sec);
 
                 var tmp = new byte[line.Length + buf.Length];
                 Buffer.BlockCopy(line, 0, tmp, 0, line.Length);
-                Buffer.BlockCopy(buf, 0,tmp,line.Length, buf.Length);
+                Buffer.BlockCopy(buf, 0, tmp, line.Length, buf.Length);
                 line = tmp;
-                if (line.Length >= 3){
-                    if (line[line.Length - 1] == '\n' && line[line.Length - 2] == '\r' && line[line.Length - 3] == '.'){
+                if (line.Length >= 3)
+                {
+                    if (line[line.Length - 1] == '\n' && line[line.Length - 2] == '\r' && line[line.Length - 3] == '.')
+                    {
                         return line;
-                   }
+                    }
                 }
             }
             return null;
         }
 
-        
 
-        bool SendCmd(string cmdStr){
+
+        bool SendCmd(string cmdStr)
+        {
             //AsciiSendは、内部でCRLFを追加する
-            if (cmdStr.Length + 2 != _sockTcp.AsciiSend(cmdStr)) {
-                SetLastError(String .Format("Faild in PopClient SendCmd({0})",cmdStr));
+            if (cmdStr.Length + 2 != _sockTcp.AsciiSend(cmdStr))
+            {
+                SetLastError(String.Format("Faild in PopClient SendCmd({0})", cmdStr));
                 ConfirmConnect();//接続確認
                 return false;
             }
             return true;
         }
 
-        bool RecvStatus(){
+        bool RecvStatus()
+        {
 
             var buf = _sockTcp.LineRecv(_sec, _iLife);
-            if (buf == null){
+            if (buf == null)
+            {
                 SetLastError("Timeout in PopClient RecvStatus()");
                 ConfirmConnect();//接続確認
                 return false;
             }
             var str = Encoding.ASCII.GetString(buf);
-            if (str.ToUpper().IndexOf("+OK") == 0){
+            if (str.ToUpper().IndexOf("+OK") == 0)
+            {
                 return true;
             }
             SetLastError("Not Found +OK in PopClient RecvStatus()");
@@ -240,15 +287,19 @@ namespace Bjd.SmtpServer
             return false;
         }
         //接続確認
-        void ConfirmConnect() {
+        void ConfirmConnect()
+        {
             //既に切断されている場合
-            if (_sockTcp.SockState != SockState.Connect) {
+            if (_sockTcp.SockState != SockState.Connect)
+            {
                 Status = PopClientStatus.Idle;
             }
         }
 
-        public void Dispose(){
-            if (_sockTcp != null){
+        public void Dispose()
+        {
+            if (_sockTcp != null)
+            {
                 _sockTcp.Close();
                 _sockTcp = null;
             }
