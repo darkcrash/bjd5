@@ -215,12 +215,6 @@ namespace Bjd.SmtpServer.Test
             var mail = new Mail();
             var actual = sut.Retr(0, mail);
 
-            for (var i = 0; i < 10; i++)
-            {
-                Thread.Sleep(100);
-                if (mail.GetBytes().Length >= 308) break;
-            }
-
             //verify
             Assert.Equal(expected, actual);
             Assert.Equal(308, mail.GetBytes().Length);
