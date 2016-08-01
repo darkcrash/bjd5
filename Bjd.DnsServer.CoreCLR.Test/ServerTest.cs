@@ -426,7 +426,7 @@ namespace DnsServerTest
             anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
             anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.45");
             anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 106.10.139.246");
-
+            anList.Add("A fd-fp3.wg1.b.yahoo.com. TTL=60 98.138.252.30");
             //Assert.Equal(Print(p, RrKind.AN, 0), "Cname www.yahoo.com. TTL=300 fd-fp3.wg1.b.yahoo.com.");
             //Assert.Equal(Print(p, RrKind.AN, 1), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.105");
             //Assert.Equal(Print(p, RrKind.AN, 2), "A fd-fp3.wg1.b.yahoo.com. TTL=60 206.190.36.45");

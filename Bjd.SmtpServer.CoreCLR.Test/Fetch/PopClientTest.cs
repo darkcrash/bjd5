@@ -11,6 +11,8 @@ using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Threading;
+using Xunit.Abstractions;
+using Bjd.Test.Logs;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -31,11 +33,13 @@ namespace Bjd.SmtpServer.Test
         }
 
         private ServerFixture _testServer;
+        private TestOutputService _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public PopClientTest()
+        public PopClientTest(ITestOutputHelper helper)
         {
             _testServer = new ServerFixture();
+            _output = new TestOutputService(helper);
 
             //usrr2のメールボックスへの２通のメールをセット
             _testServer.SetMail("user2", "00635026511425888292");
