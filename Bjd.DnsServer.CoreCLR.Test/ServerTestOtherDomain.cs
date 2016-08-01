@@ -130,6 +130,7 @@ namespace DnsServerTest
             for (var i = 0; i < 5; i++)
             {
                 p = lookup(DnsType.A, "www.sapporoworks.ne.jp", true);
+                if (p == null) continue;
                 if (p.GetCount(RrKind.AN) < 2) continue;
                 if (p.GetCount(RrKind.NS) < 2) continue;
                 if (p.GetCount(RrKind.AR) < 2) continue;
@@ -179,6 +180,7 @@ namespace DnsServerTest
             for (var i = 0; i < 5; i++)
             {
                 p = lookup(DnsType.Mx, "sapporoworks.ne.jp", true);
+                if (p == null) continue;
                 if (p.GetCount(RrKind.QD) < 1) continue;
                 if (p.GetCount(RrKind.AN) < 1) continue;
                 break;
@@ -204,6 +206,7 @@ namespace DnsServerTest
             for (var i = 0; i < 5; i ++)
             {
                 p = lookup(DnsType.A, "www.yahoo.com", true);
+                if (p == null) continue;
                 if (p.GetCount(RrKind.AN) > 0) break;
             }
 
@@ -259,6 +262,7 @@ namespace DnsServerTest
             for (var i = 0; i < 5; i++)
             {
                 p = lookup(DnsType.A, "www.yahoo.co.jp", true);
+                if (p == null) continue;
                 if (p.GetCount(RrKind.AN) > 0) break;
             }
 
@@ -277,6 +281,7 @@ namespace DnsServerTest
             for (var i = 0; i < 5; i++)
             {
                 p = lookup(DnsType.A, "www.asahi.co.jp", true);
+                if (p == null) continue;
                 if (p.GetCount(RrKind.AN) > 0) break;
             }
 
