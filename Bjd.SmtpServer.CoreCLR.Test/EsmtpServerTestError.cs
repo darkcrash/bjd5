@@ -80,6 +80,7 @@ namespace Bjd.SmtpServer.Test
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
+            _server.Dispose();
         }
 
         //クライアントの生成
