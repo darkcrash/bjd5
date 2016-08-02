@@ -21,20 +21,18 @@ namespace Bjd.SmtpServer.Test
                 SetMail("user2", "00635026511765086924");
 
             }
-            public override void Dispose()
-            {
-                base.Dispose();
-            }
+
 
         }
 
         private ServerFixture _testServer;
+        private int port;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public OneFetchJobTest()
         {
             _testServer = new ServerFixture();
-
+            port = _testServer.port;
 
         }
 
@@ -55,7 +53,6 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var port = _testServer.port;
             var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
             //var sut = new OneFetchJob(new Kernel(), mailSave, domainName, oneFetch, 3, 1000);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
@@ -77,7 +74,6 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var port = _testServer.port;
             //不正ホスト名 xxxxx
             var oneFetch = new OneFetch(interval, "xxxxx", port, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
@@ -100,7 +96,6 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var port = _testServer.port;
             var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = false;
@@ -124,7 +119,6 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var port = _testServer.port;
             var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user2", "user2", "localuser", synchronize, keepTime);
             var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
             var expected = true;

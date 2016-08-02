@@ -21,8 +21,8 @@ namespace Bjd.SmtpServer.Test
     public class TestServer : IDisposable
     {
         public readonly TestService _service;
-        private readonly OneServer _v6Sv; //サーバ
-        private readonly OneServer _v4Sv; //サーバ
+        public readonly OneServer _v6Sv; //サーバ
+        public readonly OneServer _v4Sv; //サーバ
         public readonly int port;
 
         public TestServer(TestServerType type, string iniOption)

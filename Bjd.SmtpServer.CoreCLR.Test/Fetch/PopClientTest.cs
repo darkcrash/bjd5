@@ -25,10 +25,6 @@ namespace Bjd.SmtpServer.Test
             {
 
             }
-            public override void Dispose()
-            {
-                base.Dispose();
-            }
 
         }
 
@@ -42,8 +38,11 @@ namespace Bjd.SmtpServer.Test
             _output = new TestOutputService(helper);
 
             //usrr2のメールボックスへの２通のメールをセット
+            _testServer._service.CleanMailbox("user2");
             _testServer.SetMail("user2", "00635026511425888292");
             _testServer.SetMail("user2", "00635026511765086924");
+
+            Thread.Sleep(10);
 
         }
 
@@ -219,6 +218,7 @@ namespace Bjd.SmtpServer.Test
             //verify
             Assert.Equal(expected, actual);
             Assert.Equal(308, mail.GetBytes().Length);
+
             //tearDown
             sut.Dispose();
         }

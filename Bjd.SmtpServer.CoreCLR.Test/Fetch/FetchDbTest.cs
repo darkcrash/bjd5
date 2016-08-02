@@ -2,34 +2,48 @@
 using System.Threading;
 using Xunit;
 using Bjd.SmtpServer;
+using System;
+using Bjd.Services;
 
-namespace Bjd.SmtpServer.Test {
-    public class FetchDbTest{
+namespace Bjd.SmtpServer.Test
+{
+    public class FetchDbTest : IDisposable
+    {
 
-        public  FetchDbTest(){
+        private TestService _service;
 
+        public FetchDbTest()
+        {
+            _service = TestService.CreateTestService();
+        }
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
+
         [Fact]
-        public void IndexOfによる検索(){
-            var dir = Path.GetTempPath();
+        public void IndexOfによる検索()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
-            var sut = new FetchDb(dir,"TEST");
+            var sut = new FetchDb(dir, "TEST");
             sut.Add("0-1234567890");
             sut.Add("1-1234567890");
             var expected = 1;
             //exercise
             var actual = sut.IndexOf("1-1234567890");
             //verify
-            Assert.Equal(actual,expected);
-            
+            Assert.Equal(actual, expected);
+
             //tearDown
             File.Delete(sut.FileName);
         }
 
         [Fact]
-        public void IndexOfによる検索_存在しない場合() {
-            var dir = Path.GetTempPath();
+        public void IndexOfによる検索_存在しない場合()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             var sut = new FetchDb(dir, "TEST");
             sut.Add("0-1234567890");
@@ -45,8 +59,9 @@ namespace Bjd.SmtpServer.Test {
         }
 
         [Fact]
-        public void Saveによる保存() {
-            var dir = Path.GetTempPath();
+        public void Saveによる保存()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             //いったん保存された状態を作る
             var dmy = new FetchDb(dir, "TEST");
@@ -67,8 +82,9 @@ namespace Bjd.SmtpServer.Test {
         }
 
         [Fact]
-        public void Delによる削除() {
-            var dir = Path.GetTempPath();
+        public void Delによる削除()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             //いったん保存された状態を作る
             var sut = new FetchDb(dir, "TEST");
@@ -89,8 +105,9 @@ namespace Bjd.SmtpServer.Test {
         }
 
         [Fact]
-        public void Delによる削除_失敗_存在しない() {
-            var dir = Path.GetTempPath();
+        public void Delによる削除_失敗_存在しない()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             //いったん保存された状態を作る
             var sut = new FetchDb(dir, "TEST");
@@ -111,8 +128,9 @@ namespace Bjd.SmtpServer.Test {
         }
 
         [Fact]
-        public void IsPastによる確認_指定時間を経過した() {
-            var dir = Path.GetTempPath();
+        public void IsPastによる確認_指定時間を経過した()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             //いったん保存された状態を作る
             var sut = new FetchDb(dir, "TEST");
@@ -121,7 +139,7 @@ namespace Bjd.SmtpServer.Test {
             var expected = true;
 
             //exercise
-            var actual = sut.IsPast("0-1234567890",1);
+            var actual = sut.IsPast("0-1234567890", 1);
             //verify
             Assert.Equal(expected, actual);
 
@@ -130,8 +148,9 @@ namespace Bjd.SmtpServer.Test {
         }
 
         [Fact]
-        public void IsPastによる確認_指定時間を経過していない() {
-            var dir = Path.GetTempPath();
+        public void IsPastによる確認_指定時間を経過していない()
+        {
+            var dir = _service.GetTmpDir("tmp");
             //setUp
             //いったん保存された状態を作る
             var sut = new FetchDb(dir, "TEST");
@@ -149,9 +168,10 @@ namespace Bjd.SmtpServer.Test {
 
 
         [Fact]
-        public void 複合試験() {
-            var dir = Path.GetTempPath();
-            
+        public void 複合試験()
+        {
+            var dir = _service.GetTmpDir("tmp");
+
             //当初２件で作成
             var sut = new FetchDb(dir, "TEST");
             sut.Add("0-1234567890");
@@ -167,11 +187,11 @@ namespace Bjd.SmtpServer.Test {
 
             //verify
             //最終的に２件が検索できるはず
-            Assert.Equal(sut.IndexOf("0-1234567890"),-1);
+            Assert.Equal(sut.IndexOf("0-1234567890"), -1);
             Assert.Equal(sut.IndexOf("1-1234567890"), 0);
             Assert.Equal(sut.IndexOf("2-1234567890"), 1);
 
-            
+
             //tearDown
             File.Delete(sut.FileName);
         }

@@ -87,13 +87,13 @@ namespace Bjd.Pop3Server
             if (authType == 0)
             {
                 //USER/PASS
-                sockTcp.AsciiSend("+OK " + bannerMessage);
+                sockTcp.AsciiSend($"+OK {bannerMessage}");
             }
             else
             {
                 //APOP
                 authStr = APop.CreateAuthStr(_kernel.ServerName);
-                sockTcp.AsciiSend("+OK " + bannerMessage + " " + authStr);
+                sockTcp.AsciiSend($"+OK {bannerMessage} {authStr}");
 
             }
 
@@ -108,7 +108,7 @@ namespace Bjd.Pop3Server
                 //continueを指定した場合は、レスポンスを返さずに次のコマンド受信に入る（例外処理用）
                 //breakを指定した場合は、コネクションの終了を意味する（QUIT ABORT 及びエラーの場合）
 
-                Thread.Sleep(0);
+                //Thread.Sleep(0);
 
                 var str = "";
                 var cmdStr = "";
@@ -121,7 +121,7 @@ namespace Bjd.Pop3Server
 
                 if (str == "waiting")
                 {
-                    Thread.Sleep(100); //受信待機中
+                    //Thread.Sleep(100); //受信待機中
                     continue;
                 }
 
@@ -170,7 +170,7 @@ namespace Bjd.Pop3Server
                         }
                         user = paramList[0];
                         pop3LoginState = Pop3LoginState.Pass;
-                        sockTcp.AsciiSend(string.Format("+OK Password required for {0}.", user));
+                        sockTcp.AsciiSend($"+OK Password required for {user}.");
                     }
                     else if (cmd == Pop3Cmd.Apop && (authType == 1 || authType == 2))
                     {
@@ -262,7 +262,7 @@ namespace Bjd.Pop3Server
                         index--;
                         if (index < 0 || messageList.Max <= index)
                         {
-                            sockTcp.AsciiSend(string.Format("-ERR Message {0} does not exist.", index + 1));
+                            sockTcp.AsciiSend($"-ERR Message {index + 1} does not exist.");
                             continue;
                         }
                     }
@@ -280,7 +280,7 @@ namespace Bjd.Pop3Server
                         }
                         if (count < 0)
                         {
-                            sockTcp.AsciiSend(string.Format("-ERR Linenumber range over: {0}", count));
+                            sockTcp.AsciiSend($"-ERR Linenumber range over: {count}");
                             continue;
                         }
                     }
@@ -292,57 +292,55 @@ namespace Bjd.Pop3Server
                     }
                     if (cmd == Pop3Cmd.Stat)
                     {
-                        sockTcp.AsciiSend(string.Format("+OK {0} {1}", messageList.Count, messageList.Size));
+                        sockTcp.AsciiSend($"+OK {messageList.Count} {messageList.Size}");
                         continue;
                     }
                     if (cmd == Pop3Cmd.Rset)
                     {
                         messageList.Rset();
-                        sockTcp.AsciiSend(string.Format("+OK {0} has {1} message ({2} octets).", user, messageList.Count,
-                                                        messageList.Size));
+                        sockTcp.AsciiSend($"+OK {user} has {messageList.Count} message ({messageList.Size} octets).");
                         continue;
                     }
                     if (cmd == Pop3Cmd.Dele)
                     {
                         if (messageList[index].Del)
                         {
-                            sockTcp.AsciiSend(string.Format("-ERR Message {0} has been markd for delete.", index + 1));
+                            sockTcp.AsciiSend($"-ERR Message {index + 1} has been markd for delete.");
                             continue;
                         }
                         messageList[index].Del = true;
                         //Ver5.0.3
                         //sockTcp.AsciiSend(string.Format("+OK {0} octets",messageList.Size),OPERATE_CRLF.YES);
-                        sockTcp.AsciiSend(string.Format("+OK {0} octets", messageList[index].Size));
+                        sockTcp.AsciiSend($"+OK {messageList[index].Size} octets");
                         continue;
                     }
                     if (cmd == Pop3Cmd.Uidl || cmd == Pop3Cmd.List)
                     {
                         if (paramList.Count < 1)
                         {
-                            sockTcp.AsciiSend(string.Format("+OK {0} message ({1} octets)", messageList.Count,
-                                                            messageList.Size));
+                            sockTcp.AsciiSend($"+OK {messageList.Count} message ({messageList.Size} octets)");
                             for (int i = 0; i < messageList.Max; i++)
                             {
                                 if (!messageList[i].Del)
                                 {
                                     if (cmd == Pop3Cmd.Uidl)
-                                        sockTcp.AsciiSend(string.Format("{0} {1}", i + 1, messageList[i].Uid));
+                                        sockTcp.AsciiSend($"{i + 1} {messageList[i].Uid}");
                                     else //LIST
-                                        sockTcp.AsciiSend(string.Format("{0} {1}", i + 1, messageList[i].Size));
+                                        sockTcp.AsciiSend($"{i + 1} {messageList[i].Size}");
                                 }
                             }
                             sockTcp.AsciiSend(".");
                             continue;
                         }
                         if (cmd == Pop3Cmd.Uidl)
-                            sockTcp.AsciiSend(string.Format("+OK {0} {1}", index + 1, messageList[index].Uid));
+                            sockTcp.AsciiSend($"+OK {index + 1} {messageList[index].Uid}");
                         else //LIST
-                            sockTcp.AsciiSend(string.Format("+OK {0} {1}", index + 1, messageList[index].Size));
+                            sockTcp.AsciiSend($"+OK {index + 1} {messageList[index].Size}");
                     }
                     if (cmd == Pop3Cmd.Top || cmd == Pop3Cmd.Retr)
                     {
                         //OneMessage oneMessage = messageList[index];
-                        sockTcp.AsciiSend(string.Format("+OK {0} octets", messageList[index].Size));
+                        sockTcp.AsciiSend($"+OK {messageList[index].Size} octets");
                         if (!messageList[index].Send(sockTcp, count))
                         {
                             //メールの送信
@@ -418,15 +416,15 @@ namespace Bjd.Pop3Server
                 continue;
 
                 UNKNOWN:
-                sockTcp.AsciiSend(string.Format("-ERR Invalid command."));
+                sockTcp.AsciiSend("-ERR Invalid command.");
                 continue;
 
                 FEW:
-                sockTcp.AsciiSend(string.Format("-ERR Too few arguments for the {0} command.", str));
+                sockTcp.AsciiSend($"-ERR Too few arguments for the {str} command.");
                 continue;
 
                 END:
-                sockTcp.AsciiSend(string.Format("+OK Pop Server at {0} signing off.", _kernel.ServerName));
+                sockTcp.AsciiSend($"+OK Pop Server at {_kernel.ServerName} signing off.");
                 break;
             }
             _kernel.MailBox.Logout(user);
@@ -441,7 +439,7 @@ namespace Bjd.Pop3Server
             //var folder = Kernel.MailBox.Login(user, addr);
             if (!_kernel.MailBox.Login(user, addr))
             {
-                Logger.Set(LogKind.Secure, sockTcp, 1, string.Format("user={0}", user));
+                Logger.Set(LogKind.Secure, sockTcp, 1, $"user={user}");
                 sockTcp.AsciiSend("-ERR Double login");
                 return false;
             }
@@ -451,24 +449,24 @@ namespace Bjd.Pop3Server
 
             //if (kernel.MailBox.Login(user, addr)) {//POP before SMTPのために、最後のログインアドレスを保存する
             mode = Pop3LoginState.Login;
-            Logger.Set(LogKind.Normal, sockTcp, 2, string.Format("User {0} from {1}[{2}]", user, sockTcp.RemoteHostname, sockTcp.RemoteAddress.Address));
+            Logger.Set(LogKind.Normal, sockTcp, 2, $"User {user} from {sockTcp.RemoteHostname}[{sockTcp.RemoteAddress.Address}]");
 
             // LOGIN
             //dfList = kernel.MailBox.GetDfList(user);
-            sockTcp.AsciiSend(string.Format("+OK {0} has {1} message ({2} octets).", user, messageList.Count, messageList.Size));
+            sockTcp.AsciiSend($"+OK {user} has {messageList.Count} message ({messageList.Size} octets).");
             return true;
         }
         void AuthError(SockTcp sockTcp, string user, string pass)
         {
 
-            Logger.Set(LogKind.Secure, sockTcp, 3, string.Format("user={0} pass={1}", user, pass));
+            Logger.Set(LogKind.Secure, sockTcp, 3, $"user={user} pass={pass}");
             // 認証のエラーはすぐに返答を返さない
             var authTimeout = (int)_conf.Get("authTimeout");
             for (int i = 0; i < (authTimeout * 10) && IsLife(); i++)
             {
                 Thread.Sleep(100);
             }
-            sockTcp.AsciiSend(string.Format("-ERR Password supplied for {0} is incorrect.", user));
+            sockTcp.AsciiSend($"-ERR Password supplied for {user} is incorrect.");
         }
 
         void AutoDeny(bool success, Ip remoteIp)
@@ -483,14 +481,14 @@ namespace Bjd.Pop3Server
                 return; //ACL自動拒否設定(「許可する」に設定されている場合、機能しない)
             //追加に成功した場合、オプションを書き換える
             var d = (Dat)_conf.Get("acl");
-            var name = string.Format("AutoDeny-{0}", DateTime.Now);
+            var name = $"AutoDeny-{DateTime.Now}";
             var ipStr = remoteIp.ToString();
-            d.Add(true, string.Format("{0}\t{1}", name, ipStr));
+            d.Add(true, $"{name}\t{ipStr}");
             _conf.Set("acl", d);
             _conf.Save(_kernel.Configuration);
             //OneOption.SetVal("acl", d);
             //OneOption.Save(OptionIni.GetInstance());
-            Logger.Set(LogKind.Secure, null, 9000055, string.Format("{0},{1}", name, ipStr));
+            Logger.Set(LogKind.Secure, null, 9000055, $"{name},{ipStr}");
         }
         //RemoteServerでのみ使用される
         public override void Append(OneLog oneLog)

@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTestAuthLogin : ILife, IDisposable, IClassFixture<EsmtpServerTestAuthLogin.ServerFixture>
+    public class EsmtpServerTestAuthLogin : ILife, IDisposable
     {
         public class ServerFixture : IDisposable
         {
@@ -71,11 +71,11 @@ namespace Bjd.SmtpServer.Test
         public int port;
 
 
-        public EsmtpServerTestAuthLogin(ServerFixture fixture)
+        public EsmtpServerTestAuthLogin()
         {
-            _server = fixture;
-            _service = fixture._service;
-            port = fixture.port;
+            _server = new ServerFixture();
+            _service = _server._service;
+            port = _server.port;
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
