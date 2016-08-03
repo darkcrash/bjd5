@@ -217,7 +217,11 @@ namespace Bjd.SmtpServer.Test
 
             //verify
             Assert.Equal(expected, actual);
-            Assert.Equal(308, mail.GetBytes().Length);
+
+            var enc = mail.GetEncoding();
+            _output.WriteLine(enc.GetString(mail.GetBytes()));
+
+            Assert.Equal(303, mail.GetBytes().Length);
 
             //tearDown
             sut.Dispose();

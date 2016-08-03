@@ -185,6 +185,7 @@ namespace Bjd.SmtpServer
             //var tmp = new byte[buf.Length-3];
             //Buffer.BlockCopy(buf,0,tmp,0,buf.Length-3);
             //mail.Init2(tmp);
+            System.Diagnostics.Trace.TraceInformation($"PopClient.Retr {buf.Length} byte received");
             mail.Init2(new ArraySegment<byte>(buf, 0, buf.Length - 3));
 
             return true;
@@ -217,7 +218,8 @@ namespace Bjd.SmtpServer
         byte[] RecvData()
         {
             var dt = DateTime.Now.AddSeconds(_sec);
-            var line = new byte[0];
+            //var line = new byte[0];
+            var lines = new List<byte[]>();
 
             while (_iLife.IsLife())
             {
@@ -226,27 +228,31 @@ namespace Bjd.SmtpServer
                 {
                     return null; //タイムアウト
                 }
-                var len = _sockTcp.Length();
-                if (len == 0)
-                {
-                    continue;
-                }
-                var buf = _sockTcp.Recv(len, _sec, _iLife);
-                if (buf == null)
+                //var len = _sockTcp.Length();
+                //if (len == 0)
+                //{
+                //    continue;
+                //}
+                //var buf = _sockTcp.LineRecv(len, _sec, _iLife);
+                var line = _sockTcp.LineRecv(_sec, _iLife);
+                if (line == null)
                 {
                     return null; //切断された
                 }
                 dt = now.AddSeconds(_sec);
-
-                var tmp = new byte[line.Length + buf.Length];
-                Buffer.BlockCopy(line, 0, tmp, 0, line.Length);
-                Buffer.BlockCopy(buf, 0, tmp, line.Length, buf.Length);
-                line = tmp;
+                lines.Add(line);
+                //var tmp = new byte[line.Length + buf.Length];
+                //Buffer.BlockCopy(line, 0, tmp, 0, line.Length);
+                //Buffer.BlockCopy(buf, 0, tmp, line.Length, buf.Length);
+                //line = tmp;
                 if (line.Length >= 3)
                 {
                     if (line[line.Length - 1] == '\n' && line[line.Length - 2] == '\r' && line[line.Length - 3] == '.')
                     {
-                        return line;
+                        var result = new byte[lines.Sum(_ => _.Length)];
+                        var pos = 0;
+                        lines.ForEach(_ => { Buffer.BlockCopy(_, 0, result, pos, _.Length); pos += _.Length; });
+                        return result;
                     }
                 }
             }
