@@ -57,7 +57,10 @@ namespace Bjd.Mails
                     }
                     try
                     {
-                        encoding = Encoding.GetEncoding(sb.ToString());
+                        var charsetName = sb.ToString();
+                        encoding = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                        if (encoding == null)
+                            encoding = Encoding.GetEncoding(charsetName);
                     }
                     catch
                     {
@@ -297,47 +300,45 @@ namespace Bjd.Mails
             _body.Clear();
             _body = new List<byte[]>();
 
-            if (File.Exists(fileName))
-            {
-                var tmpBuf = new byte[0];
-                using (var br = new BinaryReader(new FileStream(fileName, FileMode.Open)))
-                {
-                    var info = new FileInfo(fileName);
-                    while (true)
-                    {
-                        var len = info.Length - tmpBuf.Length;
-                        if (len <= 0)
-                            break;
-                        if (len > 65535)
-                            len = 65535;
-                        var tmp = br.ReadBytes((int)len);
-                        tmpBuf = Bytes.Create(tmpBuf, tmp);
-                    }
-                    //br.Close();
+            if (!File.Exists(fileName)) return false;
 
-                    var lines = Inet.GetLines(tmpBuf);
-                    var head = true;
-                    foreach (byte[] line in lines)
-                    {
-                        if (head)
-                        {
-                            var str = Encoding.ASCII.GetString(line);
-                            if (str == "\r\n")
-                            {
-                                head = false;
-                                continue;
-                            }
-                            _header.Add(str);
-                        }
-                        else
-                        {
-                            _body.Add(line);
-                        }
-                    }
-                    return true;
+            var tmpBuf = new byte[0];
+            using (var br = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            {
+                var info = new FileInfo(fileName);
+                while (true)
+                {
+                    var len = info.Length - tmpBuf.Length;
+                    if (len <= 0)
+                        break;
+                    if (len > 65535)
+                        len = 65535;
+                    var tmp = br.ReadBytes((int)len);
+                    tmpBuf = Bytes.Create(tmpBuf, tmp);
                 }
+                //br.Close();
+
+                var lines = Inet.GetLines(tmpBuf);
+                var head = true;
+                foreach (byte[] line in lines)
+                {
+                    if (head)
+                    {
+                        var str = Encoding.ASCII.GetString(line);
+                        if (str == "\r\n")
+                        {
+                            head = false;
+                            continue;
+                        }
+                        _header.Add(str);
+                    }
+                    else
+                    {
+                        _body.Add(line);
+                    }
+                }
+                return true;
             }
-            return false;
 
         }
         //送信
@@ -350,17 +351,26 @@ namespace Bjd.Mails
 
                 sockTcp.SendUseEncode(Encoding.ASCII.GetBytes("\r\n"));//��؂�s
 
-                if (count == -1)
+                //if (count == -1)
+                //{
+                //    _body.ForEach(d => sockTcp.SendUseEncode(d));
+                //}
+                //else
+                //{
+                //    for (int i = 0; i < count && i < _body.Count; i++)
+                //    {
+                //        sockTcp.SendUseEncode(_body[i]);
+                //    }
+                //}
+
+                if (count == -1 || count > _body.Count)
+                    count = _body.Count;
+
+                for (int i = 0; i < count; i++)
                 {
-                    _body.ForEach(d => sockTcp.SendUseEncode(d));
+                    sockTcp.SendUseEncode(_body[i]);
                 }
-                else
-                {
-                    for (int i = 0; i < count && i < _body.Count; i++)
-                    {
-                        sockTcp.SendUseEncode(_body[i]);
-                    }
-                }
+
                 return true;
             }
             catch (Exception ex)
