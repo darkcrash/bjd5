@@ -302,43 +302,50 @@ namespace Bjd.Mails
 
             if (!File.Exists(fileName)) return false;
 
-            var tmpBuf = new byte[0];
-            using (var br = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            var info = new FileInfo(fileName);
+            var fileLength = info.Length;
+            var tmpBuf = new byte[fileLength];
+            using (var br = info.Open(FileMode.Open))
             {
-                var info = new FileInfo(fileName);
+                System.Diagnostics.Trace.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
+                var pos = 0;
                 while (true)
                 {
-                    var len = info.Length - tmpBuf.Length;
+                    var len = fileLength - pos;
                     if (len <= 0)
                         break;
-                    if (len > 65535)
-                        len = 65535;
-                    var tmp = br.ReadBytes((int)len);
-                    tmpBuf = Bytes.Create(tmpBuf, tmp);
+                    if (len > 32768)
+                        len = 32768;
+                    int length = Convert.ToInt32(len);
+                    //var tmp = br.ReadBytes((int)len);
+                    //var readLength = tmp.Length;
+                    //Buffer.BlockCopy(tmp, 0, tmpBuf, pos, readLength);
+                    var readLength = br.Read(tmpBuf, pos, length);
+                    pos += readLength;
                 }
                 //br.Close();
-
-                var lines = Inet.GetLines(tmpBuf);
-                var head = true;
-                foreach (byte[] line in lines)
-                {
-                    if (head)
-                    {
-                        var str = Encoding.ASCII.GetString(line);
-                        if (str == "\r\n")
-                        {
-                            head = false;
-                            continue;
-                        }
-                        _header.Add(str);
-                    }
-                    else
-                    {
-                        _body.Add(line);
-                    }
-                }
-                return true;
             }
+
+            var lines = Inet.GetLines(tmpBuf);
+            var head = true;
+            foreach (byte[] line in lines)
+            {
+                if (head)
+                {
+                    var str = Encoding.ASCII.GetString(line);
+                    if (str == "\r\n")
+                    {
+                        head = false;
+                        continue;
+                    }
+                    _header.Add(str);
+                }
+                else
+                {
+                    _body.Add(line);
+                }
+            }
+            return true;
 
         }
         //送信
