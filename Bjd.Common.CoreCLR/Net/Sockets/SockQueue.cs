@@ -58,7 +58,8 @@ namespace Bjd.Net.Sockets
         public ArraySegment<byte> GetWriteSegment()
         {
             var sp = this.AfterSpace;
-            if (Space < sp) sp = Space;
+            var space = Space;
+            if (space < sp) sp = space;
             return new ArraySegment<byte>(_db, _dbNext, sp);
         }
 

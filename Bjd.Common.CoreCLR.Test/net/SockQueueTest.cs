@@ -566,6 +566,89 @@ namespace Bjd.Test.Net
             }
         }
 
+        [Theory]
+        [InlineData(2000000, 0)]
+        [InlineData(1999999, 1)]
+        [InlineData(1, 1999999)]
+        [InlineData(0, 2000000)]
+        public void GetWriteSegmentCount(int expected, int len)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(len);
+                //exercise
+                var actual = sut.GetWriteSegment();
+                //verify
+                Assert.Equal(expected, actual.Count);
+
+            }
+        }
+
+        [Theory]
+        [InlineData(2000000, 0)]
+        [InlineData(1999999, 1)]
+        [InlineData(1, 1999999)]
+        [InlineData(0, 2000000)]
+        public void GetWriteSegmentCountWithLoop(int expected, int len)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(sut.Max);
+                sut.Dequeue(sut.Max);
+
+                sut.NotifyWrite(len);
+                //exercise
+                var actual = sut.GetWriteSegment();
+                //verify
+                Assert.Equal(expected, actual.Count);
+
+            }
+        }
+
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(1999999, 1999999)]
+        [InlineData(0, 2000000)]
+        public void GetWriteSegmentOffset(int expected, int len)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(len);
+                //exercise
+                var actual = sut.GetWriteSegment();
+                //verify
+                Assert.Equal(expected, actual.Offset);
+
+            }
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(1999999, 1999999)]
+        [InlineData(0, 2000000)]
+        public void GetWriteSegmentOffsetWithLoop(int expected, int len)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(sut.Max);
+                sut.Dequeue(sut.Max);
+
+                sut.NotifyWrite(len);
+                //exercise
+                var actual = sut.GetWriteSegment();
+                //verify
+                Assert.Equal(expected, actual.Offset);
+
+            }
+        }
+
 
     }
 }
