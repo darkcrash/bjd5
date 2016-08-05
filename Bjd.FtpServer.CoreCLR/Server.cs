@@ -835,8 +835,8 @@ namespace Bjd.FtpServer
         //ファイル受信（バイナリ）
         private int RecvBinary(SockTcp sockTcp, String fileName)
         {
-            var sb = new StringBuilder();
-            sb.Append(string.Format("RecvBinary({0}) ", fileName));
+            var sockHash = sockTcp.GetHashCode();
+            System.Diagnostics.Trace.TraceInformation($"{sockHash} FtpServer.RecvBinary({fileName}) ");
 
             var fs = new FileStream(fileName, FileMode.Create);
             var bw = new BinaryWriter(fs);
@@ -868,7 +868,7 @@ namespace Bjd.FtpServer
                 bw.Write(buf, 0, buf.Length);
 
                 //トレース表示
-                sb.Append(string.Format("Binary={0}byte ", len));
+                System.Diagnostics.Trace.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={len}byte ");
                 size += len;
 
             }

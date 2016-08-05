@@ -31,8 +31,8 @@ namespace Bjd.Net.Sockets
         //public int Length { get { return _db.Length; } }
         public int Length { get { return _length; } }
 
-        private int AfterSpace { get { return max - _dbNext; } }
-        private int AfterLength { get { return max - _dbStart; } }
+        internal int AfterSpace { get { return max - _dbNext; } }
+        internal int AfterLength { get { return max - _dbStart; } }
 
         internal void Initialize()
         {
@@ -57,7 +57,9 @@ namespace Bjd.Net.Sockets
 
         public ArraySegment<byte> GetWriteSegment()
         {
-            return new ArraySegment<byte>(_db, _dbNext, this.AfterSpace);
+            var sp = this.AfterSpace;
+            if (Space < sp) sp = Space;
+            return new ArraySegment<byte>(_db, _dbNext, sp);
         }
 
         public void NotifyWrite(int len)

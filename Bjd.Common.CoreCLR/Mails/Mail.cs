@@ -317,9 +317,6 @@ namespace Bjd.Mails
                     if (len > 32768)
                         len = 32768;
                     int length = Convert.ToInt32(len);
-                    //var tmp = br.ReadBytes((int)len);
-                    //var readLength = tmp.Length;
-                    //Buffer.BlockCopy(tmp, 0, tmpBuf, pos, readLength);
                     var readLength = br.Read(tmpBuf, pos, length);
                     pos += readLength;
                 }
@@ -356,19 +353,8 @@ namespace Bjd.Mails
             {
                 _header.ForEach(s => sockTcp.SendUseEncode(Encoding.ASCII.GetBytes(s)));
 
-                sockTcp.SendUseEncode(Encoding.ASCII.GetBytes("\r\n"));//��؂�s
+                sockTcp.SendUseEncode(Encoding.ASCII.GetBytes("\r\n"));
 
-                //if (count == -1)
-                //{
-                //    _body.ForEach(d => sockTcp.SendUseEncode(d));
-                //}
-                //else
-                //{
-                //    for (int i = 0; i < count && i < _body.Count; i++)
-                //    {
-                //        sockTcp.SendUseEncode(_body[i]);
-                //    }
-                //}
 
                 if (count == -1 || count > _body.Count)
                     count = _body.Count;

@@ -530,6 +530,42 @@ namespace Bjd.Test.Net
             }
         }
 
+        [Theory]
+        [InlineData(2000000, 0)]
+        [InlineData(1999999, 1)]
+        [InlineData(2000000, 2000000)]
+        public void AfterSpace(int expected, int add)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(add);
+                //exercise
+                var actual = sut.AfterSpace;
+                //verify
+                Assert.Equal(expected, actual);
+
+            }
+        }
+
+        [Theory]
+        [InlineData(2000000, 0)]
+        [InlineData(2000000, 1)]
+        [InlineData(2000000, 2000000)]
+        public void AfterLength(int expected, int add)
+        {
+            //setUp
+            using (var sut = new SockQueue())
+            {
+                sut.NotifyWrite(add);
+                //exercise
+                var actual = sut.AfterLength;
+                //verify
+                Assert.Equal(expected, actual);
+
+            }
+        }
+
 
     }
 }
