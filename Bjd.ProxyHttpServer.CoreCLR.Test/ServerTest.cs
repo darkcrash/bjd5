@@ -221,7 +221,8 @@ namespace ProxyHttpServerTest
         [Theory]
         [InlineData(5000, 17777)]
         [InlineData(1000, 17778)]
-        [InlineData(30000, 17779)]
+        [InlineData(10000, 17779)]
+        [InlineData(15000, 17781)]
         //[TestCase(1000000000)]
         public void PerformanceTest(int count, int port)
         {

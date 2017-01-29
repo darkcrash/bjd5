@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.1.0-*",
   "description": "Bjd.CoreCLR Console Application",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
@@ -30,35 +30,35 @@
   },
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "type": "platform"
     }
   },
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "imports": [
         "dotnet5.6",
         "dnxcore50",
         "portable-net45+win8"
       ],
       "dependencies": {
-        "Bjd.Common.CoreCLR": "1.0.0-*",
-        "Bjd.WebServer.CoreCLR": "1.0.0-*",
-        "Bjd.FtpServer.CoreCLR": "1.0.0-*",
-        "Bjd.DnsServer.CoreCLR": "1.0.0-*",
-        "Bjd.TunnelServer.CoreCLR": "1.0.0-*",
-        "Bjd.TftpServer.CoreCLR": "1.0.0-*",
-        "Bjd.WebApiServer.CoreCLR": "1.0.0-*",
-        "Bjd.SmtpServer.CoreCLR": "1.0.0-*",
-        "Bjd.Pop3Server.CoreCLR": "1.0.0-*",
-        "Bjd.RemoteServer.CoreCLR": "1.0.0-*",
-        "Bjd.ProxySmtpServer.CoreCLR": "1.0.0-*",
-        "Bjd.ProxyTelnetServer.CoreCLR": "1.0.0-*",
-        "Bjd.SipServer.CoreCLR": "1.0.0-*",
-        "Bjd.ProxyPop3Server.CoreCLR": "1.0.0-*",
-        "Bjd.ProxyHttpServer.CoreCLR": "1.0.0-*",
-        "Bjd.ProxyFtpServer.CoreCLR": "1.0.0-*",
-        "Bjd.DhcpServer.CoreCLR": "1.0.0-*"
+        "Bjd.Common.CoreCLR": "1.1.0-*",
+        "Bjd.WebServer.CoreCLR": "1.1.0-*",
+        "Bjd.FtpServer.CoreCLR": "1.1.0-*",
+        "Bjd.DnsServer.CoreCLR": "1.1.0-*",
+        "Bjd.TunnelServer.CoreCLR": "1.1.0-*",
+        "Bjd.TftpServer.CoreCLR": "1.1.0-*",
+        "Bjd.WebApiServer.CoreCLR": "1.1.0-*",
+        "Bjd.SmtpServer.CoreCLR": "1.1.0-*",
+        "Bjd.Pop3Server.CoreCLR": "1.1.0-*",
+        "Bjd.RemoteServer.CoreCLR": "1.1.0-*",
+        "Bjd.ProxySmtpServer.CoreCLR": "1.1.0-*",
+        "Bjd.ProxyTelnetServer.CoreCLR": "1.1.0-*",
+        "Bjd.SipServer.CoreCLR": "1.1.0-*",
+        "Bjd.ProxyPop3Server.CoreCLR": "1.1.0-*",
+        "Bjd.ProxyHttpServer.CoreCLR": "1.1.0-*",
+        "Bjd.ProxyFtpServer.CoreCLR": "1.1.0-*",
+        "Bjd.DhcpServer.CoreCLR": "1.1.0-*"
       }
     }
   }

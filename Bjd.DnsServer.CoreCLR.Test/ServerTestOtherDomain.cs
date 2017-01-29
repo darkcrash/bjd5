@@ -166,9 +166,11 @@ namespace DnsServerTest
                 ar.Add(Print(p, RrKind.AR, i));
             ar.Sort();
             if (ar[0] != "A gdns1.interlink.or.jp. TTL=86400 203.141.128.80" &&
-                ar[0] != "A gdns2.interlink.or.jp. TTL=86400 203.141.142.56")
+                ar[0] != "A gdns1.interlink.or.jp. TTL=3600 203.141.128.80" &&
+                ar[0] != "A gdns2.interlink.or.jp. TTL=86400 203.141.128.80" &&
+                ar[0] != "A gdns2.interlink.or.jp. TTL=3600 203.141.142.56")
             {
-                Assert.False(true, "bad AR");
+                Assert.False(true, "bad AR - " + ar[0]);
             }
         }
 
@@ -289,7 +291,25 @@ namespace DnsServerTest
             //Assert.Equal("QD=1 AN=2 NS=2 AR=2", Print(p));
             //Assert.Equal("Cname www.asahi.co.jp. TTL=600 202.242.245.10", Print(p, RrKind.AN, 0));
             //Assert.Equal("Cname www.asahi.co.jp. TTL=600 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
-            Assert.Equal("Cname www.asahi.co.jp. TTL=28800 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
+            //Assert.Equal("Cname www.asahi.co.jp. TTL=28800 www-asahi.durasite.net.", Print(p, RrKind.AN, 0));
+
+            var count = p.GetCount(RrKind.AN);
+
+            var ar = new List<String>();
+            ar.Add("Cname www.asahi.co.jp. TTL=28800 www-asahi.durasite.net.");
+            ar.Add("Cname www.asahi.co.jp. TTL=600 www-asahi.durasite.net.");
+            ar.Add("Cname www.asahi.co.jp. TTL=600 p00s209-1083.cas.iijgio.jp.");
+            ar.Add("A p00s209-1083.cas.iijgio.jp. TTL=300 203.180.216.236");
+
+            for (int i = 0; i < count; i++)
+            {
+                var str = Print(p, RrKind.AN, i);
+                if (ar.IndexOf(str) < 0)
+                {
+                    Assert.False(true, str);
+                }
+            }
+
         }
 
         [Fact]
@@ -309,14 +329,18 @@ namespace DnsServerTest
             //ar.Add("Cname www.ip.com. TTL=3600 ip.com.");
             //ar.Add("A ip.com. TTL=3600 192.155.83.7");
             ar.Add("Cname www.ip.com. TTL=300 ip.com.");
+            ar.Add("Cname www.ip.com. TTL=3600 ip.com.");
             ar.Add("A ip.com. TTL=300 64.111.96.203");
+            ar.Add("A ip.com. TTL=3600 64.111.96.203");
 
             //ar.Add("A www.ip.com. TTL=1800 96.45.82.133");
             //ar.Add("A www.ip.com. TTL=1800 96.45.82.69");
             //ar.Add("A www.ip.com. TTL=1800 96.45.82.5");
             //ar.Add("A www.ip.com. TTL=1800 96.45.82.197");
 
-            for (int i = 0; i < ar.Count; i++)
+            var count = p.GetCount(RrKind.AN);
+
+            for (int i = 0; i < count; i++)
             {
                 var str = Print(p, RrKind.AN, i);
                 if (ar.IndexOf(str) < 0)

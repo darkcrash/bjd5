@@ -10,7 +10,6 @@ namespace ProxyHttpServerTest
     {
 
         readonly string _documentRoot;
-        //readonly HttpListener _listener;
         readonly WebListener _listener;
 
 
@@ -18,16 +17,15 @@ namespace ProxyHttpServerTest
         {
             _documentRoot = documentRoot;
 
-
-            //string prefix = string.Format("http://127.0.0.1:{0}/", port); // 受け付けるURL
+            // プレフィックスの登録
+            var setting = new WebListenerSettings();
             UrlPrefix pre = UrlPrefix.Create("http", "127.0.0.1", port, "/");
-            //_listener = new HttpListener();
-            _listener = new WebListener();
-            //_listener.UrlPrefixes.Add(prefix); // プレフィックスの登録
-            _listener.UrlPrefixes.Add(pre); // プレフィックスの登録
+            setting.UrlPrefixes.Add(pre);
+            setting.ThrowWriteExceptions = true;
+            setting.Authentication.AllowAnonymous = true;
 
+            _listener = new WebListener(setting);
             _listener.Start();
-            //_listener.BeginGetContext(OnRequested, _listener);
 
             Listen();
 
@@ -35,48 +33,20 @@ namespace ProxyHttpServerTest
 
         private void Listen()
         {
-            var t = _listener.GetContextAsync();
+            var t = _listener.AcceptAsync();
             t.ContinueWith(_ => OnRequested(_));
 
         }
 
         public void Dispose()
         {
-            //_listener.Abort();
-            //listener.Stop();
-            //_listener.Close();
             _listener.Dispose();
         }
         //  要求を受信した時に実行するメソッド。
-        //public void OnRequested(IAsyncResult result)
-        //{
-        //    //var listener = (HttpListener)result.AsyncState;
-        //    var listener = _listener;
-        //    if (!listener.IsListening)
-        //    {
-        //        return;
-        //    }
-
-        //    var ctx = listener.EndGetContext(result);
-        //    var req = ctx.Request;
-        //    var res = ctx.Response;
-
-        //    var path = _documentRoot + req.RawUrl.Replace("/", "\\");
-
-        //    // ファイルが存在すればレスポンス・ストリームに書き出す
-        //    if (File.Exists(path))
-        //    {
-        //        byte[] content = File.ReadAllBytes(path);
-        //        res.OutputStream.Write(content, 0, content.Length);
-        //    }
-        //    else
-        //    {
-        //        res.StatusCode = 404;
-        //    }
-        //    res.Close();
-        //}
         public async void OnRequested(Task<RequestContext> result)
         {
+            if (result.IsFaulted) throw result.Exception;
+
             var listener = _listener;
             if (!listener.IsListening)
             {
@@ -87,7 +57,6 @@ namespace ProxyHttpServerTest
             var req = ctx.Request;
             var res = ctx.Response;
 
-            //var path = _documentRoot + req.RawUrl.Replace("/", "\\");
             var path = _documentRoot + req.Path.Replace('/', Path.DirectorySeparatorChar);
 
             // ファイルが存在すればレスポンス・ストリームに書き出す
@@ -95,7 +64,6 @@ namespace ProxyHttpServerTest
             {
                 var cancel = new System.Threading.CancellationTokenSource();
                 byte[] content = File.ReadAllBytes(path);
-                //res.OutputStream.Write(content, 0, content.Length);
                 await res.SendFileAsync(path, 0, content.Length, cancel.Token);
             }
             else
@@ -103,7 +71,6 @@ namespace ProxyHttpServerTest
                 res.StatusCode = 404;
                 res.Body.Flush();
             }
-            //res.Close();
             ctx.Dispose();
         }
 

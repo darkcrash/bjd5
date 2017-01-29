@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.1.0-*",
   "description": "Bjd.WebServer.CoreCLR Class Library",
   "authors": [ "SIN/SapporoWorks", "yasuaki.matsuda" ],
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "dependencies": {
-    "NETStandard.Library": "1.6.0"
+    "NETStandard.Library": "1.6.1"
   },
   "frameworks": {
     "netstandard1.6": {
@@ -18,7 +18,7 @@
         "System.Threading.ThreadPool": "4.0.10",
         "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
         "System.Xml.XmlDocument": "4.0.1",
-        "Bjd.Common.CoreCLR": "1.0.0-*"
+        "Bjd.Common.CoreCLR": "1.1.0-*"
       }
     }
   }
