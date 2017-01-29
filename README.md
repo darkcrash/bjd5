@@ -38,9 +38,10 @@ BlackJumboDog
 
 
 ## TargetFramework
-* NETStandard.Library 1.6
-* Microsoft.NETCore.App 1.0.0
-* .NET Core sdk 1.0.0-preview2-003121
+* NETStandard.Library 1.6.1
+* Microsoft.NETCore.App 1.1.0
+* Microsoft .NET Core SDK 1.1
+* Microsoft .NET Core SDK 1.0.1 VS 2015 Tooling Preview2
 
 ## Deployments
 * Windows10
