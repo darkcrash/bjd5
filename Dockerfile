@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.0.0-core
+FROM microsoft/dotnet:1.1.0-runtime
 
 RUN mkdir -p /bjd \
  && cd /bjd \
