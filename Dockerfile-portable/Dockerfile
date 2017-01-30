@@ -12,7 +12,7 @@ RUN cd / \
  && cd /bjd5/Bjd.CoreCLR \
  && dotnet publish -c Release --native-subdirectory \
  && cd /bjd5 \
- && mv Bjd.CoreCLR/bin/Release/netcoreapp1.0/publish . \
+ && mv Bjd.CoreCLR/bin/Release/netcoreapp1.1/publish . \
  && rm -fr Bjd* \
  && rm -fr /root/.nuget/packages 
 
