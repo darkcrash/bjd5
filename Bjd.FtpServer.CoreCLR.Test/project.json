@@ -5,7 +5,7 @@
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "testRunner": "xunit",
   "dependencies": {
-    "xunit": "2.2.0-beta2-build3300",
+    "xunit": "2.2.0-beta5-build3474",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "frameworks": {
@@ -23,7 +23,7 @@
         "Bjd.Common.CoreCLR.Test": "1.1.0-*",
         "Bjd.FtpServer.CoreCLR": "1.1.0-*",
         "Microsoft.NETCore.Platforms": "1.1.0",
-        "System.Diagnostics.TraceSource": "4.0.0",
+        "System.Diagnostics.TraceSource": "4.3.0",
         "Microsoft.CSharp": "4.3.0",
         "System.Threading": "4.3.0"
       }
