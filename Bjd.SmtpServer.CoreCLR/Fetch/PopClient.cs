@@ -288,7 +288,7 @@ namespace Bjd.SmtpServer
             {
                 return true;
             }
-            SetLastError("Not Found +OK in PopClient RecvStatus()");
+            SetLastError($"Not Found +OK in PopClient RecvStatus() Message:{str}");
             ConfirmConnect();//接続確認
             return false;
         }

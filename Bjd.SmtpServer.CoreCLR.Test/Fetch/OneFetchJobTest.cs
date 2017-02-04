@@ -6,27 +6,47 @@ using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Test;
 using Bjd.Threading;
+using Bjd.Mails;
+using Bjd.Net;
+using Bjd.Options;
+using Bjd.Servers;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class OneFetchJobTest : ILife, IDisposable
     {
 
-        public class ServerFixture : TestServer, IDisposable
+        internal class ServerFixture : TestServer, IDisposable
         {
+
+            public readonly Logger Logger;
+            public Fetch fet = null;
+
+
             public ServerFixture() : base(TestServerType.Pop, "OneFetchJobTest.ini")
             {
+                //var bind = new OneBind(new Ip(IpKind.InAddrAny), ProtocolKind.Tcp);
+                //var sv = new SmtpServer.Server(_service.Kernel, _service.Kernel.CreateConf("Smtp"), bind);
+                fet = new Fetch(_service.Kernel, null, "", null, 0, 0);
+                Logger = _service.Kernel.CreateLogger("Smtp", true, fet);
+
                 //usrr2のメールボックスへの２通のメールをセット
                 SetMail("user2", "00635026511425888292");
                 SetMail("user2", "00635026511765086924");
 
+
+                var sv = (Pop3Server.Server)_v4Sv;
+
             }
-
-
         }
+
+
+
 
         private ServerFixture _testServer;
         private int port;
+        private bool isDisposed = false;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public OneFetchJobTest()
@@ -36,16 +56,16 @@ namespace Bjd.SmtpServer.Test
 
         }
 
-
         public void Dispose()
         {
             _testServer.Dispose();
+            _testServer = null;
+            isDisposed = true;
         }
 
 
-
         [Fact]
-        public void 接続のみの確認()
+        public void ConnectionOnly()
         {
             //setUp
             MailSave mailSave = null;
@@ -53,20 +73,22 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
+            var logger = _testServer.Logger;
+
             var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
             //var sut = new OneFetchJob(new Kernel(), mailSave, domainName, oneFetch, 3, 1000);
-            var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
-            var expected = true;
-            //exercise
-            var actual = sut.Job(new Logger(), DateTime.Now, this);
-            //verify
-            Assert.Equal(expected, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000))
+            {
+                var expected = true;
+                //exercise
+                var actual = sut.Job(logger, DateTime.Now, this);
+                //verify
+                Assert.Equal(expected, actual);
+            }
         }
 
         [Fact]
-        public void ホスト名の解決に失敗している時_処理はキャンセルされる()
+        public void CancelWhenHostNotFound()
         {
             //setUp
             MailSave mailSave = null;
@@ -74,21 +96,23 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
+            var logger = _testServer.Logger;
+
             //不正ホスト名 xxxxx
             var oneFetch = new OneFetch(interval, "xxxxx", port, "user1", "user1", "localuser", synchronize, keepTime);
-            var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
-            var expected = false;
-            //exercise
-            var actual = sut.Job(new Logger(), DateTime.Now, this);
-            //verify
-            Assert.Equal(expected, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000))
+            {
+                var expected = false;
+                //exercise
+                var actual = sut.Job(logger, DateTime.Now, this);
+                //verify
+                Assert.Equal(expected, actual);
+            }
         }
 
 
         [Fact]
-        public void インターバルが10分の時_5分後の処理はキャンセルされる()
+        public void CancelAfter5MinWhenInterval10Min()
         {
             //setUp
             MailSave mailSave = null;
@@ -96,22 +120,24 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
+            var logger = _testServer.Logger;
+
             var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user1", "user1", "localuser", synchronize, keepTime);
-            var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
-            var expected = false;
-            //exercise
-            //１回目の接続
-            sut.Job(new Logger(), DateTime.Now, this);
-            //２回目（5分後）の接続
-            var actual = sut.Job(new Logger(), DateTime.Now.AddMinutes(5), this);
-            //verify
-            Assert.Equal(expected, actual);
-            //tearDown
-            sut.Dispose();
+            using (var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000))
+            {
+                var expected = false;
+                //exercise
+                //１回目の接続
+                sut.Job(new Logger(), DateTime.Now, this);
+                //２回目（5分後）の接続
+                var actual = sut.Job(logger, DateTime.Now.AddMinutes(5), this);
+                //verify
+                Assert.Equal(expected, actual);
+            }
         }
 
         [Fact]
-        public void 動作確認()
+        public void Execution()
         {
             //setUp
             MailSave mailSave = null;
@@ -119,22 +145,24 @@ namespace Bjd.SmtpServer.Test
             var interval = 10;//10分
             var synchronize = 0;
             var keepTime = 100;//100分
-            var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user2", "user2", "localuser", synchronize, keepTime);
-            var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000);
-            var expected = true;
-            //exercise
-            var actual = sut.Job(new Logger(), DateTime.Now, this);
-            //verify
-            Assert.Equal(expected, actual);
-            //tearDown
-            sut.Dispose();
-        }
+            var logger = _testServer.Logger;
 
+            var oneFetch = new OneFetch(interval, "127.0.0.1", port, "user2", "user2", "localuser", synchronize, keepTime);
+            using (var sut = new OneFetchJob(_testServer._service.Kernel, mailSave, domainName, oneFetch, 3, 1000))
+            {
+                var expected = true;
+                //exercise
+                var actual = sut.Job(logger, DateTime.Now, this);
+                //verify
+                Assert.True(actual, sut.GetLastError());
+                Assert.Equal(expected, actual);
+            }
+        }
 
 
         public bool IsLife()
         {
-            return true;
+            return !isDisposed;
         }
     }
 }

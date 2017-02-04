@@ -295,7 +295,6 @@ namespace Bjd.SmtpServer
 
             while (IsLife())
             {
-                Thread.Sleep(0);
 
                 var cmd = recvCmd(sockTcp);
                 if (cmd == null)
@@ -304,7 +303,6 @@ namespace Bjd.SmtpServer
                 }
                 if (cmd.Str == "")
                 {
-                    Thread.Sleep(100);//受信待機中
                     continue;
                 }
                 var smtpCmd = new SmtpCmd(cmd);

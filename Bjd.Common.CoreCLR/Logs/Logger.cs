@@ -60,18 +60,11 @@ namespace Bjd.Logs
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation)
         {
             //デバッグ等でkernelが初期化されていない場合、処理なし
-            if (_logFile == null)
-            {
-                return;
-            }
+            if (_logFile == null) return;
+
             //詳細ログが対象外の場合、処理なし
-            if (logKind == LogKind.Detail)
-            {
-                if (!_useDetailsLog)
-                {
-                    return;
-                }
-            }
+            if (logKind == LogKind.Detail && !_useDetailsLog) return;
+
             int threadId = GetCurrentThreadId();
             //long threadId = Thread.currentThread().getId(); 
 

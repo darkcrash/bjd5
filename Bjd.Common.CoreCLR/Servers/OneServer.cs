@@ -591,23 +591,6 @@ namespace Bjd.Servers
             return "";
         }
 
-        /********************************************************/
-        //移植のための暫定処置(POP3でのみ使用されている)
-        /********************************************************/
-        protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
-        {
-
-            var cmd = recvCmd(sockTcp);
-            if (cmd == null)
-            {
-                return false;
-            }
-            cmdStr = cmd.CmdStr;
-            paramStr = cmd.ParamStr;
-            str = cmd.Str;
-            return true;
-        }
-
         public bool WaitLine(SockTcp sockTcp, ref string cmdStr, ref string paramStr)
         {
             var cmd = WaitLine(sockTcp);

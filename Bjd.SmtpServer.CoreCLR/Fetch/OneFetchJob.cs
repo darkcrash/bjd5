@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Mails;
@@ -34,8 +35,6 @@ namespace Bjd.SmtpServer
         //RETRの後のメールの保存が完成したら、Job2をこちらに乗せ換えられる
         public bool Job(Logger logger, DateTime now, ILife iLife)
         {
-            Debug.Assert(logger != null, "logger != null");
-
             var fetchDb = new FetchDb(_kernel.Enviroment.ExecutableDirectory, _oneFetch.Name);
             var remoteUidList = new List<String>();
             var getList = new List<int>();//取得するメールのリスト
@@ -158,12 +157,9 @@ namespace Bjd.SmtpServer
                 var rcptList = new List<MailAddress>();
                 rcptList.Add(new MailAddress(_oneFetch.LocalUser, _domainName));
 
-                if (_mailSave != null)
+                if (_mailSave != null && !_mailSave.Save(from, rcptList, mail, remoteHost, remoteAddr))
                 {
-                    if (!_mailSave.Save(from, rcptList, mail, remoteHost, remoteAddr))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
 
                 fetchDb.Add(remoteUidList[i]);
@@ -189,9 +185,9 @@ namespace Bjd.SmtpServer
             return true;
         }
 
-        public void Dispose()
+        public void Dispose()  
         {
-            ;
         }
+
     }
 }

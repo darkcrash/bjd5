@@ -101,6 +101,8 @@ namespace Bjd.Pop3Server
             //実際のメールの削除は、QUIT受信時に、mailList.Update()で処理する
             MessageList messageList = null;
 
+            var remoteIp = new Ip(sockTcp.RemoteAddress.Address.ToString());
+
             while (IsLife())
             {
                 //このループは最初にクライアントからのコマンドを１行受信し、最後に、
@@ -112,8 +114,6 @@ namespace Bjd.Pop3Server
 
                 var str = "";
                 var cmdStr = "";
-
-                var remoteIp = new Ip(sockTcp.RemoteAddress.Address.ToString());
 
                 var paramStr2 = "";
                 if (!RecvCmd(sockTcp, ref str, ref cmdStr, ref paramStr2))
@@ -490,11 +490,32 @@ namespace Bjd.Pop3Server
             //OneOption.Save(OptionIni.GetInstance());
             Logger.Set(LogKind.Secure, null, 9000055, $"{name},{ipStr}");
         }
+
+        /********************************************************/
+        //移植のための暫定処置(POP3でのみ使用されている)
+        /********************************************************/
+        protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
+        {
+
+            var cmd = recvCmd(sockTcp);
+            if (cmd == null)
+            {
+                return false;
+            }
+            cmdStr = cmd.CmdStr;
+            paramStr = cmd.ParamStr;
+            str = cmd.Str;
+            return true;
+        }
+
+
         //RemoteServerでのみ使用される
         public override void Append(OneLog oneLog)
         {
 
         }
+
+
 
     }
 }

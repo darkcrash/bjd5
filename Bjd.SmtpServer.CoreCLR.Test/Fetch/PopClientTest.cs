@@ -42,7 +42,7 @@ namespace Bjd.SmtpServer.Test
             _testServer.SetMail("user2", "00635026511425888292");
             _testServer.SetMail("user2", "00635026511765086924");
 
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
         }
 

@@ -44,14 +44,15 @@ namespace Bjd.SmtpServer
             }
         }
         //ログ等表示用
-        public override String ToString(){
-            return String.Format("{0}:{1} USER:{2} => LOCAL:{3}", Host, Port, User, LocalUser);
+        public override string ToString(){
+            return string.Format("{0}:{1} USER:{2} => LOCAL:{3}", Host, Port, User, LocalUser);
         }
         
         //データベース作成用の名前
-        public String Name{
+        public string Name
+        {
             get{
-                return String.Format("{0}.{1}.{2}.{3}", Host, Port, User, LocalUser);
+                return string.Format("{0}.{1}.{2}.{3}", Host, Port, User, LocalUser);
             }
         }
     }
