@@ -14,6 +14,8 @@ using Bjd.Pop3Server;
 using System.Collections.Generic;
 using Bjd.Services;
 using Bjd.Threading;
+using Xunit.Abstractions;
+using Bjd.Test.Logs;
 
 namespace Pop3ServerTest
 {
@@ -22,8 +24,10 @@ namespace Pop3ServerTest
         internal TestService _service;
         internal Server _v6Sv; //サーバ
         internal Server _v4Sv; //サーバ
+        internal TestOutputService _output;
+        public readonly int port;
 
-        public ServerTest()
+        public ServerTest(ITestOutputHelper helper)
         {
 
             _service = TestService.CreateTestService();
@@ -32,6 +36,7 @@ namespace Pop3ServerTest
             var kernel = _service.Kernel;
             var option = kernel.ListOption.Get("Pop3");
             var conf = new Conf(option);
+            port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
 
             //サーバ起動
             _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -50,12 +55,15 @@ namespace Pop3ServerTest
             _service.AddMail("MF_00635026511765086924", "user2");
 
             //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
+            _output = new TestOutputService(helper);
 
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
+            _output.Dispose();
+
             //サーバ停止
             _v4Sv.Stop();
             _v6Sv.Stop();
@@ -70,7 +78,6 @@ namespace Pop3ServerTest
         //クライアントの生成
         SockTcp CreateClient(InetKind inetKind)
         {
-            int port = 9210;
             var kernel = _service.Kernel;
             if (inetKind == InetKind.V4)
             {
@@ -149,11 +156,11 @@ namespace Pop3ServerTest
             //exercise verify
             CheckBanner(cl.StringRecv(10, this));//バナーチェック
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for user1.\r\n");
+            Assert.Equal("+OK Password required for user1.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK user1 has 0 message (0 octets).\r\n");
+            Assert.Equal("+OK user1 has 0 message (0 octets).\r\n", cl.StringRecv(3, this));
             cl.StringSend("QUIT");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Pop Server at localhost signing off.\r\n");
+            Assert.Equal("+OK Pop Server at localhost signing off.\r\n", cl.StringRecv(3, this));
 
             //tearDown
             cl.Close();
@@ -728,10 +735,10 @@ namespace Pop3ServerTest
 
             //verify
             Assert.Equal(13, actual.Count);
-            Assert.Equal(actual[0], "+OK 317 octets");
-            Assert.Equal(actual[5], "Message-ID: <bjd.00635026511425808252.000@example.com>");
-            Assert.Equal(actual[6], "From: <1@1>");
-            Assert.Equal(actual[12], ".");
+            Assert.Equal("+OK 317 octets", actual[0]);
+            Assert.Equal("Message-ID: <bjd.00635026511425808252.000@example.com>", actual[5]);
+            Assert.Equal("From: <1@1>", actual[6]);
+            Assert.Equal(".", actual[12]);
 
             //tearDown
             cl.StringSend("QUIT");
