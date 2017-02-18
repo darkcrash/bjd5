@@ -3,6 +3,7 @@ using System.IO;
 using Bjd;
 using Bjd.Logs;
 using Xunit;
+using Xunit.Abstractions;
 using Bjd.SmtpServer;
 using Bjd.Test;
 using Bjd.Threading;
@@ -11,6 +12,8 @@ using Bjd.Net;
 using Bjd.Options;
 using Bjd.Servers;
 using Bjd.Services;
+using Bjd.Test.Logs;
+using System.Threading.Tasks;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -38,6 +41,7 @@ namespace Bjd.SmtpServer.Test
 
                 var sv = (Pop3Server.Server)_v4Sv;
 
+
             }
         }
 
@@ -47,17 +51,20 @@ namespace Bjd.SmtpServer.Test
         private ServerFixture _testServer;
         private int port;
         private bool isDisposed = false;
+        private TestOutputService _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
-        public OneFetchJobTest()
+        public OneFetchJobTest(ITestOutputHelper helper)
         {
             _testServer = new ServerFixture();
+            _output = new TestOutputService(helper);
             port = _testServer.port;
 
         }
 
         public void Dispose()
         {
+            _output.Dispose();
             _testServer.Dispose();
             _testServer = null;
             isDisposed = true;

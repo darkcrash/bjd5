@@ -221,7 +221,7 @@ namespace Bjd.SmtpServer.Test
             var enc = mail.GetEncoding();
             _output.WriteLine(enc.GetString(mail.GetBytes()));
 
-            Assert.Equal(303, mail.GetBytes().Length);
+            Assert.Equal(308, mail.GetBytes().Length);
 
             //tearDown
             sut.Dispose();
@@ -280,7 +280,7 @@ namespace Bjd.SmtpServer.Test
 
         [Theory]
         [InlineData(InetKind.V4)]
-        [InlineData(InetKind.V6)]
+        [InlineData(InetKind.V6)]   
         public void DELEによるメール削除_失敗(InetKind inetKind)
         {
             //setUp

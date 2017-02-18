@@ -35,6 +35,8 @@ namespace Bjd.SmtpServer
         //RETRの後のメールの保存が完成したら、Job2をこちらに乗せ換えられる
         public bool Job(Logger logger, DateTime now, ILife iLife)
         {
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job now:{now} Start");
+
             var fetchDb = new FetchDb(_kernel.Enviroment.ExecutableDirectory, _oneFetch.Name);
             var remoteUidList = new List<String>();
             var getList = new List<int>();//取得するメールのリスト
@@ -53,25 +55,32 @@ namespace Bjd.SmtpServer
                 return false;
             }
             var popClient = new PopClient(_kernel, _oneFetch.Ip, _oneFetch.Port, _timeout, iLife);
+
             //接続
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Connect");
             if (!popClient.Connect())
             {
                 logger.Set(LogKind.Error, null, 3, popClient.GetLastError());
                 return false;
             }
+
             //ログイン
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Login");
             if (!popClient.Login(_oneFetch.User, _oneFetch.Pass))
             {
                 logger.Set(LogKind.Error, null, 4, popClient.GetLastError());
                 return false;
             }
+
             //UID
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Uidl");
             var lines = new List<String>();
             if (!popClient.Uidl(lines))
             {
                 logger.Set(LogKind.Error, null, 5, popClient.GetLastError());
                 return false;
             }
+
             for (int i = 0; i < lines.Count; i++)
             {
                 var tmp = lines[i].Split(' ');
@@ -88,17 +97,18 @@ namespace Bjd.SmtpServer
                     }
                 }
             }
+
             if (_oneFetch.Synchronize == 0)
             { //サーバに残す
                 for (var i = 0; i < remoteUidList.Count; i++)
                 {
-                    if (_oneFetch.KeepTime != 0)
-                    { //保存期間0の時は、削除しない
-                        //保存期間が過ぎているかどうかを確認する
-                        if (fetchDb.IsPast(remoteUidList[i], _oneFetch.KeepTime * 60))
-                        { //サーバに残す時間（分）
-                            delList.Add(i);
-                        }
+                    //保存期間0の時は、削除しない
+                    if (_oneFetch.KeepTime == 0) continue;
+
+                    //保存期間が過ぎているかどうかを確認する
+                    if (fetchDb.IsPast(remoteUidList[i], _oneFetch.KeepTime * 60))
+                    { //サーバに残す時間（分）
+                        delList.Add(i);
                     }
                 }
             }
@@ -133,15 +143,19 @@ namespace Bjd.SmtpServer
                     }
                 }
             }
+
             //RETR
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job RETR");
             for (int i = 0; i < getList.Count; i++)
             {
+                System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job RETR {i}");
                 var mail = new Mail();
                 if (!popClient.Retr(getList[i], mail))
                 {
                     logger.Set(LogKind.Error, null, 6, popClient.GetLastError());
                     return false;
                 }
+
                 //Ver5.9.8
                 var fromStr = mail.GetHeader("From");
                 if (fromStr == null)
@@ -165,6 +179,7 @@ namespace Bjd.SmtpServer
                 fetchDb.Add(remoteUidList[i]);
             }
             //DELE
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job DELE");
             for (int i = 0; i < delList.Count; i++)
             {
                 if (!popClient.Dele(delList[i]))
@@ -175,6 +190,7 @@ namespace Bjd.SmtpServer
                 fetchDb.Del(remoteUidList[i]);
             }
             //QUIT
+            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Quit");
             if (!popClient.Quit())
             {
                 logger.Set(LogKind.Error, null, 5, popClient.GetLastError());
@@ -185,7 +201,7 @@ namespace Bjd.SmtpServer
             return true;
         }
 
-        public void Dispose()  
+        public void Dispose()
         {
         }
 

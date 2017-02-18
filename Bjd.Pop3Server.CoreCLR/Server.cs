@@ -69,6 +69,7 @@ namespace Bjd.Pop3Server
         //接続単位の処理
         protected override void OnSubThread(SockObj sockObj)
         {
+            System.Diagnostics.Trace.TraceInformation($"Pop3Server.OnSubThread()");
 
             var sockTcp = (SockTcp)sockObj;
 
@@ -339,14 +340,15 @@ namespace Bjd.Pop3Server
                     }
                     if (cmd == Pop3Cmd.Top || cmd == Pop3Cmd.Retr)
                     {
-                        //OneMessage oneMessage = messageList[index];
-                        sockTcp.AsciiSend($"+OK {messageList[index].Size} octets");
-                        if (!messageList[index].Send(sockTcp, count))
+                        System.Diagnostics.Trace.TraceInformation($"Pop3Server.OnSubThread() Top || Retr");
+                        var msg = messageList[index];
+                        sockTcp.AsciiSend($"+OK {msg.Size} octets");
+                        if (!msg.Send(sockTcp, count))
                         {
                             //メールの送信
                             break;
                         }
-                        MailInfo mailInfo = messageList[index].GetMailInfo();
+                        MailInfo mailInfo = msg.GetMailInfo();
                         Logger.Set(LogKind.Normal, sockTcp, 5, mailInfo.ToString());
 
                         sockTcp.AsciiSend(".");
@@ -435,6 +437,7 @@ namespace Bjd.Pop3Server
 
         bool Login(SockTcp sockTcp, ref Pop3LoginState mode, ref MessageList messageList, string user, Ip addr)
         {
+            System.Diagnostics.Debug.WriteLine($"Pop3Server.Login user:{user} ");
 
             //var folder = Kernel.MailBox.Login(user, addr);
             if (!_kernel.MailBox.Login(user, addr))
@@ -496,7 +499,7 @@ namespace Bjd.Pop3Server
         /********************************************************/
         protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
         {
-
+            System.Diagnostics.Debug.WriteLine($"Pop3Server.RecvCmd cmd:{cmdStr} str:{str}");
             var cmd = recvCmd(sockTcp);
             if (cmd == null)
             {

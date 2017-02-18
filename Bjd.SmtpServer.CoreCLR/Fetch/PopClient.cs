@@ -38,6 +38,7 @@ namespace Bjd.SmtpServer
         //接続
         public bool Connect()
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Connect");
             if (Status != PopClientStatus.Idle)
             {
                 SetLastError("Connect() Status != Idle");
@@ -54,10 +55,8 @@ namespace Bjd.SmtpServer
             if (_sockTcp.SockState == SockState.Connect)
             {
                 //+OK受信
-                if (!RecvStatus())
-                {
-                    return false;
-                }
+                if (!RecvStatus()) return false;
+
                 Status = PopClientStatus.Authorization;
                 return true;
             }
@@ -68,6 +67,7 @@ namespace Bjd.SmtpServer
         //ログイン
         public bool Login(String user, String pass)
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Login");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Authorization)
             {
@@ -75,31 +75,24 @@ namespace Bjd.SmtpServer
                 return false;
             }
             //USER送信
-            if (!SendCmd(String.Format("USER {0}", user)))
-            {
-                return false;
-            }
+            if (!SendCmd(String.Format("USER {0}", user))) return false;
+         
             //+OK受信
-            if (!RecvStatus())
-            {
-                return false;
-            }
+            if (!RecvStatus()) return false;
+
             //PASS送信
-            if (!SendCmd(String.Format("PASS {0}", pass)))
-            {
-                return false;
-            }
+            if (!SendCmd(String.Format("PASS {0}", pass))) return false;
+
             //+OK受信
-            if (!RecvStatus())
-            {
-                return false;
-            }
+            if (!RecvStatus()) return false;
+
             Status = PopClientStatus.Transaction;
             return true;
         }
 
         public bool Quit()
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Quit");
             //切断中の場合はエラー
             if (Status == PopClientStatus.Idle)
             {
@@ -107,15 +100,11 @@ namespace Bjd.SmtpServer
                 return false;
             }
             //QUIT送信
-            if (!SendCmd("QUIT"))
-            {
-                return false;
-            }
+            if (!SendCmd("QUIT")) return false;
+
             //+OK受信
-            if (!RecvStatus())
-            {
-                return false;
-            }
+            if (!RecvStatus()) return false;
+
             //切断
             _sockTcp.Close();
             _sockTcp = null;
@@ -125,6 +114,7 @@ namespace Bjd.SmtpServer
 
         public bool Uidl(List<String> lines)
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Uidl");
             lines.Clear();
 
             //切断中の場合はエラー
@@ -134,21 +124,15 @@ namespace Bjd.SmtpServer
                 return false;
             }
             //QUIT送信
-            if (!SendCmd("UIDL"))
-            {
-                return false;
-            }
+            if (!SendCmd("UIDL")) return false;
+    
             //+OK受信
-            if (!RecvStatus())
-            {
-                return false;
-            }
+            if (!RecvStatus()) return false;
+
             //.までの行を受信
             var buf = RecvData();
-            if (buf == null)
-            {
-                return false;
-            }
+            if (buf == null) return false;
+
             var s = Encoding.ASCII.GetString(buf);
             if (s.Length >= 5)
             {
@@ -160,31 +144,31 @@ namespace Bjd.SmtpServer
 
         public bool Retr(int n, Mail mail)
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Retr() ");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Transaction)
             {
                 SetLastError("Retr() Status != Transaction");
                 return false;
             }
+
             //RETR送信
-            if (!SendCmd(string.Format("RETR {0}", n + 1)))
-            {
-                return false;
-            }
+            System.Diagnostics.Trace.TraceInformation("PopClient.Retr() RETR");
+            if (!SendCmd($"RETR {n + 1}")) return false;
+
             //+OK受信
-            if (!RecvStatus())
-            {
-                return false;
-            }
+            System.Diagnostics.Trace.TraceInformation("PopClient.Retr() RecvStatus");
+            if (!RecvStatus()) return false;
+
             //.までの行を受信
+            System.Diagnostics.Trace.TraceInformation("PopClient.Retr() RecvData");
             var buf = RecvData();
-            if (buf == null)
-            {
-                return false;
-            }
+            if (buf == null) return false;
+           
             //var tmp = new byte[buf.Length-3];
             //Buffer.BlockCopy(buf,0,tmp,0,buf.Length-3);
             //mail.Init2(tmp);
+
             System.Diagnostics.Trace.TraceInformation($"PopClient.Retr {buf.Length} byte received");
             mail.Init2(new ArraySegment<byte>(buf, 0, buf.Length - 3));
 
@@ -194,6 +178,7 @@ namespace Bjd.SmtpServer
 
         public bool Dele(int n)
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.Dele");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Transaction)
             {
@@ -217,6 +202,7 @@ namespace Bjd.SmtpServer
         //.行までを受信する
         byte[] RecvData()
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.RecvData");
             var dt = DateTime.Now.AddSeconds(_sec);
             //var line = new byte[0];
             var lines = new List<byte[]>();
@@ -239,13 +225,14 @@ namespace Bjd.SmtpServer
                 {
                     return null; //切断された
                 }
+
                 dt = now.AddSeconds(_sec);
                 lines.Add(line);
                 //var tmp = new byte[line.Length + buf.Length];
                 //Buffer.BlockCopy(line, 0, tmp, 0, line.Length);
                 //Buffer.BlockCopy(buf, 0, tmp, line.Length, buf.Length);
                 //line = tmp;
-                if (line.Length >= 3)
+                if (line.Length == 3)
                 {
                     if (line[line.Length - 1] == '\n' && line[line.Length - 2] == '\r' && line[line.Length - 3] == '.')
                     {
@@ -263,6 +250,7 @@ namespace Bjd.SmtpServer
 
         bool SendCmd(string cmdStr)
         {
+            System.Diagnostics.Trace.TraceInformation($"PopClient.SendCmd {cmdStr}");
             //AsciiSendは、内部でCRLFを追加する
             if (cmdStr.Length + 2 != _sockTcp.AsciiSend(cmdStr))
             {
@@ -275,6 +263,7 @@ namespace Bjd.SmtpServer
 
         bool RecvStatus()
         {
+            System.Diagnostics.Trace.TraceInformation("PopClient.RecvStatus");
 
             var buf = _sockTcp.LineRecv(_sec, _iLife);
             if (buf == null)
@@ -284,11 +273,9 @@ namespace Bjd.SmtpServer
                 return false;
             }
             var str = Encoding.ASCII.GetString(buf);
-            if (str.ToUpper().IndexOf("+OK") == 0)
-            {
-                return true;
-            }
-            SetLastError($"Not Found +OK in PopClient RecvStatus() Message:{str}");
+            if (str.ToUpper().IndexOf("+OK") == 0) return true;
+
+            SetLastError($"Not Found +OK in PopClient RecvStatus()");
             ConfirmConnect();//接続確認
             return false;
         }
