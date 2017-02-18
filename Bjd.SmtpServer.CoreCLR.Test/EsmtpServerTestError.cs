@@ -112,11 +112,13 @@ namespace Bjd.SmtpServer.Test
                 str = string.Format("250-localhost Helo ::1[[::1]:{0}], Pleased to meet you.", localPort);
             }
 
-            var line1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
-            var line2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
-            var line3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
-            var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
-            var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
+            var timeoutSec = 3;
+
+            var line1 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(timeoutSec, this)));
+            var line2 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(timeoutSec, this)));
+            var line3 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(timeoutSec, this)));
+            var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(timeoutSec, this)));
+            var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(timeoutSec, this)));
 
             Assert.Equal(line1, str);
             Assert.Equal(line2, "250-8BITMIME");
