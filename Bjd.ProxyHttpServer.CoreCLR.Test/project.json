@@ -5,7 +5,7 @@
   "copyright": "Copyright(c) 1998/05.. by SIN/SapporoWorks",
   "testRunner": "xunit",
   "dependencies": {
-    "xunit": "2.2.0-beta5-build3474",
+    "xunit": "2.2.0-rc4-build3536",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.Net.Http.Server": "1.1.0"
   },

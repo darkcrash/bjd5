@@ -16,7 +16,7 @@
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
         "System.Threading.ThreadPool": "4.0.10",
-        "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
+        "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
         "System.Xml.XmlDocument": "4.0.1",
         "Bjd.Common.CoreCLR": "1.1.0-*"
       }
