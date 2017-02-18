@@ -45,12 +45,11 @@ namespace Bjd.Mails
                     var sb = new StringBuilder();
                     foreach (char t in str)
                     {
-                        if (t == ' ')
-                            continue;
+                        // skip space
+                        if (t == ' ') continue;
                         if (t == '"')
                         {
-                            if (sb.Length != 0)
-                                break;
+                            if (sb.Length != 0) break;
                             continue;
                         }
                         sb.Append(t);
@@ -58,17 +57,21 @@ namespace Bjd.Mails
                     var charsetName = sb.ToString();
                     try
                     {
+                        // first take, desktop support encoding.
                         encoding = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                        if (encoding == null)
-                            encoding = Encoding.GetEncoding(charsetName);
+                        // second take, .NET Core support encoding.
+                        if (encoding == null) encoding = Encoding.GetEncoding(charsetName);
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
                     }
+                    finally
+                    {
+                        if (encoding == null) encoding = Encoding.ASCII;
+                    }
                 }
             }
-            if (encoding == null) encoding = Encoding.ASCII;
             return encoding;
 
         }
@@ -178,8 +181,7 @@ namespace Bjd.Mails
             foreach (var line in _header)
             {
                 var i = line.IndexOf(':');
-                if (0 > i)
-                    continue;
+                if (0 > i) continue;
                 if (line.Substring(0, i).ToUpper() == tag.ToUpper())
                 {
                     return Inet.TrimCrlf(line).Substring(i + 1).Trim(' ');
@@ -190,7 +192,7 @@ namespace Bjd.Mails
         //ヘッダ追加
         public void AddHeader(string tag, string str)
         {
-            var buf = string.Format("{0}: {1}\r\n", tag, str);
+            var buf = $"{tag}: {str}\r\n";
             if (tag.ToUpper() == "RECEIVED")
             {
                 //最上部に追加する
@@ -259,15 +261,15 @@ namespace Bjd.Mails
         //ファイルへの追加書き込み
         public bool Append(string fileName)
         {
-            return Save1(fileName, FileMode.Append);
+            return SaveInternal(fileName, FileMode.Append);
         }
         //ファイルへの保存
         public bool Save(string fileName)
         {
-            return Save1(fileName, FileMode.Create);
+            return SaveInternal(fileName, FileMode.Create);
         }
         //ファイルへの保存(内部メソッド)
-        bool Save1(string fileName, FileMode fileMode)
+        private bool SaveInternal(string fileName, FileMode fileMode)
         {
             try
             {
@@ -306,17 +308,15 @@ namespace Bjd.Mails
             var info = new FileInfo(fileName);
             var fileLength = info.Length;
             var tmpBuf = new byte[fileLength];
-            using (var br = info.Open(FileMode.Open))
+            using (var br = info.OpenRead())
             {
                 System.Diagnostics.Trace.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
                 var pos = 0;
                 while (true)
                 {
                     var len = fileLength - pos;
-                    if (len <= 0)
-                        break;
-                    if (len > 32768)
-                        len = 32768;
+                    if (len <= 0) break;
+                    if (len > 32768) len = 32768;
                     int length = Convert.ToInt32(len);
                     var readLength = br.Read(tmpBuf, pos, length);
                     pos += readLength;
