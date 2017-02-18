@@ -146,7 +146,7 @@ namespace WebServerTest
             var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", fileName)));
-            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
             //var lines = Inet.RecvLines(cl, sec, this);
             var lines = new List<string>();
             var isMatch = false;
@@ -179,7 +179,7 @@ namespace WebServerTest
             var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/ExecCgi.html HTTP/1.1\nHost: ws00\n\n"));
-            int sec = 10;
+            int sec = 30;
 
             var lines = new List<string>();
             for (var i = 0; i < 21; i++)
@@ -205,7 +205,7 @@ namespace WebServerTest
             var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
 
             cl.Send(Encoding.ASCII.GetBytes("GET /SsiTest/Include.html HTTP/1.1\nHost: ws00\n\n"));
-            int sec = 10;
+            int sec = 30;
 
             var lines = new List<string>();
             for (var i = 0; i < 19; i++)
@@ -232,7 +232,7 @@ namespace WebServerTest
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include2.html")));
-            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
             //var lines = Inet.RecvLines(cl, sec, this);
 
             var lines = new List<string>();
@@ -263,7 +263,7 @@ namespace WebServerTest
 
             //exercise
             cl.Send(Encoding.ASCII.GetBytes(string.Format("GET /SsiTest/{0} HTTP/1.1\nHost: ws00\n\n", "Include3.html")));
-            int sec = 10; //CGI処理待ち時間（これで大丈夫?）
+            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
             //var lines = Inet.RecvLines(cl, sec, this);
 
             var lines = new List<string>();
