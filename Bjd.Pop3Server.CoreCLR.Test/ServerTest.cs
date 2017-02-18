@@ -117,11 +117,11 @@ namespace Pop3ServerTest
         }
 
         [Fact]
-        public void ステータス情報_ToString_の出力確認_V4()
+        public void StatusInfo_ToString_Output_V4()
         {
             //setUp
             var sv = _v4Sv;
-            var expected = "+ サービス中 \t                Pop3\t[127.0.0.1\t:TCP 9210]\tThread";
+            var expected = $"+ サービス中 \t                Pop3\t[127.0.0.1\t:TCP {port}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 58);
@@ -131,12 +131,12 @@ namespace Pop3ServerTest
         }
 
         [Fact]
-        public void ステータス情報_ToString_の出力確認_V6()
+        public void StatusInfo_ToString_Output_V6()
         {
 
             //setUp
             var sv = _v6Sv;
-            var expected = "+ サービス中 \t                Pop3\t[::1\t:TCP 9210]\tThread";
+            var expected = $"+ サービス中 \t                Pop3\t[::1\t:TCP {port}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 52);
