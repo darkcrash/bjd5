@@ -55,19 +55,20 @@ namespace Bjd.Mails
                         }
                         sb.Append(t);
                     }
+                    var charsetName = sb.ToString();
                     try
                     {
-                        var charsetName = sb.ToString();
                         encoding = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
                         if (encoding == null)
                             encoding = Encoding.GetEncoding(charsetName);
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        encoding = Encoding.ASCII;
+                        System.Diagnostics.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
                     }
                 }
             }
+            if (encoding == null) encoding = Encoding.ASCII;
             return encoding;
 
         }
