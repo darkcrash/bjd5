@@ -42,8 +42,6 @@ namespace Bjd.SmtpServer.Test
             _testServer.SetMail("user2", "00635026511425888292");
             _testServer.SetMail("user2", "00635026511765086924");
 
-            Thread.Sleep(50);
-
         }
 
 
@@ -64,8 +62,6 @@ namespace Bjd.SmtpServer.Test
         }
 
 
-
-
         [Theory]
         [InlineData(InetKind.V4, "127.0.0.1", 1)]
         [InlineData(InetKind.V6, "::1", 1)]
@@ -73,18 +69,20 @@ namespace Bjd.SmtpServer.Test
         {
             var kernel = _testServer._service.Kernel;
             //setUp
-            var sut = new PopClient(kernel, new Ip(addr), port, 3, this);
-            var expected = false;
+            using (var sut = new PopClient(kernel, new Ip(addr), port, 3, this))
+            {
+                var expected = false;
 
-            //exercise
-            var actual = sut.Connect();
+                //exercise
+                var actual = sut.Connect();
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -95,18 +93,20 @@ namespace Bjd.SmtpServer.Test
             var kernel = _testServer._service.Kernel;
             var port = _testServer.port;
             //setUp
-            var sut = new PopClient(kernel, new Ip(addr), port, 3, this);
-            var expected = false;
+            using (var sut = new PopClient(kernel, new Ip(addr), port, 3, this))
+            {
+                var expected = false;
 
-            //exercise
-            var actual = sut.Connect();
+                //exercise
+                var actual = sut.Connect();
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -115,18 +115,20 @@ namespace Bjd.SmtpServer.Test
         public void ログイン成功(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = true;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = true;
 
-            //exercise
-            sut.Connect();
-            var actual = sut.Login("user1", "user1");
+                //exercise
+                sut.Connect();
+                var actual = sut.Login("user1", "user1");
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -135,19 +137,21 @@ namespace Bjd.SmtpServer.Test
         public void ログイン失敗_パスワードの間違い(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = false;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = false;
 
-            //exercise
-            sut.Connect();
-            var actual = sut.Login("user1", "xxx");
+                //exercise
+                sut.Connect();
+                var actual = sut.Login("user1", "xxx");
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal("Timeout in PopClient RecvStatus()", sut.GetLastError());
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal("Timeout in PopClient RecvStatus()", sut.GetLastError());
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -156,22 +160,24 @@ namespace Bjd.SmtpServer.Test
         public void user1のUidl取得(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = true;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = true;
 
-            //exercise
-            sut.Connect();
-            sut.Login("user1", "user1");
+                //exercise
+                sut.Connect();
+                sut.Login("user1", "user1");
 
-            var lines = new List<string>();
-            var actual = sut.Uidl(lines);
+                var lines = new List<string>();
+                var actual = sut.Uidl(lines);
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal(lines.Count, 0);
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal(lines.Count, 0);
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -180,23 +186,25 @@ namespace Bjd.SmtpServer.Test
         public void user2のUidl取得(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = true;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = true;
 
-            //exercise
-            sut.Connect();
-            sut.Login("user2", "user2");
+                //exercise
+                sut.Connect();
+                sut.Login("user2", "user2");
 
-            var lines = new List<string>();
-            var actual = sut.Uidl(lines);
+                var lines = new List<string>();
+                var actual = sut.Uidl(lines);
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal("1 bjd.00635026511425808252.000", lines[0]);
-            Assert.Equal("2 bjd.00635026511765066907.001", lines[1]);
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal("1 bjd.00635026511425808252.000", lines[0]);
+                Assert.Equal("2 bjd.00635026511765066907.001", lines[1]);
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -205,26 +213,29 @@ namespace Bjd.SmtpServer.Test
         public void RETRによるメール取得(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = true;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = true;
 
-            //exercise
-            sut.Connect();
-            sut.Login("user2", "user2");
+                //exercise
+                sut.Connect();
+                sut.Login("user2", "user2");
 
-            var mail = new Mail();
-            var actual = sut.Retr(0, mail);
+                var mail = new Mail();
+                var actual = sut.Retr(0, mail);
 
-            //verify
-            Assert.Equal(expected, actual);
+                //verify
+                Assert.Equal(expected, actual);
 
-            var enc = mail.GetEncoding();
-            _output.WriteLine(enc.GetString(mail.GetBytes()));
+                var enc = mail.GetEncoding();
+                _output.WriteLine(enc.GetString(mail.GetBytes()));
 
-            Assert.Equal(308, mail.GetBytes().Length);
+                Assert.Equal(308, mail.GetBytes().Length);
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
+
         }
 
         [Theory]
@@ -233,21 +244,23 @@ namespace Bjd.SmtpServer.Test
         public void RETRによるメール取得_失敗(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = false;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = false;
 
-            //exercise
-            sut.Connect();
-            sut.Login("user1", "user1");
+                //exercise
+                sut.Connect();
+                sut.Login("user1", "user1");
 
-            var mail = new Mail();
-            var actual = sut.Retr(0, mail); //user1は滞留が0通なので、存在しないメールをリクエストしている
+                var mail = new Mail();
+                var actual = sut.Retr(0, mail); //user1は滞留が0通なので、存在しないメールをリクエストしている
 
-            //verify
-            Assert.Equal(expected, actual);
-            Assert.Equal("Not Found +OK in PopClient RecvStatus()", sut.GetLastError());
-            //tearDown
-            sut.Dispose();
+                //verify
+                Assert.Equal(expected, actual);
+                Assert.Equal("Not Found +OK in PopClient RecvStatus()", sut.GetLastError());
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
         [Theory]
@@ -256,50 +269,54 @@ namespace Bjd.SmtpServer.Test
         public void DELEによるメール削除(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            //var expected = true;
-            var expected = CountMail("user2");
+            using (var sut = CreatePopClient(inetKind))
+            {
+                //var expected = true;
+                var expected = CountMail("user2");
 
-            //exercise
-            sut.Connect();
-            sut.Login("user2", "user2");
+                //exercise
+                sut.Connect();
+                sut.Login("user2", "user2");
 
-            //verify
-            sut.Dele(0);//1通削除
-            Assert.Equal(expected, CountMail("user2"));//QUIT前は２通
+                //verify
+                sut.Dele(0);//1通削除
+                Assert.Equal(expected, CountMail("user2"));//QUIT前は２通
 
-            sut.Quit();
-            Assert.Equal(expected - 1, CountMail("user2"));//QUIT後は１通
+                sut.Quit();
+                Assert.Equal(expected - 1, CountMail("user2"));//QUIT後は１通
 
 
 
-            //tearDown
-            sut.Dispose();
+                //tearDown
+                //sut.Dispose();
+            }
         }
 
 
         [Theory]
         [InlineData(InetKind.V4)]
-        [InlineData(InetKind.V6)]   
+        [InlineData(InetKind.V6)]
         public void DELEによるメール削除_失敗(InetKind inetKind)
         {
             //setUp
-            var sut = CreatePopClient(inetKind);
-            var expected = false;
+            using (var sut = CreatePopClient(inetKind))
+            {
+                var expected = false;
 
-            //exercise
-            sut.Connect();
-            sut.Login("user1", "user1");
+                //exercise
+                sut.Connect();
+                sut.Login("user1", "user1");
 
-            //verify
-            var actual = sut.Dele(0);
-            Assert.Equal(expected, actual);
-            Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
+                //verify
+                var actual = sut.Dele(0);
+                Assert.Equal(expected, actual);
+                Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
 
 
-            //tearDown
-            sut.Quit();
-            sut.Dispose();
+                //tearDown
+                sut.Quit();
+                //sut.Dispose();
+            }
         }
 
         //メール通数の確認

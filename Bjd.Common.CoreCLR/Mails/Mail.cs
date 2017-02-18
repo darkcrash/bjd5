@@ -62,7 +62,7 @@ namespace Bjd.Mails
                         if (encoding == null)
                             encoding = Encoding.GetEncoding(charsetName);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         System.Diagnostics.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
                     }
