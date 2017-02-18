@@ -165,7 +165,7 @@ namespace WebServerTest
             }
             //var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
-            Assert.Equal(isMatch, true);
+            Assert.Equal(true, isMatch);
 
             cl.Close();
 

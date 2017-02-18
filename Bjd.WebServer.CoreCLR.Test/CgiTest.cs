@@ -80,7 +80,7 @@ namespace WebServerTest
                 Assert.NotEqual(0, lines.Count);
                 Assert.NotEqual(1, lines.Count);
                 Assert.NotEqual(2, lines.Count);
-                Assert.Equal(find, true);
+                Assert.Equal(true, find);
 
                 cl.Close();
                 sv.Stop();
@@ -112,7 +112,7 @@ namespace WebServerTest
                 Assert.NotEqual(0, lines.Count);
                 Assert.NotEqual(1, lines.Count);
                 Assert.NotEqual(2, lines.Count);
-                Assert.Equal(find, true);
+                Assert.Equal(true, find);
 
                 cl.Close();
                 sv.Stop();
