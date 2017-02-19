@@ -52,14 +52,12 @@ namespace Bjd.SmtpServer.Test
         private Kernel _kernel;
         private int port;
         private bool isDisposed = false;
-        private Bjd.Traces.TraceBroker _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public OneFetchJobTest(ITestOutputHelper helper)
         {
             _testServer = new ServerFixture();
             _testServer._service.AddOutput(helper);
-            _output = _testServer._service.Kernel.Trace;
             port = _testServer.port;
             _kernel = _testServer._service.Kernel;
 

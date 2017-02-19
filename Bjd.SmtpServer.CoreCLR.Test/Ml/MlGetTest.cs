@@ -19,12 +19,12 @@ namespace Bjd.SmtpServer.Test
 
     public class MlGetTest : IDisposable
     {
-        private TestService _service; 
+        private TestService _service;
         private Ml _ml;
         private TsMailSave _tsMailSave;
 
 
-        public  MlGetTest()
+        public MlGetTest()
         {
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
@@ -33,7 +33,9 @@ namespace Bjd.SmtpServer.Test
             _service.SetOption("MlGetTest.ini");
 
             var kernel = _service.Kernel;
-            var logger = new Logger(_service.Kernel);
+            kernel.ListInitialize();
+
+            var logger = _service.Kernel.Logger;
             var manageDir = _service.GetTmpDir("TestDir");
 
             _tsMailSave = new TsMailSave(kernel);//MailSaveのモックオブジェクト
@@ -57,8 +59,10 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
+            _tsMailSave.Clear();
             _tsMailSave.Dispose();
             _ml.Remove();
+            _ml.Dispose();
             _service.Dispose();
         }
 
@@ -73,7 +77,7 @@ namespace Bjd.SmtpServer.Test
             const string domain = "@example.com";
             const string from = "user1" + domain;
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), 1); //返されるエラーメールは1通
@@ -101,9 +105,8 @@ namespace Bjd.SmtpServer.Test
 
             for (int i = 0; i < 30; i++)
             {
-                var m = new TsMail(from, "1ban" + domain, "DMY");
+                var m = new TsMail(_service, from, "1ban" + domain, "DMY");
                 m.Mail.AddHeader("subject", string.Format("TEST_{0}", i));//試験的に件名を挿入する
-
                 _ml.Job(m.MlEnvelope, m.Mail);
             }
             //この時点で、user1,user2,adin2のそれぞれ30通が送信されているため_tsMailSave.Count()は90となる
@@ -111,7 +114,7 @@ namespace Bjd.SmtpServer.Test
             _tsMailSave.Clear();
 
             //リクエスト
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), 1); //返されるメールは１通
@@ -122,7 +125,6 @@ namespace Bjd.SmtpServer.Test
             //添付されているメールの通数確認
             var ar = GetAttach(_tsMailSave.GetMail(0));
             Assert.Equal(ar.Count, attach);
-
 
         }
 
@@ -146,7 +148,7 @@ namespace Bjd.SmtpServer.Test
 
             for (int i = 0; i < 30; i++)
             {
-                var m = new TsMail(from, "1ban" + domain, "DMY");
+                var m = new TsMail(_service, from, "1ban" + domain, "DMY");
                 m.Mail.AddHeader("subject", string.Format("TEST_{0}", i));//試験的に件名を挿入する
 
                 _ml.Job(m.MlEnvelope, m.Mail);
@@ -156,7 +158,8 @@ namespace Bjd.SmtpServer.Test
             _tsMailSave.Clear();
 
             //リクエスト
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
+
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), count); //返されるメールはcount通
@@ -167,6 +170,7 @@ namespace Bjd.SmtpServer.Test
             //添付されているメールの通数確認
             var ar = GetAttach(_tsMailSave.GetMail(count - 1));
             Assert.Equal(ar.Count, attach);
+
         }
 
         //メール本文から添付されているメールを取り出す

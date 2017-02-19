@@ -11,7 +11,7 @@ using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class DataTest
+    public class DataTest : IDisposable
     {
         private TestService _service;
         private Kernel _kernel;
@@ -21,6 +21,11 @@ namespace Bjd.SmtpServer.Test
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
 
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         [Fact]

@@ -32,7 +32,7 @@ namespace Bjd.Net.Sockets
 
         public SockServerTcp(Kernel kernel, ProtocolKind protocolKind, Ssl ssl) : base(kernel)
         {
-            Kernel.Trace.TraceInformation($"SockServerTcp..ctor{protocolKind.ToString()}");
+            Kernel.Logger.TraceInformation($"SockServerTcp..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
             var pool = SockQueuePool.Instance;
@@ -55,7 +55,7 @@ namespace Bjd.Net.Sockets
         //TCP用
         public bool Bind(Ip bindIp, int port, int listenMax)
         {
-            Kernel.Trace.TraceInformation($"SockServerTcp.Bind TCP Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
+            Kernel.Logger.TraceInformation($"SockServerTcp.Bind TCP Start {bindIp.ToString()} {port.ToString()} {listenMax.ToString()}");
             _bindIp = bindIp;
             _bindPort = port;
             try
@@ -81,13 +81,13 @@ namespace Bjd.Net.Sockets
             }
             finally
             {
-                Kernel.Trace.TraceInformation("SockServerTcp.Bind End");
+                Kernel.Logger.TraceInformation("SockServerTcp.Bind End");
             }
         }
 
         public SockTcp Select(ILife iLife)
         {
-            Kernel.Trace.TraceInformation($"SockServerTcp.Select");
+            Kernel.Logger.TraceInformation($"SockServerTcp.Select");
             try
             {
                 this.SockState = SockState.Bind;
@@ -109,12 +109,12 @@ namespace Bjd.Net.Sockets
             }
             catch (OperationCanceledException)
             {
-                Kernel.Trace.TraceInformation("SockServerTcp.Select OperationCanceledException");
+                Kernel.Logger.TraceInformation("SockServerTcp.Select OperationCanceledException");
             }
             catch (Exception ex)
             {
-                Kernel.Trace.TraceError(ex.Message);
-                Kernel.Trace.TraceError(ex.StackTrace);
+                Kernel.Logger.TraceError(ex.Message);
+                Kernel.Logger.TraceError(ex.StackTrace);
             }
             return null;
         }

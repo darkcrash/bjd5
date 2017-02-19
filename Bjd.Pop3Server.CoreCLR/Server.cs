@@ -69,7 +69,7 @@ namespace Bjd.Pop3Server
         //接続単位の処理
         protected override void OnSubThread(SockObj sockObj)
         {
-            _kernel.Trace.TraceInformation($"Pop3Server.OnSubThread()");
+            _kernel.Logger.TraceInformation($"Pop3Server.OnSubThread()");
 
             var sockTcp = (SockTcp)sockObj;
 
@@ -340,7 +340,7 @@ namespace Bjd.Pop3Server
                     }
                     if (cmd == Pop3Cmd.Top || cmd == Pop3Cmd.Retr)
                     {
-                        _kernel.Trace.TraceInformation($"Pop3Server.OnSubThread() Top || Retr");
+                        _kernel.Logger.TraceInformation($"Pop3Server.OnSubThread() Top || Retr");
                         var msg = messageList[index];
                         sockTcp.AsciiSend($"+OK {msg.Size} octets");
                         if (!msg.Send(_kernel, sockTcp, count))
@@ -437,7 +437,7 @@ namespace Bjd.Pop3Server
 
         bool Login(SockTcp sockTcp, ref Pop3LoginState mode, ref MessageList messageList, string user, Ip addr)
         {
-            _kernel.Trace.TraceInformation($"Pop3Server.Login user:{user} ");
+            _kernel.Logger.TraceInformation($"Pop3Server.Login user:{user} ");
 
             //var folder = Kernel.MailBox.Login(user, addr);
             if (!_kernel.MailBox.Login(user, addr))
@@ -499,7 +499,7 @@ namespace Bjd.Pop3Server
         /********************************************************/
         protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
         {
-            _kernel.Trace.TraceInformation($"Pop3Server.RecvCmd cmd:{cmdStr} str:{str}");
+            _kernel.Logger.TraceInformation($"Pop3Server.RecvCmd cmd:{cmdStr} str:{str}");
             var cmd = recvCmd(sockTcp);
             if (cmd == null)
             {

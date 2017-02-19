@@ -5,6 +5,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using System.Threading.Tasks;
 using Bjd.Threading;
+using System.Diagnostics;
 
 namespace Bjd.Logs
 {
@@ -24,11 +25,7 @@ namespace Bjd.Logs
         private readonly bool _useDetailsLog;
         private readonly bool _useLimitString;
         private readonly ILoggerHelper _helper;
-
-        static int GetCurrentThreadId()
-        {
-            return System.Threading.Thread.CurrentThread.ManagedThreadId;
-        }
+        private readonly string _pid;
 
         //コンストラクタ
         //kernelの中でCreateLogger()を定義して使用する
@@ -43,6 +40,7 @@ namespace Bjd.Logs
             _useDetailsLog = useDetailsLog;
             _useLimitString = useLimitString;
             _helper = helper;
+            _pid = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
         }
 
         //テスト用
@@ -56,6 +54,7 @@ namespace Bjd.Logs
             _useDetailsLog = false;
             _useLimitString = false;
             _helper = null;
+            _pid = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
         }
 
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation)
@@ -66,8 +65,7 @@ namespace Bjd.Logs
             //詳細ログが対象外の場合、処理なし
             if (logKind == LogKind.Detail && !_useDetailsLog) return;
 
-            int threadId = GetCurrentThreadId();
-            //long threadId = Thread.currentThread().getId(); 
+            int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
             var t = new Task(() =>
                 SetInternal(logKind, sockBase, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
@@ -349,22 +347,22 @@ namespace Bjd.Logs
                 if (isDisplay)
                 {
                     //isDisplayの結果に従う
-                    AppendAsync(oneLog);
+                    Append(oneLog);
                 }
             }
             else
             {
                 //表示制限が無効な場合は、すべて保存される
-                AppendAsync(oneLog);
+                Append(oneLog);
             }
 
         }
 
-        private void AppendAsync(LogMessage msg)
+        private void Append(LogMessage msg)
         {
             foreach (var sv in _logServices)
             {
-                sv.AppendAsync(msg);
+                sv.Append(msg);
             }
         }
 
@@ -399,6 +397,94 @@ namespace Bjd.Logs
                     }
                 }
             }
+        }
+
+
+        [Conditional("TRACE")]
+        public void TraceInformation(string message)
+        {
+            FormatWriteLine(message);
+        }
+
+        [Conditional("TRACE")]
+        public void TraceWarning(string message)
+        {
+            FormatWriteLine(message);
+        }
+
+        [Conditional("TRACE")]
+        public void TraceError(string message)
+        {
+            FormatWriteLine(message);
+        }
+
+        [Conditional("TRACE")]
+        public void Fail(string message)
+        {
+            FormatWriteLine(message);
+        }
+
+        private int indentCount = 0;
+        private string indent = string.Empty;
+        private string indentText = "  ";
+
+        [Conditional("TRACE")]
+        public void Indent()
+        {
+            indentCount++;
+            indent = string.Empty;
+            for (var i = 0; i < indentCount; i++)
+            {
+                indent += indentText;
+            }
+        }
+
+        [Conditional("TRACE")]
+        public void Unindent()
+        {
+            indentCount--;
+            indent = string.Empty;
+            for (var i = 0; i < indentCount; i++)
+            {
+                indent += indentText;
+            }
+        }
+        protected virtual void FormatWriteLine(string message)
+        {
+            var info = CreateTraceInfo(message);
+
+            var t = new System.Threading.Tasks.Task(() => WriteLineAll(info));
+            t.Start(sts);
+        }
+
+        internal TraceStruct CreateTraceInfo(string message)
+        {
+            var info = new TraceStruct();
+            info.date = DateTime.Now;
+            info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            info.ind = indent;
+            info.message = message;
+            return info;
+        }
+
+        internal void WriteLineAll(TraceStruct info)
+        {
+            var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
+            var tidtext = info.tid.ToString().PadLeft(3);
+            var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
+            foreach (var writer in _logServices)
+            {
+                writer.WriteLine(msg);
+            }
+        }
+
+
+        internal struct TraceStruct
+        {
+            public DateTime date;
+            public int tid;
+            public string ind;
+            public string message;
         }
     }
 }

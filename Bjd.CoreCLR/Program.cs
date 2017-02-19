@@ -15,7 +15,7 @@ namespace Bjd.Common
             try
             {
 
-                DefaultService.ServiceMain();
+                DefaultConsoleService.ServiceMain();
 
             }
             catch (Exception ex)

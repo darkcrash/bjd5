@@ -34,11 +34,10 @@ namespace Bjd
         public ListServer ListServer { get; private set; }
         public List<ILogService> LogServices { get; private set; } = new List<ILogService>();
         public bool IsJp { get; private set; } = true;
-        private Logger _logger;
 
         public KernelEvents Events { get; private set; } = new KernelEvents();
 
-        public TraceBroker Trace { get; private set; }
+        public Logger Logger { get; private set; }
 
         //Ver5.9.6
         public WebApi WebApi { get; private set; }
@@ -78,20 +77,17 @@ namespace Bjd
         //* 通常使用されるコンストラクタ
         internal Kernel(bool isTest)
         {
-            Trace = new TraceBroker(this);
-            var logConsole = new LogConsoleService();
-            LogServices.Add(logConsole);
+            Logger = new TmpLogger(this);
 
-
-            Trace.TraceInformation("Kernel..ctor Start");
+            Logger.TraceInformation("Kernel..ctor Start");
             DefaultInitialize(isTest);
-            Trace.TraceInformation("Kernel..ctor End");
+            Logger.TraceInformation("Kernel..ctor End");
         }
 
         //起動時に、コンストラクタから呼び出される初期化
         private void DefaultInitialize(bool isTest)
         {
-            Trace.TraceInformation("Kernel.DefaultInitialize Start");
+            Logger.TraceInformation("Kernel.DefaultInitialize Start");
 
             // Define Initialize
             if (isTest)
@@ -109,15 +105,14 @@ namespace Bjd
             this.CancelToken = this.CancelTokenSource.Token;
             this.CancelToken.Register(this.OnCancel);
 
-            Trace.TraceInformation("Kernel.DefaultInitialize End");
+            Logger.TraceInformation("Kernel.DefaultInitialize End");
         }
 
         //サーバ再起動で、再度実行される初期化
         public void ListInitialize()
         {
-            Trace.TraceInformation("Kernel.ListInitialize Start");
+            Logger.TraceInformation("Kernel.ListInitialize Start");
             //Loggerが使用できない間のログは、こちらに保存して、後でLoggerに送る
-            var tmpLogger = new TmpLogger(this);
 
             RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
 
@@ -144,19 +139,21 @@ namespace Bjd
             {
                 MailBox = null;
             }
+
+            // initialize logServices
             foreach (var logsrv in LogServices.ToArray())
             {
                 LogServices.Remove(logsrv);
                 logsrv.Dispose();
             }
-            var logConsole = new LogConsoleService();
-            LogServices.Add(logConsole);
+            Events.OnRequestLogService(this);
+
 
             //var listPlugin = new ListPlugin(Define.ExecutableDirectory);
             var listPlugin = new ListPlugin(this);
             foreach (var o in listPlugin)
             {
-                tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
+                Logger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
             }
 
             IsJp = Configuration.IsJp();
@@ -170,7 +167,7 @@ namespace Bjd
             var confOption = new Conf(ListOption.Get("Log"));
 
             //LogFileの初期化
-            var saveDirectory = (String)confOption.Get("saveDirectory");
+            var saveDirectory = (string)confOption.Get("saveDirectory");
             saveDirectory = ReplaceOptionEnv(saveDirectory);
             var normalLogKind = (int)confOption.Get("normalLogKind");
             var secureLogKind = (int)confOption.Get("secureLogKind");
@@ -186,11 +183,11 @@ namespace Bjd
             }
             if (saveDirectory == "")
             {
-                tmpLogger.Set(LogKind.Error, null, 9000045, "It is not appointed");
+                Logger.Set(LogKind.Error, null, 9000045, "It is not appointed");
             }
             else
             {
-                tmpLogger.Set(LogKind.Detail, null, 9000032, saveDirectory);
+                Logger.Set(LogKind.Detail, null, 9000032, saveDirectory);
                 try
                 {
                     var logFile = new LogFileService(saveDirectory, normalLogKind, secureLogKind, saveDays, useLogFile);
@@ -198,10 +195,14 @@ namespace Bjd
                 }
                 catch (IOException e)
                 {
-                    tmpLogger.Set(LogKind.Error, null, 9000031, e.Message);
+                    Logger.Set(LogKind.Error, null, 9000031, e.Message);
                 }
             }
 
+            var tmpLogger = Logger as TmpLogger;
+            Logger = CreateLogger("kernel", true, null);
+            if (tmpLogger != null)
+                tmpLogger.Release(Logger);
 
             //Ver5.8.7 Java fix
             //mailBox初期化
@@ -219,8 +220,6 @@ namespace Bjd
                 break;
             }
 
-            _logger = CreateLogger("kernel", true, null);
-            tmpLogger.Release(_logger);
 
             ListServer = new ListServer(this, listPlugin);
 
@@ -232,14 +231,14 @@ namespace Bjd
             // raise ListInitialized;
             Events.OnListInitialized(this);
 
-            Trace.TraceInformation("Kernel.ListInitialize End");
+            Logger.TraceInformation("Kernel.ListInitialize End");
         }
 
         //Confの生成
         //事前にListOptionが初期化されている必要がある
         public Conf CreateConf(String nameTag)
         {
-            Trace.TraceInformation($"Kernel.CreateConf {nameTag}");
+            Logger.TraceInformation($"Kernel.CreateConf {nameTag}");
             try
             {
                 if (ListOption == null)
@@ -264,7 +263,7 @@ namespace Bjd
         //事前にListOptionが初期化されている必要がある
         public Logger CreateLogger(String nameTag, bool useDetailsLog, ILoggerHelper helper)
         {
-            Trace.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
+            Logger.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
             if (ListOption == null)
             {
                 Util.RuntimeException("CreateLogger() ListOption==null || LogFile==null");
@@ -289,7 +288,7 @@ namespace Bjd
         //終了処理
         public void Dispose()
         {
-            Trace.TraceInformation("Kernel.Dispose Start");
+            Logger.TraceInformation("Kernel.Dispose Start");
             try
             {
                 //**********************************************
@@ -304,7 +303,7 @@ namespace Bjd
             }
             finally
             {
-                Trace.TraceInformation("Kernel.Dispose End");
+                Logger.TraceInformation("Kernel.Dispose End");
                 foreach (var ls in LogServices.ToArray())
                 {
                     LogServices.Remove(ls);
@@ -328,7 +327,7 @@ namespace Bjd
         {
             if (ListServer.Count == 0)
             {
-                _logger.Set(LogKind.Error, null, 9000030, "");
+                Logger.Set(LogKind.Error, null, 9000030, "");
                 return;
             }
 

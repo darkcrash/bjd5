@@ -24,7 +24,6 @@ namespace Pop3ServerTest
         internal TestService _service;
         internal Server _v6Sv; //サーバ
         internal Server _v4Sv; //サーバ
-        internal Bjd.Traces.TraceBroker _output;
         public readonly int port;
 
         public ServerTest(ITestOutputHelper helper)
@@ -36,7 +35,6 @@ namespace Pop3ServerTest
             var kernel = _service.Kernel;
             kernel.ListInitialize();
             _service.AddOutput(helper);
-            _output = _service.Kernel.Trace;
 
             var option = kernel.ListOption.Get("Pop3");
             var conf = new Conf(option);

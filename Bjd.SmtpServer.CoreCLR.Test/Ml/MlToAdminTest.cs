@@ -67,7 +67,7 @@ namespace Bjd.SmtpServer.Test
         public void AdminTest(string from)
         {
 
-            var mail = new TsMail(from, "1ban-admin@example.com", "DMY");
+            var mail = new TsMail(_service, from, "1ban-admin@example.com", "DMY");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             //管理者全員にメールが配信される

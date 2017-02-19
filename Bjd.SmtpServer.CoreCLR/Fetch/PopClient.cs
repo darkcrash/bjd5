@@ -38,7 +38,7 @@ namespace Bjd.SmtpServer
         //接続
         public bool Connect()
         {
-            _kernel.Trace.TraceInformation("PopClient.Connect");
+            _kernel.Logger.TraceInformation("PopClient.Connect");
             if (Status != PopClientStatus.Idle)
             {
                 SetLastError("Connect() Status != Idle");
@@ -67,7 +67,7 @@ namespace Bjd.SmtpServer
         //ログイン
         public bool Login(String user, String pass)
         {
-            _kernel.Trace.TraceInformation("PopClient.Login");
+            _kernel.Logger.TraceInformation("PopClient.Login");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Authorization)
             {
@@ -92,7 +92,7 @@ namespace Bjd.SmtpServer
 
         public bool Quit()
         {
-            _kernel.Trace.TraceInformation("PopClient.Quit");
+            _kernel.Logger.TraceInformation("PopClient.Quit");
             //切断中の場合はエラー
             if (Status == PopClientStatus.Idle)
             {
@@ -114,7 +114,7 @@ namespace Bjd.SmtpServer
 
         public bool Uidl(List<String> lines)
         {
-            _kernel.Trace.TraceInformation("PopClient.Uidl");
+            _kernel.Logger.TraceInformation("PopClient.Uidl");
             lines.Clear();
 
             //切断中の場合はエラー
@@ -144,7 +144,7 @@ namespace Bjd.SmtpServer
 
         public bool Retr(int n, Mail mail)
         {
-            _kernel.Trace.TraceInformation("PopClient.Retr() ");
+            _kernel.Logger.TraceInformation("PopClient.Retr() ");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Transaction)
             {
@@ -153,15 +153,15 @@ namespace Bjd.SmtpServer
             }
 
             //RETR送信
-            _kernel.Trace.TraceInformation("PopClient.Retr() RETR");
+            _kernel.Logger.TraceInformation("PopClient.Retr() RETR");
             if (!SendCmd($"RETR {n + 1}")) return false;
 
             //+OK受信
-            _kernel.Trace.TraceInformation("PopClient.Retr() RecvStatus");
+            _kernel.Logger.TraceInformation("PopClient.Retr() RecvStatus");
             if (!RecvStatus()) return false;
 
             //.までの行を受信
-            _kernel.Trace.TraceInformation("PopClient.Retr() RecvData");
+            _kernel.Logger.TraceInformation("PopClient.Retr() RecvData");
             var buf = RecvData();
             if (buf == null) return false;
            
@@ -169,7 +169,7 @@ namespace Bjd.SmtpServer
             //Buffer.BlockCopy(buf,0,tmp,0,buf.Length-3);
             //mail.Init2(tmp);
 
-            _kernel.Trace.TraceInformation($"PopClient.Retr {buf.Length} byte received");
+            _kernel.Logger.TraceInformation($"PopClient.Retr {buf.Length} byte received");
             mail.Init2(new ArraySegment<byte>(buf, 0, buf.Length - 3));
 
             return true;
@@ -178,7 +178,7 @@ namespace Bjd.SmtpServer
 
         public bool Dele(int n)
         {
-            _kernel.Trace.TraceInformation("PopClient.Dele");
+            _kernel.Logger.TraceInformation("PopClient.Dele");
             //切断中の場合はエラー
             if (Status != PopClientStatus.Transaction)
             {
@@ -202,7 +202,7 @@ namespace Bjd.SmtpServer
         //.行までを受信する
         byte[] RecvData()
         {
-            _kernel.Trace.TraceInformation("PopClient.RecvData");
+            _kernel.Logger.TraceInformation("PopClient.RecvData");
             var dt = DateTime.Now.AddSeconds(_sec);
             //var line = new byte[0];
             var lines = new List<byte[]>();
@@ -250,7 +250,7 @@ namespace Bjd.SmtpServer
 
         bool SendCmd(string cmdStr)
         {
-            _kernel.Trace.TraceInformation($"PopClient.SendCmd {cmdStr}");
+            _kernel.Logger.TraceInformation($"PopClient.SendCmd {cmdStr}");
             //AsciiSendは、内部でCRLFを追加する
             if (cmdStr.Length + 2 != _sockTcp.AsciiSend(cmdStr))
             {
@@ -263,7 +263,7 @@ namespace Bjd.SmtpServer
 
         bool RecvStatus()
         {
-            _kernel.Trace.TraceInformation("PopClient.RecvStatus");
+            _kernel.Logger.TraceInformation("PopClient.RecvStatus");
 
             var buf = _sockTcp.LineRecv(_sec, _iLife);
             if (buf == null)

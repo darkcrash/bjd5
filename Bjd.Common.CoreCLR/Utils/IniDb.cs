@@ -218,7 +218,7 @@ namespace Bjd.Utils
                     }
                     catch (Exception ex)
                     {
-                        _kernel.Trace.TraceInformation($"IniDbRead:Exception {ex.Message}");
+                        _kernel.Logger.TraceInformation($"IniDbRead:Exception {ex.Message}");
                         continue;
                     }
 
@@ -238,9 +238,9 @@ namespace Bjd.Utils
                 return false;
             var isRead = false;
 
-            _kernel.Trace.Indent();
-            _kernel.Trace.TraceInformation($"IniDbRead:{fileName} - {nameTag}");
-            _kernel.Trace.Unindent();
+            _kernel.Logger.Indent();
+            _kernel.Logger.TraceInformation($"IniDbRead:{fileName} - {nameTag}");
+            _kernel.Logger.Unindent();
 
             var lines = File.ReadAllLines(fileName, Encoding.UTF8);
 

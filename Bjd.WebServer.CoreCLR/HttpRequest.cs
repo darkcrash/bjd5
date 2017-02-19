@@ -52,7 +52,7 @@ namespace Bjd.WebServer
         //public bool Recv(int timeout,sockTcp sockTcp,ref bool life) {
         public bool Init(string requestStr)
         {
-            _kernel.Trace.TraceInformation($"Request.Init");
+            _kernel.Logger.TraceInformation($"Request.Init");
 
             //既存のデータが残っている場合は削除してから受信にはいる
             Uri = "";

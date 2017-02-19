@@ -71,7 +71,7 @@ namespace Bjd.Mails
                     }
                     catch (Exception ex)
                     {
-                        _kernel.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
+                        _kernel.Logger.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
                     }
                     finally
                     {
@@ -320,7 +320,7 @@ namespace Bjd.Mails
             using (var br = new BinaryReader(fs))
             {
                 fileLength = fs.Length;
-                _kernel.Trace.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
+                _kernel.Logger.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
                 var pos = 0;
                 while (true)
                 {

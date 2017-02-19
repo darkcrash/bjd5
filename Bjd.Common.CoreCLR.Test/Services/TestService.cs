@@ -37,8 +37,9 @@ namespace Bjd.Services
                     if (_kernel != null)
                     {
                         env = _kernel.Enviroment;
-                        _kernel.Events.ListInitialized -= Kernel_ListInitialized;
+                        _kernel.Events.RequestLogService -= KernelEvents_RequestLogService;
                         _kernel.Dispose();
+                        _kernel = null;
                     }
                     if (lsrvList != null)
                     {
@@ -53,7 +54,6 @@ namespace Bjd.Services
                         try { Directory.Delete(env.ExecutableDirectory, true); } catch { };
                         try { Directory.Delete(env.ConfigurationDirectory, true); } catch { };
                     }
-                    _kernel = null;
                 }
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
@@ -112,7 +112,7 @@ namespace Bjd.Services
             var instance = new TestService();
             instance._kernel = new Kernel(true);
 
-            instance._kernel.Events.ListInitialized += instance.Kernel_ListInitialized;
+            instance._kernel.Events.RequestLogService += instance.KernelEvents_RequestLogService;
 
             var env = instance._kernel.Enviroment;
 
@@ -136,7 +136,7 @@ namespace Bjd.Services
             return instance;
         }
 
-        private void Kernel_ListInitialized(object sender, EventArgs e)
+        private void KernelEvents_RequestLogService(object sender, EventArgs e)
         {
             foreach (var lts in lsrvList)
             {

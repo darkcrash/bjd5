@@ -7,8 +7,6 @@ namespace Bjd.Logs
     {
         void Append(LogMessage oneLog);
 
-        Task AppendAsync(LogMessage oneLog);
-
         void WriteLine(string message);
 
         void TraceInformation(string message);

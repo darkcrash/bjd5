@@ -22,7 +22,7 @@ namespace WebServerTest
 
         public void Dispose()
         {
-
+            _service.Dispose();
 
         }
 

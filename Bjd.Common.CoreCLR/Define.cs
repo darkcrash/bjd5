@@ -41,11 +41,11 @@ namespace Bjd
         {
             if (IsInitialize)
             {
-                kernel.Trace.TraceInformation("Define.Initialize Skip");
+                kernel.Logger.TraceInformation("Define.Initialize Skip");
                 return;
             }
             IsInitialize = true;
-            kernel.Trace.TraceInformation("Define.Initialize Start");
+            kernel.Logger.TraceInformation("Define.Initialize Start");
 
             // get service
             var runtimeServices = PlatformServices.Default;
@@ -59,64 +59,64 @@ namespace Bjd
 
             if (applicationEnvironment != null)
             {
-                kernel.Trace.TraceError($"----------------------------------------------------------------");
-                kernel.Trace.TraceError($"- {applicationEnvironment.ApplicationName} - {applicationEnvironment.ApplicationVersion}");
-                kernel.Trace.TraceError($"- {applicationEnvironment.RuntimeFramework.FullName} ");
-                kernel.Trace.TraceError($"----------------------------------------------------------------");
+                kernel.Logger.TraceError($"----------------------------------------------------------------");
+                kernel.Logger.TraceError($"- {applicationEnvironment.ApplicationName} - {applicationEnvironment.ApplicationVersion}");
+                kernel.Logger.TraceError($"- {applicationEnvironment.RuntimeFramework.FullName} ");
+                kernel.Logger.TraceError($"----------------------------------------------------------------");
             }
 
             // CompilerOptions
             if (compilerOptions != null)
             {
-                kernel.Trace.TraceInformation($"[CompilerOptions]");
+                kernel.Logger.TraceInformation($"[CompilerOptions]");
                 if (compilerOptions.AllowUnsafe.HasValue)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] AllowUnsafe:{(compilerOptions.AllowUnsafe)}");
                 if (compilerOptions.DebugType != null)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] DebugType:{compilerOptions.DebugType}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] DebugType:{compilerOptions.DebugType}");
                 if (compilerOptions.DelaySign.HasValue)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] DelaySign:{compilerOptions.DelaySign}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] DelaySign:{compilerOptions.DelaySign}");
                 if (compilerOptions.Defines != null)
                 {
                     foreach (var def in compilerOptions.Defines.ToArray())
-                        kernel.Trace.TraceInformation($"[CompilerOptions][Defines] {def}");
+                        kernel.Logger.TraceInformation($"[CompilerOptions][Defines] {def}");
                 }
                 if (compilerOptions.EmitEntryPoint.HasValue)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] EmitEntryPoint:{compilerOptions.EmitEntryPoint}");
                 if (compilerOptions.KeyFile != null)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] KeyFile:{compilerOptions.KeyFile}");
-                kernel.Trace.TraceInformation($"[CompilerOptions] LanguageVersion:{compilerOptions.LanguageVersion}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] KeyFile:{compilerOptions.KeyFile}");
+                kernel.Logger.TraceInformation($"[CompilerOptions] LanguageVersion:{compilerOptions.LanguageVersion}");
                 if (compilerOptions.Optimize.HasValue)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] Optimize:{compilerOptions.Optimize}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] Optimize:{compilerOptions.Optimize}");
                 if (compilerOptions.Platform != null)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] Platform:{compilerOptions.Platform}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] Platform:{compilerOptions.Platform}");
                 if (compilerOptions.WarningsAsErrors.HasValue)
-                    kernel.Trace.TraceInformation($"[CompilerOptions] WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
+                    kernel.Logger.TraceInformation($"[CompilerOptions] WarningsAsErrors:{compilerOptions.WarningsAsErrors}");
             }
 
             // RuntimeEnvironment
-            kernel.Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystem:{(RuntimeEnvironment.OperatingSystem)}");
-            kernel.Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystemPlatform:{(RuntimeEnvironment.OperatingSystemPlatform)}");
-            kernel.Trace.TraceInformation($"[RuntimeEnvironment] OperatingSystemVersion:{(RuntimeEnvironment.OperatingSystemVersion)}");
-            kernel.Trace.TraceInformation($"[RuntimeEnvironment] RuntimeArchitecture:{(RuntimeEnvironment.RuntimeArchitecture)}");
+            kernel.Logger.TraceInformation($"[RuntimeEnvironment] OperatingSystem:{(RuntimeEnvironment.OperatingSystem)}");
+            kernel.Logger.TraceInformation($"[RuntimeEnvironment] OperatingSystemPlatform:{(RuntimeEnvironment.OperatingSystemPlatform)}");
+            kernel.Logger.TraceInformation($"[RuntimeEnvironment] OperatingSystemVersion:{(RuntimeEnvironment.OperatingSystemVersion)}");
+            kernel.Logger.TraceInformation($"[RuntimeEnvironment] RuntimeArchitecture:{(RuntimeEnvironment.RuntimeArchitecture)}");
 
             // ApplicationEnvironment
             if (applicationEnvironment != null)
             {
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] ApplicationBasePath:{(applicationEnvironment.ApplicationBasePath)}");
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] ApplicationName:{(applicationEnvironment.ApplicationName)}");
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] ApplicationVersion:{(applicationEnvironment.ApplicationVersion)}");
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] RuntimeFramework:{(applicationEnvironment.RuntimeFramework.FullName)}");
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] RuntimeFrameworkIdentifier:{(applicationEnvironment.RuntimeFramework.Identifier)}");
-                kernel.Trace.TraceInformation($"[ApplicationEnvironment] RuntimeFrameworkVersion:{applicationEnvironment.RuntimeFramework.Version}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] ApplicationBasePath:{(applicationEnvironment.ApplicationBasePath)}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] ApplicationName:{(applicationEnvironment.ApplicationName)}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] ApplicationVersion:{(applicationEnvironment.ApplicationVersion)}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] RuntimeFramework:{(applicationEnvironment.RuntimeFramework.FullName)}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] RuntimeFrameworkIdentifier:{(applicationEnvironment.RuntimeFramework.Identifier)}");
+                kernel.Logger.TraceInformation($"[ApplicationEnvironment] RuntimeFrameworkVersion:{applicationEnvironment.RuntimeFramework.Version}");
             }
 
             // Define.Libraries
             if (Define.Libraries != null)
             {
-                kernel.Trace.TraceInformation($"[LibraryManager]");
+                kernel.Logger.TraceInformation($"[LibraryManager]");
                 foreach (var lib in Define.Libraries)
                 {
-                    kernel.Trace.TraceInformation($"[LibraryManager]({lib.Type}) {lib.Name.PadRight(61)} {lib.Version.PadRight(17)} Assemblies({lib.Assemblies.Count().ToString().PadLeft(2)}) Dependencies({ lib.Dependencies.Count().ToString().PadLeft(2)})");
+                    kernel.Logger.TraceInformation($"[LibraryManager]({lib.Type}) {lib.Name.PadRight(61)} {lib.Version.PadRight(17)} Assemblies({lib.Assemblies.Count().ToString().PadLeft(2)}) Dependencies({ lib.Dependencies.Count().ToString().PadLeft(2)})");
                 }
             }
 
@@ -124,9 +124,9 @@ namespace Bjd
             var dir = System.IO.Directory.GetCurrentDirectory();
             var asm = typeof(Define).GetTypeInfo().Assembly;
             var asmName = asm.GetName();
-            kernel.Trace.TraceInformation($"CurrentDirectory:{dir}");
-            kernel.Trace.TraceInformation($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
-            kernel.Trace.TraceInformation($"Assembly.Location:{asm.Location}");
+            kernel.Logger.TraceInformation($"CurrentDirectory:{dir}");
+            kernel.Logger.TraceInformation($"AppContext.BaseDirectory:{AppContext.BaseDirectory}");
+            kernel.Logger.TraceInformation($"Assembly.Location:{asm.Location}");
 
             //プログラム起動から初めて呼び出されたとき、１度だけ実行される
             if (ServerAddressList == null)
@@ -151,8 +151,8 @@ namespace Bjd
                 }
                 catch (Exception ex)
                 {
-                    kernel.Trace.TraceError($"ServerAddressList:{ex.Message}");
-                    kernel.Trace.TraceError(ex.StackTrace);
+                    kernel.Logger.TraceError($"ServerAddressList:{ex.Message}");
+                    kernel.Logger.TraceError(ex.StackTrace);
                 }
 
                 Define.HostName = Dns.GetHostName();
@@ -169,7 +169,7 @@ namespace Bjd
 
             OnChangeOperationSystem();
 
-            kernel.Trace.TraceInformation("Define.Initialize End");
+            kernel.Logger.TraceInformation("Define.Initialize End");
         }
 
         public static void TestInitalize(Kernel kernel)
@@ -178,7 +178,7 @@ namespace Bjd
             {
                 if (IsInitialize)
                 {
-                    kernel.Trace.TraceInformation("Define.TestInitalize Skip");
+                    kernel.Logger.TraceInformation("Define.TestInitalize Skip");
                 }
                 else
                 {

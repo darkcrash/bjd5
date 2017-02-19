@@ -61,13 +61,18 @@ namespace ProxyHttpServerTest
             public void Dispose()
             {
                 //サーバ停止
-                _v4Sv.Stop();
-                _v6Sv.Stop();
+                try
+                {
+                    _v4Sv.Stop();
+                    _v6Sv.Stop();
 
-                _v4Sv.Dispose();
-                _v6Sv.Dispose();
-
-                _service.Dispose();
+                    _v4Sv.Dispose();
+                    _v6Sv.Dispose();
+                }
+                finally
+                {
+                    _service.Dispose();
+                }
 
             }
 
@@ -122,38 +127,40 @@ namespace ProxyHttpServerTest
             const int webPort = 3778;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
-            var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
-            var kernel = _fixture._service.Kernel;
-
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
-
-            //exercise
-            //var lines = Inet.RecvLines(cl, 3, this);
-            var lines = new List<string>();
-            for (var i = 0; i < 9; i++)
+            //Webサーバ起動           
+            using (var tsWeb = new TsWeb(webPort, webRoot))
             {
-                var buf = cl.LineRecv(2, this);
-                buf = Inet.TrimCrlf(buf);
-                lines.Add(Encoding.ASCII.GetString(buf));
+                var kernel = _fixture._service.Kernel;
+
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+                cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+
+                //exercise
+                //var lines = Inet.RecvLines(cl, 3, this);
+                var lines = new List<string>();
+                for (var i = 0; i < 9; i++)
+                {
+                    var buf = cl.LineRecv(2, this);
+                    buf = Inet.TrimCrlf(buf);
+                    lines.Add(Encoding.ASCII.GetString(buf));
+                }
+
+                //verify
+                Assert.Equal(lines.Count, 9);
+                Assert.Equal(lines[0], "HTTP/1.1 200 OK");
+                Assert.Equal(lines[1], "Transfer-Encoding: chunked");
+                Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
+
+                Assert.Equal(lines[4], "");
+                Assert.Equal(lines[5], "3");
+                Assert.Equal(lines[6], "123");
+                Assert.Equal(lines[7], "0");
+                Assert.Equal(lines[8], "");
+
+
+                //tearDown
+                //tsWeb.Dispose();//Webサーバ停止
             }
-
-            //verify
-            Assert.Equal(lines.Count, 9);
-            Assert.Equal(lines[0], "HTTP/1.1 200 OK");
-            Assert.Equal(lines[1], "Transfer-Encoding: chunked");
-            Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
-
-            Assert.Equal(lines[4], "");
-            Assert.Equal(lines[5], "3");
-            Assert.Equal(lines[6], "123");
-            Assert.Equal(lines[7], "0");
-            Assert.Equal(lines[8], "");
-
-
-            //tearDown
-            tsWeb.Dispose();//Webサーバ停止
-
         }
 
         [Fact]
@@ -164,38 +171,40 @@ namespace ProxyHttpServerTest
             const int webPort = 3779;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
-            var tsWeb = new TsWeb(webPort, webRoot);//Webサーバ起動
-            var kernel = _fixture._service.Kernel;
-
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
-            cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
-
-            //exercise
-            //var lines = Inet.RecvLines(cl, 3, this);
-            var lines = new List<string>();
-            for (var i = 0; i < 9; i++)
+            //Webサーバ起動           
+            using (var tsWeb = new TsWeb(webPort, webRoot))
             {
-                var buf = cl.LineRecv(2, this);
-                buf = Inet.TrimCrlf(buf);
-                lines.Add(Encoding.ASCII.GetString(buf));
+                var kernel = _fixture._service.Kernel;
+
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
+                cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+
+                //exercise
+                //var lines = Inet.RecvLines(cl, 3, this);
+                var lines = new List<string>();
+                for (var i = 0; i < 9; i++)
+                {
+                    var buf = cl.LineRecv(2, this);
+                    buf = Inet.TrimCrlf(buf);
+                    lines.Add(Encoding.ASCII.GetString(buf));
+                }
+
+                //verify
+                Assert.Equal(lines.Count, 9);
+                Assert.Equal(lines[0], "HTTP/1.1 200 OK");
+                Assert.Equal(lines[1], "Transfer-Encoding: chunked");
+                Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
+
+                Assert.Equal(lines[4], "");
+                Assert.Equal(lines[5], "3");
+                Assert.Equal(lines[6], "123");
+                Assert.Equal(lines[7], "0");
+                Assert.Equal(lines[8], "");
+
+
+                //tearDown
+                //tsWeb.Dispose();//Webサーバ停止
             }
-
-            //verify
-            Assert.Equal(lines.Count, 9);
-            Assert.Equal(lines[0], "HTTP/1.1 200 OK");
-            Assert.Equal(lines[1], "Transfer-Encoding: chunked");
-            Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
-
-            Assert.Equal(lines[4], "");
-            Assert.Equal(lines[5], "3");
-            Assert.Equal(lines[6], "123");
-            Assert.Equal(lines[7], "0");
-            Assert.Equal(lines[8], "");
-
-
-            //tearDown
-            tsWeb.Dispose();//Webサーバ停止
-
         }
 
 
@@ -249,44 +258,46 @@ namespace ProxyHttpServerTest
             }
             File.WriteAllLines(path, buf);
 
-            var tsWeb = new TsWeb(port, webRoot);//Webサーバ起動
-            var kernel = _fixture._service.Kernel;
-
-            //試験用クライアント
-
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
-
-            //計測
-            var sw = new Stopwatch();
-            sw.Start();
-
-            //cl.Send(Encoding.ASCII.GetBytes(string.Format("GET http://127.0.0.1:17777/{0} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", fileName)));
-            cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{port}/{fileName} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
-            //var lines = Inet.RecvLines(cl, 5, this);
-            var lines = new List<string>();
-            for (var i = 0; i < count; i++)
+            //Webサーバ起動           
+            using (var tsWeb = new TsWeb(port, webRoot))
             {
-                lines.Add(cl.AsciiRecv(2, this));
+                var kernel = _fixture._service.Kernel;
+
+                //試験用クライアント
+
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+
+                //計測
+                var sw = new Stopwatch();
+                sw.Start();
+
+                //cl.Send(Encoding.ASCII.GetBytes(string.Format("GET http://127.0.0.1:17777/{0} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", fileName)));
+                cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{port}/{fileName} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+                //var lines = Inet.RecvLines(cl, 5, this);
+                var lines = new List<string>();
+                for (var i = 0; i < count; i++)
+                {
+                    lines.Add(cl.AsciiRecv(2, this));
+                }
+
+                //計測終了
+                sw.Stop();
+                kernel.Logger.TraceInformation($"HTTPProxy Performance : {sw.ElapsedMilliseconds}ms LINES:{count}");
+
+                ////作業ファイル削除
+                //File.Delete(path);
+
+                if (lines != null)
+                {
+                    Assert.Equal(lines[0], "HTTP/1.1 200 OK\r\n");
+                }
+                else
+                {
+                    Assert.Equal(null, "receive faild");
+                }
+                cl.Close();//試験用クライアント破棄
+                //tsWeb.Dispose();//Webサーバ停止
             }
-
-            //計測終了
-            sw.Stop();
-            Console.Write("HTTPProxy Performance : {0}ms LINES:{1}\n", sw.ElapsedMilliseconds, count);
-
-            ////作業ファイル削除
-            //File.Delete(path);
-
-            if (lines != null)
-            {
-                Assert.Equal(lines[0], "HTTP/1.1 200 OK\r\n");
-            }
-            else
-            {
-                Assert.Equal(null, "receive faild");
-            }
-            cl.Close();//試験用クライアント破棄
-            tsWeb.Dispose();//Webサーバ停止
-
 
         }
 

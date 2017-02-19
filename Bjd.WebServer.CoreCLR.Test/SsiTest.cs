@@ -74,17 +74,16 @@ namespace WebServerTest
         }
 
         private ServerFixture _fixture;
-        private Bjd.Traces.TraceBroker _output;
 
         public SsiTest(ITestOutputHelper helper)
         {
             _fixture = new ServerFixture(helper);
-            _output = _fixture._service.Kernel.Trace;
         }
 
         public void Dispose()
         {
             isLife = false;
+            _fixture.Dispose();
         }
 
 
@@ -200,7 +199,7 @@ namespace WebServerTest
                     isMatch = true;
                     break;
                 }
-                _output.TraceInformation(text);
+                _fixture._service.Kernel.Logger.TraceInformation(text);
                 lines.Add(text);
             }
             Assert.Equal(true, isMatch);

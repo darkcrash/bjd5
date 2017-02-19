@@ -19,6 +19,8 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.Kernel.ListInitialize();
+
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
                 replace.Add(true, "ABC\tXYZ");
@@ -47,6 +49,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
                 replace.Add(true, "ABC\tBBB");
@@ -74,6 +77,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
                 replace.Add(true, "EFGH\tWXYZ");
@@ -101,6 +105,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
                 replace.Add(true, "User-Agent:.*\tUser-Agent:Henteko Mailer 09.87.12");
@@ -129,6 +134,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.Kernel.ListInitialize();
                 //setUp
                 var appned = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
                 appned.Add(true, "tag2\tzzz");

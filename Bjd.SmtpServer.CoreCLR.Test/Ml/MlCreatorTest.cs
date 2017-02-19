@@ -35,7 +35,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
-
+            _service.Dispose();
         }
         //[Fact]
         //public  void WelcomeTest(){

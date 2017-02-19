@@ -29,7 +29,9 @@ namespace Bjd.SmtpServer.Test
             _service.SetOption("MlSummaryTest.ini");
 
             var kernel = _service.Kernel;
-            var logger = new Logger(kernel);
+            kernel.ListInitialize();
+
+            var logger = kernel.Logger;
             var manageDir = _service.GetTmpDir("TestDir");
 
 
@@ -70,7 +72,7 @@ namespace Bjd.SmtpServer.Test
             const string domain = "@example.com";
             const string from = "user1" + domain;
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), 1); //返されるエラーメールは1通
@@ -98,7 +100,7 @@ namespace Bjd.SmtpServer.Test
 
             for (var i = 0; i < 30; i++)
             {
-                var m = new TsMail(from, "1ban" + domain, "DMY");
+                var m = new TsMail(_service, from, "1ban" + domain, "DMY");
                 m.Mail.AddHeader("subject", string.Format("TEST_{0}", i));//試験的に件名を挿入する
 
                 _ml.Job(m.MlEnvelope, m.Mail);
@@ -108,7 +110,7 @@ namespace Bjd.SmtpServer.Test
             _tsMailSave.Clear();
 
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), count); //返されるエラーメールは1通
@@ -129,7 +131,7 @@ namespace Bjd.SmtpServer.Test
 
             for (var i = 0; i < 30; i++)
             {
-                var m = new TsMail(from, "1ban" + domain, "DMY");
+                var m = new TsMail(_service, from, "1ban" + domain, "DMY");
                 m.Mail.AddHeader("subject", string.Format("TEST_{0}", i));//試験的に件名を挿入する
 
                 _ml.Job(m.MlEnvelope, m.Mail);
@@ -139,7 +141,7 @@ namespace Bjd.SmtpServer.Test
             _tsMailSave.Clear();
 
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, body);
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             var s = Encoding.ASCII.GetString(_tsMailSave.GetMail(0).GetBody());

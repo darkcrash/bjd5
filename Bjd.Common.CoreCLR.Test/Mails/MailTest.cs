@@ -28,6 +28,7 @@ namespace Bjd.Test.Mails
         public void Dispose()
         {
             sut.Dispose();
+            _service.Dispose();
         }
 
         [Fact]

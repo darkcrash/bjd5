@@ -31,8 +31,8 @@ namespace Bjd.Options
             }
             catch (Exception ex)
             {
-                _kernel.Trace.TraceError(ex.Message);
-                _kernel.Trace.TraceError(ex.StackTrace);
+                _kernel.Logger.TraceError(ex.Message);
+                _kernel.Logger.TraceError(ex.StackTrace);
 
             }
             _isMemberLoaded = true;

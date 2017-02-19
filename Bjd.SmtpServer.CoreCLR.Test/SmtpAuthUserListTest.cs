@@ -19,6 +19,7 @@ namespace Bjd.SmtpServer.Test
         public  SmtpAuthUserListTest()
         {
             _service = TestService.CreateTestService();
+            _service.Kernel.ListInitialize();
 
             //mailBoxに"user1"を登録
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });

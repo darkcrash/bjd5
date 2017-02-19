@@ -7,7 +7,7 @@ using Bjd.Services;
 
 namespace Bjd.Test.Net
 {
-    public class DnsCacheTest
+    public class DnsCacheTest : IDisposable
     {
         TestService _service;
         Kernel _kernel;
@@ -16,6 +16,11 @@ namespace Bjd.Test.Net
         {
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         [Fact]

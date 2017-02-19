@@ -11,7 +11,7 @@ using Bjd.Services;
 namespace Bjd.Test.Options
 {
 
-    public class OneValTest
+    public class OneValTest : IDisposable
     {
         TestService _service;
         Kernel _kernel;
@@ -21,6 +21,11 @@ namespace Bjd.Test.Options
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
 
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         [Theory]

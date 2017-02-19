@@ -43,7 +43,7 @@ namespace Bjd.WebServer.Handlers
             }
             if (!Directory.Exists(DocumentRoot))
             {
-                _kernel.Trace.TraceError($"HandlerSelector..ctor DocumentRoot not exists ");
+                _kernel.Logger.TraceError($"HandlerSelector..ctor DocumentRoot not exists ");
                 DocumentRoot = null;//ドキュメントルート無効
             }
 
@@ -89,7 +89,7 @@ namespace Bjd.WebServer.Handlers
         //uriによる初期化
         public HandlerSelectorResult InitFromUri(string uri)
         {
-            _kernel.Trace.TraceInformation($"HandlerSelector.InitFromUri {uri}");
+            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromUri {uri}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -97,13 +97,13 @@ namespace Bjd.WebServer.Handlers
             Init(result, uri);
 
             SetHandler(result);
-            _kernel.Trace.TraceInformation($"HandlerSelector.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
+            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
             return result;
         }
         //filenameによる初期化
         public HandlerSelectorResult InitFromFile(string file)
         {
-            _kernel.Trace.TraceInformation($"HandlerSelector.InitFromFile {file}");
+            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromFile {file}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -127,7 +127,7 @@ namespace Bjd.WebServer.Handlers
         //コマンドによる初期化
         public HandlerSelectorResult InitFromCmd(string fullPath)
         {
-            _kernel.Trace.TraceInformation($"HandlerSelector.InitFromCmd {fullPath}");
+            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromCmd {fullPath}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -292,7 +292,7 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
             result.FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
-            _kernel.Trace.TraceInformation($"Target.Init {result.FullPath}");
+            _kernel.Logger.TraceInformation($"Target.Init {result.FullPath}");
 
             /*************************************************/
             //ファイル指定されたターゲットがファイルではなくディレクトリの場合
@@ -335,7 +335,7 @@ namespace Bjd.WebServer.Handlers
                             if (!File.Exists(newPath)) continue;
 
                             result.FullPath = newPath;
-                            _kernel.Trace.TraceInformation($"Target.Init welcomeFileName {result.FullPath}");
+                            _kernel.Logger.TraceInformation($"Target.Init welcomeFileName {result.FullPath}");
                             break;
                         }
                     }

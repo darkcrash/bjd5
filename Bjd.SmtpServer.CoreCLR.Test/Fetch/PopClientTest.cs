@@ -30,7 +30,6 @@ namespace Bjd.SmtpServer.Test
 
         private ServerFixture _testServer;
         private Kernel _kernel;
-        private Traces.TraceBroker _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public PopClientTest(ITestOutputHelper helper)
@@ -38,7 +37,6 @@ namespace Bjd.SmtpServer.Test
             _testServer = new ServerFixture();
             _testServer._service.AddOutput(helper);
             //_output = new TestOutputService(helper);
-            _output = _testServer._service.Kernel.Trace;
 
             //usrr2のメールボックスへの２通のメールをセット
             _testServer._service.CleanMailbox("user2");
@@ -233,7 +231,7 @@ namespace Bjd.SmtpServer.Test
                 Assert.Equal(expected, actual);
 
                 var enc = mail.GetEncoding();
-                _output.TraceInformation(enc.GetString(mail.GetBytes()));
+                _kernel.Logger.TraceInformation(enc.GetString(mail.GetBytes()));
 
                 var mfList = _testServer.GetMf("user2");
                 var mf1 = mfList.First();

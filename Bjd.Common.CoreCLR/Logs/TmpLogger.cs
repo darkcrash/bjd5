@@ -8,6 +8,7 @@ namespace Bjd.Logs
     {
 
         private readonly List<LogTemporary> _ar = new List<LogTemporary>();
+        private readonly List<TraceStruct> _ts = new List<TraceStruct>();
 
         public TmpLogger(Kernel kernel) : base(kernel)
         {
@@ -35,6 +36,12 @@ namespace Bjd.Logs
             }
         }
 
+        protected override void FormatWriteLine(string message)
+        {
+            var info = CreateTraceInfo(message);
+            _ts.Add(info);
+        }
+
         /**
          * 溜まったログをloggerに送る
          * @param logger
@@ -47,6 +54,11 @@ namespace Bjd.Logs
                 logger.Set(a.LogKind, a.SockObj, a.MessageNo, a.DetailInfomation);
             }
             _ar.Clear();
+            foreach (var t in _ts)
+            {
+                logger.WriteLineAll(t);
+            }
+            _ts.Clear();
 
         }
     }

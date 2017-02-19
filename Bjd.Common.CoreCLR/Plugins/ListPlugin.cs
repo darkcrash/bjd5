@@ -15,7 +15,7 @@ namespace Bjd.Plugins
         public ListPlugin(Kernel kernel)
         {
             _kernel = kernel;
-            _kernel.Trace.TraceInformation("ListPlugin..ctor Start");
+            _kernel.Logger.TraceInformation("ListPlugin..ctor Start");
 
             if (Define.Libraries != null)
             {
@@ -42,25 +42,25 @@ namespace Bjd.Plugins
                             var ctor = t.GetConstructor(Type.EmptyTypes);
                             if (ctor == null)
                             {
-                                _kernel.Trace.TraceError($"[IPlugin] require default conctructor {t.FullName}");
+                                _kernel.Logger.TraceError($"[IPlugin] require default conctructor {t.FullName}");
                                 continue;
                             }
                             try
                             {
                                 var instance = (IPlugin)ctor.Invoke(null);
-                                _kernel.Trace.TraceInformation($"[IPlugin] {instance.PluginName}");
+                                _kernel.Logger.TraceInformation($"[IPlugin] {instance.PluginName}");
                                 Ar.Add(instance);
                             }
                             catch
                             {
-                                _kernel.Trace.TraceError($"[IPlugin] throw exception conctructor {t.FullName}");
+                                _kernel.Logger.TraceError($"[IPlugin] throw exception conctructor {t.FullName}");
                                 continue;
                             }
                         }
                         var plugin = t as IPlugin;
                         if (plugin != null)
                         {
-                            _kernel.Trace.TraceInformation($"[IPlugin] {plugin.PluginName}");
+                            _kernel.Logger.TraceInformation($"[IPlugin] {plugin.PluginName}");
                         }
 
                     }
@@ -68,7 +68,7 @@ namespace Bjd.Plugins
 
             }
 
-            _kernel.Trace.TraceInformation("ListPlugin..ctor End");
+            _kernel.Logger.TraceInformation("ListPlugin..ctor End");
         }
 
 

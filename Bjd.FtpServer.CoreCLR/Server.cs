@@ -836,7 +836,7 @@ namespace Bjd.FtpServer
         private int RecvBinary(SockTcp sockTcp, String fileName)
         {
             var sockHash = sockTcp.GetHashCode();
-            _kernel.Trace.TraceInformation($"{sockHash} FtpServer.RecvBinary({fileName}) ");
+            _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary({fileName}) ");
 
             var fs = new FileStream(fileName, FileMode.Create);
             var bw = new BinaryWriter(fs);
@@ -868,7 +868,7 @@ namespace Bjd.FtpServer
                 bw.Write(buf, 0, buf.Length);
 
                 //トレース表示
-                _kernel.Trace.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={len}byte ");
+                _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={len}byte ");
                 size += len;
 
             }

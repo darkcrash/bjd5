@@ -10,16 +10,27 @@ using Bjd.Services;
 namespace Bjd.Test.Options
 {
     //テストでは、リソースの開放（dispose）を省略する
-    public class ListValTest
+    public class ListValTest : IDisposable
     {
         private TestService _service;
         private Kernel _kernel;
 
-        //テスト用のListVal作成(パターン１)
-        private ListVal CreateListVal1()
+        public ListValTest()
         {
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
+        }
+
+
+        public void Dispose()
+        {
+            _service.Dispose();
+        }
+
+
+        //テスト用のListVal作成(パターン１)
+        private ListVal CreateListVal1()
+        {
 
             var listVal = new ListVal();
             //listVal.Add(new OneVal("n1", 1, Crlf.Nextline, new CtrlInt("help", 10)));

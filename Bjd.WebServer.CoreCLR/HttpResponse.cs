@@ -42,7 +42,7 @@ namespace Bjd.WebServer
             _sockTcp = tcpObj;
             _contentType = contentType;
 
-            _kernel.Trace.TraceInformation($"HttpResponse..ctor");
+            _kernel.Logger.TraceInformation($"HttpResponse..ctor");
 
             SetRangeTo = false;
 

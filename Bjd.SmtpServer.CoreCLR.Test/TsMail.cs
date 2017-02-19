@@ -4,6 +4,7 @@ using Bjd.Mails;
 using Bjd.Net;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using System;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -16,9 +17,9 @@ namespace Bjd.SmtpServer.Test
         Kernel _kernel;
         public Mail Mail { get; private set; }
         internal MlEnvelope MlEnvelope { get; private set; }
-        public TsMail(string from, string to, string bodyStr)
+        public TsMail(TestService service, string from, string to, string bodyStr)
         {
-            _service = TestService.CreateTestService();
+            _service = service;
             _kernel = _service.Kernel;
 
             Mail = new Mail(_kernel);

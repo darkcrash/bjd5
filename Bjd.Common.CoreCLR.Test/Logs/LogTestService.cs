@@ -24,19 +24,9 @@ namespace Bjd.Test.Logs
             WriteLine(oneLog.ToTraceString());
         }
 
-        public Task AppendAsync(LogMessage oneLog)
-        {
-            Action a = () => Append(oneLog);
-
-            var t1 = new Task(a, TaskCreationOptions.PreferFairness);
-            t1.Start(sts);
-
-            return t1;
-        }
 
         public void Dispose()
         {
-            _helper = null;
         }
 
         public void WriteLine(string message)

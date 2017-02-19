@@ -12,7 +12,6 @@ namespace Bjd.Logs
     public class LogConsoleService : IDisposable, ILogService
     {
 
-        private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private bool isDisposed = false;
 
         public LogConsoleService()
@@ -68,18 +67,6 @@ namespace Bjd.Logs
             Console.WriteLine(oneLog.ToTraceString());
         }
 
-        //ログファイルへの追加
-        //oneLog 保存するログ（１行）
-        //return 失敗した場合はfalseが返される
-        public Task AppendAsync(LogMessage oneLog)
-        {
-            Action a = () => Append(oneLog);
-
-            var t1 = new Task(a, TaskCreationOptions.PreferFairness);
-            t1.Start(sts);
-
-            return t1;
-        }
 
         public void WriteLine(string message)
         {

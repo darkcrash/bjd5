@@ -104,7 +104,7 @@ namespace Bjd.Net.Sockets
         protected internal virtual void Cancel()
         {
             if (this.disposedValue) return;
-            Kernel.Trace.TraceInformation("SockObj.Cancel");
+            Kernel.Logger.TraceInformation("SockObj.Cancel");
             this.cancelTokenSource.Cancel();
         }
 
@@ -161,14 +161,14 @@ namespace Bjd.Net.Sockets
         //****************************************************************
         protected void SetException(Exception ex)
         {
-            Kernel.Trace.TraceError($"{this.GetType().Name}.SetException {ex.Message}");
+            Kernel.Logger.TraceError($"{this.GetType().Name}.SetException {ex.Message}");
             _lastError = $"[{ex.Source}] {ex.Message}";
             SockState = SockState.Error;
         }
 
         protected void SetError(String msg)
         {
-            Kernel.Trace.TraceError($"{this.GetType().Name}.SetError {msg}");
+            Kernel.Logger.TraceError($"{this.GetType().Name}.SetError {msg}");
             _lastError = msg;
             SockState = SockState.Error;
         }

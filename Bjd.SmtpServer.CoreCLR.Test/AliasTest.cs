@@ -22,6 +22,7 @@ namespace Bjd.SmtpServer.Test
         {
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
+            _kernel.ListInitialize();
 
             _domainList = new List<string>();
             _domainList.Add("example.com");

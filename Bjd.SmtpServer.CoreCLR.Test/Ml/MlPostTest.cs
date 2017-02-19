@@ -83,7 +83,7 @@ namespace Bjd.SmtpServer.Test
                 recvList.Add(r + domain);
             }
 
-            var mail = new TsMail(sender, to, "dmy");
+            var mail = new TsMail(_service, sender, to, "dmy");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             //user1とuser2に届く
@@ -106,8 +106,7 @@ namespace Bjd.SmtpServer.Test
 
             for (var i = 0; i < count; i++)
             {
-                var m = new TsMail(from, "1ban" + domain, "DMY");
-
+                var m = new TsMail(_service, from, "1ban" + domain, "DMY");
                 var subject = string.Format("TEST_{0}", i);//試験的に件名を挿入する
                 m.Mail.AddHeader("subject", subject);
 

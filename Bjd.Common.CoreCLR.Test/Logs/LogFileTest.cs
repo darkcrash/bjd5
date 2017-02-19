@@ -14,7 +14,6 @@ namespace Bjd.Test.Logs
         //テンポラリディレクトリ名
         const string TmpDir = "LogFileTest";
         TestService service;
-        Traces.TraceBroker _output;
 
         public LogFileTest(ITestOutputHelper output)
         {
@@ -22,7 +21,6 @@ namespace Bjd.Test.Logs
             service.AddOutput(output);
 
             service.Kernel.ListInitialize();
-            _output = service.Kernel.Trace;
         }
 
         public void Dispose()
@@ -134,13 +132,12 @@ namespace Bjd.Test.Logs
             Directory.CreateDirectory(dir);
             using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
-                sut.AppendAsync(
+                sut.Append(
                     new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.AppendAsync(
+                sut.Append(
                     new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                var r = sut.AppendAsync(
+                sut.Append(
                     new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                r.Wait();
                 //sut.Dispose();
             }
 
@@ -168,13 +165,12 @@ namespace Bjd.Test.Logs
             Directory.CreateDirectory(dir);
             using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
-                sut.AppendAsync(
+                sut.Append(
                     new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.AppendAsync(
+                sut.Append(
                     new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                var r = sut.AppendAsync(
+                sut.Append(
                      new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                r.Wait();
                 //sut.Dispose();
             }
 
@@ -210,27 +206,20 @@ namespace Bjd.Test.Logs
             //最初は、保存期間指定なしで起動する
             using (var logFile = new LogFileService(dir, 2, 2, 0, true))
             {
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
-                logFile.AppendAsync(
-                    new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
-                    .Wait();
+                logFile.Append(
+                    new LogMessage("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                logFile.Append(
+                    new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
 
                 //exercise
                 //リフレクションを使用してprivateメソッドにアクセスする

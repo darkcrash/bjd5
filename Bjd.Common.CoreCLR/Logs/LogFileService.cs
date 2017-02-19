@@ -105,19 +105,6 @@ namespace Bjd.Logs
             }
         }
 
-        //ログファイルへの追加
-        //oneLog 保存するログ（１行）
-        //return 失敗した場合はfalseが返される
-        public Task AppendAsync(LogMessage oneLog)
-        {
-            Action a = () => Append(oneLog);
-
-            var t1 = new Task(a, TaskCreationOptions.PreferFairness);
-            t1.Start(sts);
-
-            return t1;
-        }
-
 
         private void LogOpen()
         {
@@ -376,7 +363,7 @@ namespace Bjd.Logs
         public void Dispose()
         {
             var log = new LogMessage(DateTime.Now, LogKind.Secure, "Log", 0, "local", 0, "LogFile.Dispose()", "last mesasage");
-            AppendAsync(log).Wait();
+            Append(log);
 
             lock (_lock)
             {

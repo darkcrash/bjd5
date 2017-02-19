@@ -41,6 +41,7 @@ namespace ProxyHttpServerTest
 
             public void Dispose()
             {
+                _proxy.Dispose();
                 _service.Dispose();
             }
 

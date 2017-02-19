@@ -67,7 +67,7 @@ namespace Bjd.SmtpServer.Test
             const string domain = "@example.com";
             var from = user + domain;
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, "guide");
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, "guide");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), 1);
@@ -89,7 +89,7 @@ namespace Bjd.SmtpServer.Test
             const string domain = "@example.com";
             string from = user + domain;
 
-            var mail = new TsMail(from, "1ban-ctl" + domain, "help");
+            var mail = new TsMail(_service, from, "1ban-ctl" + domain, "help");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             Assert.Equal(_tsMailSave.Count(), 1);

@@ -23,7 +23,10 @@ namespace Bjd.SmtpServer.Test
             _user1 = new MlOneUser(true, "USER1", new MailAddress("user1@example.com"), false, true, true, "password");
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            _service.Dispose();
+        }
 
         //１行コマンド
         [Theory]

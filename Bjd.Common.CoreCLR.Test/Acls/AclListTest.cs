@@ -6,11 +6,12 @@ using Bjd.Options;
 using Xunit;
 using Bjd;
 using Bjd.Services;
+using System;
 
 namespace Bjd.Test.Acls
 {
 
-    public class AclListTest
+    public class AclListTest : IDisposable
     {
         TestService _service;
         Kernel _kernel;
@@ -19,6 +20,11 @@ namespace Bjd.Test.Acls
         {
             _service = TestService.CreateTestService();
             _kernel = _service.Kernel;
+        }
+
+        public void Dispose()
+        {
+            _service.Dispose();
         }
 
         [Theory]

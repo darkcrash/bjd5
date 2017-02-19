@@ -59,6 +59,7 @@ namespace Bjd.Test.Mails
                     Directory.Delete(sut.Dir, true);
                 }
             }
+            _service.Dispose();
         }
 
         [Fact]

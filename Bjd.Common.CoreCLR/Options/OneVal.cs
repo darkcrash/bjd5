@@ -369,11 +369,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                _kernel.Trace.TraceError($"Error OneVal.FromReg({str})");
+                _kernel.Logger.TraceError($"Error OneVal.FromReg({str})");
                 Value = null;
                 return false;
             }
-            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Logger.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -393,11 +393,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Logger.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Logger.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -417,11 +417,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Logger.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Logger.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -441,11 +441,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Logger.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Logger.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -511,11 +511,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                _kernel.Trace.TraceError($"Error OneVal.FromReg({str})");
+                _kernel.Logger.TraceError($"Error OneVal.FromReg({str})");
                 Value = null;
                 return false;
             }
-            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Logger.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 

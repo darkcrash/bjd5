@@ -597,7 +597,7 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -610,7 +610,7 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -623,7 +623,7 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD xxx");
-            Assert.Equal(cl.StringRecv(1, this), "550 xxx: No such file or directory.\r\n");
+            Assert.Equal("550 xxx: No such file or directory.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PWD");
 
         }
@@ -637,7 +637,7 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD xxx");
-            Assert.Equal(cl.StringRecv(1, this), "550 xxx: No such file or directory.\r\n");
+            Assert.Equal("550 xxx: No such file or directory.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PWD");
 
         }
@@ -652,9 +652,9 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             cl.StringSend("CWD ..\\..");
-            Assert.Equal(cl.StringRecv(1, this), "550 ..\\..: No such file or directory.\r\n");
+            Assert.Equal("550 ..\\..: No such file or directory.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -684,13 +684,13 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             //cdup
             cl.StringSend("CDUP");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             //pwd ルートに戻っていることを確認する
             cl.StringSend("PWD");
-            Assert.Equal(cl.StringRecv(1, this), "257 \"/\" is current directory.\r\n");
+            Assert.Equal("257 \"/\" is current directory.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -703,13 +703,13 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             //cdup
             cl.StringSend("CDUP");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             //pwd ルートに戻っていることを確認する
             cl.StringSend("PWD");
-            Assert.Equal(cl.StringRecv(1, this), "257 \"/\" is current directory.\r\n");
+            Assert.Equal("257 \"/\" is current directory.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -722,16 +722,16 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNFR $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
         }
         [Fact]
         public void RNFR_RNTOコマンド_ファイル名変更_V6()
@@ -764,16 +764,16 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RNFR home0");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNFR $$$.home0");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -785,16 +785,16 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RNFR home0");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNFR $$$.home0");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -806,7 +806,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RMD home0");
-            Assert.Equal(cl.StringRecv(1, this), "451 Rmd error.\r\n");
+            Assert.Equal("451 Rmd error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -819,7 +819,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RMD home0");
-            Assert.Equal(cl.StringRecv(1, this), "451 Rmd error.\r\n");
+            Assert.Equal("451 Rmd error.\r\n", cl.StringRecv(1, this));
 
         }
 

@@ -98,7 +98,7 @@ namespace Bjd.Threading
         //Override可能
         public void Start()
         {
-            _kernel.Trace.TraceWarning($"{this.GetType().FullName}.Start Begin");
+            _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Start Begin");
             if (_threadBaseKind == ThreadBaseKind.Running)
                 return;
 
@@ -126,9 +126,9 @@ namespace Bjd.Threading
             }
             catch (Exception ex)
             {
-                _kernel.Trace.TraceWarning($"{this.GetType().FullName}.Start {ex.Message}");
+                _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Start {ex.Message}");
             }
-            _kernel.Trace.TraceWarning($"{this.GetType().FullName}.Start End");
+            _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Start End");
         }
 
         //【スレッド終了処理】
@@ -138,7 +138,7 @@ namespace Bjd.Threading
         //Override可能
         public void Stop()
         {
-            _kernel.Trace.TraceWarning($"{this.GetType().FullName}.Stop Begin");
+            _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Stop Begin");
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
             {
                 //起動されている場合
@@ -156,7 +156,7 @@ namespace Bjd.Threading
                 AfterWait.Wait();
             }
             _t = null;
-            _kernel.Trace.TraceWarning($"{this.GetType().FullName}.Stop End");
+            _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Stop End");
         }
 
         protected abstract void OnRunThread();
@@ -171,11 +171,11 @@ namespace Bjd.Threading
             }
             catch (OperationCanceledException)
             {
-                _kernel.Trace.TraceInformation("stop Thread");
+                _kernel.Logger.TraceInformation("stop Thread");
             }
             catch (Exception ex)
             {
-                _kernel.Trace.TraceError(ex.Message);
+                _kernel.Logger.TraceError(ex.Message);
                 if (_logger != null)
                 {
                     _logger.Set(LogKind.Error, null, 1, ex.Message);

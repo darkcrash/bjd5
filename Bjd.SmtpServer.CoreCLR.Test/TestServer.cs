@@ -106,14 +106,18 @@ namespace Bjd.SmtpServer.Test
         public virtual void Dispose()
         {
             //サーバ停止
-            _v4Sv.Stop();
-            _v6Sv.Stop();
+            try
+            {
+                _v4Sv.Stop();
+                _v6Sv.Stop();
 
-            _v4Sv.Dispose();
-            _v6Sv.Dispose();
-
-            _service.Dispose();
-
+                _v4Sv.Dispose();
+                _v6Sv.Dispose();
+            }
+            finally
+            {
+                _service.Dispose();
+            }
         }
     }
 }
