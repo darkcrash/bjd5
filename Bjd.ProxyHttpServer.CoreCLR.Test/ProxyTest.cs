@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using Bjd.ProxyHttpServer;
 using Bjd.Services;
 using Bjd.Threading;
+using Bjd.Options;
 
 namespace ProxyHttpServerTest
 {
@@ -26,6 +27,8 @@ namespace ProxyHttpServerTest
 
 
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var ip = new Ip("127.0.0.1");
                 const int port = 0;
                 Ssl ssl = null;
@@ -63,6 +66,9 @@ namespace ProxyHttpServerTest
             //int port = 8080;
             //string host = "127.0.0.1";
             var ip = new Ip(host);
+            port = _fixture._service.GetAvailablePort(ip, port);
+
+
             var listener = new TcpListener(ip.IPAddress, port);
             listener.Start();
 
