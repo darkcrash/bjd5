@@ -235,7 +235,11 @@ namespace Bjd.SmtpServer.Test
                 var enc = mail.GetEncoding();
                 _output.TraceInformation(enc.GetString(mail.GetBytes()));
 
-                Assert.Equal(308, mail.GetBytes().Length);
+                var mfList = _testServer.GetMf("user2");
+                var mf1 = mfList.First();
+
+                //Assert.Equal(308, mail.GetBytes().Length);
+                Assert.Equal(mf1.Length, mail.GetBytes().Length);
 
                 //tearDown
                 //sut.Dispose();

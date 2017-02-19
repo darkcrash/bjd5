@@ -76,11 +76,6 @@ namespace Bjd.Services
 
         static TestService()
         {
-            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
-            {
-                var f = new EventTypeFilter(SourceLevels.All);
-                l.Filter = f;
-            }
 
 
         }

@@ -149,7 +149,7 @@ namespace Bjd.Utils
             }
             return lines;
         }
-     
+
         //\r\nの削除
         static public byte[] TrimCrlf(byte[] buf)
         {
@@ -160,6 +160,13 @@ namespace Bjd.Utils
                 {
                     count++;
                 }
+                var tmp = new byte[buf.Length - count];
+                Buffer.BlockCopy(buf, 0, tmp, 0, buf.Length - count);
+                return tmp;
+            }
+            else if (buf.Length >= 1 && buf[buf.Length - 1] == '\r')
+            {
+                var count = 1;
                 var tmp = new byte[buf.Length - count];
                 Buffer.BlockCopy(buf, 0, tmp, 0, buf.Length - count);
                 return tmp;
@@ -219,7 +226,7 @@ namespace Bjd.Utils
             }
             return str;
         }
-  
+
         //ハッシュ文字列の作成（MD5）
         static public string Md5Str(string str)
         {

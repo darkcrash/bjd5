@@ -92,7 +92,7 @@ namespace Bjd.Test.Utils
         [Theory]
         [InlineData(new byte[] { 0x64 }, new byte[] { 0x64 })]
         [InlineData(new byte[] { 0x64, 0x0d, 0x0a }, new byte[] { 0x64 })]
-        [InlineData(new byte[] { 0x64, 0x0d }, new byte[] { 0x64, 0x0d })]
+        [InlineData(new byte[] { 0x64, 0x0d }, new byte[] { 0x64 })]
         [InlineData(new byte[] { 0x64, 0x0a }, new byte[] { 0x64 })]
         [InlineData(new byte[] { 0x64, 0x0a, 0x65, 0x0a }, new byte[] { 0x64, 0x0a, 0x65 })]
         public void trimCrlf_byte配列(byte[] buf, byte[] expended)
