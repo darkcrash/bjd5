@@ -26,17 +26,17 @@ namespace Bjd.TftpServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //onePage.Add(CreateServerOption(ProtocolKind.Udp, 69, 60, 10)); //サーバ基本設定
@@ -51,10 +51,10 @@ namespace Bjd.TftpServer
             //key = "override";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
 
-            Add(new OneVal(CtrlType.Folder, "workDir", "Tftp", Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "read", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "write", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "override", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Folder, "workDir", "Tftp", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "read", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "write", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "override", false, Crlf.Nextline));
 
             return onePage;
         }

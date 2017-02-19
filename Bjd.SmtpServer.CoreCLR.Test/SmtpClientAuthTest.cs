@@ -30,10 +30,12 @@ namespace Bjd.SmtpServer.Test
         }
 
         private ServerFixture _testServer;
+        private Kernel _kernel;
 
         public SmtpClientAuthTest(ServerFixture fixture)
         {
             _testServer = fixture;
+            _kernel = _testServer._service.Kernel;
         }
 
         public void Dispose()
@@ -65,7 +67,7 @@ namespace Bjd.SmtpServer.Test
             Assert.Equal(sut.Auth(kind, "user1", "user1"), true);
             Assert.Equal(sut.Mail("1@1"), true);
             Assert.Equal(sut.Rcpt("user1@example.com"), true);
-            Assert.Equal(sut.Data(new Mail()), true);
+            Assert.Equal(sut.Data(new Mail(_kernel)), true);
 
             Assert.Equal(sut.Quit(), true);
 

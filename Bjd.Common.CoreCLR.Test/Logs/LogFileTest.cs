@@ -14,17 +14,19 @@ namespace Bjd.Test.Logs
         //テンポラリディレクトリ名
         const string TmpDir = "LogFileTest";
         TestService service;
-        TestOutputService _output;
+        Traces.TraceBroker _output;
 
         public LogFileTest(ITestOutputHelper output)
         {
             service = TestService.CreateTestService();
-            _output = new TestOutputService(output);
+            service.AddOutput(output);
+
+            service.Kernel.ListInitialize();
+            _output = service.Kernel.Trace;
         }
 
         public void Dispose()
         {
-            _output.Dispose();
             service.Dispose();
         }
 
@@ -50,7 +52,7 @@ namespace Bjd.Test.Logs
             //var dir = TestUtil.GetTmpPath(TmpDir);
             var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            using (var sut = new LogFile(dir, logKind, logKind, 0, true))
+            using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
                 const int expected = 2;
 
@@ -76,7 +78,7 @@ namespace Bjd.Test.Logs
             //var dir = TestUtil.GetTmpPath(TmpDir);
             var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            using (var sut = new LogFile(dir, logKind, logKind, 0, true))
+            using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
                 const int expected = 2;
 
@@ -103,7 +105,7 @@ namespace Bjd.Test.Logs
             //var dir = TestUtil.GetTmpPath(TmpDir);
             var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            using (var sut = new LogFile(dir, logKind, logKind, 0, true))
+            using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
                 const int expected = 2;
 
@@ -130,14 +132,14 @@ namespace Bjd.Test.Logs
             //var dir = TestUtil.GetTmpPath(TmpDir);
             var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            using (var sut = new LogFile(dir, logKind, logKind, 0, true))
+            using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
                 sut.AppendAsync(
-                    new OneLog("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 sut.AppendAsync(
-                    new OneLog("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 var r = sut.AppendAsync(
-                    new OneLog("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 r.Wait();
                 //sut.Dispose();
             }
@@ -164,14 +166,14 @@ namespace Bjd.Test.Logs
             //var dir = TestUtil.GetTmpPath(TmpDir);
             var dir = service.GetTmpPath(TmpDir);
             Directory.CreateDirectory(dir);
-            using (var sut = new LogFile(dir, logKind, logKind, 0, true))
+            using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
                 sut.AppendAsync(
-                    new OneLog("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 sut.AppendAsync(
-                    new OneLog("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                    new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 var r = sut.AppendAsync(
-                     new OneLog("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                     new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
                 r.Wait();
                 //sut.Dispose();
             }
@@ -206,28 +208,28 @@ namespace Bjd.Test.Logs
 
             //2012/09/01~7日分のログを準備
             //最初は、保存期間指定なしで起動する
-            using (var logFile = new LogFile(dir, 2, 2, 0, true))
+            using (var logFile = new LogFileService(dir, 2, 2, 0, true))
             {
                 logFile.AppendAsync(
-                    new OneLog("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
                 logFile.AppendAsync(
-                    new OneLog("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
+                    new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"))
                     .Wait();
 
                 //exercise

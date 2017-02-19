@@ -16,7 +16,7 @@ namespace Bjd.Servers
 
         public ListServer(Kernel kernel, ListPlugin listPlugin)
         {
-            System.Diagnostics.Trace.TraceInformation($"ListServer..ctor {listPlugin.GetType().Name} Start");
+            kernel.Trace.TraceInformation($"ListServer..ctor {listPlugin.GetType().Name} Start");
             try
             {
                 this.kernel = kernel;
@@ -24,12 +24,12 @@ namespace Bjd.Servers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError(ex.Message);
-                System.Diagnostics.Trace.TraceError(ex.StackTrace);
+                kernel.Trace.TraceError(ex.Message);
+                kernel.Trace.TraceError(ex.StackTrace);
             }
             finally
             {
-                System.Diagnostics.Trace.TraceInformation($"ListServer..ctor {listPlugin.GetType().Name} End");
+                kernel.Trace.TraceInformation($"ListServer..ctor {listPlugin.GetType().Name} End");
             }
         }
 

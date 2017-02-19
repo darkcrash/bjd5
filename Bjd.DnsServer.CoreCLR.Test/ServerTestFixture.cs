@@ -33,6 +33,8 @@ namespace DnsServerTest
             _service.ContentFile("named.ca");
 
             Kernel kernel = _service.Kernel;
+            kernel.ListInitialize();
+
             Ip ip = new Ip(IpKind.V4Localhost);
             OneBind oneBind = new OneBind(ip, ProtocolKind.Udp);
             var option = kernel.ListOption.Get("Dns");

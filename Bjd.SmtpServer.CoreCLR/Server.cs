@@ -76,11 +76,11 @@ namespace Bjd.SmtpServer
             }
 
             //メールキューの初期化
-            _mailQueue = new MailQueue(_kernel.Enviroment.ExecutableDirectory);
+            _mailQueue = new MailQueue(_kernel, _kernel.Enviroment.ExecutableDirectory);
 
             //SaveMail初期化
             var receivedHeader = new ReceivedHeader(kernel, (string)_conf.Get("receivedHeader"));
-            _mailSave = new MailSave(kernel.MailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
+            _mailSave = new MailSave(kernel, kernel.MailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
 
             var always = (bool)_conf.Get("always");//キュー常時処理
             _agent = new Agent(kernel, this, _conf, Logger, _mailQueue, always);
@@ -165,7 +165,7 @@ namespace Bjd.SmtpServer
                     {
                         //var emlFileName = string.Format("{0}\\MF_{1}", folder, mailInfo.FileName);
                         var emlFileName = $"{folder}{Path.DirectorySeparatorChar}MF_{mailInfo.FileName}";
-                        var mail = new Mail();
+                        var mail = new Mail(_kernel);
                         mail.Read(emlFileName);
                         return Inet.FromBytes(mail.GetBytes());
                     }
@@ -513,7 +513,7 @@ namespace Bjd.SmtpServer
 
                     sockTcp.AsciiSend("354 Enter mail,end with \".\" on a line by ltself");
 
-                    var data = new Data(sizeLimit);
+                    var data = new Data(_kernel, sizeLimit);
                     if (!data.Recv(sockTcp, 20, Logger, this))
                     {
                         Thread.Sleep(1000);
@@ -591,7 +591,7 @@ namespace Bjd.SmtpServer
 
 
         //RemoteServerでのみ使用される
-        public override void Append(OneLog oneLog)
+        public override void Append(LogMessage oneLog)
         {
 
         }

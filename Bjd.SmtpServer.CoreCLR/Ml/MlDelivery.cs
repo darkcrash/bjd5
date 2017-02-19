@@ -195,7 +195,7 @@ namespace Bjd.SmtpServer
         //元メールを添付して管理者へ送る
         public bool AttachToAmdin(Mail orgMail, string subject, MlEnvelope mlEnvelope) {
             //メール生成
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             mail.AddHeader("subject", subject);
             mail.AppendLine(Encoding.ASCII.GetBytes(subject + "\r\n"));
@@ -234,7 +234,7 @@ namespace Bjd.SmtpServer
             return Create(ContentTyep.Sjis, subject, bodyStr);
         }
         Mail Create(string subject, string contentType, byte[] body) {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             //ヘッダ作成
             mail.AddHeader("subject", subject);

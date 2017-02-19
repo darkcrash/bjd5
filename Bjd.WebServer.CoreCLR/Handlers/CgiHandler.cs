@@ -55,7 +55,7 @@ namespace Bjd.WebServer.Handlers
             //***************************************************
             if (Path.GetFileName(selector.FullPath).IndexOf("nph-") == 0)
             {
-                System.Diagnostics.Trace.TraceInformation("CgiHandler.Request nph");
+                _kernel.Trace.TraceInformation("CgiHandler.Request nph");
                 connection.Connection.SendUseEncode(context.OutputStream.GetBytes());//CGI出力をそのまま送信する
                 return false;
             }
@@ -65,7 +65,7 @@ namespace Bjd.WebServer.Handlers
             {
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation("CgiHandler.CreateFromCgi ");
+            _kernel.Trace.TraceInformation("CgiHandler.CreateFromCgi ");
 
             // cgi出力で、Location:が含まれる場合、レスポンスコードを302にする
             if (context.Response.SearchLocation())//Location:ヘッダを含むかどうか

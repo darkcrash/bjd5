@@ -63,9 +63,8 @@ namespace Bjd.Test
         //}
 
         //テスト用のダミーのConf生成
-        public static Conf CreateConf(String optionName)
+        public static Conf CreateConf(Kernel kernel, String optionName)
         {
-            var kernel = new Kernel(new Enviroments());
             if (optionName == "OptionSample")
             {
                 return new Conf(new OptionSample(kernel, ""));

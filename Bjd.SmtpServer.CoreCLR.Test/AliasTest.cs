@@ -14,24 +14,24 @@ namespace Bjd.SmtpServer.Test
     public class AliasTest : IDisposable
     {
         private TestService _service;
+        private Kernel _kernel;
         private MailBox _mailBox;
         private List<String> _domainList;
 
         public AliasTest()
         {
             _service = TestService.CreateTestService();
-
+            _kernel = _service.Kernel;
 
             _domainList = new List<string>();
             _domainList.Add("example.com");
-
 
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             datUser.Add(true, "user3\tjNBu6GHNV633O4jMz1GJiQ==");
             //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
-            _mailBox = new MailBox(new Logger(), datUser, _service.MailboxPath);
+            _mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
 
         }
         public void Dispose()
@@ -44,13 +44,13 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("user1", "user2,user3", new Logger());
+            sut.Add("user1", "user2,user3", new Logger(_kernel));
 
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("user1@example.com"));
 
             //exercise
-            var actual = sut.Reflection(rcptList, new Logger());
+            var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
             Assert.Equal(actual.Count, 2);
             Assert.Equal(actual[0].ToString(), "user2@example.com");
@@ -62,13 +62,13 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("user1", "user2,user3", new Logger());
+            sut.Add("user1", "user2,user3", new Logger(_kernel));
 
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("user2@example.com"));
 
             //exercise
-            var actual = sut.Reflection(rcptList, new Logger());
+            var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
             Assert.Equal(actual.Count, 1);
             Assert.Equal(actual[0].ToString(), "user2@example.com");
@@ -79,13 +79,13 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("user1", "$ALL", new Logger());
+            sut.Add("user1", "$ALL", new Logger(_kernel));
 
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("user1@example.com"));
 
             //exercise
-            var actual = sut.Reflection(rcptList, new Logger());
+            var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
             Assert.Equal(actual.Count, 3);
             Assert.Equal(actual[0].ToString(), "user1@example.com");
@@ -99,13 +99,13 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("user1", "$USER,user2", new Logger());
+            sut.Add("user1", "$USER,user2", new Logger(_kernel));
 
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("user1@example.com"));
 
             //exercise
-            var actual = sut.Reflection(rcptList, new Logger());
+            var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
             Assert.Equal(actual.Count, 2);
             Assert.Equal(actual[0].ToString(), "user1@example.com");
@@ -118,12 +118,12 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("dmy", "user1,user2", new Logger());
+            sut.Add("dmy", "user1,user2", new Logger(_kernel));
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("dmy@example.com"));
 
             //exercise
-            var actual = sut.Reflection(rcptList, new Logger());
+            var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
             Assert.Equal(actual.Count, 2);
             Assert.Equal(actual[0].ToString(), "user1@example.com");
@@ -140,8 +140,8 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             var sut = new Alias(_domainList, _mailBox);
-            sut.Add("dmy", "user1,user2", new Logger());
-            sut.Add("user1", "user3,user4", new Logger());
+            sut.Add("dmy", "user1,user2", new Logger(_kernel));
+            sut.Add("user1", "user3,user4", new Logger(_kernel));
 
             var rcptList = new List<MailAddress>();
             rcptList.Add(new MailAddress("dmy@example.com"));

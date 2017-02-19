@@ -196,7 +196,7 @@ namespace Bjd.WebServer.Handlers
 
         void AutoDeny(Logger Logger, bool success, Ip remoteIp)
         {
-            System.Diagnostics.Trace.TraceWarning($"WebServer.AutoDeny ");
+            _kernel.Trace.TraceWarning($"WebServer.AutoDeny ");
             if (_attackDb == null)
                 return;
             //データベースへの登録

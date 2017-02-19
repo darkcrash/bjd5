@@ -22,7 +22,7 @@ namespace Bjd.Common.Test.plugin
                 //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
                 //var sut = new ListPlugin(currentDir);
-                var sut = new ListPlugin();
+                var sut = new ListPlugin(service.Kernel);
                 const int expected = 16;
                 //exercise
                 var actual = sut.Count;
@@ -42,10 +42,11 @@ namespace Bjd.Common.Test.plugin
 
                 //var kernel = new Kernel();
                 var kernel = service.Kernel;
+                kernel.ListInitialize();
                 //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
                 //var sut = new ListPlugin(string.Format("{0}\\bin\\plugins", currentDir));
-                var sut = new ListPlugin();
+                var sut = new ListPlugin(kernel);
                 foreach (var onePlugin in sut)
                 {
                     //Optionインスタンス生成

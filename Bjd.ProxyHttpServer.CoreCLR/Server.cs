@@ -321,7 +321,7 @@ namespace Bjd.ProxyHttpServer
         }
 
         //RemoteServerでのみ使用される
-        public override void Append(OneLog oneLog)
+        public override void Append(LogMessage oneLog)
         {
 
         }

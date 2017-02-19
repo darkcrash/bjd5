@@ -1,6 +1,7 @@
 ﻿using System;
 using Bjd.WebServer;
 using Xunit;
+using Bjd.Services;
 
 namespace WebServerTest
 {
@@ -8,14 +9,14 @@ namespace WebServerTest
     public class RequestTest : IDisposable
     {
 
-
+        TestService _service;
         HttpRequest _request;
 
         public RequestTest()
         {
+            _service = TestService.CreateTestService();
 
-
-            _request = new HttpRequest(null, null);
+            _request = new HttpRequest(_service.Kernel, null, null);
 
         }
 

@@ -47,11 +47,11 @@ namespace Bjd.Pop3Server
         }
 
         //メールの送信 count=本文の行数（-1の場合は全部）
-        public bool Send(SockTcp sockTcp, int count)
+        public bool Send(Kernel kernel, SockTcp sockTcp, int count)
         {
             //string fileName = string.Format("{0}\\MF_{1}", _dir, _fname);
             string fileName = $"{_dir}{Path.DirectorySeparatorChar}MF_{_fname}";
-            var mail = new Mail();
+            var mail = new Mail(kernel);
             mail.Read(fileName);
             if (!mail.Send(sockTcp, count))
             {

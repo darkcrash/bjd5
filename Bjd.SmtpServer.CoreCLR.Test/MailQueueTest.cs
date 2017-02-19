@@ -17,12 +17,14 @@ namespace Bjd.SmtpServer.Test
     {
         private MailQueue sut;
         private TestService _service;
+        private Kernel _kernel;
 
         public MailQueueTest()
         {
             _service = TestService.CreateTestService();
             var path = _service.Kernel.Enviroment.ExecutableDirectory;
-            sut = new MailQueue(path);
+            _kernel = _service.Kernel;
+            sut = new MailQueue(_kernel, path);
         }
 
         public void Dispose()
@@ -51,7 +53,7 @@ namespace Bjd.SmtpServer.Test
             var max = 100;
             var threadSpan = 0; //最小経過時間
 
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             var mailInfo = CreateMailInfo();
             for (int i = 0; i < n; i++)
             {
@@ -77,7 +79,7 @@ namespace Bjd.SmtpServer.Test
             var max = 10;
             for (var i = 0; i < max; i++)
             {
-                sut.Save(new Mail(), CreateMailInfo());
+                sut.Save(new Mail(_kernel), CreateMailInfo());
             }
             var expected = count;
             //一度一覧取得を行う
@@ -103,7 +105,7 @@ namespace Bjd.SmtpServer.Test
             var max = 10;
             var threadSpan = 0; //最小経過時間
 
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             var mailInfo = CreateMailInfo();
             for (int i = 0; i < max; i++)
             {
@@ -138,7 +140,7 @@ namespace Bjd.SmtpServer.Test
             var max = 10;
             var threadSpan = 0; //最小経過時間
 
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             var expected = string.Format("{0}", n);
             mail.AddHeader("tag", expected);
             var mailInfo = CreateMailInfo();

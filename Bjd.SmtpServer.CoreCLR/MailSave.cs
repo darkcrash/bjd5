@@ -10,6 +10,7 @@ namespace Bjd.SmtpServer
 {
     internal class MailSave
     {
+        readonly Kernel _kernel;
         readonly MailBox _mailBox;
         private readonly LocalBox _localBox;
         readonly MailQueue _mailQueue;
@@ -18,8 +19,9 @@ namespace Bjd.SmtpServer
         readonly List<string> _domainList;
         int _idCounter;//id作成のための順次番号生成カウンタ
         readonly ReceivedHeader _receivedHeader;//Receivedヘッダ文字列
-        public MailSave(MailBox mailBox, Alias alias, MailQueue mailQueue, Logger logger, ReceivedHeader receivedHeader, List<string> domainList)
+        public MailSave(Kernel kernel, MailBox mailBox, Alias alias, MailQueue mailQueue, Logger logger, ReceivedHeader receivedHeader, List<string> domainList)
         {
+            _kernel = kernel;
             _mailBox = mailBox;
             _alias = alias;
             _mailQueue = mailQueue;
@@ -56,7 +58,7 @@ namespace Bjd.SmtpServer
         {
 
             //Mailのヘッダ内容等を変更するので、この関数内だけの変更にとどめるため、テンポラリを作成する
-            var mail = new Mail(); //orgMail.CreateClone();
+            var mail = new Mail(_kernel); //orgMail.CreateClone();
             mail.Init2(orgMail.GetBytes());
 
             //ユニークなID文字列の生成

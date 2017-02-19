@@ -26,10 +26,10 @@ namespace Bjd.SmtpServer
         long _len;//受信バッファのデータ量（受信サイズ制限に使用する）
         byte[] _keep = new byte[0];
 
-        public Data(long sizeLimit)
+        public Data(Kernel kernel, long sizeLimit)
         {
             _sizeLimit = sizeLimit;
-            Mail = new Mail();
+            Mail = new Mail(kernel);
         }
 
         public void Dispose()

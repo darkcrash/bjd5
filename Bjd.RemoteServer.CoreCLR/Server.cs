@@ -223,7 +223,7 @@ namespace Bjd.RemoteServer
 
 
         //ログのAppendイベントでリモートクライアントへログを送信する
-        public override void Append(OneLog oneLog)
+        public override void Append(LogMessage oneLog)
         {
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLog, oneLog.ToString());
         }

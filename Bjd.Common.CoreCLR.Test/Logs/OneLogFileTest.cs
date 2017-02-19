@@ -48,18 +48,18 @@ namespace Bjd.Test.Logs
             //setUp
             //var fileName = TestUtil.GetTmpPath(TmpDir);
             var fileName = service.GetTmpPath(TmpDir);
-            var sut = new OneLogFile(fileName);
-            sut.Set("1");
-            sut.Set("2");
-            sut.Set("3");
+            var sut = new LogFileWriter(fileName);
+            sut.WriteLine("1");
+            sut.WriteLine("2");
+            sut.WriteLine("3");
             //いったんクローズする
             sut.Dispose();
 
             //同一のファイルを再度開いてさらに３行追加
-            sut = new OneLogFile(fileName);
-            sut.Set("4");
-            sut.Set("5");
-            sut.Set("6");
+            sut = new LogFileWriter(fileName);
+            sut.WriteLine("4");
+            sut.WriteLine("5");
+            sut.WriteLine("6");
             sut.Dispose();
 
             const int expected = 6;

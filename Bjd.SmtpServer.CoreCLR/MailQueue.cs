@@ -11,14 +11,15 @@ namespace Bjd.SmtpServer
 {
     class MailQueue
     {
+        readonly Kernel _kernel;
         readonly object _lockObj = new Object();
 
         public bool Status { get; private set; }//初期化状態 falseの場合は、初期化に失敗しているので使用できない
         public string Dir { get; private set; }
 
-        public MailQueue(string currentDirectory)
+        public MailQueue(Kernel kernel, string currentDirectory)
         {
-
+            _kernel = kernel;
             Status = true;//初期化状態 falseの場合は、初期化に失敗しているので使用できない
 
             //基底クラスのstring dirの初期化
@@ -71,7 +72,7 @@ namespace Bjd.SmtpServer
                     if (mailInfo.IsProcess(sec, fileName))
                     {
                         var fname = Path.GetFileName(fileName);
-                        queueList.Add(new OneQueue(fname.Substring(3), mailInfo));
+                        queueList.Add(new OneQueue(_kernel, fname.Substring(3), mailInfo));
                     }
                 }
                 return queueList;

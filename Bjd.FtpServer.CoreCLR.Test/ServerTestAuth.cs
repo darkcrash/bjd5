@@ -32,6 +32,8 @@ namespace FtpServerTest
                 _service.ContentDirectory("TestDir");
 
                 Kernel kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("Ftp");
                 Conf conf = new Conf(option);
                 port = _service.GetAvailablePort(IpKind.V4Localhost, conf);

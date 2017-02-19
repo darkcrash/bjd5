@@ -16,13 +16,14 @@ namespace Bjd.WebServer
         public bool KeepAlive = true;
         //1回目の通信でバーチャルホストの検索を実施する
         public bool CheckVirtual = true;
+        public Kernel Kernel;
         public Logs.Logger Logger;
 
         public HttpRequestContext CreateRequestContext()
         {
             var context = new HttpRequestContext();
             context.Connection = this;
-            context.Request = new HttpRequest(Logger, Connection);
+            context.Request = new HttpRequest(Kernel, Logger, Connection);
             context.Header = new HttpHeader();
             context.InputStream = null;
             context.OutputStream = new WebStream(-1);

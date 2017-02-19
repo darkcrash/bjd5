@@ -38,6 +38,8 @@ namespace WebApiServerTest
                 //MailBoxのみ初期化する特別なテスト用Kernelコンストラクタ
                 //var kernel = new Kernel("MailBox");
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
 

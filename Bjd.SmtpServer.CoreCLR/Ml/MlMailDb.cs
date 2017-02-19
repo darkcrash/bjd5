@@ -13,10 +13,12 @@ namespace Bjd.SmtpServer
         public bool Status { get; private set; }//初期化の成否
 
         readonly string _dir;
+        readonly Kernel _kernel;
         readonly Logger _logger;
-        public MlMailDb(Logger logger, string manageDir, string mlName) {
+        public MlMailDb(Kernel kernel, Logger logger, string manageDir, string mlName) {
             
             Status = false;
+            _kernel = kernel;
             _logger = logger;
            
             //_dir = string.Format("{0}\\{1}", manageDir, mlName);
@@ -64,7 +66,7 @@ namespace Bjd.SmtpServer
                 
             var fileName = MailFile(no);
             if (File.Exists(fileName)) {
-                var mail = new Mail();
+                var mail = new Mail(_kernel);
                 if (mail.Read(fileName)) {
                     return mail;
                 }

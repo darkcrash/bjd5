@@ -14,21 +14,21 @@ namespace Bjd.Options
         public override char Mnemonic { get { return 'O'; } }
 
 
-        public OptionSample(Kernel kernel, String path)
+        public OptionSample(Kernel kernel, string path)
             : base(kernel, path, "Sample")
         {
 
             var pageList = new List<OnePage>();
             var key = "Basic";
-            pageList.Add(Page1(key, Lang.Value(key)));
+            pageList.Add(Page1(kernel, key, Lang.Value(key)));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
 
         }
 
-        private OnePage Page1(String name, String title)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //onePage.Add(CreateServerOption(ProtocolKind.Tcp, 999, 30, 50)); //サーバ基本設定

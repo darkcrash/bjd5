@@ -9,6 +9,11 @@ namespace Bjd.Logs
 
         private readonly List<LogTemporary> _ar = new List<LogTemporary>();
 
+        public TmpLogger(Kernel kernel) : base(kernel)
+        {
+        }
+
+
         public new void Set(LogKind logKind, SockObj sockObj, int messageNo, String detailInfomation)
         {
             _ar.Add(new LogTemporary(logKind, sockObj, messageNo, detailInfomation));

@@ -14,7 +14,7 @@ namespace Bjd.Mails
     public class MailBox
     {
         private readonly List<OneMailBox> _ar = new List<OneMailBox>();
-        private Log _log;
+        private Logger _log;
 
         public string Dir { get; private set; } //メールボックスのフォルダ
         public bool Status { get; private set; } //初期化成否の確認
@@ -31,7 +31,7 @@ namespace Bjd.Mails
         {
             Status = true; //初期化状態 falseの場合は、初期化に失敗しているので使用できない
 
-            _log = new Log(logger);
+            _log = logger;
 
             //MailBoxを配置するフォルダ
             Dir = dir;

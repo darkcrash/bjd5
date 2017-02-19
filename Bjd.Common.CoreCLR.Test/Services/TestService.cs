@@ -10,6 +10,7 @@ using Bjd.Options;
 using System.Collections.Generic;
 using Xunit.Abstractions;
 using Bjd.Test.Logs;
+using Bjd.Logs;
 
 namespace Bjd.Services
 {
@@ -45,8 +46,8 @@ namespace Bjd.Services
                         tos = null;
                     }
                     this._kernel = null;
-                    try { Directory.Delete(this.env.ExecutableDirectory, true); } catch { };
-                    try { Directory.Delete(this.env.ConfigurationDirectory, true); } catch { };
+                    try { Directory.Delete(this._kernel.Enviroment.ExecutableDirectory, true); } catch { };
+                    try { Directory.Delete(this._kernel.Enviroment.ConfigurationDirectory, true); } catch { };
                 }
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
@@ -81,49 +82,53 @@ namespace Bjd.Services
                 l.Filter = f;
             }
 
-            // Define Initialize
-            Define.TestInitalize();
 
         }
 
-        private Enviroments env;
 
         private Kernel _kernel;
         public Kernel Kernel
         {
             get
             {
-                if (_kernel == null)
-                    _kernel = new Kernel(env);
                 return _kernel;
             }
         }
+
+        private Enviroments Env
+        {
+            get
+            {
+                return _kernel.Enviroment;
+            }
+        }
+
         public string MailboxPath { get; private set; }
         public string MailQueuePath { get; private set; }
 
         private static TestService CreateTestServiceInternal()
         {
             var instance = new TestService();
+            instance._kernel = new Kernel(true);
+
+            var env = instance._kernel.Enviroment;
 
             // set executable directory
             var rdval = rd.Next(0, int.MaxValue);
             var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}_{instance.GetHashCode()}";
 
-            instance.env = new Enviroments();
-            var dir = instance.env.ExecutableDirectory;
-            instance.env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
-            Directory.CreateDirectory(instance.env.ExecutableDirectory);
+            var dir = env.ExecutableDirectory;
+            env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
+            Directory.CreateDirectory(env.ExecutableDirectory);
 
             //BJD.Lang.txtを作業ディレクトリにコピーする
-            Copy(instance.env, "BJD.Lang.txt", "BJD.Lang.txt");
+            Copy(env, "BJD.Lang.txt", "BJD.Lang.txt");
 
             // メールボックスの生成
-            instance.MailboxPath = System.IO.Path.Combine(instance.env.ExecutableDirectory, "mailbox");
+            instance.MailboxPath = System.IO.Path.Combine(env.ExecutableDirectory, "mailbox");
 
             // メールキューの生成
-            instance.MailQueuePath = System.IO.Path.Combine(instance.env.ExecutableDirectory, "MailQueue");
-
-
+            instance.MailQueuePath = System.IO.Path.Combine(env.ExecutableDirectory, "MailQueue");
 
             return instance;
         }
@@ -140,28 +145,29 @@ namespace Bjd.Services
             return instance;
         }
 
-        List<TestOutputService> tos = new List<TestOutputService>();
+        List<LogTestService> tos = new List<LogTestService>();
         public void AddOutput(ITestOutputHelper output)
         {
-            tos.Add(new TestOutputService(output));
+            tos.Add(new LogTestService(output));
+            Kernel.LogServices.Add(new LogTestService(output));
         }
 
         public void ContentFile(params string[] paths)
         {
             var src = Path.Combine(paths);
             var filename = Path.GetFileName(src);
-            Copy(this.env, src, filename);
+            Copy(this.Kernel.Enviroment, src, filename);
         }
 
         public void ContentDirectory(params string[] paths)
         {
             var src = Path.Combine(paths);
-            CreateDirectory(this.env, src);
+            CreateDirectory(Env, src);
             var srcPath = System.IO.Path.Combine(ProjectDirectory, src);
             foreach (var f in Directory.GetFiles(srcPath))
             {
                 var fPath = f.Substring(ProjectDirectory.Length + 1);
-                Copy(this.env, fPath, fPath);
+                Copy(Env, fPath, fPath);
             }
             foreach (var d in Directory.GetDirectories(src))
             {
@@ -172,21 +178,21 @@ namespace Bjd.Services
         public void SetOption(params string[] paths)
         {
             var src = Path.Combine(paths);
-            Copy(this.env, src, "Option.ini");
+            Copy(Env, src, "Option.ini");
         }
 
         public void AddMail(string srcFile, string user)
         {
             var filename = Path.GetFileName(srcFile);
             var destFilepath = Path.Combine(this.MailboxPath, user, filename);
-            Copy(this.env, srcFile, destFilepath);
+            Copy(Env, srcFile, destFilepath);
         }
 
         public void AddMailQueue(string srcFile)
         {
             var filename = Path.GetFileName(srcFile);
             var destFilepath = Path.Combine(this.MailQueuePath, filename);
-            Copy(this.env, srcFile, destFilepath);
+            Copy(Env, srcFile, destFilepath);
         }
 
         public void CreateMailbox(string username)
@@ -242,7 +248,7 @@ namespace Bjd.Services
         //最初に呼ばれたとき、ディレクトリが存在しないので、新規に作成される
         public string GetTmpDir(string tmpDir)
         {
-            var dir = Path.Combine(env.ExecutableDirectory, tmpDir);
+            var dir = Path.Combine(Kernel.Enviroment.ExecutableDirectory, tmpDir);
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);

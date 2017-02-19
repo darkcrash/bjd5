@@ -18,7 +18,7 @@ namespace Bjd.WebServer
     //********************************************************
     class HttpResponse
     {
-        readonly Kernel kernel;
+        readonly Kernel _kernel;
         readonly Logger _logger;
         //readonly OneOption _oneOption;
         readonly Conf _conf;
@@ -35,13 +35,14 @@ namespace Bjd.WebServer
 
         public HttpResponse(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpContentType contentType)
         {
-            System.Diagnostics.Trace.TraceInformation($"HttpResponse..ctor");
-            this.kernel = kernel;
+            _kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;
             _conf = conf;
             _sockTcp = tcpObj;
             _contentType = contentType;
+
+            _kernel.Trace.TraceInformation($"HttpResponse..ctor");
 
             SetRangeTo = false;
 
@@ -51,7 +52,7 @@ namespace Bjd.WebServer
             _sendHeader.Replace("MIME-Version", "1.0");
             _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
 
-            _body = new HttpResponseBody();
+            _body = new HttpResponseBody(_kernel);
         }
         //Location:ヘッダを含むかどうか
         public bool SearchLocation()
@@ -72,7 +73,7 @@ namespace Bjd.WebServer
         //public void Send(bool keepAlive,ref bool life) {
         public void Send(bool keepAlive, ILife iLife)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.Send");
+            //_kernel.Trace.TraceInformation($"Document.Send");
             _sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
 
             //ヘッダ送信
@@ -111,7 +112,7 @@ namespace Bjd.WebServer
         //*********************************************************************
         public bool CreateFromFile(string fileName, long rangeFrom, long rangeTo)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromFile");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromFile");
             if (File.Exists(fileName))
             {
 
@@ -136,7 +137,7 @@ namespace Bjd.WebServer
 
         public void CreateFromXml(string str)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromXml");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromXml");
 
             _body.Set(Encoding.UTF8.GetBytes(str));
             _sendHeader.Replace("Content-Length", _body.Length.ToString());
@@ -146,7 +147,7 @@ namespace Bjd.WebServer
 
         public void CreateFromSsi(byte[] output, string fileName)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromSsi");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromSsi");
             _body.Set(output);
             _sendHeader.Replace("Content-Length", _body.Length.ToString());
             _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
@@ -155,7 +156,7 @@ namespace Bjd.WebServer
         // CGIで得られた出力から、SendHeader及びdocを生成する
         public bool CreateFromCgi(byte[] output)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromCgi");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromCgi");
             while (true)
             {
                 var tmp = new byte[output.Length];
@@ -206,7 +207,7 @@ namespace Bjd.WebServer
         //Ver5.0.0-a20 エンコードはオプション設定に従う
         bool GetEncodeOption(out Encoding encoding, out string charset)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.GetEncodeOption");
+            //_kernel.Trace.TraceInformation($"Document.GetEncodeOption");
             charset = "utf-8";
             encoding = Encoding.UTF8;
             var enc = _conf.Get("encode");
@@ -243,7 +244,7 @@ namespace Bjd.WebServer
 
         public bool CreateFromErrorCode(HttpRequest request, int responseCode)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromErrorCode");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromErrorCode");
 
             //Ver5.0.0-a20 エンコードはオプション設定に従う
             Encoding encoding;
@@ -273,7 +274,7 @@ namespace Bjd.WebServer
                 string str = line;
                 str = Util.SwapStr("$MSG", WebServerUtil.StatusMessage(responseCode), str);
                 str = Util.SwapStr("$CODE", responseCode.ToString(), str);
-                str = Util.SwapStr("$SERVER", kernel.Enviroment.ApplicationName, str);
+                str = Util.SwapStr("$SERVER", _kernel.Enviroment.ApplicationName, str);
                 str = Util.SwapStr("$VER", request.Ver, str);
                 str = Util.SwapStr("$URI", uri, str);
                 sb.Append(str + "\r\n");
@@ -286,7 +287,7 @@ namespace Bjd.WebServer
         }
         public bool CreateFromIndex(HttpRequest request, string path)
         {
-            //System.Diagnostics.Trace.TraceInformation($"Document.CreateFromIndex");
+            //_kernel.Trace.TraceInformation($"Document.CreateFromIndex");
 
             //Ver5.0.0-a20 エンコードはオプション設定に従う
             Encoding encoding;
@@ -355,7 +356,7 @@ namespace Bjd.WebServer
                 else
                 {//一覧行以外の処理
                     str = Util.SwapStr("$URI", uri, str);
-                    str = Util.SwapStr("$SERVER", kernel.Enviroment.ApplicationName, str);
+                    str = Util.SwapStr("$SERVER", _kernel.Enviroment.ApplicationName, str);
                     str = Util.SwapStr("$VER", request.Ver, str);
                     sb.Append(str + "\r\n");
                 }

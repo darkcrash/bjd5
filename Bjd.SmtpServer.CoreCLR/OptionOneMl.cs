@@ -31,23 +31,23 @@ namespace Bjd.SmtpServer
             //pageList.Add(Page9("Admin", "Admin", kernel));
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            pageList.Add(Page2("Member", Lang.Value("Member"), kernel));
-            pageList.Add(Page3("Guide", "Guide", kernel));
-            pageList.Add(Page4("Deny", "Deny", kernel));
-            pageList.Add(Page5("Confirm", "Confirm", kernel));
-            pageList.Add(Page6("Welcome", "Welcome", kernel));
-            pageList.Add(Page7("Append", "Append", kernel));
-            pageList.Add(Page8("Help", "Help", kernel));
-            pageList.Add(Page9("Admin", "Admin", kernel));
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            pageList.Add(Page2(kernel, "Member", Lang.Value("Member")));
+            pageList.Add(Page3(kernel, "Guide", "Guide"));
+            pageList.Add(Page4(kernel, "Deny", "Deny"));
+            pageList.Add(Page5(kernel, "Confirm", "Confirm"));
+            pageList.Add(Page6(kernel, "Welcome", "Welcome"));
+            pageList.Add(Page7(kernel, "Append", "Append"));
+            pageList.Add(Page8(kernel, "Help", "Help"));
+            pageList.Add(Page9(kernel, "Admin", "Admin"));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "manageDir";
@@ -63,16 +63,16 @@ namespace Bjd.SmtpServer
             //key = "autoRegistration";
             //onePage.Add(new OneVal(key, true, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
 
-            Add(new OneVal(CtrlType.Folder, "manageDir", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useDetailsLog", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.ComboBox, "title", 5, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "maxGet", 10, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "maxSummary", 100, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "autoRegistration", true, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Folder, "manageDir", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useDetailsLog", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.ComboBox, "title", 5, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "maxGet", 10, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "maxSummary", 100, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "autoRegistration", true, Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page2(string name, string title, Kernel kernel)
+        private OnePage Page2(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var l = new ListVal();
@@ -92,83 +92,83 @@ namespace Bjd.SmtpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlOrgMemberDat(Lang.Value(key), l, 390,Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Contonie));
-            l.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Nextline));
-            l.Add(new OneVal(CtrlType.CheckBox, "manager", false, Crlf.Contonie));
-            l.Add(new OneVal(CtrlType.CheckBox, "reacer", true, Crlf.Contonie));
-            l.Add(new OneVal(CtrlType.CheckBox, "contributor", true, Crlf.Nextline));
-            l.Add(new OneVal(CtrlType.Hidden, "pass", "", Crlf.Nextline, true));
-            Add(new OneVal(CtrlType.Dat, "memberList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "name", "", Crlf.Contonie));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "address", "", Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.CheckBox, "manager", false, Crlf.Contonie));
+            l.Add(new OneVal(kernel, CtrlType.CheckBox, "reacer", true, Crlf.Contonie));
+            l.Add(new OneVal(kernel, CtrlType.CheckBox, "contributor", true, Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.Hidden, "pass", "", Crlf.Nextline, true));
+            Add(new OneVal(kernel, CtrlType.Dat, "memberList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page3(string name, string title, Kernel kernel)
+        private OnePage Page3(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "guideDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "guideDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "guideDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page4(string name, string title, Kernel kernel)
+        private OnePage Page4(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "denyDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "denyDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "denyDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page5(string name, string title, Kernel kernel)
+        private OnePage Page5(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "confirmDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "confirmDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "confirmDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page6(string name, string title, Kernel kernel)
+        private OnePage Page6(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "welcomeDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "welcomeDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "welcomeDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page7(string name, string title, Kernel kernel)
+        private OnePage Page7(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "appendDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "appendDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "appendDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page8(string name, string title, Kernel kernel)
+        private OnePage Page8(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "helpDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "helpDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "helpDocument", "", Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page9(string name, string title, Kernel kernel)
+        private OnePage Page9(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "adminDocument";
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlMemo(Lang.Value(key), 600, 360)));
 
-            Add(new OneVal(CtrlType.Memo, "adminDocument", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Memo, "adminDocument", "", Crlf.Nextline));
 
             return onePage;
         }

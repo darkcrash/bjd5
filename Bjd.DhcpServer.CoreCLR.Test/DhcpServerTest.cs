@@ -28,6 +28,8 @@ namespace DhcpServerTest
 
             OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
             Kernel kernel = _service.Kernel;
+            kernel.ListInitialize();
+
             var option = kernel.ListOption.Get("Dhcp");
             Conf conf = new Conf(option);
 

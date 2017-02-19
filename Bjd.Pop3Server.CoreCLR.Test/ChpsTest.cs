@@ -7,6 +7,7 @@ using Bjd.Options;
 using Xunit;
 using Bjd.Pop3Server;
 using Bjd.Services;
+using Bjd;
 
 namespace Pop3ServerTest
 {
@@ -15,6 +16,7 @@ namespace Pop3ServerTest
         private Conf _conf;
         private MailBox _mailBox;
         private TestService _service;
+        private Kernel _kernel;
 
         public ChpsTest()
         {
@@ -28,8 +30,10 @@ namespace Pop3ServerTest
             _conf = new Conf();
             _conf.Add("user", datUser);
 
+            _kernel = _service.Kernel;
+
             //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\Pop3Server\\mailbox");
-            _mailBox = new MailBox(new Logger(), datUser, _service.MailboxPath);
+            _mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
         }
 
         public void Dispose()

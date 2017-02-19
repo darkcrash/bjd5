@@ -35,7 +35,7 @@ namespace Bjd.SmtpServer
         //RETRの後のメールの保存が完成したら、Job2をこちらに乗せ換えられる
         public bool Job(Logger logger, DateTime now, ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job now:{now} Start");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job now:{now} Start");
 
             var fetchDb = new FetchDb(_kernel.Enviroment.ExecutableDirectory, _oneFetch.Name);
             var remoteUidList = new List<String>();
@@ -57,7 +57,7 @@ namespace Bjd.SmtpServer
             var popClient = new PopClient(_kernel, _oneFetch.Ip, _oneFetch.Port, _timeout, iLife);
 
             //接続
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Connect");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job Connect");
             if (!popClient.Connect())
             {
                 logger.Set(LogKind.Error, null, 3, popClient.GetLastError());
@@ -65,7 +65,7 @@ namespace Bjd.SmtpServer
             }
 
             //ログイン
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Login");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job Login");
             if (!popClient.Login(_oneFetch.User, _oneFetch.Pass))
             {
                 logger.Set(LogKind.Error, null, 4, popClient.GetLastError());
@@ -73,7 +73,7 @@ namespace Bjd.SmtpServer
             }
 
             //UID
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Uidl");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job Uidl");
             var lines = new List<String>();
             if (!popClient.Uidl(lines))
             {
@@ -145,11 +145,11 @@ namespace Bjd.SmtpServer
             }
 
             //RETR
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job RETR");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job RETR");
             for (int i = 0; i < getList.Count; i++)
             {
-                System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job RETR {i}");
-                var mail = new Mail();
+                _kernel.Trace.TraceInformation($"OneFetchJob.Job RETR {i}");
+                var mail = new Mail(_kernel);
                 if (!popClient.Retr(getList[i], mail))
                 {
                     logger.Set(LogKind.Error, null, 6, popClient.GetLastError());
@@ -179,7 +179,7 @@ namespace Bjd.SmtpServer
                 fetchDb.Add(remoteUidList[i]);
             }
             //DELE
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job DELE");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job DELE");
             for (int i = 0; i < delList.Count; i++)
             {
                 if (!popClient.Dele(delList[i]))
@@ -190,7 +190,7 @@ namespace Bjd.SmtpServer
                 fetchDb.Del(remoteUidList[i]);
             }
             //QUIT
-            System.Diagnostics.Trace.TraceInformation($"OneFetchJob.Job Quit");
+            _kernel.Trace.TraceInformation($"OneFetchJob.Job Quit");
             if (!popClient.Quit())
             {
                 logger.Set(LogKind.Error, null, 5, popClient.GetLastError());

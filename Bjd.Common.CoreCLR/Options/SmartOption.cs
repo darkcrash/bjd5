@@ -12,12 +12,13 @@ namespace Bjd.Options
 
         private bool _isMemberLoaded = false;
         private readonly bool _isJp;
+        private Kernel _kernel;
 
 
         public SmartOption(Kernel kernel, string path, string nameTag) : base(kernel, path, nameTag)
         {
             _isJp = kernel.IsJp;
-
+            _kernel = kernel;
         }
 
         private void MemberLoad()
@@ -30,8 +31,8 @@ namespace Bjd.Options
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError(ex.Message);
-                System.Diagnostics.Trace.TraceError(ex.StackTrace);
+                _kernel.Trace.TraceError(ex.Message);
+                _kernel.Trace.TraceError(ex.StackTrace);
 
             }
             _isMemberLoaded = true;
@@ -97,13 +98,13 @@ namespace Bjd.Options
                     MemberLoad(fType, childList, fValue);
 
                     var dat = new Dat(childList);
-                    var one = f.Control.Create(f.Field.Name, dat);
+                    var one = f.Control.Create(_kernel, f.Field.Name, dat);
                     list.Add(one);
                 }
                 else
                 {
                     var value = f.Field.GetValue(instance);
-                    var one = f.Control.Create(f.Field.Name, value);
+                    var one = f.Control.Create(_kernel, f.Field.Name, value);
                     list.Add(one);
                 }
 

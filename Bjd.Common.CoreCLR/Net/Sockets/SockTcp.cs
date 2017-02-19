@@ -145,7 +145,7 @@ namespace Bjd.Net.Sockets
         //接続完了処理（受信待機開始）
         private void BeginReceive()
         {
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.BeginReceive");
+            Kernel.Trace.TraceInformation($"{hash} SockTcp.BeginReceive");
 
             // Using the LocalEndPoint property.
             //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -167,8 +167,8 @@ namespace Bjd.Net.Sockets
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
                 this.SetErrorReceive();
             }
         }
@@ -178,7 +178,7 @@ namespace Bjd.Net.Sockets
 
             if (result.IsCanceled)
             {
-                System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive IsCanceled=true");
+                Kernel.Trace.TraceInformation($"{hash} SockTcp.EndReceive IsCanceled=true");
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace Bjd.Net.Sockets
                 var ex = result.Exception.InnerException as SocketException;
                 if (ex != null)
                 {
-                    System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.SocketErrorCode:{ex.SocketErrorCode}");
+                    Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive Result.SocketErrorCode:{ex.SocketErrorCode}");
                 }
 
                 // 一部のエラーでは再試行する
@@ -198,10 +198,10 @@ namespace Bjd.Net.Sockets
                         return;
                 }
 
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionType:{result.Exception.InnerException.GetType().FullName}");
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.InnerException.Message}");
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.Message}");
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive Result.StackTrace:{result.Exception.StackTrace}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionType:{result.Exception.InnerException.GetType().FullName}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.InnerException.Message}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.Message}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive Result.StackTrace:{result.Exception.StackTrace}");
                 this.SetErrorReceive();
                 return;
             }
@@ -212,7 +212,7 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 int bytesRead = result.Result;
-                System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive Length={bytesRead}");
+                Kernel.Trace.TraceInformation($"{hash} SockTcp.EndReceive Length={bytesRead}");
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
@@ -225,7 +225,7 @@ namespace Bjd.Net.Sockets
             catch (Exception ex)
             {
                 //受信待機のままソケットがクローズされた場合は、ここにくる
-                System.Diagnostics.Trace.TraceError($"{hash} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
+                Kernel.Trace.TraceError($"{hash} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
                 this.SetErrorReceive();
                 return;
             }
@@ -239,7 +239,7 @@ namespace Bjd.Net.Sockets
                 if (CancelToken.IsCancellationRequested) return;
                 if (SockState != SockState.Connect)
                 {
-                    System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.EndReceive Not Connected");
+                    Kernel.Trace.TraceInformation($"{hash} SockTcp.EndReceive Not Connected");
                     this.SetErrorReceive();
                     return;
                 }
@@ -267,7 +267,7 @@ namespace Bjd.Net.Sockets
             var result = _sockQueue.DequeueWait(len, toutms, this.CancelToken);
             if (result.Length == 0 && SockState != SockState.Connect) return null;
             var length = (result != null ? result.Length.ToString() : "null");
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.Recv {length}");
+            Kernel.Trace.TraceInformation($"{hash} SockTcp.Recv {length}");
             return result;
         }
 
@@ -279,7 +279,7 @@ namespace Bjd.Net.Sockets
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
             var length = (result != null ? result.Length.ToString() : "null");
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.LineRecv {length}");
+            Kernel.Trace.TraceInformation($"{hash} SockTcp.LineRecv {length}");
             return result;
         }
 
@@ -329,7 +329,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(byte[] buf, int length)
         {
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.Send {length}");
+            Kernel.Trace.TraceInformation($"{hash} SockTcp.Send {length}");
             try
             {
                 if (buf.Length != length)
@@ -429,7 +429,7 @@ namespace Bjd.Net.Sockets
         //RemoteObj.Send()では、こちらを使用する
         public int SendNoTrace(byte[] buffer)
         {
-            System.Diagnostics.Trace.TraceInformation($"{hash} SockTcp.SendNoTrace {buffer.Length}");
+            Kernel.Trace.TraceInformation($"{hash} SockTcp.SendNoTrace {buffer.Length}");
             try
             {
                 if (isSsl)

@@ -19,13 +19,13 @@ namespace Bjd.DnsServer
             //pageList.Add(Page1(key,Lang.Value(key),kernel));
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             var list = new ListVal();
@@ -35,9 +35,9 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal(key, true, Crlf.Nextline, new CtrlCheckBox(Lang.Value(key))));
             //onePage.Add(new OneVal("domainList", null, Crlf.Nextline, new CtrlDat("", list, 400, Lang.LangKind)));
 
-            list.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Nextline));
-            list.Add(new OneVal(CtrlType.CheckBox, "authority", true, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "domainList", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.TextBox, "name", "", Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.CheckBox, "authority", true, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "domainList", new Dat(list), Crlf.Nextline));
 
             return onePage;
 

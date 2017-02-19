@@ -29,9 +29,9 @@ namespace Bjd.Options.Attributes
             
         }
 
-        public OneVal Create(string name, object value)
+        public OneVal Create(Kernel kernel, string name, object value)
         {
-            var val = new OneVal(ControlType, name, value, this.crlfType, this.IsSecret);
+            var val = new OneVal(kernel, ControlType, name, value, this.crlfType, this.IsSecret);
             return val;
         }
 

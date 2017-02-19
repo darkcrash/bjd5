@@ -33,6 +33,7 @@ namespace Bjd.SmtpServer.Test
         }
 
         private ServerFixture _testServer;
+        private Kernel _kernel;
 
 
         public SmtpClientTest(ServerFixture fixture)
@@ -45,6 +46,7 @@ namespace Bjd.SmtpServer.Test
             _testServer._service.CleanMailbox("user1");
             _testServer._service.CleanMailbox("user2");
 
+            _kernel = _testServer._service.Kernel;
 
         }
 
@@ -75,7 +77,7 @@ namespace Bjd.SmtpServer.Test
             Assert.Equal(sut.Helo(), true);
             Assert.Equal(sut.Mail("1@1"), true);
             Assert.Equal(sut.Rcpt("user1@example.com"), true);
-            Assert.Equal(sut.Data(new Mail()), true);
+            Assert.Equal(sut.Data(new Mail(_kernel)), true);
 
             Assert.Equal(sut.Quit(), true);
 
@@ -99,7 +101,7 @@ namespace Bjd.SmtpServer.Test
             sut.Mail("1@1");
             sut.Rcpt("user1@example.com");
             sut.Rcpt("user2@example.com");
-            sut.Data(new Mail());
+            sut.Data(new Mail(_kernel));
             sut.Quit();
 
             //verify
@@ -121,7 +123,7 @@ namespace Bjd.SmtpServer.Test
             //setUp
             var sut = CreateSmtpClient(inetKind);
 
-            var mail1 = new Mail();
+            var mail1 = new Mail(_kernel);
             mail1.Init2(Encoding.ASCII.GetBytes("1:1\r\n\r\nbody1\r\nbody2\r\n"));
 
             //exercise
@@ -148,7 +150,7 @@ namespace Bjd.SmtpServer.Test
             //setUp
             var sut = CreateSmtpClient(inetKind);
 
-            var mail1 = new Mail();
+            var mail1 = new Mail(_kernel);
             mail1.Init2(Encoding.ASCII.GetBytes("1:1\r\n\r\nbody1\r\nbody2\r\n.\r\n"));
 
             //exercise
@@ -175,7 +177,7 @@ namespace Bjd.SmtpServer.Test
             //setUp
             var sut = CreateSmtpClient(inetKind);
 
-            var mail1 = new Mail();
+            var mail1 = new Mail(_kernel);
             mail1.Init2(Encoding.ASCII.GetBytes("1:1\r\n\r\nbody1\r\nbody2\r\n123"));
 
             //exercise

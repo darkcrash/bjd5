@@ -30,16 +30,16 @@ namespace Bjd.TunnelServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -66,9 +66,9 @@ namespace Bjd.TunnelServer
             //onePage.Add(new OneVal(key, targetServer, Crlf.Nextline, new CtrlTextBox(Lang.Value(key), 50)));
             //key = "idleTime";
             //onePage.Add(new OneVal(key, 1, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));
-            Add(new OneVal(CtrlType.Int, "targetPort", targetPort, Crlf.Nextline));
-            Add(new OneVal(CtrlType.TextBox, "targetServer", targetServer, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "idleTime", 1, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "targetPort", targetPort, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TextBox, "targetServer", targetServer, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "idleTime", 1, Crlf.Nextline));
 
             return onePage;
         }

@@ -5,39 +5,44 @@ using Bjd.Controls;
 using Bjd.Options;
 using Bjd.Utils;
 using Xunit;
+using Bjd.Services;
 
 namespace Bjd.Test.Options
 {
     //テストでは、リソースの開放（dispose）を省略する
     public class ListValTest
     {
+        private TestService _service;
+        private Kernel _kernel;
 
         //テスト用のListVal作成(パターン１)
         private ListVal CreateListVal1()
         {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
 
             var listVal = new ListVal();
             //listVal.Add(new OneVal("n1", 1, Crlf.Nextline, new CtrlInt("help", 10)));
             //listVal.Add(new OneVal("n2", 1, Crlf.Nextline, new CtrlInt("help", 10)));
-            listVal.Add(new OneVal(CtrlType.Int, "n1", 1, Crlf.Nextline));
-            listVal.Add(new OneVal(CtrlType.Int, "n2", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Int, "n1", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Int, "n2", 1, Crlf.Nextline));
 
             var datList = new ListVal();
             //datList.Add(new OneVal("n3", 1, Crlf.Nextline, new CtrlInt("help", 10)));
             //datList.Add(new OneVal("n4", 1, Crlf.Nextline, new CtrlInt("help", 10)));
             //listVal.Add(new OneVal("n5", 1, Crlf.Nextline, new CtrlDat("help", datList, 10, LangKind.Jp)));
-            datList.Add(new OneVal(CtrlType.Int, "n3", 1, Crlf.Nextline));
-            datList.Add(new OneVal(CtrlType.Int, "n4", 1, Crlf.Nextline));
-            listVal.Add(new OneVal(CtrlType.Dat, "n5", new Dat(datList), Crlf.Nextline));
+            datList.Add(new OneVal(_kernel, CtrlType.Int, "n3", 1, Crlf.Nextline));
+            datList.Add(new OneVal(_kernel, CtrlType.Int, "n4", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Dat, "n5", new Dat(datList), Crlf.Nextline));
 
 
             datList = new ListVal();
             //datList.Add(new OneVal("n6", 1, Crlf.Nextline, new CtrlInt("help", 10)));
             //datList.Add(new OneVal("n7", 1, Crlf.Nextline, new CtrlInt("help", 10)));
             //listVal.Add(new OneVal("n8", 1, Crlf.Nextline, new CtrlDat("help", datList, 10, LangKind.Jp)));
-            datList.Add(new OneVal(CtrlType.Int, "n6", 1, Crlf.Nextline));
-            datList.Add(new OneVal(CtrlType.Int, "n7", 1, Crlf.Nextline));
-            listVal.Add(new OneVal(CtrlType.Dat, "n8", new Dat(datList), Crlf.Nextline));
+            datList.Add(new OneVal(_kernel, CtrlType.Int, "n6", 1, Crlf.Nextline));
+            datList.Add(new OneVal(_kernel, CtrlType.Int, "n7", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Dat, "n8", new Dat(datList), Crlf.Nextline));
 
 
             return listVal;
@@ -53,16 +58,16 @@ namespace Bjd.Test.Options
 
             var onePage = new OnePage("page1", "ページ１");
             //onePage.Add(new OneVal("n0", 1, Crlf.Nextline, new CtrlInt("help", 10)));
-            listVal.Add(new OneVal(CtrlType.Int, "n0", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Int, "n0", 1, Crlf.Nextline));
             pageList.Add(onePage);
 
             onePage = new OnePage("page2", "ページ２");
             //onePage.Add(new OneVal("n1", 1, Crlf.Nextline, new CtrlInt("help", 10)));
-            listVal.Add(new OneVal(CtrlType.Int, "n1", 1, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.Int, "n1", 1, Crlf.Nextline));
             pageList.Add(onePage);
 
             //listVal.Add(new OneVal("n2", null, Crlf.Nextline, new CtrlTabPage("help", pageList)));
-            listVal.Add(new OneVal(CtrlType.TabPage, "n2", null, Crlf.Nextline));
+            listVal.Add(new OneVal(_kernel, CtrlType.TabPage, "n2", null, Crlf.Nextline));
             return listVal;
         }
 

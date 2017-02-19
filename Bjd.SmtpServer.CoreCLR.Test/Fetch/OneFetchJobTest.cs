@@ -49,22 +49,24 @@ namespace Bjd.SmtpServer.Test
 
 
         private ServerFixture _testServer;
+        private Kernel _kernel;
         private int port;
         private bool isDisposed = false;
-        private TestOutputService _output;
+        private Bjd.Traces.TraceBroker _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public OneFetchJobTest(ITestOutputHelper helper)
         {
             _testServer = new ServerFixture();
-            _output = new TestOutputService(helper);
+            _testServer._service.AddOutput(helper);
+            _output = _testServer._service.Kernel.Trace;
             port = _testServer.port;
+            _kernel = _testServer._service.Kernel;
 
         }
 
         public void Dispose()
         {
-            _output.Dispose();
             _testServer.Dispose();
             _testServer = null;
             isDisposed = true;
@@ -135,7 +137,7 @@ namespace Bjd.SmtpServer.Test
                 var expected = false;
                 //exercise
                 //１回目の接続
-                sut.Job(new Logger(), DateTime.Now, this);
+                sut.Job(new Logger(_kernel), DateTime.Now, this);
                 //２回目（5分後）の接続
                 var actual = sut.Job(logger, DateTime.Now.AddMinutes(5), this);
                 //verify

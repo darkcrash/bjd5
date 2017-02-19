@@ -21,7 +21,7 @@ namespace Bjd
 {
     public sealed class Kernel : IDisposable
     {
-        public Enviroments Enviroment { get; private set; } = new Enviroments();
+        public Enviroments Enviroment { get; private set; }
 
 
         //プロセス起動時に初期化される変数 
@@ -32,11 +32,13 @@ namespace Bjd
         //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
         public ListServer ListServer { get; private set; }
-        public LogFile LogFile { get; private set; }
+        public List<ILogService> LogServices { get; private set; } = new List<ILogService>();
         public bool IsJp { get; private set; } = true;
         private Logger _logger;
 
         public KernelEvents Events { get; private set; } = new KernelEvents();
+
+        public TraceBroker Trace { get; private set; }
 
         //Ver5.9.6
         public WebApi WebApi { get; private set; }
@@ -46,7 +48,7 @@ namespace Bjd
 
         private CancellationTokenSource CancelTokenSource { get; set; }
 
-        private CancellationToken CancelToken { get;  set; }
+        private CancellationToken CancelToken { get; set; }
 
 
         public string ServerName
@@ -69,37 +71,43 @@ namespace Bjd
         }
 
         //* 通常使用されるコンストラクタ
-        internal Kernel(Enviroments env)
+        internal Kernel() : this(false)
         {
+        }
+
+        //* 通常使用されるコンストラクタ
+        internal Kernel(bool isTest)
+        {
+            Trace = new TraceBroker(this);
+            var logConsole = new LogConsoleService();
+            LogServices.Add(logConsole);
+
+
             Trace.TraceInformation("Kernel..ctor Start");
-            this.Enviroment = env;
-            DefaultInitialize();
+            DefaultInitialize(isTest);
             Trace.TraceInformation("Kernel..ctor End");
         }
 
         //起動時に、コンストラクタから呼び出される初期化
-        private void DefaultInitialize()
+        private void DefaultInitialize(bool isTest)
         {
             Trace.TraceInformation("Kernel.DefaultInitialize Start");
+
+            // Define Initialize
+            if (isTest)
+            {
+                Define.TestInitalize(this);
+            }
+            else
+            {
+                Define.Initialize(this);
+            }
+
+            this.Enviroment = new Enviroments();
 
             this.CancelTokenSource = new CancellationTokenSource();
             this.CancelToken = this.CancelTokenSource.Token;
             this.CancelToken.Register(this.OnCancel);
-
-            RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
-
-            //プロセス起動時に初期化される
-            DnsCache = new DnsCache();
-
-            Configuration = new IniDb(this.Enviroment.ExecutableDirectory, "Option");
-
-            MailBox = null;
-
-            ListInitialize(); //サーバ再起動で、再度実行される初期化 
-
-            //ウインドサイズの復元
-            //var path = string.Format("{0}\\BJD.ini", Define.ExecutableDirectory);
-            var path = $"{this.Enviroment.ExecutableDirectory}{Path.DirectorySeparatorChar}BJD.ini";
 
             Trace.TraceInformation("Kernel.DefaultInitialize End");
         }
@@ -109,7 +117,15 @@ namespace Bjd
         {
             Trace.TraceInformation("Kernel.ListInitialize Start");
             //Loggerが使用できない間のログは、こちらに保存して、後でLoggerに送る
-            var tmpLogger = new TmpLogger();
+            var tmpLogger = new TmpLogger(this);
+
+            RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
+
+            //プロセス起動時に初期化される
+            DnsCache = new DnsCache();
+
+            Configuration = new IniDb(this, this.Enviroment.ExecutableDirectory, "Option");
+            MailBox = null;
 
             //************************************************************
             // 破棄
@@ -128,14 +144,16 @@ namespace Bjd
             {
                 MailBox = null;
             }
-            if (LogFile != null)
+            foreach (var logsrv in LogServices.ToArray())
             {
-                LogFile.Dispose();
-                LogFile = null;
+                LogServices.Remove(logsrv);
+                logsrv.Dispose();
             }
+            var logConsole = new LogConsoleService();
+            LogServices.Add(logConsole);
 
             //var listPlugin = new ListPlugin(Define.ExecutableDirectory);
-            var listPlugin = new ListPlugin();
+            var listPlugin = new ListPlugin(this);
             foreach (var o in listPlugin)
             {
                 tmpLogger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
@@ -161,6 +179,7 @@ namespace Bjd
             //Ver6.0.7
             var useLogFile = (bool)confOption.Get("useLogFile");
             var useLogClear = (bool)confOption.Get("useLogClear");
+
             if (!useLogClear)
             {
                 saveDays = 0; //ログの自動削除が無効な場合、saveDaysに0をセットする
@@ -174,14 +193,16 @@ namespace Bjd
                 tmpLogger.Set(LogKind.Detail, null, 9000032, saveDirectory);
                 try
                 {
-                    LogFile = new LogFile(saveDirectory, normalLogKind, secureLogKind, saveDays, useLogFile);
+                    var logFile = new LogFileService(saveDirectory, normalLogKind, secureLogKind, saveDays, useLogFile);
+                    LogServices.Add(logFile);
                 }
                 catch (IOException e)
                 {
-                    LogFile = null;
                     tmpLogger.Set(LogKind.Error, null, 9000031, e.Message);
                 }
             }
+
+
 
             //Ver5.8.7 Java fix
             //mailBox初期化
@@ -239,7 +260,7 @@ namespace Bjd
 
         //Loggerの生成
         //事前にListOptionが初期化されている必要がある
-        public Logger CreateLogger(String nameTag, bool useDetailsLog, ILogger logger)
+        public Logger CreateLogger(String nameTag, bool useDetailsLog, ILoggerHelper helper)
         {
             Trace.TraceInformation($"Kernel.CreateLogger {nameTag} useDetailsLog={useDetailsLog.ToString()}");
             if (ListOption == null)
@@ -256,9 +277,11 @@ namespace Bjd
             var dat = (Dat)conf.Get("limitString");
             var isDisplay = ((int)conf.Get("isDisplay")) == 0;
             var logLimit = new LogLimit(dat, isDisplay);
-
             var useLimitString = (bool)conf.Get("useLimitString");
-            return new Logger(this, logLimit, LogFile, IsJp, nameTag, useDetailsLog, useLimitString, logger);
+
+            var logger = new Logger(this, logLimit, IsJp, nameTag, useDetailsLog, useLimitString, helper);
+
+            return logger;
         }
 
         //終了処理
@@ -273,13 +296,19 @@ namespace Bjd
                 //ListServer.Dispose(); //各サーバは停止される
                 this.Stop();
 
-                ListOption.Dispose();
+                if (ListOption != null) ListOption.Dispose();
                 MailBox = null;
 
             }
             finally
             {
                 Trace.TraceInformation("Kernel.Dispose End");
+                foreach (var ls in LogServices.ToArray())
+                {
+                    LogServices.Remove(ls);
+                    ls.Dispose();
+                }
+
             }
         }
 
@@ -298,18 +327,17 @@ namespace Bjd
             if (ListServer.Count == 0)
             {
                 _logger.Set(LogKind.Error, null, 9000030, "");
+                return;
             }
-            else
-            {
-                ListServer.Start();
-            }
+
+            ListServer.Start();
         }
 
         internal void Stop()
         {
             this.CancelTokenSource.Cancel();
             this.CancelToken.WaitHandle.WaitOne(5000);
-            ListServer.Stop();
+            if (ListServer != null) ListServer.Stop();
         }
 
         //リモート操作(データの取得)

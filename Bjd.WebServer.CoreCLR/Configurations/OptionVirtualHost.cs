@@ -23,15 +23,15 @@ namespace Bjd.WebServer.Configurations
             //Add(new OneVal("tab", null, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal(CtrlType.ComboBox, "protocol", ProtocolKind.Tcp, Crlf.Nextline));
-            list1.Add(new OneVal(CtrlType.TextBox, "host", "", Crlf.Contonie));
-            list1.Add(new OneVal(CtrlType.Int, "port", 80, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "hostList", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(kernel, CtrlType.ComboBox, "protocol", ProtocolKind.Tcp, Crlf.Nextline));
+            list1.Add(new OneVal(kernel, CtrlType.TextBox, "host", "", Crlf.Contonie));
+            list1.Add(new OneVal(kernel, CtrlType.Int, "port", 80, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "hostList", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            Add(new OneVal(CtrlType.File, "certificate", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Hidden, "privateKeyPassword", "", Crlf.Nextline, true));
-            Add(new OneVal(CtrlType.Group, "groupHttps", new Dat(list2), Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.File, "certificate", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Hidden, "privateKeyPassword", "", Crlf.Nextline, true));
+            Add(new OneVal(kernel, CtrlType.Group, "groupHttps", new Dat(list2), Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み

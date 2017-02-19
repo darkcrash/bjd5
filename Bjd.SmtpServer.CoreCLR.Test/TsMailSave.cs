@@ -10,8 +10,8 @@ namespace Bjd.SmtpServer.Test
     internal class TsMailSave : MailSave
     {
         readonly List<OneMail> _ar = new List<OneMail>();
-        public TsMailSave()
-            : base(null, null, null, null, null, null)
+        public TsMailSave(Kernel kernel)
+            : base(kernel, null, null, null, null, null, null)
         {
 
         }

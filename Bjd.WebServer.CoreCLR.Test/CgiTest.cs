@@ -27,11 +27,14 @@ namespace WebServerTest
         public CgiTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
-            _service.AddOutput(output);
             _service.SetOption("CgiTest.ini");
             _service.ContentDirectory("public_html");
+
             _kernel = _service.Kernel;
+            _kernel.ListInitialize();
+
             _option = _kernel.ListOption.Get("Web-localhost:7188");
+            _service.AddOutput(output);
 
         }
 

@@ -33,7 +33,7 @@ namespace Bjd.SmtpServer
             _mlName = mlName;
             //_mlOption = mlOption;
             
-            _mlMailDb = new MlMailDb(logger, mlOption.ManageDir, mlName);
+            _mlMailDb = new MlMailDb(kernel, logger, mlOption.ManageDir, mlName);
             if (!_mlMailDb.Status) {
                 return;//初期化中断
             }
@@ -43,7 +43,7 @@ namespace Bjd.SmtpServer
             _mlSender = new MlSender(mailSave, logger);
             var mlSubject = new MlSubject(mlOption.TitleKind, mlName);
             _mlDevivery = new MlDelivery(kernel, mailSave, logger,_mlUserList, _mlAddr, _mlMailDb, mlSubject, mlOption.Docs,mlOption.MaxGet);
-            _mlCreator2 = new MlCreator(_mlAddr,mlOption.Docs);
+            _mlCreator2 = new MlCreator(kernel, _mlAddr, mlOption.Docs);
             _autoRegistration = mlOption.AutoRegistration;
             const double effectiveMsec = 120 * 1000; //有効時間120秒
             _mlSubscribeDb = new MlSubscribeDb(mlOption.ManageDir, mlName, effectiveMsec);//confirm文字列データベース

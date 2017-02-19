@@ -5,6 +5,7 @@ using System.Text;
 using Bjd.Logs;
 using Bjd.Mails;
 using Xunit;
+using Bjd.Services;
 
 namespace Bjd.Test.Mails
 {
@@ -12,10 +13,16 @@ namespace Bjd.Test.Mails
     public class MailTest : IDisposable
     {
         private Mail sut = null;
+        private TestService _service;
+        private Kernel _kernel;
 
         public MailTest()
         {
-            sut = new Mail();
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+
+            sut = new Mail(_kernel);
+
         }
 
         public void Dispose()

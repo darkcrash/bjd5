@@ -15,7 +15,7 @@ namespace Bjd.Net.Sockets
         //public static SockTcp CreateConnection(Kernel kernel,Ip ip, int port,ILife iLife){
         public static SockTcp CreateConnection(Kernel kernel, Ip ip, int port, Ssl ssl, ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockUtil.CreateConnection");
+            kernel.Trace.TraceInformation($"SockUtil.CreateConnection");
             const int listenMax = 1;
             //Ver5.9.2 Java fix
             //var sockServer = new SockServer(kernel,ProtocolKind.Tcp);
@@ -45,7 +45,7 @@ namespace Bjd.Net.Sockets
         //bindが可能かどうかの確認
         public static bool IsAvailable(Kernel kernel, Ip ip, int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockUtil.IsAvailable");
+            kernel.Trace.TraceInformation($"SockUtil.IsAvailable");
             const int listenMax = 1;
             var sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, null);
             try
@@ -64,7 +64,7 @@ namespace Bjd.Net.Sockets
         }
         public static bool IsAvailableUdp(Kernel kernel, Ip ip, int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockUtil.IsAvailable");
+            kernel.Trace.TraceInformation($"SockUtil.IsAvailable");
             var sockServer = new SockServerUdp(kernel, ProtocolKind.Udp, null);
             try
             {

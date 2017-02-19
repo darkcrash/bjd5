@@ -30,6 +30,8 @@ namespace WebServerTest
             _service.ContentDirectory("public_html");
 
             _kernel = _service.Kernel;
+            _kernel.ListInitialize();
+
             option = _kernel.ListOption.Get("Web-localhost:90");
             conf = new Conf(option);
 
@@ -49,7 +51,7 @@ namespace WebServerTest
             var key = "PATHEXT";
             var val = ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC";
 
-            var request = new HttpRequest(null, null);
+            var request = new HttpRequest(_kernel, null, null);
             var header = new HttpHeader();
             var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";
@@ -76,7 +78,7 @@ namespace WebServerTest
         {
             var ip = new Ip(IpKind.V4_0);
             port = _service.GetAvailablePort(ip, conf);
-            var request = new HttpRequest(null, null);
+            var request = new HttpRequest(_service.Kernel, null, null);
             var header = new HttpHeader();
             var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";
@@ -106,7 +108,7 @@ namespace WebServerTest
         {
             var ip = new Ip("0.0.0.0");
             port = _service.GetAvailablePort(ip, conf);
-            var request = new HttpRequest(null, null);
+            var request = new HttpRequest(_service.Kernel, null, null);
 
             conf.Set("documentRoot", val);
 
@@ -135,7 +137,7 @@ namespace WebServerTest
         {
             var ip = new Ip("0.0.0.0");
             port = _service.GetAvailablePort(ip, conf);
-            var request = new HttpRequest(null, null);
+            var request = new HttpRequest(_service.Kernel, null, null);
             var header = new HttpHeader();
             var tcpObj = new SockTcp(_kernel, ip, port, 1, null);
             tcpObj.LocalAddress = new IPEndPoint((new Ip("127.0.0.1")).IPAddress, 80);
@@ -166,7 +168,7 @@ namespace WebServerTest
             port = _service.GetAvailablePort(ip, conf);
 
 
-            var request = new HttpRequest(null, null);
+            var request = new HttpRequest(_service.Kernel, null, null);
             var header = new HttpHeader();
             header.Append("Connection", Encoding.ASCII.GetBytes("keep-alive"));
             header.Append("User-Agent", Encoding.ASCII.GetBytes("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"));

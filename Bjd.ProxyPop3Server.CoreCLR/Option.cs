@@ -28,19 +28,19 @@ namespace Bjd.ProxyPop3Server
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            pageList.Add(Page2("Expansion", Lang.Value("Expansion"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            pageList.Add(Page2(kernel, "Expansion", Lang.Value("Expansion")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -53,14 +53,14 @@ namespace Bjd.ProxyPop3Server
             //onePage.Add(new OneVal(key, 1, Crlf.Nextline, new CtrlInt(Lang.Value(key), 5)));
 
             CreateServerOption(ProtocolKind.Tcp, 8110, 60, 10); //サーバ基本設定
-            Add(new OneVal(CtrlType.Int, "targetPort", 110, Crlf.Nextline));
-            Add(new OneVal(CtrlType.TextBox, "targetServer", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "idleTime", 1, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "targetPort", 110, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TextBox, "targetServer", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "idleTime", 1, Crlf.Nextline));
 
             return onePage;
         }
 
-        private OnePage Page2(string name, string title, Kernel kernel)
+        private OnePage Page2(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -77,11 +77,11 @@ namespace Bjd.ProxyPop3Server
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 360, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal(CtrlType.TextBox, "specialUser", "", Crlf.Nextline));
-            l.Add(new OneVal(CtrlType.TextBox, "specialServer", "", Crlf.Contonie));
-            l.Add(new OneVal(CtrlType.Int, "specialPort", 110, Crlf.Nextline));
-            l.Add(new OneVal(CtrlType.TextBox, "specialName", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "specialUserList", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "specialUser", "", Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "specialServer", "", Crlf.Contonie));
+            l.Add(new OneVal(kernel, CtrlType.Int, "specialPort", 110, Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "specialName", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "specialUserList", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

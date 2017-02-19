@@ -179,7 +179,7 @@ namespace Bjd.ProxyTelnetServer
 
         }
         //RemoteServer�ł̂ݎg�p�����
-        public override void Append(OneLog oneLog) {
+        public override void Append(LogMessage oneLog) {
 
         }
 

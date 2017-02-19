@@ -23,17 +23,17 @@ namespace Bjd.ProxyTelnetServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -43,7 +43,7 @@ namespace Bjd.ProxyTelnetServer
             //var key = "idleTime";
             //onePage.Add(new OneVal(key, 1, Crlf.Contonie, new CtrlInt(Lang.Value(key), 5)));
 
-            onePage.Add(new OneVal(CtrlType.Int, "idleTime", 1, Crlf.Contonie));
+            onePage.Add(new OneVal(kernel, CtrlType.Int, "idleTime", 1, Crlf.Contonie));
 
             return onePage;
         }

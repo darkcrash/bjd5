@@ -14,10 +14,11 @@ namespace Bjd.WebServer
     internal class HttpRequest
     {
 
-        public HttpRequest(Logger logger, SockTcp sockTcp)
+        public HttpRequest(Kernel kernel, Logger logger, SockTcp sockTcp)
         {
 
             //Logger出力用(void Log()の中でのみ使用される)
+            _kernel = kernel;
             _logger = logger;
             _sockObj = sockTcp;
 
@@ -29,6 +30,7 @@ namespace Bjd.WebServer
 
         }
 
+        readonly Kernel _kernel;
         readonly Logger _logger;
         readonly SockTcp _sockObj;//Logger出力用
 
@@ -50,7 +52,7 @@ namespace Bjd.WebServer
         //public bool Recv(int timeout,sockTcp sockTcp,ref bool life) {
         public bool Init(string requestStr)
         {
-            System.Diagnostics.Trace.TraceInformation($"Request.Init");
+            _kernel.Trace.TraceInformation($"Request.Init");
 
             //既存のデータが残っている場合は削除してから受信にはいる
             Uri = "";

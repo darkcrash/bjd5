@@ -18,12 +18,12 @@ namespace Bjd.Logs
         private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
-        private readonly LogFile _logFile;
+        private readonly List<ILogService> _logServices;
         private readonly bool _isJp;
         private readonly String _nameTag;
         private readonly bool _useDetailsLog;
         private readonly bool _useLimitString;
-        private readonly ILogger _logger;
+        private readonly ILoggerHelper _helper;
 
         static int GetCurrentThreadId()
         {
@@ -32,35 +32,36 @@ namespace Bjd.Logs
 
         //コンストラクタ
         //kernelの中でCreateLogger()を定義して使用する
-        public Logger(Kernel kernel, LogLimit logLimit, LogFile logFile, bool isJp, String nameTag,
-                      bool useDetailsLog, bool useLimitString, ILogger logger)
+        public Logger(Kernel kernel, LogLimit logLimit, bool isJp, String nameTag,
+                      bool useDetailsLog, bool useLimitString, ILoggerHelper helper)
         {
             _kernel = kernel;
+            _logServices = _kernel.LogServices;
             _logLimit = logLimit;
-            _logFile = logFile;
             _isJp = isJp;
             _nameTag = nameTag;
             _useDetailsLog = useDetailsLog;
             _useLimitString = useLimitString;
-            _logger = logger;
+            _helper = helper;
         }
 
         //テスト用
-        public Logger()
+        public Logger(Kernel kernel)
         {
+            _kernel = kernel;
             _logLimit = null;
-            _logFile = null;
+            _logServices = _kernel.LogServices;
             _isJp = true;
             _nameTag = "";
             _useDetailsLog = false;
             _useLimitString = false;
-            _logger = null;
+            _helper = null;
         }
 
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, String detailInfomation)
         {
             //デバッグ等でkernelが初期化されていない場合、処理なし
-            if (_logFile == null) return;
+            if (_logServices.Count == 0) return;
 
             //詳細ログが対象外の場合、処理なし
             if (logKind == LogKind.Detail && !_useDetailsLog) return;
@@ -83,9 +84,9 @@ namespace Bjd.Logs
             var message = _isJp ? "定義されていません" : "Message is not defined";
             if (messageNo < 9000000)
             {
-                if (_logger != null)
+                if (_helper != null)
                 {
-                    message = _logger.GetMsg(messageNo); //デリゲートを使用した継承によるメッセージ取得
+                    message = _helper.GetMsg(messageNo); //デリゲートを使用した継承によるメッセージ取得
                 }
             }
             else
@@ -301,20 +302,20 @@ namespace Bjd.Logs
                 }
             }
             var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
-            var oneLog = new OneLog(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
+            var oneLog = new LogMessage(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
                                        detailInfomation);
-            switch (logKind)
-            {
-                case LogKind.Error:
-                    System.Diagnostics.Trace.TraceError($"{oneLog.ToTraceString()}");
-                    break;
-                case LogKind.Secure:
-                    System.Diagnostics.Trace.TraceWarning($"{oneLog.ToTraceString()}");
-                    break;
-                default:
-                    System.Diagnostics.Trace.TraceInformation($"{oneLog.ToTraceString()}");
-                    break;
-            }
+            //switch (logKind)
+            //{
+            //    case LogKind.Error:
+            //        Kernel.Trace.TraceError($"{oneLog.ToTraceString()}");
+            //        break;
+            //    case LogKind.Secure:
+            //        Kernel.Trace.TraceWarning($"{oneLog.ToTraceString()}");
+            //        break;
+            //    default:
+            //        Kernel.Trace.TraceInformation($"{oneLog.ToTraceString()}");
+            //        break;
+            //}
 
 
             // 表示制限にヒットするかどうかの確認
@@ -341,25 +342,31 @@ namespace Bjd.Logs
             }
 
 
-            if (_logFile != null)
+
+            if (_useLimitString)
             {
-                if (_useLimitString)
+                //表示制限が有効な場合
+                if (isDisplay)
                 {
-                    //表示制限が有効な場合
-                    if (isDisplay)
-                    {
-                        //isDisplayの結果に従う
-                        _logFile.AppendAsync(oneLog);
-                    }
-                }
-                else
-                {
-                    //表示制限が無効な場合は、すべて保存される
-                    _logFile.AppendAsync(oneLog);
+                    //isDisplayの結果に従う
+                    AppendAsync(oneLog);
                 }
             }
+            else
+            {
+                //表示制限が無効な場合は、すべて保存される
+                AppendAsync(oneLog);
+            }
+
         }
 
+        private void AppendAsync(LogMessage msg)
+        {
+            foreach (var sv in _logServices)
+            {
+                sv.AppendAsync(msg);
+            }
+        }
 
         //Ver5.3.2
         public void Exception(Exception ex, SockObj sockObj, int messageNo)

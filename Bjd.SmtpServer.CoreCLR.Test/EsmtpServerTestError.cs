@@ -35,6 +35,8 @@ namespace Bjd.SmtpServer.Test
                 _service.SetOption("EsmtpServerTest.ini");
 
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("Smtp");
                 var conf = new Conf(option);
                 port = _service.GetAvailablePort(IpKind.V4Localhost, conf);

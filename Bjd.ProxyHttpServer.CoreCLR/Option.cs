@@ -35,23 +35,23 @@ namespace Bjd.ProxyHttpServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            pageList.Add(Page2("HigherProxy", Lang.Value("HigherProxy"), kernel));
-            pageList.Add(Page3("Cache1", Lang.Value("Cache1"), kernel));
-            pageList.Add(Page4("Cache2", Lang.Value("Cache2"), kernel));
-            pageList.Add(Page5("LimitUrl", Lang.Value("LimitUrl"), kernel));
-            pageList.Add(Page6("LimitContents", Lang.Value("LimitContents"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            pageList.Add(Page2(kernel, "HigherProxy", Lang.Value("HigherProxy")));
+            pageList.Add(Page3(kernel, "Cache1", Lang.Value("Cache1")));
+            pageList.Add(Page4(kernel, "Cache2", Lang.Value("Cache2")));
+            pageList.Add(Page5(kernel, "LimitUrl", Lang.Value("LimitUrl")));
+            pageList.Add(Page6(kernel, "LimitContents", Lang.Value("LimitContents")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -81,26 +81,26 @@ namespace Bjd.ProxyHttpServer
 
             CreateServerOption(ProtocolKind.Tcp, 8080, 60, 300); //サーバ基本設定
 
-            Add(new OneVal(CtrlType.CheckBox, "useRequestLog", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useRequestLog", false, Crlf.Nextline));
 
             var list1 = new ListVal();
-            Add(new OneVal(CtrlType.TextBox, "anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
-            Add(new OneVal(CtrlType.TextBox, "serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Group, "anonymousFtp", new Dat(list1), Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TextBox, "anonymousAddress", "BlackJumboDog@", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TextBox, "serverHeader", "BlackJumboDog .NET Core Version $v", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Group, "anonymousFtp", new Dat(list1), Crlf.Nextline));
 
-            Add(new OneVal(CtrlType.CheckBox, "useBrowserHedaer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useBrowserHedaer", false, Crlf.Nextline));
 
             var list2 = new ListVal();
-            Add(new OneVal(CtrlType.CheckBox, "addHeaderRemoteHost", false, Crlf.Contonie));
-            Add(new OneVal(CtrlType.CheckBox, "addHeaderXForwardedFor", false, Crlf.Contonie));
-            Add(new OneVal(CtrlType.CheckBox, "addHeaderForwarded", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Group, "groupAddHeader", new Dat(list2), Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "addHeaderRemoteHost", false, Crlf.Contonie));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "addHeaderXForwardedFor", false, Crlf.Contonie));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "addHeaderForwarded", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Group, "groupAddHeader", new Dat(list2), Crlf.Nextline));
 
 
             return onePage;
         }
 
-        private OnePage Page2(string name, string title, Kernel kernel)
+        private OnePage Page2(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "useUpperProxy";
@@ -126,21 +126,21 @@ namespace Bjd.ProxyHttpServer
             //key = "disableAddress";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 200, Lang.LangKind)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useUpperProxy", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.TextBox, "upperProxyServer", "", Crlf.Contonie));
-            Add(new OneVal(CtrlType.Int, "upperProxyPort", 8080, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "upperProxyUseAuth", false, Crlf.Contonie));
-            Add(new OneVal(CtrlType.TextBox, "upperProxyAuthName", "", Crlf.Contonie));
-            Add(new OneVal(CtrlType.Hidden, "upperProxyAuthPass", "", Crlf.Nextline, true));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useUpperProxy", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TextBox, "upperProxyServer", "", Crlf.Contonie));
+            Add(new OneVal(kernel, CtrlType.Int, "upperProxyPort", 8080, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "upperProxyUseAuth", false, Crlf.Contonie));
+            Add(new OneVal(kernel, CtrlType.TextBox, "upperProxyAuthName", "", Crlf.Contonie));
+            Add(new OneVal(kernel, CtrlType.Hidden, "upperProxyAuthPass", "", Crlf.Nextline, true));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "disableAddress", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(kernel, CtrlType.TextBox, "address", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "disableAddress", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
 
-        private OnePage Page3(string name, string title, Kernel kernel)
+        private OnePage Page3(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "useCache";
@@ -158,17 +158,17 @@ namespace Bjd.ProxyHttpServer
             //key = "maxSize";
             //onePage.Add(new OneVal(key, 1200, Crlf.Nextline, new CtrlInt(Lang.Value(key), 10)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useCache", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Folder, "cacheDir", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "testTime", 3, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "memorySize", 1000, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "diskSize", 5000, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "expires", 24, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Int, "maxSize", 1200, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useCache", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Folder, "cacheDir", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "testTime", 3, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "memorySize", 1000, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "diskSize", 5000, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "expires", 24, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Int, "maxSize", 1200, Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page4(string name, string title, Kernel kernel)
+        private OnePage Page4(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "enableHost";
@@ -186,22 +186,22 @@ namespace Bjd.ProxyHttpServer
             //key = "cacheExt";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 135, Lang.LangKind)));
 
-            Add(new OneVal(CtrlType.Radio, "enableHost", 1, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Radio, "enableHost", 1, Crlf.Nextline));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal(CtrlType.TextBox, "host", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "cacheHost", new Dat(list1), Crlf.Nextline));
-            Add(new OneVal(CtrlType.Radio, "enableExt", 1, Crlf.Nextline));
+            list1.Add(new OneVal(kernel, CtrlType.TextBox, "host", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "cacheHost", new Dat(list1), Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Radio, "enableExt", 1, Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal(CtrlType.TextBox, "ext", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "cacheExt", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(kernel, CtrlType.TextBox, "ext", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "cacheExt", new Dat(list2), Crlf.Nextline));
 
 
             return onePage;
         }
 
-        private OnePage Page5(string name, string title, Kernel kernel)
+        private OnePage Page5(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var list1 = new ListVal();
@@ -218,18 +218,18 @@ namespace Bjd.ProxyHttpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list2, 185, Lang.LangKind)));
 
             var list1 = new ListVal();
-            list1.Add(new OneVal(CtrlType.TextBox, "allowUrl", "", Crlf.Contonie));
-            list1.Add(new OneVal(CtrlType.ComboBox, "allowMatching", Matching.beginsWithMatch, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "limitUrlAllow", new Dat(list1), Crlf.Nextline));
+            list1.Add(new OneVal(kernel, CtrlType.TextBox, "allowUrl", "", Crlf.Contonie));
+            list1.Add(new OneVal(kernel, CtrlType.ComboBox, "allowMatching", Matching.beginsWithMatch, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "limitUrlAllow", new Dat(list1), Crlf.Nextline));
 
             var list2 = new ListVal();
-            list2.Add(new OneVal(CtrlType.TextBox, "denyUrl", "", Crlf.Contonie));
-            list2.Add(new OneVal(CtrlType.ComboBox, "denyMatching", Matching.beginsWithMatch, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "limitUrlDeny", new Dat(list2), Crlf.Nextline));
+            list2.Add(new OneVal(kernel, CtrlType.TextBox, "denyUrl", "", Crlf.Contonie));
+            list2.Add(new OneVal(kernel, CtrlType.ComboBox, "denyMatching", Matching.beginsWithMatch, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "limitUrlDeny", new Dat(list2), Crlf.Nextline));
 
             return onePage;
         }
-        private OnePage Page6(string name, string title, Kernel kernel)
+        private OnePage Page6(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var l = new ListVal();
@@ -239,8 +239,8 @@ namespace Bjd.ProxyHttpServer
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), l, 300, Lang.LangKind)));
 
             var l = new ListVal();
-            l.Add(new OneVal(CtrlType.TextBox, "string", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "limitString", new Dat(l), Crlf.Nextline));
+            l.Add(new OneVal(kernel, CtrlType.TextBox, "string", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "limitString", new Dat(l), Crlf.Nextline));
 
             return onePage;
         }

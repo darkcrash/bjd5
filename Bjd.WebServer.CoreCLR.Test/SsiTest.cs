@@ -37,6 +37,8 @@ namespace WebServerTest
                 _service.ContentDirectory("public_html");
 
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("Web-localhost:7089");
                 Conf conf = new Conf(option);
                 var ipv4 = new Ip(IpKind.V4Localhost);
@@ -71,18 +73,18 @@ namespace WebServerTest
         }
 
         private ServerFixture _fixture;
-        private TestOutputService _output;
+        private Bjd.Traces.TraceBroker _output;
 
         public SsiTest(ServerFixture fixture, ITestOutputHelper helper)
         {
             _fixture = fixture;
-            _output = new TestOutputService(helper);
+            _fixture._service.AddOutput(helper);
+            _output = _fixture._service.Kernel.Trace;
         }
 
         public void Dispose()
         {
             isLife = false;
-            _output.Dispose();
         }
 
 

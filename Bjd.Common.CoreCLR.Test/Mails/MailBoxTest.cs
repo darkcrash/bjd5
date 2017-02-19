@@ -11,6 +11,8 @@ using Xunit;
 using Bjd;
 using System.Security.Cryptography;
 using System.Threading;
+using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails
 {
@@ -20,18 +22,26 @@ namespace Bjd.Test.Mails
 
         private MailBox sut;
         private Dat _datUser = null;
+        private TestService _service;
+        private Kernel _kernel;
 
 
-        public MailBoxTest()
+        public MailBoxTest(ITestOutputHelper helper)
         {
             const string dir = "mailbox";
+
+            _service = TestService.CreateTestService();
+            _service.CreateMailbox("user1");
+            _service.CreateMailbox("user2");
+            _service.CreateMailbox("user3");
+            _kernel = _service.Kernel;
 
             _datUser = new Dat(new CtrlType[2] { CtrlType.TextBox, CtrlType.TextBox });
             _datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             _datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             _datUser.Add(true, "user3\tXXX");
 
-            sut = new MailBox(new Logger(), _datUser, dir);
+            sut = new MailBox(new Logger(_kernel), _datUser, _service.MailboxPath);
         }
 
         public void Dispose()
@@ -255,7 +265,7 @@ namespace Bjd.Test.Mails
         [InlineData(3)]
         public void SaveCountTest(int n)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             const string uid = "XXX123";
             const int size = 100;
             const string host = "hostname";
@@ -290,7 +300,7 @@ namespace Bjd.Test.Mails
         [InlineData("zzzz", false, "", 0, "", "", "")]//無効ユーザで保存失敗
         public void SaveDfTest(string user, bool status, string uid, int size, string hostname, string from, string to)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             var ip = new Ip("10.0.0.1");
             var mailInfo = new MailInfo(uid, size, hostname, ip, new MailAddress(from), new MailAddress(to));
 

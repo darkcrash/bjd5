@@ -20,16 +20,20 @@ namespace Bjd.Test.Servers
     {
 
         TestService _service;
+        Kernel _kernel;
 
         public OneServerTest()
         {
-            this._service = TestService.CreateTestService();
-            this._service.SetOption("Option.ini");
+            _service = TestService.CreateTestService();
+            _service.SetOption("Option.ini");
+
+            _kernel = _service.Kernel;
+            _kernel.ListInitialize();
         }
 
         public void Dispose()
         {
-            this._service.Dispose();
+            _service.Dispose();
         }
 
         private class MyServer : OneServer
@@ -66,7 +70,7 @@ namespace Bjd.Test.Servers
                 }
             }
             //RemoteServerでのみ使用される
-            public override void Append(OneLog oneLog)
+            public override void Append(LogMessage oneLog)
             {
 
             }
@@ -135,12 +139,12 @@ namespace Bjd.Test.Servers
         [Fact]
         public void RepeatStartStop_TCP()
         {
-            var kernel = _service.Kernel;
+            var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailablePort(ip, 9997);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            Conf conf = TestUtil.CreateConf("OptionSample");
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
@@ -170,12 +174,12 @@ namespace Bjd.Test.Servers
         [Fact]
         public void RepeatStartStop_UDP()
         {
-            var kernel = _service.Kernel;
+            var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailableUdpPort(ip, 9991);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
-            Conf conf = TestUtil.CreateConf("OptionSample");
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
@@ -205,12 +209,12 @@ namespace Bjd.Test.Servers
         [Fact]
         public void RepeatNewStartStopDispose_TCP()
         {
-            var kernel = _service.Kernel;
+            var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailablePort(ip, 88);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            Conf conf = TestUtil.CreateConf("OptionSample");
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
@@ -237,12 +241,12 @@ namespace Bjd.Test.Servers
         [Fact]
         public void RepeatNewStartStopDispose_UDP()
         {
-            var kernel = _service.Kernel;
+            var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailableUdpPort(ip, 88);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
-            Conf conf = TestUtil.CreateConf("OptionSample");
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", new Dat(new CtrlType[0]));
@@ -273,14 +277,14 @@ namespace Bjd.Test.Servers
         [InlineData(20)]
         public void multipleを超えたリクエストは破棄される事をcountで確認する(int multiple)
         {
-            var kernel = _service.Kernel;
+            var kernel = _kernel;
 
             //const int port = 8889;
             const string address = "127.0.0.1";
             var ip = new Ip(address);
             var port = _service.GetAvailablePort(ip, 8889);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            Conf conf = TestUtil.CreateConf("OptionSample");
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", multiple);
             conf.Set("acl", new Dat(new CtrlType[0]));

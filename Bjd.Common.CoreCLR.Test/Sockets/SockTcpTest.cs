@@ -17,16 +17,16 @@ namespace Bjd.Test.Sockets
     {
         const int timeout = 20;
         TestService _service;
-        TestOutputService _output;
+        Traces.TraceBroker _output;
         public SockTcpTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
-            _output = new  TestOutputService(output);
+            _service.AddOutput(output);
+            _output = _service.Kernel.Trace;
         }
 
         public void Dispose()
         {
-            _output.Dispose();
             _service.Dispose();
         }
 

@@ -22,18 +22,18 @@ namespace Bjd.RemoteServer
             //pageList.Add(PageAcl());
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            Add(new OneVal(CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useServer", false, Crlf.Nextline));
 
             var pageList = new List<OnePage>();
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
             pageList.Add(PageAcl());
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -42,7 +42,7 @@ namespace Bjd.RemoteServer
             //onePage.Add(new OneVal(key, "", Crlf.Nextline, new CtrlHidden(Lang.Value(key), 20)));
 
             CreateServerOption(ProtocolKind.Tcp, 10001, 60, 1);
-            Add(new OneVal(CtrlType.Hidden, "password", "", Crlf.Nextline, true));
+            Add(new OneVal(kernel, CtrlType.Hidden, "password", "", Crlf.Nextline, true));
 
             return onePage;
         }

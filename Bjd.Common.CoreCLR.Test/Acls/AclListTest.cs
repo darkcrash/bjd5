@@ -5,13 +5,21 @@ using Bjd.Net;
 using Bjd.Options;
 using Xunit;
 using Bjd;
-
+using Bjd.Services;
 
 namespace Bjd.Test.Acls
 {
 
     public class AclListTest
     {
+        TestService _service;
+        Kernel _kernel;
+
+        public AclListTest()
+        {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+        }
 
         [Theory]
         [InlineData("192.168.0.1", "192.168.0.1", AclKind.Allow)]
@@ -42,7 +50,7 @@ namespace Bjd.Test.Acls
                 Assert.False(true, "このエラーが発生したら、テストの実装に問題がある");
             }
             var ip = TestUtil.CreateIp(ipStr);
-            AclList sut = new AclList(dat, enableNum, new Logger());
+            AclList sut = new AclList(dat, enableNum, new Logger(_kernel));
 
             //exercise
             AclKind actual = sut.Check(ip);
@@ -81,7 +89,7 @@ namespace Bjd.Test.Acls
                 Assert.False(true,"このエラーが発生したら、テストの実装に問題がある");
             }
             var ip = TestUtil.CreateIp(ipStr);
-            AclList sut = new AclList(dat, enableNum, new Logger());
+            AclList sut = new AclList(dat, enableNum, new Logger(_kernel));
 
             //exercise
             AclKind actual = sut.Check(ip);

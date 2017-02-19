@@ -40,7 +40,7 @@ namespace Bjd.Test.Utils
                 string progDir = _service.Kernel.Enviroment.ExecutableDirectory;
                 //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
                 string path = Path.Combine(progDir, fileName + ".ini");
-                IniDb sut = new IniDb(progDir, fileName);
+                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
 
                 ListVal listVal = new ListVal();
                 listVal.Add(Assistance.createOneVal(_service.Kernel, ctrlType, value));
@@ -84,7 +84,7 @@ namespace Bjd.Test.Utils
                 string path = Path.Combine(progDir, fileName + ".ini");
 
 
-                IniDb sut = new IniDb(progDir, fileName);
+                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
                 sut.Delete();
 
                 String expected = value;
@@ -115,21 +115,22 @@ namespace Bjd.Test.Utils
             using (TestService _service = TestService.CreateTestService())
             {
                 //setUp
+                Kernel k = _service.Kernel;
                 string fileName = "iniDbTestTmp"; //テンポラリファイル名
                 string progDir = Directory.GetCurrentDirectory();
                 //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
                 string path = Path.Combine(progDir, fileName + ".ini");
-                IniDb sut = new IniDb(progDir, fileName);
+                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
 
                 ListVal listVal = new ListVal();
                 var l = new ListVal();
                 //l.Add(new OneVal("mimeExtension", "", Crlf.Nextline, new CtrlTextBox("Extension", 10)));
                 //l.Add(new OneVal("mimeType", "", Crlf.Nextline, new CtrlTextBox("MIME Type", 50)));
                 //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-                l.Add(new OneVal(CtrlType.TextBox, "mimeExtension", "", Crlf.Nextline));
-                l.Add(new OneVal(CtrlType.TextBox, "mimeType", "", Crlf.Nextline));
+                l.Add(new OneVal(k, CtrlType.TextBox, "mimeExtension", "", Crlf.Nextline));
+                l.Add(new OneVal(k, CtrlType.TextBox, "mimeType", "", Crlf.Nextline));
                 //var oneVal = new OneVal("mime", null, Crlf.Nextline, new CtrlDat("comment", l, 350, LangKind.Jp));
-                var oneVal = new OneVal(CtrlType.Dat, "mime", new Dat(l), Crlf.Nextline);
+                var oneVal = new OneVal(k, CtrlType.Dat, "mime", new Dat(l), Crlf.Nextline);
                 listVal.Add(oneVal);
 
                 sut.Save("Basic", listVal); // nameTagは"Basic"で決め打ちされている
@@ -259,8 +260,8 @@ namespace Bjd.Test.Utils
                         ListVal listVal = new ListVal();
                         //listVal.Add(new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")));
                         //listVal.Add(new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help")));
-                        listVal.Add(new OneVal(CtrlType.CheckBox, "name1", true, Crlf.Nextline));
-                        listVal.Add(new OneVal(CtrlType.CheckBox, "name2", true, Crlf.Nextline));
+                        listVal.Add(new OneVal(kernel, CtrlType.CheckBox, "name1", true, Crlf.Nextline));
+                        listVal.Add(new OneVal(kernel, CtrlType.CheckBox, "name2", true, Crlf.Nextline));
 
                         if (val == null)
                         {
@@ -274,7 +275,7 @@ namespace Bjd.Test.Utils
                         throw new Exception(ctrlType.ToString());
                 }
                 //return new OneVal("name", val, Crlf.Nextline, oneCtrl);
-                return new OneVal(ctrlType, "name", val, Crlf.Nextline);
+                return new OneVal(kernel, ctrlType, "name", val, Crlf.Nextline);
             }
 
 

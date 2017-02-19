@@ -50,6 +50,8 @@ namespace ProxyPop3ServerTest
             _service.SetOption("ProxyPop3ServerTest.ini");
 
             var kernel = _service.Kernel;
+            kernel.ListInitialize();
+
             var option = kernel.ListOption.Get("ProxyPop3");
             var conf = new Conf(option);
 

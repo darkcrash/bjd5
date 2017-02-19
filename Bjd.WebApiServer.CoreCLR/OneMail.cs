@@ -5,16 +5,21 @@ using Bjd.Mails;
 
 namespace Bjd.WebApiServer
 {
-    class OneMail{
+    class OneMail
+    {
 
+        private readonly Kernel _kernel;
         private readonly Mail _mail;
         private readonly MailInfo _mailInfo;
 
-        public object Get(string field) {
-            switch (field){
+        public object Get(string field)
+        {
+            switch (field)
+            {
                 case "subject":
                     var s = _mail.GetHeader("subject");
-                    if (s != null){
+                    if (s != null)
+                    {
                         return DecodeMailSubject(s);
                     }
                     return "";
@@ -34,7 +39,7 @@ namespace Bjd.WebApiServer
                     return _mailInfo.Uid;
                 case "filename":
                     return _mailInfo.FileName;
-                    
+
 
             }
             return "";
@@ -42,28 +47,36 @@ namespace Bjd.WebApiServer
 
         public String Owner { get; private set; }
 
-        public OneMail(String owner,String fileName){
+        public OneMail(Kernel kernel, string owner, string fileName)
+        {
+            _kernel = kernel;
             Owner = owner;
             _mailInfo = new MailInfo(fileName);
             //fileName = fileName.Replace("\\DF_","\\MF_");
-            fileName = fileName.Replace($"{Path.DirectorySeparatorChar}DF_",$"{Path.DirectorySeparatorChar}MF_");
+            fileName = fileName.Replace($"{Path.DirectorySeparatorChar}DF_", $"{Path.DirectorySeparatorChar}MF_");
 
-            _mail = new Mail();
-            if (File.Exists(fileName)) {
+            _mail = new Mail(_kernel);
+            if (File.Exists(fileName))
+            {
                 _mail.Init2(Encoding.ASCII.GetBytes(File.ReadAllText(fileName)));
             }
         }
-        string DecodeMailSubject(string subject) {
+        string DecodeMailSubject(string subject)
+        {
             string[] s = subject.Split('?');
             byte[] b;
 
             //Ver5.9.7
-            if (s.Length < 4){
+            if (s.Length < 4)
+            {
                 return subject; //エンコードされていない
             }
-            if (s[2] == "B") { //Base64形式
+            if (s[2] == "B")
+            { //Base64形式
                 b = Convert.FromBase64String(s[3]);
-            } else {
+            }
+            else
+            {
                 return subject; //未対応
             }
             //s[1]をEncoding名として、デコード

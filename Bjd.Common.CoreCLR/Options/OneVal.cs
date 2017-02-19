@@ -14,6 +14,8 @@ namespace Bjd.Options
     //ListValと共に再帰処理が可能になっている<br>
     public class OneVal : IDisposable
     {
+        private Kernel _kernel;
+
         public string Name { get; private set; }
         public object Value { get; private set; }
         public Crlf Crlf { get; private set; }
@@ -24,12 +26,15 @@ namespace Bjd.Options
 
         public bool IsSecret { get; private set; }
 
-        public OneVal(CtrlType type, String name, Object value, Crlf crlf) : this(type, name, value, crlf, false)
+        public OneVal(Kernel kernel, CtrlType type, String name, Object value, Crlf crlf) : this(kernel, type, name, value, crlf, false)
         {
+            _kernel = kernel;
         }
 
-        public OneVal(CtrlType type, String name, Object value, Crlf crlf, bool isSecret)
+        public OneVal(Kernel kernel, CtrlType type, String name, Object value, Crlf crlf, bool isSecret)
         {
+            _kernel = kernel;
+
             this.CtrlType = type;
             this.Name = name;
             this.Value = value;
@@ -364,11 +369,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({str})");
+                _kernel.Trace.TraceError($"Error OneVal.FromReg({str})");
                 Value = null;
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -388,11 +393,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -412,11 +417,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -436,11 +441,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({val})");
+                _kernel.Trace.TraceError($"Error OneVal.FromReg({val})");
                 Value = null;
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 
@@ -506,11 +511,11 @@ namespace Bjd.Options
             }
             catch (Exception)
             {
-                System.Diagnostics.Trace.TraceError($"Error OneVal.FromReg({str})");
+                _kernel.Trace.TraceError($"Error OneVal.FromReg({str})");
                 Value = null;
                 return false;
             }
-            System.Diagnostics.Trace.TraceInformation($"{this.Name}={this.Value}");
+            _kernel.Trace.TraceInformation($"{this.Name}={this.Value}");
             return true;
         }
 

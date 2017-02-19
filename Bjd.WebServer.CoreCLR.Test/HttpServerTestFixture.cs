@@ -28,6 +28,8 @@ namespace WebServerTest
             _service.ContentDirectory("public_html");
 
             var kernel = _service.Kernel;
+            kernel.ListInitialize();
+
             var option = kernel.ListOption.Get("Web-localhost:7088");
             Conf conf = new Conf(option);
             var ipv4 = new Ip(IpKind.V4Localhost);

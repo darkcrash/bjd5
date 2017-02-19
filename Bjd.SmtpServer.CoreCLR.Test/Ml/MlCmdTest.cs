@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.Mails;
 using Xunit;
 using Bjd.SmtpServer;
-
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -13,9 +13,13 @@ namespace Bjd.SmtpServer.Test
     {
 
         private MlOneUser _user1;
+        private TestService _service;
+        private Kernel _kernel;
 
         public MlCmdTest()
         {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
             _user1 = new MlOneUser(true, "USER1", new MailAddress("user1@example.com"), false, true, true, "password");
         }
 
@@ -35,7 +39,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Test(string cmdStr, MlCmdKind mlCmdKind, string paramStr)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             mail.AppendLine(Encoding.ASCII.GetBytes(cmdStr));//区切り行(ヘッダ終了)
             var mlCmd = new MlCmd(null, mail, _user1);
@@ -57,7 +61,7 @@ namespace Bjd.SmtpServer.Test
         [InlineData("\r\n\r\n\r\n\r\nmember", 1)]//空行を含む
         public void Test(string cmdStr, int count)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             mail.AppendLine(Encoding.ASCII.GetBytes(cmdStr));//区切り行(ヘッダ終了)
             var mlCmd = new MlCmd(null, mail, _user1);

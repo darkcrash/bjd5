@@ -5,7 +5,7 @@ using System.Text;
 namespace Bjd.Logs
 {
     //生成時に１つのファイルをオープンしてset()で１行ずつ格納するクラス
-    public class OneLogFile : IDisposable
+    public class LogFileWriter : IDisposable
     {
         private FileStream _fs;
         private StreamWriter _sw;
@@ -13,7 +13,7 @@ namespace Bjd.Logs
         private int disposeCount = 0;
         private object Lock = new object();
 
-        public OneLogFile(String fileName)
+        public LogFileWriter(String fileName)
         {
             _fileName = fileName;
             _fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
@@ -40,12 +40,11 @@ namespace Bjd.Logs
             }
         }
 
-        public void Set(String str)
+        public void WriteLine(string message)
         {
-            _sw.WriteLine(str);
+            _sw.WriteLine(message);
             _sw.Flush();
         }
-
     }
 }
 

@@ -15,6 +15,8 @@ namespace Bjd.Mails
     //**********************************************************************************
     public class Mail : LastError, IDisposable
     {
+        Kernel _kernel;
+
         //ヘッダとボディの間の空白行は含まない
         //\r\nは含む
         List<string> _header = new List<string>();
@@ -22,6 +24,11 @@ namespace Bjd.Mails
         //複数行のヘッダを整理する前の、テンポラリ
         List<string> _lines = new List<string>();
         bool _isHeader = true;//当初ヘッダ行として扱う
+
+        public Mail(Kernel kernel)
+        {
+            _kernel = kernel;
+        }
 
         public void Dispose()
         {
@@ -64,7 +71,7 @@ namespace Bjd.Mails
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
+                        _kernel.Trace.TraceInformation($"Mail.GetEncoding() charsetName:{charsetName} Exception:{ex.Message}");
                     }
                     finally
                     {
@@ -153,7 +160,7 @@ namespace Bjd.Mails
 
         public Mail CreateClone()
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             //ヘッダ行
             _header.ForEach(s => mail.AppendLine(Encoding.ASCII.GetBytes(s)));
             //区切り行
@@ -308,9 +315,12 @@ namespace Bjd.Mails
             var info = new FileInfo(fileName);
             var fileLength = info.Length;
             var tmpBuf = new byte[fileLength];
-            using (var br = info.OpenRead())
+            //using (var br = info.OpenRead())
+            using (var fs = info.OpenRead())
+            using (var br = new BinaryReader(fs))
             {
-                System.Diagnostics.Trace.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
+                fileLength = fs.Length;
+                _kernel.Trace.TraceInformation($"Mail.Read {fileName} {fileLength} byte.");
                 var pos = 0;
                 while (true)
                 {

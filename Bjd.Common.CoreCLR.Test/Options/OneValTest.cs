@@ -6,13 +6,22 @@ using Bjd.Options;
 using Bjd.Controls;
 using Bjd.Utils;
 using Xunit;
-
+using Bjd.Services;
 
 namespace Bjd.Test.Options
 {
 
     public class OneValTest
     {
+        TestService _service;
+        Kernel _kernel;
+
+        public OneValTest()
+        {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+
+        }
 
         [Theory]
         [InlineData(CtrlType.CheckBox, true, "true")]
@@ -41,7 +50,7 @@ namespace Bjd.Test.Options
         {
             //setUp
             const bool isSecret = false;
-            var sut = Assistance.CreateOneVal(ctrlType, val);
+            var sut = Assistance.CreateOneVal(_kernel, ctrlType, val);
             //exercise
             var actual = sut.ToReg(isSecret);
             //verify
@@ -76,7 +85,7 @@ namespace Bjd.Test.Options
         {
             //setUp
             const bool isSecret = false;
-            OneVal sut = Assistance.CreateOneVal(ctrlType, null);
+            OneVal sut = Assistance.CreateOneVal(_kernel, ctrlType, null);
             sut.FromReg(str);
             var expected = str;
             //exercise
@@ -121,7 +130,7 @@ namespace Bjd.Test.Options
         public void FromRegの不正パラメータ判定(CtrlType ctrlType, string str, bool expected)
         {
             //setUp
-            var sut = Assistance.CreateOneVal(ctrlType, null);
+            var sut = Assistance.CreateOneVal(_kernel, ctrlType, null);
             //exercise
             var actual = sut.FromReg(str);
             //verify
@@ -137,7 +146,7 @@ namespace Bjd.Test.Options
         public void IsDebugTrueの時のToReg出力(CtrlType ctrlType, bool isDebug, string str, string expected)
         {
             //setUp
-            OneVal sut = Assistance.CreateOneVal(ctrlType, str);
+            OneVal sut = Assistance.CreateOneVal(_kernel, ctrlType, str);
             //exercise
             string actual = sut.ToReg(isDebug);
             //verify
@@ -164,7 +173,7 @@ namespace Bjd.Test.Options
         public void ReadCtrlFalseでデフォルトの値に戻るかどうかのテスト(CtrlType ctrlType, object value)
         {
             //setUp
-            var sut = Assistance.CreateOneVal(ctrlType, value);
+            var sut = Assistance.CreateOneVal(_kernel, ctrlType, value);
             //var tabindex = 0;
             //sut.CreateCtrl(null, 0, 0, ref tabindex);
             //var b = sut.ReadCtrl(false); //isConfirm = false; 確認のみではなく、実際に読み込む
@@ -182,7 +191,7 @@ namespace Bjd.Test.Options
     {
         //OneValの生成
         //デフォルト値(nullを設定した場合、適切な値を自動でセットする)
-        public static OneVal CreateOneVal(CtrlType ctrlType, object val)
+        public static OneVal CreateOneVal(Kernel kernel,CtrlType ctrlType, object val)
         {
             //Kernel kernel = new Kernel();
             //const string help = "help";
@@ -251,7 +260,7 @@ namespace Bjd.Test.Options
                         val = "";
                     }
                     //oneCtrl = new CtrlHidden(help, 30);
-                    return new OneVal(ctrlType, "name", val, Crlf.Nextline, true);
+                    return new OneVal(kernel, ctrlType, "name", val, Crlf.Nextline, true);
                 //break;
                 case CtrlType.AddressV4:
                     if (val == null)
@@ -294,8 +303,8 @@ namespace Bjd.Test.Options
                     var listVal = new ListVal{
                         //new OneVal("name1", true, Crlf.Nextline, new CtrlCheckBox("help")),
                         //new OneVal("name2", true, Crlf.Nextline, new CtrlCheckBox("help"))
-                        new OneVal(CtrlType.CheckBox, "name1", true, Crlf.Nextline),
-                        new OneVal(CtrlType.CheckBox,"name2", true, Crlf.Nextline)
+                        new OneVal(kernel, CtrlType.CheckBox, "name1", true, Crlf.Nextline),
+                        new OneVal(kernel, CtrlType.CheckBox,"name2", true, Crlf.Nextline)
                     };
 
                     if (val == null)
@@ -311,7 +320,7 @@ namespace Bjd.Test.Options
                     throw new Exception(ctrlType.ToString());
             }
             //return new OneVal("name", val, Crlf.Nextline, oneCtrl);
-            return new OneVal(ctrlType, "name", val, Crlf.Nextline);
+            return new OneVal(kernel, ctrlType, "name", val, Crlf.Nextline);
         }
     }
 }

@@ -16,9 +16,12 @@ namespace Bjd.Test.Servers
     public class ServerTest : IDisposable
     {
         TestService _service;
+        Kernel _kernel;
         public ServerTest()
         {
             _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+            _kernel.ListInitialize();
         }
         public void Dispose()
         {
@@ -61,7 +64,7 @@ namespace Bjd.Test.Servers
                 }
             }
             //RemoteServerでのみ使用される
-            public override void Append(OneLog oneLog)
+            public override void Append(LogMessage oneLog)
             {
 
             }
@@ -75,7 +78,7 @@ namespace Bjd.Test.Servers
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailablePort(ip, 8888);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            var conf = TestUtil.CreateConf("OptionSample");
+            var conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("protocolKind", (int)ProtocolKind.Tcp);
             conf.Set("port", port);
             conf.Set("multiple", 10);

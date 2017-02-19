@@ -25,13 +25,13 @@ namespace Bjd.DnsServer
             //pageList.Add(Page1(key, Lang.Value(key), kernel));
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //�@���W�X�g������̓ǂݍ���
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             var list = new ListVal();
@@ -42,12 +42,12 @@ namespace Bjd.DnsServer
             //list.Add(new OneVal("priority", 10, Crlf.Nextline, new CtrlInt("Priority", 5)));
             //onePage.Add(new OneVal("resourceList", null, Crlf.Nextline, new CtrlOrgDat("", list, 350, Lang.LangKind)));
 
-            list.Add(new OneVal(CtrlType.ComboBox, "type", DnsType.A, Crlf.Nextline));
-            list.Add(new OneVal(CtrlType.TextBox, "name", "", Crlf.Contonie));
-            list.Add(new OneVal(CtrlType.TextBox, "alias", "", Crlf.Nextline));
-            list.Add(new OneVal(CtrlType.TextBox, "address", "", Crlf.Contonie));
-            list.Add(new OneVal(CtrlType.Int, "priority", 10, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "resourceList", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.ComboBox, "type", DnsType.A, Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.TextBox, "name", "", Crlf.Contonie));
+            list.Add(new OneVal(kernel, CtrlType.TextBox, "alias", "", Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.TextBox, "address", "", Crlf.Contonie));
+            list.Add(new OneVal(kernel, CtrlType.Int, "priority", 10, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "resourceList", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }

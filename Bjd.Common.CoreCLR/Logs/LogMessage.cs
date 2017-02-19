@@ -6,7 +6,7 @@ namespace Bjd.Logs
 
 
     // ログ１行を表現するクラス
-    public class OneLog : ValidObj
+    public class LogMessage : ValidObj
     {
 
         private DateTime _dt;
@@ -17,8 +17,9 @@ namespace Bjd.Logs
         private int _messageNo;
         private String _message;
         private String _detailInfomation;
+        private static int _pid = System.Diagnostics.Process.GetCurrentProcess().Id;
 
-        public OneLog(DateTime dt, LogKind logKind, String nameTag, long threadId, String remoteHostname, int messageNo, String message, String detailInfomation)
+        public LogMessage(DateTime dt, LogKind logKind, String nameTag, long threadId, String remoteHostname, int messageNo, String message, String detailInfomation)
         {
             _dt = dt;
             _logKind = logKind;
@@ -32,7 +33,7 @@ namespace Bjd.Logs
 
         //コンストラクタ
         //行の文字列(\t区切り)で指定される
-        public OneLog(String str)
+        public LogMessage(String str)
         {
             var tmp = str.Split('\t');
             if (tmp.Length != 8)
@@ -117,8 +118,7 @@ namespace Bjd.Logs
         public string ToTraceString()
         {
             CheckInitialise();
-            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", Kind(), 
-                                 NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
+            return $"[{_dt.ToString("HH\\:mm\\:ss\\.fff")}][{_pid}][{_threadId.ToString().PadLeft(3)}] {Kind()}\t{NameTag()}\t{RemoteHostname()}\t{MessageNo()}\t{Message()}\t{DetailInfomation()}";
         }
 
         //セキュリティログかどうかの確認

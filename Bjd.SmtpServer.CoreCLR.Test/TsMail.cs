@@ -3,6 +3,7 @@ using Bjd;
 using Bjd.Mails;
 using Bjd.Net;
 using Bjd.SmtpServer;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -11,11 +12,16 @@ namespace Bjd.SmtpServer.Test
     //******************************************************************
     public class TsMail
     {
+        TestService _service;
+        Kernel _kernel;
         public Mail Mail { get; private set; }
         internal MlEnvelope MlEnvelope { get; private set; }
         public TsMail(string from, string to, string bodyStr)
         {
-            Mail = new Mail();
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+
+            Mail = new Mail(_kernel);
             Mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             var body = Encoding.ASCII.GetBytes(bodyStr);
             Mail.AppendLine(body);

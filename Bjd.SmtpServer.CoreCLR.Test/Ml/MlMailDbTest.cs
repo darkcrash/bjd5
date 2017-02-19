@@ -12,10 +12,12 @@ namespace Bjd.SmtpServer.Test {
     public class MlMailDbTest : IDisposable
     {
         TestService service;
+        Kernel _kernel;
 
         public MlMailDbTest()
         {
             service = TestService.CreateTestService();
+            _kernel = service.Kernel;
         }
 
         public void Dispose()
@@ -28,12 +30,11 @@ namespace Bjd.SmtpServer.Test {
         public void SaveReadTest(){
             //var tmpDir = TestUtil.GetTmpDir("$tmp");
             var tmpDir = service.GetTmpDir("$tmp");
-            var logger = new Logger();
+            var logger = new Logger(_kernel);
 
-
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             const string mlName = "1ban";
-            var mlMailDb = new MlMailDb(logger, tmpDir, mlName);
+            var mlMailDb = new MlMailDb(_kernel, logger, tmpDir, mlName);
             mlMailDb.Remove();//もし、以前のメールが残っていたらTESTが誤動作するので、ここで消しておく
 
             Assert.Equal(mlMailDb.Count(), 0);
@@ -83,7 +84,7 @@ namespace Bjd.SmtpServer.Test {
                 }
             }
             const string mlName = "2ban";
-            var mlMailDb = new MlMailDb(null, dir,mlName);//コンストラクタ
+            var mlMailDb = new MlMailDb(_kernel, null, dir,mlName);//コンストラクタ
             Assert.Equal(mlMailDb.Status, status);//初期化成功
             mlMailDb.Remove();
             

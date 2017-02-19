@@ -11,18 +11,20 @@ namespace Bjd.WebServer.Authority
     class Authorization
     {
         //readonly OneOption _oneOption;
+        readonly Kernel _kernel;
         readonly Conf _conf;
         readonly Logger _logger;
         private AuthList _authList;
         private GroupList _groupList;
         private UserList _userList;
 
-        public Authorization(Conf conf, Logger logger)
+        public Authorization(Kernel kernel, Conf conf, Logger logger)
         {
-            System.Diagnostics.Trace.TraceInformation($"Authorization..ctor");
-            //_oneOption = oneOption;
+            _kernel = kernel;
             _conf = conf;
             _logger = logger;
+            _kernel.Trace.TraceInformation($"Authorization..ctor");
+            //_oneOption = oneOption;
             //認証リスト
             _authList = new AuthList((Dat)_conf.Get("authList"));
             _groupList = new GroupList((Dat)_conf.Get("groupList"));
@@ -61,7 +63,7 @@ namespace Bjd.WebServer.Authority
 
         public bool Check(string uri, string authorization, ref string authName)
         {
-            System.Diagnostics.Trace.TraceInformation($"Authorization.Check {uri}");
+            _kernel.Trace.TraceInformation($"Authorization.Check {uri}");
             //認証リスト
             //var authList = new AuthList((Dat)_conf.Get("authList"));
             var authList = _authList;

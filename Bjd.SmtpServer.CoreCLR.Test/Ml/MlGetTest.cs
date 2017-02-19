@@ -33,10 +33,10 @@ namespace Bjd.SmtpServer.Test
             _service.SetOption("MlGetTest.ini");
 
             var kernel = _service.Kernel;
-            var logger = new Logger();
+            var logger = new Logger(_service.Kernel);
             var manageDir = _service.GetTmpDir("TestDir");
 
-            _tsMailSave = new TsMailSave();//MailSaveのモックオブジェクト
+            _tsMailSave = new TsMailSave(kernel);//MailSaveのモックオブジェクト
 
             var memberList = new Dat(new[] { CtrlType.TextBox, CtrlType.TextBox, CtrlType.CheckBox, CtrlType.CheckBox, CtrlType.CheckBox, CtrlType.TextBox });
             memberList.Add(true, string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", "USER1", "user1@example.com", false, true, true, "")); //一般・読者・投稿
@@ -195,7 +195,7 @@ namespace Bjd.SmtpServer.Test
                     {
                         i++;
                     } while (lines[i] != "\r\n");
-                    mail = new Mail();
+                    mail = new Mail(_service.Kernel);
                     continue;
                 }
                 if (mail != null)

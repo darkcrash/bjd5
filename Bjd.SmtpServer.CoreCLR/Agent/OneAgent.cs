@@ -305,7 +305,7 @@ namespace Bjd.SmtpServer
         //エラーメールの作成
         Mail MakeErrorMail(MailAddress from, MailAddress to, string reason, List<string> lastLog)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             const string boundaryStr = "BJD-Boundary";
 
             mail.AppendLine(Encoding.ASCII.GetBytes(string.Format("From: Mail Delivery Subsystem <{0}>\r\n", @from)));

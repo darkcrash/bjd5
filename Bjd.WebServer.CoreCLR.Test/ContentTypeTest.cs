@@ -22,6 +22,8 @@ namespace WebServerTest
                 _service.SetOption("ContentTypeTest.ini");
 
                 Kernel kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("Web-localhost:92");
                 Conf conf = new Conf(option);
 

@@ -100,7 +100,7 @@ namespace Bjd.WebApiServer
         }
 
         //RemoteServerでのみ使用される
-        public override void Append(Bjd.Logs.OneLog oneLog) {
+        public override void Append(Bjd.Logs.LogMessage oneLog) {
 
         }
 

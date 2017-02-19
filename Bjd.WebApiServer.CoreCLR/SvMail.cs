@@ -11,12 +11,14 @@ namespace Bjd.WebApiServer
 {
     class SvMail
     {
+        private readonly Kernel _kernel;
         private readonly MailBox _mailBox;
         private readonly string _mailQueue = "";
         private readonly WebApi _webApi; //コントロール
 
         public SvMail(Kernel kernel)
         {
+            _kernel = kernel;
             _webApi = kernel.WebApi;
             _mailBox = kernel.MailBox;
             //_mailQueue = Define.ExecutableDirectory + "\\MailQueue";
@@ -206,7 +208,7 @@ namespace Bjd.WebApiServer
                         {
                             if (limit == 0 || ar.Count < limit)
                             {
-                                var oneMail = new OneMail(user, fileName);
+                                var oneMail = new OneMail(_kernel, user, fileName);
                                 ar.Add(oneMail);
                             }
                         }
@@ -224,7 +226,7 @@ namespace Bjd.WebApiServer
                     {
                         if (limit == 0 || ar.Count < limit)
                         {
-                            var oneMail = new OneMail("mailQueue", fileName);
+                            var oneMail = new OneMail(_kernel, "mailQueue", fileName);
                             ar.Add(oneMail);
                         }
                     }

@@ -24,6 +24,7 @@ namespace Bjd.WebServer
 
         static byte[] empty = new byte[0];
 
+        Kernel _kernel;
         KindBuf _kindBuf;
         byte[] _doc;
 
@@ -31,8 +32,9 @@ namespace Bjd.WebServer
         long _rangeFrom;
         long _rangeTo;
 
-        public HttpResponseBody()
+        public HttpResponseBody(Kernel kernel)
         {
+            _kernel = kernel;
             _kindBuf = KindBuf.Memory;
             _doc = empty;
         }
@@ -54,7 +56,7 @@ namespace Bjd.WebServer
             _kindBuf = KindBuf.Memory;
             _doc = new byte[buf.Length];
             Buffer.BlockCopy(buf, 0, _doc, 0, buf.Length);
-            System.Diagnostics.Trace.TraceInformation($"HttpResponseBody.Set Length={buf.Length}");
+            _kernel.Trace.TraceInformation($"HttpResponseBody.Set Length={buf.Length}");
         }
 
         public long Length
@@ -71,7 +73,7 @@ namespace Bjd.WebServer
         //public bool Send(SockTcp tcpObj,bool encode,ref bool life){
         public bool Send(SockTcp tcpObj, bool encode, ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"HttpResponseBody.Send encode={encode}");
+            _kernel.Trace.TraceInformation($"HttpResponseBody.Send encode={encode}");
             if (_kindBuf == KindBuf.Memory)
             {
                 if (encode)

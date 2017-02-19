@@ -34,7 +34,7 @@ namespace Bjd.Net.Sockets
 
         public SockServerUdp(Kernel kernel, ProtocolKind protocolKind, Ssl ssl) : base(kernel)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
+            Kernel.Trace.TraceInformation($"SockServer..ctor{protocolKind.ToString()}");
             ProtocolKind = protocolKind;
             _ssl = ssl;
         }
@@ -53,7 +53,7 @@ namespace Bjd.Net.Sockets
         //UDP用
         public bool Bind(Ip bindIp, int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.Bind UDP Start {bindIp.ToString()} {port.ToString()} ");
+            Kernel.Trace.TraceInformation($"SockServer.Bind UDP Start {bindIp.ToString()} {port.ToString()} ");
             _bindIp = bindIp;
             _bindPort = port;
             if (ProtocolKind != ProtocolKind.Udp)
@@ -84,7 +84,7 @@ namespace Bjd.Net.Sockets
         //受信開始
         void BeginReceiveUdp()
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.BeginReceiveUdp");
+            Kernel.Trace.TraceInformation($"SockServer.BeginReceiveUdp");
             // UDP
             var ep = (EndPoint)new IPEndPoint((_bindIp.InetKind == InetKind.V4) ? IPAddress.Any : IPAddress.IPv6Any, _bindPort);
             var tUdp = _socket.ReceiveFromAsync(_udpBufSegment, SocketFlags.None, ep);
@@ -127,7 +127,7 @@ namespace Bjd.Net.Sockets
 
         public SockUdp Select(ILife iLife)
         {
-            System.Diagnostics.Trace.TraceInformation($"SockServer.Select");
+            Kernel.Trace.TraceInformation($"SockServer.Select");
 
             while (iLife.IsLife())
             {

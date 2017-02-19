@@ -3,11 +3,21 @@ using System.Linq;
 using Bjd.Logs;
 using Bjd.Net;
 using Xunit;
+using Bjd.Services;
 
 namespace Bjd.Test.Net
 {
     public class DnsCacheTest
     {
+        TestService _service;
+        Kernel _kernel;
+
+        public DnsCacheTest()
+        {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+        }
+
         [Fact]
         public void アドレスからホスト名を取得する()
         {
@@ -18,7 +28,7 @@ namespace Bjd.Test.Net
             const string expected = "www1968.sakura.ne.jp";
 
             //exercise
-            String actual = sut.GetHostName(ip.IPAddress, new Logger());
+            String actual = sut.GetHostName(ip.IPAddress, new Logger(_kernel));
 
             //verify
             Assert.Equal(expected, actual);
@@ -127,7 +137,7 @@ namespace Bjd.Test.Net
 
             //exercise
             TestUtil.WaitDisp("無効アドレスの検索　タイムアウトまで待機");
-            var actual = sut.GetHostName(ip.IPAddress, new Logger());
+            var actual = sut.GetHostName(ip.IPAddress, new Logger(_kernel));
 
             //verify
             Assert.Equal(expected, actual);

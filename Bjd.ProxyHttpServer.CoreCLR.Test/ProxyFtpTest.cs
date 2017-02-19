@@ -30,6 +30,8 @@ namespace ProxyHttpServerTest
                 _service.SetOption("ProxyFtpTest.ini");
 
                 Kernel kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("ProxyHttp");
                 Conf conf = new Conf(option);
 

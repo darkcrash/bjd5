@@ -28,6 +28,8 @@ namespace SipServerTest
                 _service.SetOption("SipServerTest.ini");
 
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("Sip");
                 var conf = new Conf(option);
 

@@ -24,7 +24,7 @@ namespace Bjd.SmtpServer.Test
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
-            _mailBox = new MailBox(new Logger(), datUser, _service.MailboxPath);
+            _mailBox = new MailBox(new Logger(_service.Kernel), datUser, _service.MailboxPath);
             //esmtpUserListに"user2"を登録
             _esmtpUserList = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             _esmtpUserList.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");

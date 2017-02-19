@@ -9,10 +9,13 @@ namespace Bjd.Plugins
     //プラグインフォルダ内のjarファイルを列挙するクラス
     public class ListPlugin : ListBase<IPlugin>
     {
+
+        private Kernel _kernel;
         //dir 検索対象となるpluginsフォルダ
-        public ListPlugin()
+        public ListPlugin(Kernel kernel)
         {
-            Trace.TraceInformation("ListPlugin..ctor Start");
+            _kernel = kernel;
+            _kernel.Trace.TraceInformation("ListPlugin..ctor Start");
 
             if (Define.Libraries != null)
             {
@@ -39,25 +42,25 @@ namespace Bjd.Plugins
                             var ctor = t.GetConstructor(Type.EmptyTypes);
                             if (ctor == null)
                             {
-                                Trace.TraceError($"[IPlugin] require default conctructor {t.FullName}");
+                                _kernel.Trace.TraceError($"[IPlugin] require default conctructor {t.FullName}");
                                 continue;
                             }
                             try
                             {
                                 var instance = (IPlugin)ctor.Invoke(null);
-                                Trace.TraceInformation($"[IPlugin] {instance.PluginName}");
+                                _kernel.Trace.TraceInformation($"[IPlugin] {instance.PluginName}");
                                 Ar.Add(instance);
                             }
                             catch
                             {
-                                Trace.TraceError($"[IPlugin] throw exception conctructor {t.FullName}");
+                                _kernel.Trace.TraceError($"[IPlugin] throw exception conctructor {t.FullName}");
                                 continue;
                             }
                         }
                         var plugin = t as IPlugin;
                         if (plugin != null)
                         {
-                            Trace.TraceInformation($"[IPlugin] {plugin.PluginName}");
+                            _kernel.Trace.TraceInformation($"[IPlugin] {plugin.PluginName}");
                         }
 
                     }
@@ -65,7 +68,7 @@ namespace Bjd.Plugins
 
             }
 
-            Trace.TraceInformation("ListPlugin..ctor End");
+            _kernel.Trace.TraceInformation("ListPlugin..ctor End");
         }
 
 

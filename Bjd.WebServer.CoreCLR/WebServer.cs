@@ -115,7 +115,7 @@ namespace Bjd.WebServer
 
             _Selector = new HandlerSelector(_kernel, _conf, Logger);
             _contentType = new HttpContentType(_conf);
-            _authorization = new Authorization(_conf, Logger);
+            _authorization = new Authorization(_kernel, _conf, Logger);
 
         }
         //終了処理
@@ -141,13 +141,14 @@ namespace Bjd.WebServer
         //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
-            System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread ");
+            _kernel.Trace.TraceInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
 
             // create Connection Context
             using (var connection = new HttpConnectionContext())
             {
+                connection.Kernel = _kernel;
                 connection.Logger = Logger;
                 connection.Connection = (SockTcp)sockObj;
                 connection.RemoteIp = connection.Connection.RemoteIp;
@@ -199,7 +200,7 @@ namespace Bjd.WebServer
                 //Ver5.1.x
                 var hostStr = request.Header.GetVal("host");
                 request.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
-                System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread {request.Url}");
+                _kernel.Trace.TraceInformation($"WebServer.OnSubThread {request.Url}");
             }
 
             //***************************************************************
@@ -258,7 +259,7 @@ namespace Bjd.WebServer
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Trace.TraceError($"WebServer.OnSubThread {ex.Message}");
+                    _kernel.Trace.TraceError($"WebServer.OnSubThread {ex.Message}");
                     Logger.Set(LogKind.Error, null, 40, ex.Message);
                 }
             }
@@ -442,7 +443,7 @@ namespace Bjd.WebServer
         //********************************************************
         void ReplaceVirtualHost(string host, IPAddress ip, int port)
         {
-            System.Diagnostics.Trace.TraceInformation($"WebServer.ReplaceVirtualHost ");
+            _kernel.Trace.TraceInformation($"WebServer.ReplaceVirtualHost ");
 
             //Ver5.0.0-b12
             if (host == null)
@@ -501,7 +502,7 @@ namespace Bjd.WebServer
         //********************************************************
         int CheckUri(SockTcp sockTcp, HttpRequest request, HttpHeader recvHeader)
         {
-            System.Diagnostics.Trace.TraceInformation($"WebServer.CheckUri ");
+            _kernel.Trace.TraceInformation($"WebServer.CheckUri ");
             var responseCode = 200;
 
             // v2.3.1 Uri の１文字目が/で無い場合
@@ -543,7 +544,7 @@ namespace Bjd.WebServer
             var contextConnection = contextRequest.Connection;
             var response = contextRequest.Response;
 
-            System.Diagnostics.Trace.TraceInformation($"WebServer.OnSubThread SEND");
+            _kernel.Trace.TraceInformation($"WebServer.OnSubThread SEND");
             //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
             if (contextRequest.ResponseCode != 200 && contextRequest.ResponseCode != 302 && contextRequest.ResponseCode != 206 && contextRequest.ResponseCode != 207 && contextRequest.ResponseCode != 204 && contextRequest.ResponseCode != 201)
             {
@@ -591,7 +592,7 @@ namespace Bjd.WebServer
         }
 
         //RemoteServerでのみ使用される
-        public override void Append(OneLog oneLog)
+        public override void Append(LogMessage oneLog)
         {
 
         }

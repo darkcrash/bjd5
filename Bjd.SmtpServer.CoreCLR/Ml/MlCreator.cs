@@ -13,17 +13,19 @@ namespace Bjd.SmtpServer
         //メール生成クラス
         // mailヘッダのFrom及びToは追加さない(MlSenderで最終的に追加する)
         //******************************************************************
+        readonly Kernel _kernel;
         readonly MlAddr _mlAddr;
         readonly List<string> _docs;
-        public MlCreator(MlAddr mlAddr, List<string> docs)
+        public MlCreator(Kernel kernel, MlAddr mlAddr, List<string> docs)
         {
+            _kernel = kernel;
             _mlAddr = mlAddr;
             _docs = docs;
         }
         //メールを添付する
         public Mail Attach(string subject, Mail orgMail)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
 
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             //ヘッダ作成
@@ -153,7 +155,7 @@ namespace Bjd.SmtpServer
         }
         Mail Create(string subject, string contentType, byte[] body)
         {
-            var mail = new Mail();
+            var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)
             //ヘッダ作成
             mail.AddHeader("subject", subject);

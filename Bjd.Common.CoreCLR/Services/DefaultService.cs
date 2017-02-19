@@ -14,7 +14,7 @@ namespace Bjd.Services
         public static void ServiceMain()
         {
             // Add console trace
-            System.Diagnostics.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
+            //Kernel.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
             Trace.TraceInformation("DefaultService.ServiceMain Start");
 
 #if DEBUG
@@ -29,8 +29,8 @@ namespace Bjd.Services
             }
             Trace.UseGlobalLock = false;
 
-            // Define Initialize
-            Define.Initialize();
+            //// Define Initialize
+            //Define.Initialize();
 
             // service start
             DefaultService.instance.OnStart();
@@ -59,7 +59,8 @@ namespace Bjd.Services
         protected void OnStart()
         {
             Trace.TraceInformation("DefaultService.OnStart Start");
-            _kernel = new Kernel(new Enviroments());
+            _kernel = new Kernel();
+            _kernel.ListInitialize();
             _kernel.Start();
             Trace.TraceInformation("DefaultService.OnStart End");
         }

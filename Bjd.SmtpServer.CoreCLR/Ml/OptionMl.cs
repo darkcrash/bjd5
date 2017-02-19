@@ -20,13 +20,13 @@ namespace Bjd.SmtpServer
             //pageList.Add(Page1(key, Lang.Value(key), kernel));
             //Add(new OneVal("tab", null, Crlf.Nextline, new CtrlTabPage("tabPage", pageList)));
 
-            pageList.Add(Page1("Mailing List", Lang.Value("Mailing List"), kernel));
-            Add(new OneVal(CtrlType.TabPage, "tab", null, Crlf.Nextline));
+            pageList.Add(Page1(kernel, "Mailing List", Lang.Value("Mailing List")));
+            Add(new OneVal(kernel, CtrlType.TabPage, "tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
 
@@ -36,8 +36,8 @@ namespace Bjd.SmtpServer
             //key = "mlList";
             //onePage.Add(new OneVal(key, null, Crlf.Nextline, new CtrlDat(Lang.Value(key), list, 250, Lang.LangKind)));
 
-            list.Add(new OneVal(CtrlType.TextBox, "user", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "mlList", new Dat(list), Crlf.Nextline));
+            list.Add(new OneVal(kernel, CtrlType.TextBox, "user", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Dat, "mlList", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }

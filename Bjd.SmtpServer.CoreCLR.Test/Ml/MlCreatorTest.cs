@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Bjd.SmtpServer;
-
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class MlCreatorTest : IDisposable
     {
         MlCreator _mlCreator;
+        TestService _service;
+        Kernel _kernel;
 
         public MlCreatorTest()
         {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+
             var mlAddr = new MlAddr("1ban", new List<string> { "example.com" });
             var docs = new List<string>();
             foreach (var docKind in Enum.GetValues(typeof(MlDocKind)))
@@ -24,7 +29,7 @@ namespace Bjd.SmtpServer.Test
                 }
                 docs.Add(buf);
             }
-            _mlCreator = new MlCreator(mlAddr, docs);
+            _mlCreator = new MlCreator(_kernel, mlAddr, docs);
 
         }
 

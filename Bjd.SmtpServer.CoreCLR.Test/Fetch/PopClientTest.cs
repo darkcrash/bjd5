@@ -29,25 +29,30 @@ namespace Bjd.SmtpServer.Test
         }
 
         private ServerFixture _testServer;
-        private TestOutputService _output;
+        private Kernel _kernel;
+        private Traces.TraceBroker _output;
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public PopClientTest(ITestOutputHelper helper)
         {
             _testServer = new ServerFixture();
-            _output = new TestOutputService(helper);
+            _testServer._service.AddOutput(helper);
+            //_output = new TestOutputService(helper);
+            _output = _testServer._service.Kernel.Trace;
 
             //usrr2のメールボックスへの２通のメールをセット
             _testServer._service.CleanMailbox("user2");
             _testServer.SetMail("user2", "00635026511425888292");
             _testServer.SetMail("user2", "00635026511765086924");
 
+            _kernel = _testServer._service.Kernel;
+
         }
 
 
         public void Dispose()
         {
-            _output.Dispose();
+            //_output.Dispose();
             _testServer.Dispose();
         }
 
@@ -221,14 +226,14 @@ namespace Bjd.SmtpServer.Test
                 sut.Connect();
                 sut.Login("user2", "user2");
 
-                var mail = new Mail();
+                var mail = new Mail(_kernel);
                 var actual = sut.Retr(0, mail);
 
                 //verify
                 Assert.Equal(expected, actual);
 
                 var enc = mail.GetEncoding();
-                _output.WriteLine(enc.GetString(mail.GetBytes()));
+                _output.TraceInformation(enc.GetString(mail.GetBytes()));
 
                 Assert.Equal(308, mail.GetBytes().Length);
 
@@ -252,7 +257,7 @@ namespace Bjd.SmtpServer.Test
                 sut.Connect();
                 sut.Login("user1", "user1");
 
-                var mail = new Mail();
+                var mail = new Mail(_kernel);
                 var actual = sut.Retr(0, mail); //user1は滞留が0通なので、存在しないメールをリクエストしている
 
                 //verify

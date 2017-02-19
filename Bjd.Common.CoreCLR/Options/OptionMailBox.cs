@@ -17,14 +17,14 @@ namespace Bjd.Options
             //pageList.Add(Page2(key, Lang.Value(key)));
             //Add(new OneVal("tab", null, Crlf.Nextline));
 
-            pageList.Add(Page1("Basic", Lang.Value("Basic"), kernel));
-            pageList.Add(Page2("User", Lang.Value("User")));
+            pageList.Add(Page1(kernel, "Basic", Lang.Value("Basic")));
+            pageList.Add(Page2(kernel, "User", Lang.Value("User")));
             //Add(new OneVal("tab", null, Crlf.Nextline));
 
             Read(kernel.Configuration); //　レジストリからの読み込み
         }
 
-        private OnePage Page1(string name, string title, Kernel kernel)
+        private OnePage Page1(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var key = "dir";
@@ -32,13 +32,13 @@ namespace Bjd.Options
             //key = "useDetailsLog";
             //onePage.Add(new OneVal(key, false, Crlf.Nextline));
 
-            Add(new OneVal(CtrlType.Folder, "dir", "", Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useDetailsLog", false, Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.Folder, "dir", "", Crlf.Nextline));
+            Add(new OneVal(kernel, CtrlType.CheckBox, "useDetailsLog", false, Crlf.Nextline));
 
             return onePage;
         }
 
-        private OnePage Page2(string name, string title)
+        private OnePage Page2(Kernel kernel, string name, string title)
         {
             var onePage = new OnePage(name, title);
             //var listVal = new ListVal();
@@ -50,9 +50,9 @@ namespace Bjd.Options
             //onePage.Add(new OneVal(key, null, Crlf.Nextline));
 
             var listVal = new ListVal();
-            listVal.Add(new OneVal(CtrlType.TextBox, "userName", "", Crlf.Nextline));
-            listVal.Add(new OneVal(CtrlType.TextBox, "password", "", Crlf.Nextline, true));
-            Add(new OneVal(CtrlType.Dat, "user", new Dat(listVal), Crlf.Nextline));
+            listVal.Add(new OneVal(kernel, CtrlType.TextBox, "userName", "", Crlf.Nextline));
+            listVal.Add(new OneVal(kernel, CtrlType.TextBox, "password", "", Crlf.Nextline, true));
+            Add(new OneVal(kernel, CtrlType.Dat, "user", new Dat(listVal), Crlf.Nextline));
 
             return onePage;
         }

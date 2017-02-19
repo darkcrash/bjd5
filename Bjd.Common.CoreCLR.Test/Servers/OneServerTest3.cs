@@ -16,10 +16,13 @@ namespace Bjd.Test.Servers
     public class OneServerTest3 : ILife, IDisposable
     {
         TestService _service;
+        Kernel _kernel;
 
         public OneServerTest3()
         {
             _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+            _kernel.ListInitialize();
         }
 
         public void Dispose()
@@ -59,7 +62,7 @@ namespace Bjd.Test.Servers
                 }
             }
             //RemoteServerでのみ使用される
-            public override void Append(OneLog oneLog)
+            public override void Append(LogMessage oneLog)
             {
 
             }
@@ -71,7 +74,7 @@ namespace Bjd.Test.Servers
         {
             const int timeout = 300;
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
-            var conf = TestUtil.CreateConf("OptionSample");
+            var conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
             conf.Set("acl", acl);

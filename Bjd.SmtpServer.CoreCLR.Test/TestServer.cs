@@ -33,6 +33,8 @@ namespace Bjd.SmtpServer.Test
             _service.SetOption(iniOption);
 
             var kernel = _service.Kernel;
+            kernel.ListInitialize();
+
             var option = kernel.ListOption.Get(confName);
             var conf = new Conf(option);
             port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
@@ -93,7 +95,7 @@ namespace Bjd.SmtpServer.Test
             var ar = new List<Mail>();
             foreach (var fileName in Directory.GetFiles(dir, "MF*"))
             {
-                var mail = new Mail();
+                var mail = new Mail(_service.Kernel);
                 mail.Read(fileName);
                 ar.Add(mail);
             }

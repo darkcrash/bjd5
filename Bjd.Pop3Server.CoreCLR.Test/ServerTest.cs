@@ -24,7 +24,7 @@ namespace Pop3ServerTest
         internal TestService _service;
         internal Server _v6Sv; //サーバ
         internal Server _v4Sv; //サーバ
-        internal TestOutputService _output;
+        internal Bjd.Traces.TraceBroker _output;
         public readonly int port;
 
         public ServerTest(ITestOutputHelper helper)
@@ -32,8 +32,12 @@ namespace Pop3ServerTest
 
             _service = TestService.CreateTestService();
             _service.SetOption("Pop3ServerTest.ini");
+            _service.AddOutput(helper);
 
             var kernel = _service.Kernel;
+            kernel.ListInitialize();
+            _output = _service.Kernel.Trace;
+
             var option = kernel.ListOption.Get("Pop3");
             var conf = new Conf(option);
             port = _service.GetAvailablePort(IpKind.V4Localhost, conf);
@@ -54,16 +58,12 @@ namespace Pop3ServerTest
             _service.AddMail("MF_00635026511425888292", "user2");
             _service.AddMail("MF_00635026511765086924", "user2");
 
-            //Thread.Sleep(100);//少し余裕がないと多重でテストした場合に、サーバが起動しきらないうちにクライアントからの接続が始まってしまう。
-            _output = new TestOutputService(helper);
 
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
-            _output.Dispose();
-
             //サーバ停止
             _v4Sv.Stop();
             _v6Sv.Stop();

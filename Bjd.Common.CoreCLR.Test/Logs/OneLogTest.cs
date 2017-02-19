@@ -25,14 +25,14 @@ namespace Bjd.Test.Logs
         {
             //exercise
             //new OneLog("xxx");
-            Assert.Throws<ValidObjException>(() => new OneLog("xxx"));
+            Assert.Throws<ValidObjException>(() => new LogMessage("xxx"));
         }
 
         [Fact]
         public void ToStringによる出力の確認()
         {
             //setUp
-            var sut = new OneLog(GetDateTime(), LogKind.Debug, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
+            var sut = new LogMessage(GetDateTime(), LogKind.Debug, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
             const string expected = "1970/01/01 09:00:00\tDebug\t100\tNAME\t127.0.0.1\t0000200\tMSG\tDETAIL";
             //exercise
             var actual = sut.ToString();
@@ -47,7 +47,7 @@ namespace Bjd.Test.Logs
             //setUp
             const LogKind logKind = LogKind.Secure;
             const bool expected = true;
-            var sut = new OneLog(GetDateTime(), logKind, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
+            var sut = new LogMessage(GetDateTime(), logKind, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
             //exercise
             var actual = sut.IsSecure();
             //verify
@@ -62,7 +62,7 @@ namespace Bjd.Test.Logs
             //setUp
             const LogKind logKind = LogKind.Debug;
             const bool expected = false;
-            var sut = new OneLog(GetDateTime(), logKind, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
+            var sut = new LogMessage(GetDateTime(), logKind, NameTag, ThreadId, RemoteHostname, MessageId, Message, DetailInfomation);
             //exercise
             var actual = sut.IsSecure();
             //verify

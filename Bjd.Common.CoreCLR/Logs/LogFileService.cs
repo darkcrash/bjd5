@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bjd.Logs
 {
-    public class LogFile : IDisposable
+    public class LogFileService : IDisposable, ILogService
     {
 
         private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
@@ -25,8 +25,8 @@ namespace Bjd.Logs
         private System.Threading.CountdownEvent count = new System.Threading.CountdownEvent(0);
 
 
-        private OneLogFile _normalLog; // 通常ログ
-        private OneLogFile _secureLog; // セキュアログ
+        private LogFileWriter _normalLog; // 通常ログ
+        private LogFileWriter _secureLog; // セキュアログ
 
         private DateTime _dt; //インスタンス生成時に初期化し、日付が変化したかどうかの確認に使用する
         private DateTime _lastDelete = new DateTime(0);
@@ -38,7 +38,7 @@ namespace Bjd.Logs
         //normalFileKind　通常ログのファイルル名の種類
         //secureFileKind　セキュリティログのファイルル名の種類
         //saveDays ログの自動削除で残す日数　0を指定した場合、自動削除は行わない
-        public LogFile(String saveDirectory, int normalLogKind, int secureLogKind, int saveDays, bool useLogFile)
+        public LogFileService(String saveDirectory, int normalLogKind, int secureLogKind, int saveDays, bool useLogFile)
         {
             _saveDirectory = saveDirectory;
             _normalLogKind = normalLogKind;
@@ -62,7 +62,7 @@ namespace Bjd.Logs
             //_timer.Enabled = true;
         }
 
-        public void Append(OneLog oneLog)
+        public void Append(LogMessage oneLog)
         {
             //コンストラクタで初期化に失敗している場合、falseを返す
             if (_timer == null) return;
@@ -89,13 +89,13 @@ namespace Bjd.Logs
                 // セキュリティログは、表示制限に関係なく書き込む
                 if (_secureLog != null && oneLog.IsSecure())
                 {
-                    _secureLog.Set(oneLog.ToString());
+                    _secureLog.WriteLine(oneLog.ToString());
                 }
                 // 通常ログの場合
                 if (_normalLog != null)
                 {
                     // ルール適用除外　もしくは　表示対象になっている場合
-                    _normalLog.Set(oneLog.ToString());
+                    _normalLog.WriteLine(oneLog.ToString());
                 }
             }
             catch (IOException) { }
@@ -108,7 +108,7 @@ namespace Bjd.Logs
         //ログファイルへの追加
         //oneLog 保存するログ（１行）
         //return 失敗した場合はfalseが返される
-        public Task AppendAsync(OneLog oneLog)
+        public Task AppendAsync(LogMessage oneLog)
         {
             Action a = () => Append(oneLog);
 
@@ -147,7 +147,7 @@ namespace Bjd.Logs
                 //Ver6.0.7
                 if (_useLogFile)
                 {
-                    _normalLog = new OneLogFile(fileName);
+                    _normalLog = new LogFileWriter(fileName);
                 }
                 else
                 {
@@ -181,7 +181,7 @@ namespace Bjd.Logs
                 //Ver6.0.7
                 if (_useLogFile)
                 {
-                    _secureLog = new OneLogFile(fileName);
+                    _secureLog = new LogFileWriter(fileName);
                 }
                 else
                 {
@@ -375,7 +375,7 @@ namespace Bjd.Logs
         //過去ログの自動削除が行われる
         public void Dispose()
         {
-            var log = new OneLog(DateTime.Now, LogKind.Secure, "Log", 0, "local", 0, "LogFile.Dispose()", "last mesasage");
+            var log = new LogMessage(DateTime.Now, LogKind.Secure, "Log", 0, "local", 0, "LogFile.Dispose()", "last mesasage");
             AppendAsync(log).Wait();
 
             lock (_lock)
@@ -397,6 +397,22 @@ namespace Bjd.Logs
             }
         }
 
+        public void WriteLine(string message)
+        {
+        }
+
+
+        public void TraceInformation(string message)
+        {
+        }
+
+        public void TraceWarning(string message)
+        {
+        }
+
+        public void TraceError(string message)
+        {
+        }
     }
 }
 

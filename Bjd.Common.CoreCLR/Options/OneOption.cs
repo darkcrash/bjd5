@@ -22,9 +22,11 @@ namespace Bjd.Options
 
         //Ver6.1.6
         protected readonly Lang Lang;
+        private Kernel _kernel;
 
         public OneOption(Kernel kernel, string path, string nameTag)
         {
+            _kernel = kernel;
             ListVal = new ListVal();
             _isJp = kernel.IsJp;
             Path = path;
@@ -53,12 +55,12 @@ namespace Bjd.Options
         {
             var onePage = new OnePage("ACL", "ACL");
             //onePage.Add(new OneVal("enableAcl", 0, Crlf.Nextline));
-            Add(new OneVal(CtrlType.Radio, "enableAcl", 0, Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.Radio, "enableAcl", 0, Crlf.Nextline));
             var list = new ListVal();
-            list.Add(new OneVal(CtrlType.TextBox, "aclName", "", Crlf.Nextline));
-            list.Add(new OneVal(CtrlType.TextBox, "aclAddress", "", Crlf.Nextline));
+            list.Add(new OneVal(_kernel, CtrlType.TextBox, "aclName", "", Crlf.Nextline));
+            list.Add(new OneVal(_kernel, CtrlType.TextBox, "aclAddress", "", Crlf.Nextline));
             //onePage.Add(new OneVal("acl", new Dat(list), Crlf.Nextline));
-            Add(new OneVal(CtrlType.Dat, "acl", new Dat(list), Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.Dat, "acl", new Dat(list), Crlf.Nextline));
 
             return onePage;
         }
@@ -82,13 +84,13 @@ namespace Bjd.Options
         //}
         protected void CreateServerOption(ProtocolKind protocolKind, int port, int timeout, int multiple)
         {
-            Add(new OneVal(CtrlType.ComboBox, "protocolKind", protocolKind, Crlf.Contonie));
-            Add(new OneVal(CtrlType.Int, "port", port, Crlf.Nextline));
-            Add(new OneVal(CtrlType.BindAddr, "bindAddress2", new BindAddr(), Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useResolve", false, Crlf.Nextline));
-            Add(new OneVal(CtrlType.CheckBox, "useDetailsLog", true, Crlf.Contonie));
-            Add(new OneVal(CtrlType.Int, "multiple", multiple, Crlf.Contonie));
-            Add(new OneVal(CtrlType.Int, "timeOut", timeout, Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.ComboBox, "protocolKind", protocolKind, Crlf.Contonie));
+            Add(new OneVal(_kernel, CtrlType.Int, "port", port, Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.BindAddr, "bindAddress2", new BindAddr(), Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.CheckBox, "useResolve", false, Crlf.Nextline));
+            Add(new OneVal(_kernel, CtrlType.CheckBox, "useDetailsLog", true, Crlf.Contonie));
+            Add(new OneVal(_kernel, CtrlType.Int, "multiple", multiple, Crlf.Contonie));
+            Add(new OneVal(_kernel, CtrlType.Int, "timeOut", timeout, Crlf.Nextline));
         }
 
 

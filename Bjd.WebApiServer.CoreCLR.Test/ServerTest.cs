@@ -32,6 +32,8 @@ namespace WebApiServerTest
                 _service.ContentDirectory("MailQueue");
 
                 var kernel = _service.Kernel;
+                kernel.ListInitialize();
+
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
 

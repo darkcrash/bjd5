@@ -7,17 +7,28 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;
+using Bjd.Services;
 
 namespace Bjd.SmtpServer.Test
 {
     public class DataTest
     {
+        private TestService _service;
+        private Kernel _kernel;
+
+        public DataTest()
+        {
+            _service = TestService.CreateTestService();
+            _kernel = _service.Kernel;
+
+        }
+
         [Fact]
         public void Appendでメール受信の完了時にFinishが返される()
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = RecvStatus.Finish;
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n.\r\n"));//<CL><CR>.<CL><CR>
@@ -29,7 +40,7 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = RecvStatus.Continue;
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n..\r\n"));//<CL><CR>..<CL><CR>
@@ -42,7 +53,7 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = ".htaccess\r\n";
             //exercise
             sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n..htaccess\r\n.\r\n"));//>.htaccess
@@ -57,7 +68,7 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = ".\r\n";
             //exercise
             sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n..\r\n.\r\n"));//>.htaccess
@@ -73,7 +84,7 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = RecvStatus.Continue;
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("123.\r\n"));//.<CL><CR>
@@ -85,7 +96,7 @@ namespace Bjd.SmtpServer.Test
         {
             //setUp
             const int sizeLimit = 1000;
-            var sut = new Data(sizeLimit);
+            var sut = new Data(_kernel, sizeLimit);
             var expected = RecvStatus.Continue;
             //exercise
             var actual = sut.Append(Encoding.ASCII.GetBytes("1:1\r\n\r\n."));
@@ -100,7 +111,7 @@ namespace Bjd.SmtpServer.Test
         public void Appendでサイズ制限を超えるとContinueが返される(int limit, int size, RecvStatus recvStatus)
         {
             //setUp
-            var sut = new Data(limit);
+            var sut = new Data(_kernel, limit);
             var expected = recvStatus;
             //exercise
             var actual = sut.Append(new byte[size]);

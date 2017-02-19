@@ -14,16 +14,18 @@ namespace Bjd.Utils
     //1つのデフォルト値ファイルを使用して2つのファイルを出力する<br>
     public class IniDb
     {
-        private readonly String _fileIni;
-        private readonly String _fileDef;
-        private readonly String _fileTxt;
-        private readonly String _fileIniJson;
+        private readonly Kernel _kernel;
+        private readonly string _fileIni;
+        private readonly string _fileDef;
+        private readonly string _fileTxt;
+        private readonly string _fileIniJson;
 
-        public IniDb(String progDir, String fileName)
+        public IniDb(Kernel kernel, string progDir, string fileName)
         {
             //_fileIni = progDir + "\\" + fileName + ".ini";
             //_fileDef = progDir + "\\" + fileName + ".def";
             //_fileTxt = progDir + "\\" + fileName + ".txt";
+            _kernel = kernel;
             _fileIni = System.IO.Path.Combine(progDir, fileName + ".ini");
             _fileDef = System.IO.Path.Combine(progDir, fileName + ".def");
             _fileTxt = System.IO.Path.Combine(progDir, fileName + ".txt");
@@ -216,7 +218,7 @@ namespace Bjd.Utils
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Trace.TraceInformation($"IniDbRead:Exception {ex.Message}");
+                        _kernel.Trace.TraceInformation($"IniDbRead:Exception {ex.Message}");
                         continue;
                     }
 
@@ -236,9 +238,9 @@ namespace Bjd.Utils
                 return false;
             var isRead = false;
 
-            System.Diagnostics.Trace.Indent();
-            System.Diagnostics.Trace.TraceInformation($"IniDbRead:{fileName} - {nameTag}");
-            System.Diagnostics.Trace.Unindent();
+            _kernel.Trace.Indent();
+            _kernel.Trace.TraceInformation($"IniDbRead:{fileName} - {nameTag}");
+            _kernel.Trace.Unindent();
 
             var lines = File.ReadAllLines(fileName, Encoding.UTF8);
 
@@ -548,7 +550,7 @@ namespace Bjd.Utils
         public bool IsJp()
         {
             var listVal = new ListVal{
-                new OneVal(CtrlType.ComboBox, "lang", LangKind.Jp, Crlf.Nextline)
+                new OneVal(_kernel, CtrlType.ComboBox, "lang", LangKind.Jp, Crlf.Nextline)
             };
             Read("Basic", listVal);
             var oneVal = listVal.Search("lang");

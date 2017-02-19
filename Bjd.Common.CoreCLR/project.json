@@ -19,7 +19,7 @@
         "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
         "Microsoft.CSharp": "4.0.1",
         "System.Globalization.Extensions": "4.3.0",
-        "System.Diagnostics.TraceSource": "4.0.0",
+        "System.Diagnostics.TraceSource": "4.3.0",
         "System.Diagnostics.Process": "4.1.0",
         "System.Reflection.TypeExtensions": "4.3.0",
         "System.Net.Security": "4.0.0",

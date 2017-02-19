@@ -28,10 +28,10 @@ namespace Bjd.SmtpServer.Test
             _service.SetOption("MlGuideTest.ini");
 
             var kernel = _service.Kernel;
-            var logger = new Logger();
+            var logger = new Logger(kernel);
             var manageDir = _service.GetTmpDir("TestDir");
 
-            _tsMailSave = new TsMailSave(); //MailSaveのモックオブジェクト
+            _tsMailSave = new TsMailSave(kernel); //MailSaveのモックオブジェクト
 
             var memberList = new Dat(new[] { CtrlType.TextBox, CtrlType.TextBox, CtrlType.CheckBox, CtrlType.CheckBox, CtrlType.CheckBox, CtrlType.TextBox });
             memberList.Add(true, string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", "USER1", "user1@example.com", false, true, true, "")); //一般・読者・投稿
