@@ -19,7 +19,7 @@ using Bjd.Test.Logs;
 namespace WebServerTest
 {
 
-    public class SsiTest : ILife, IDisposable, IClassFixture<SsiTest.ServerFixture>
+    public class SsiTest : ILife, IDisposable
     {
         bool isLife = true;
         public class ServerFixture : IDisposable
@@ -30,11 +30,12 @@ namespace WebServerTest
             private WebServer _v6Sv; //サーバ
             internal WebServer _v4Sv; //サーバ
 
-            public ServerFixture()
+            public ServerFixture(ITestOutputHelper helper)
             {
                 _service = TestService.CreateTestService();
                 _service.SetOption("SsiTest.ini");
                 _service.ContentDirectory("public_html");
+                _service.AddOutput(helper);
 
                 var kernel = _service.Kernel;
                 kernel.ListInitialize();
@@ -75,10 +76,9 @@ namespace WebServerTest
         private ServerFixture _fixture;
         private Bjd.Traces.TraceBroker _output;
 
-        public SsiTest(ServerFixture fixture, ITestOutputHelper helper)
+        public SsiTest(ITestOutputHelper helper)
         {
-            _fixture = fixture;
-            _fixture._service.AddOutput(helper);
+            _fixture = new ServerFixture(helper);
             _output = _fixture._service.Kernel.Trace;
         }
 
@@ -96,7 +96,7 @@ namespace WebServerTest
         }
 
         [Theory]
-        [InlineData("FSize.html", "179")]
+        //[InlineData("FSize.html", "179")]
         [InlineData("Echo.html", "DOCUMENT_NAME = Echo.html")]
         [InlineData("Echo.html", "LAST_MODIFIED = $")]
         [InlineData("Echo.html", "DATE_LOCAL = $")]
@@ -167,6 +167,42 @@ namespace WebServerTest
             }
             //var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
+            Assert.Equal(true, isMatch);
+
+            cl.Close();
+
+        }
+
+        [Fact]
+        public void SsiRequestTestFileSize()
+        {
+            var fileName = "FSize.html";
+            var pattern = "179";
+
+            var dir = _fixture._service.Kernel.Enviroment.ExecutableDirectory;
+            var path = Path.Combine(dir, _fixture._v4Sv.DocumentRoot, "SsiTest", fileName);
+
+            var cl = Inet.Connect(_fixture._service.Kernel, new Ip(IpKind.V4Localhost), _fixture.portv4, 10, null);
+
+            cl.Send(Encoding.ASCII.GetBytes($"GET /SsiTest/{fileName} HTTP/1.1\nHost: ws00\n\n"));
+            int sec = 30; //CGI処理待ち時間（これで大丈夫?）
+
+            var lines = new List<string>();
+            var isMatch = false;
+            while (true)
+            {
+                var result = cl.LineRecv(sec, this);
+                if (result == null) break;
+                result = Inet.TrimCrlf(result);
+                var text = Encoding.ASCII.GetString(result);
+                if (text.IndexOf(pattern) != -1)
+                {
+                    isMatch = true;
+                    break;
+                }
+                _output.TraceInformation(text);
+                lines.Add(text);
+            }
             Assert.Equal(true, isMatch);
 
             cl.Close();

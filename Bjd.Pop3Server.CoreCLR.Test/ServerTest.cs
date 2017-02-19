@@ -32,10 +32,10 @@ namespace Pop3ServerTest
 
             _service = TestService.CreateTestService();
             _service.SetOption("Pop3ServerTest.ini");
-            _service.AddOutput(helper);
 
             var kernel = _service.Kernel;
             kernel.ListInitialize();
+            _service.AddOutput(helper);
             _output = _service.Kernel.Trace;
 
             var option = kernel.ListOption.Get("Pop3");
