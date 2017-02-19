@@ -32,22 +32,28 @@ namespace Bjd.Services
             {
                 if (disposing)
                 {
+                    Enviroments env = null;
                     // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
-                    if (this._kernel != null)
+                    if (_kernel != null)
                     {
-                        this._kernel.Dispose();
+                        env = _kernel.Enviroment;
+                        _kernel.Events.ListInitialized -= Kernel_ListInitialized;
+                        _kernel.Dispose();
                     }
-                    if (tos != null)
+                    if (lsrvList != null)
                     {
-                        foreach(var item in tos)
+                        foreach (var item in lsrvList)
                         {
                             item.Dispose();
                         }
-                        tos = null;
+                        lsrvList.Clear();
                     }
-                    this._kernel = null;
-                    try { Directory.Delete(this._kernel.Enviroment.ExecutableDirectory, true); } catch { };
-                    try { Directory.Delete(this._kernel.Enviroment.ConfigurationDirectory, true); } catch { };
+                    if (env != null)
+                    {
+                        try { Directory.Delete(env.ExecutableDirectory, true); } catch { };
+                        try { Directory.Delete(env.ConfigurationDirectory, true); } catch { };
+                    }
+                    _kernel = null;
                 }
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
@@ -106,6 +112,8 @@ namespace Bjd.Services
             var instance = new TestService();
             instance._kernel = new Kernel(true);
 
+            instance._kernel.Events.ListInitialized += instance.Kernel_ListInitialized;
+
             var env = instance._kernel.Enviroment;
 
             // set executable directory
@@ -128,6 +136,14 @@ namespace Bjd.Services
             return instance;
         }
 
+        private void Kernel_ListInitialized(object sender, EventArgs e)
+        {
+            foreach (var lts in lsrvList)
+            {
+                Kernel.LogServices.Add(lts);
+            }
+        }
+
         public static TestService CreateTestService()
         {
             // Add console trace
@@ -140,11 +156,12 @@ namespace Bjd.Services
             return instance;
         }
 
-        List<LogTestService> tos = new List<LogTestService>();
+        List<LogTestService> lsrvList = new List<LogTestService>();
         public void AddOutput(ITestOutputHelper output)
         {
-            tos.Add(new LogTestService(output));
-            Kernel.LogServices.Add(new LogTestService(output));
+            var lts = new LogTestService(output);
+            lsrvList.Add(lts);
+            Kernel.LogServices.Add(lts);
         }
 
         public void ContentFile(params string[] paths)

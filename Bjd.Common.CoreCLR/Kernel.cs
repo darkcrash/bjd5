@@ -203,7 +203,6 @@ namespace Bjd
             }
 
 
-
             //Ver5.8.7 Java fix
             //mailBox初期化
             var useMailBoxTag = new[] { "Smtp", "Pop3", "WebApi" };
@@ -229,6 +228,9 @@ namespace Bjd
             //ListTool.Initialize(this);
 
             WebApi = new WebApi();
+
+            // raise ListInitialized;
+            Events.OnListInitialized(this);
 
             Trace.TraceInformation("Kernel.ListInitialize End");
         }

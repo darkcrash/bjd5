@@ -35,10 +35,10 @@ namespace WebServerTest
                 _service = TestService.CreateTestService();
                 _service.SetOption("SsiTest.ini");
                 _service.ContentDirectory("public_html");
-                _service.AddOutput(helper);
 
                 var kernel = _service.Kernel;
                 kernel.ListInitialize();
+                _service.AddOutput(helper);
 
                 var option = kernel.ListOption.Get("Web-localhost:7089");
                 Conf conf = new Conf(option);

@@ -21,6 +21,8 @@ namespace Bjd.Test.Sockets
         public SockTcpQueueTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.Kernel.ListInitialize();
+
             _service.AddOutput(output);
             _output = _service.Kernel.Trace;
         }

@@ -27,6 +27,7 @@ namespace ProxyHttpServerTest
             internal Server _v6Sv; //サーバ
             internal Server _v4Sv; //サーバ
             internal string srcDir = "";
+            internal int port;
 
             public ServerFixture()
             {
@@ -40,13 +41,18 @@ namespace ProxyHttpServerTest
                 var option = kernel.ListOption.Get("ProxyHttp");
                 Conf conf = new Conf(option);
 
+                var ipv4 = new Ip(IpKind.V4Localhost);
+                var ipv6 = new Ip(IpKind.V6Localhost);
+
+                port = _service.GetAvailablePort(ipv4, conf);
+
                 srcDir = _service.Kernel.Enviroment.ExecutableDirectory;
 
                 //サーバ起動
-                _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
+                _v4Sv = new Server(kernel, conf, new OneBind(ipv4, ProtocolKind.Tcp));
                 _v4Sv.Start();
 
-                _v6Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V6Localhost), ProtocolKind.Tcp));
+                _v6Sv = new Server(kernel, conf, new OneBind(ipv6, ProtocolKind.Tcp));
                 _v6Sv.Start();
 
 
@@ -85,7 +91,7 @@ namespace ProxyHttpServerTest
         {
 
             var sv = _fixture._v4Sv;
-            var expected = "+ サービス中 \t           ProxyHttp\t[127.0.0.1\t:TCP 8888]\tThread";
+            var expected = $"+ サービス中 \t           ProxyHttp\t[127.0.0.1\t:TCP {_fixture.port}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 58);
@@ -98,7 +104,7 @@ namespace ProxyHttpServerTest
         {
 
             var sv = _fixture._v6Sv;
-            var expected = "+ サービス中 \t           ProxyHttp\t[::1\t:TCP 8888]\tThread";
+            var expected = $"+ サービス中 \t           ProxyHttp\t[::1\t:TCP {_fixture.port}]\tThread";
 
             //exercise
             var actual = sv.ToString().Substring(0, 52);

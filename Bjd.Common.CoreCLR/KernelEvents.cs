@@ -8,6 +8,7 @@ namespace Bjd
     public class KernelEvents
     {
         public event EventHandler Cancel;
+        public event EventHandler ListInitialized;
 
         internal void OnCancel(object sender)
         {
@@ -16,5 +17,11 @@ namespace Bjd
             catch { }
         }
 
+        internal void OnListInitialized(object sender)
+        {
+            if (this.ListInitialized == null) return;
+            try { ListInitialized(sender, EventArgs.Empty); }
+            catch { }
+        }
     }
 }
