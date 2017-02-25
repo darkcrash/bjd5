@@ -8,33 +8,37 @@ namespace Bjd.Services
     public class DefaultConsoleService
     {
         Kernel _kernel;
-        static DefaultConsoleService instance = new DefaultConsoleService();
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
+        static DefaultConsoleService instance = new DefaultConsoleService();
 
-        public static void ServiceMain()
+        public static void Start()
         {
             // Add console trace
             //Kernel.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
             Trace.TraceInformation("DefaultConsoleService.ServiceMain Start");
 
-//#if DEBUG
-//            var f = new EventTypeFilter(SourceLevels.All);
-//#else
-//            var f = new EventTypeFilter(SourceLevels.Warning);
-//#endif
-//            // filter Trace
-//            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
-//            {
-//                l.Filter = f;
-//            }
-//            Trace.UseGlobalLock = false;
+            //#if DEBUG
+            //            var f = new EventTypeFilter(SourceLevels.All);
+            //#else
+            //            var f = new EventTypeFilter(SourceLevels.Warning);
+            //#endif
+            //            // filter Trace
+            //            foreach (TraceListener l in System.Diagnostics.Trace.Listeners)
+            //            {
+            //                l.Filter = f;
+            //            }
+            //            Trace.UseGlobalLock = false;
 
             //// Define Initialize
             //Define.Initialize();
 
+            //Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
+            Define.ChangeOperationSystem += Define_ChangeOperationSystem;
+            Define_ChangeOperationSystem(instance, EventArgs.Empty);
+
             // service start
             DefaultConsoleService.instance.OnStart();
-            Console.CancelKeyPress += Console_CancelKeyPress;
+            System.Console.CancelKeyPress += Console_CancelKeyPress;
             signal.WaitOne();
             Trace.TraceInformation("DefaultConsoleService.ServiceMain End");
         }
@@ -46,6 +50,23 @@ namespace Bjd.Services
             instance.OnStart();
             Trace.TraceInformation("DefaultConsoleService.Restart End");
         }
+
+        private static void Define_ChangeOperationSystem(object sender, EventArgs e)
+        {
+            // fix Windows ja-jp to codepage 932
+            var lang = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            var lang2 = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+            if (Define.IsWindows && lang == "ja")
+            {
+                var enc = System.Text.CodePagesEncodingProvider.Instance;
+                var sjis = enc.GetEncoding(932);
+                var writer = new System.IO.StreamWriter(System.Console.OpenStandardOutput(), sjis);
+                writer.AutoFlush = true;
+                System.Console.SetOut(writer);
+            }
+        }
+
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {

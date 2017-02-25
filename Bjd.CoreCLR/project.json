@@ -43,6 +43,7 @@
       ],
       "dependencies": {
         "Bjd.Common.CoreCLR": "1.1.0-*",
+        "Bjd.Console.CoreCLR": "1.1.0-*",
         "Bjd.WebServer.CoreCLR": "1.1.0-*",
         "Bjd.FtpServer.CoreCLR": "1.1.0-*",
         "Bjd.DnsServer.CoreCLR": "1.1.0-*",

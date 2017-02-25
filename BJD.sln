@@ -82,6 +82,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "portable", "portable", "{A2
 		Dockerfile-portable\Dockerfile = Dockerfile-portable\Dockerfile
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Console.CoreCLR", "Bjd.Console.CoreCLR\Bjd.Console.CoreCLR.xproj", "{15B832D8-D6AE-4926-938E-8273B9B22394}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -1184,6 +1186,42 @@ Global
 		{3B59D154-A891-4741-A18D-4F4BC5CA3A52}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
 		{3B59D154-A891-4741-A18D-4F4BC5CA3A52}.Tmp|x86.ActiveCfg = Debug|Any CPU
 		{3B59D154-A891-4741-A18D-4F4BC5CA3A52}.Tmp|x86.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|Any CPU.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|Mixed Platforms.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|x86.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.CD_ROM|x86.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Debug|x86.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|Mixed Platforms.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|x86.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.DVD-5|x86.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|x86.ActiveCfg = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Release|x86.Build.0 = Release|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|Any CPU.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|Mixed Platforms.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|x86.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.SingleImage|x86.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|Any CPU.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|Mixed Platforms.Build.0 = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|x86.ActiveCfg = Debug|Any CPU
+		{15B832D8-D6AE-4926-938E-8273B9B22394}.Tmp|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

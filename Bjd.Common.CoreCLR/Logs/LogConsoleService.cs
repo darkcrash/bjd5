@@ -28,9 +28,6 @@ namespace Bjd.Logs
 
             try
             {
-                //Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
-                Define.ChangeOperationSystem += Define_ChangeOperationSystem;
-                Define_ChangeOperationSystem(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -46,21 +43,6 @@ namespace Bjd.Logs
             isDisposed = true;
         }
 
-        private void Define_ChangeOperationSystem(object sender, EventArgs e)
-        {
-            // fix Windows ja-jp to codepage 932
-            var lang = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-            var lang2 = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-
-            if (Define.IsWindows && lang == "ja")
-            {
-                var enc = System.Text.CodePagesEncodingProvider.Instance;
-                var sjis = enc.GetEncoding(932);
-                var writer = new System.IO.StreamWriter(Console.OpenStandardOutput(), sjis);
-                writer.AutoFlush = true;
-                Console.SetOut(writer);
-            }
-        }
 
         public void Append(LogMessage oneLog)
         {

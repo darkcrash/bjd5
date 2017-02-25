@@ -44,18 +44,30 @@ namespace Bjd.Servers
         private ManualResetEventSlim _childNone = new ManualResetEventSlim(true);
 
         // 同時接続数
+        private readonly int _port;
         private readonly int _multiple;
         private readonly OneBind _oneBind;
 
         //ステータス表示用
-        public override String ToString()
+        public override string ToString()
         {
             var stat = IsJp ? "+ サービス中 " : "+ In execution ";
             if (ThreadBaseKind != ThreadBaseKind.Running)
             {
                 stat = IsJp ? "- 停止 " : "- Initialization failure ";
             }
-            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), (int)_conf.Get("port"), Count, _multiple);
+            return string.Format("{0}\t{1,20}\t[{2}\t:{3} {4}]\tThread {5}/{6}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), _port, Count, _multiple);
+        }
+
+        //ステータス表示用
+        public string ToConsoleString()
+        {
+            var stat = "+";
+            if (ThreadBaseKind != ThreadBaseKind.Running)
+            {
+                stat = "-";
+            }
+            return string.Format("{0} [{2,16}:{3} {4,5}] [Thread {5,3}/{6,3}] {1}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), _port, Count, _multiple);
         }
 
         public int Count
@@ -105,6 +117,7 @@ namespace Bjd.Servers
             CheckLang();//定義のテスト
 
             Logger = kernel.CreateLogger(conf.NameTag, (bool)_conf.Get("useDetailsLog"), this);
+            _port = (int)_conf.Get("port");
             _multiple = (int)_conf.Get("multiple");
 
             //DHCPにはACLが存在しない

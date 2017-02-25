@@ -1,7 +1,19 @@
 {
   "profiles": {
-    "Bjd": {
+    "Bjd.CoreCLR": {
       "commandName": "Project"
+    },
+    "Bjd.CoreCLR --console": {
+      "commandName": "Project",
+      "commandLineArgs": "--console"
+    },
+    "BjdCoreCLR --interactive": {
+      "commandName": "Project",
+      "commandLineArgs": "--interactive"
+    },
+    "Bjd.CoreCLR --service": {
+      "commandName": "Project",
+      "commandLineArgs": "--service"
     }
   }
 }
