@@ -29,6 +29,19 @@ namespace Bjd.Console.Controls
                 return true;
             }
 
+            if (key.Key == ConsoleKey.OemPlus || key.Key ==  ConsoleKey.Add)
+            {
+                var sv = Servers[ActiveServerIndex];
+                sv.MaxCount++; 
+                return true;
+            }
+            if (key.Key == ConsoleKey.OemMinus || key.Key == ConsoleKey.Subtract)
+            {
+                var sv = Servers[ActiveServerIndex];
+                if (sv.MaxCount > 0) sv.MaxCount--;
+                return true;
+            }
+
             var vRows = VisibleRows - headerRow;
             var vServerMinIndex = ActiveServerIndexOffset;
             var vServerMaxIndex = vRows + ActiveServerIndexOffset - 1;

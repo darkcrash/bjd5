@@ -45,7 +45,7 @@ namespace Bjd.Servers
 
         // 同時接続数
         private readonly int _port;
-        private readonly int _multiple;
+        private int _multiple;
         private readonly OneBind _oneBind;
 
         //ステータス表示用
@@ -73,6 +73,12 @@ namespace Bjd.Servers
         public int Count
         {
             get { return _count; }
+        }
+
+        internal int MaxCount
+        {
+            get { return _multiple; }
+            set { _multiple = value; }
         }
 
         //リモート操作(データの取得)
@@ -194,7 +200,7 @@ namespace Bjd.Servers
             var result = OnStartServer(); //子クラスのスレッド開始処理
             if (!result) return false;
 
-            var port = (int)_conf.Get("port");
+            var port = _port;
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
 
             //Ver5.9,2 Java fix
