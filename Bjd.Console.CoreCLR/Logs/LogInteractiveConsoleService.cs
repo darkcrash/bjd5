@@ -90,12 +90,10 @@ namespace Bjd.Logs
 
         public string[] GetBuffer(int row)
         {
-            KeyValuePair<long, string>[] buf;
             string[] result;
             lock (lockKey)
             {
                 result = buffer.OrderByDescending(_ => _.Key).Take(row).Select(_ => _.Value).ToArray();
-                //result = buf.Select(_ => _.Value).ToArray();
             }
             return result;
         }

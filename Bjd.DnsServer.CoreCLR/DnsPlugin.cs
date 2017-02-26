@@ -26,7 +26,7 @@ namespace Bjd.DnsServer
             }
         }
 
-        OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             switch(path)
             {

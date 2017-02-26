@@ -6,7 +6,7 @@ namespace Bjd.Options
 {
     //オプションのリストを表現するクラス
     //Kernelの中で使用される
-    public class ListOption : ListBase<OneOption>
+    public class ListOption : ListBase<SmartOption>
     {
 
         private readonly Kernel _kernel;
@@ -31,7 +31,7 @@ namespace Bjd.Options
             }
         }
 
-        public OneOption Get(String nameTag)
+        public SmartOption Get(String nameTag)
         {
             foreach (var o in Ar)
             {
@@ -44,7 +44,7 @@ namespace Bjd.Options
         }
 
         //Ver6.0.0.
-        public void Replice(OneOption oneOption)
+        public void Replice(SmartOption oneOption)
         {
             for (int i = 0; i < Ar.Count; i++)
             {
@@ -57,7 +57,7 @@ namespace Bjd.Options
         }
 
         //null追加を回避するために、Ar.Add()は、このファンクションを使用する
-        private bool Add(OneOption o)
+        private bool Add(SmartOption o)
         {
             if (o == null)
             {
@@ -95,7 +95,7 @@ namespace Bjd.Options
                 if (oneOption.NameTag == "Web")
                 {
                     //WebServerの場合は、バーチャルホストごとに１つのオプションを初期化する
-                    OneOption o = onePlugin.CreateOption(_kernel, "OptionVirtualHost", "VirtualHost");
+                    SmartOption o = onePlugin.CreateOption(_kernel, "OptionVirtualHost", "VirtualHost");
                     if (Add(o))
                     {
                         var dat = (Dat)o.GetValue("hostList");
@@ -103,11 +103,9 @@ namespace Bjd.Options
                         {
                             foreach (var e in dat)
                             {
-                                if (e.Enable)
-                                {
-                                    string name = string.Format("Web-{0}:{1}", e.ColumnValueList[1], e.ColumnValueList[2]);
-                                    Add(onePlugin.CreateOption(_kernel, "Option", name));
-                                }
+                                if (!e.Enable) continue;
+                                string name = string.Format("Web-{0}:{1}", e.ColumnValueList[1], e.ColumnValueList[2]);
+                                Add(onePlugin.CreateOption(_kernel, "Option", name));
                             }
                         }
                     }
@@ -115,7 +113,7 @@ namespace Bjd.Options
                 else if (oneOption.NameTag == "Tunnel")
                 {
                     //TunnelServerの場合は、１トンネルごとに１つのオプションを初期化する
-                    OneOption o = onePlugin.CreateOption(_kernel, "OptionTunnel", "TunnelList");
+                    SmartOption o = onePlugin.CreateOption(_kernel, "OptionTunnel", "TunnelList");
                     if (Add(o))
                     {
                         var dat = (Dat)o.GetValue("tunnelList");
@@ -123,11 +121,9 @@ namespace Bjd.Options
                         {
                             foreach (var e in dat)
                             {
-                                if (e.Enable)
-                                {
-                                    string name = string.Format("{0}:{1}:{2}:{3}", (e.ColumnValueList[0] == "0") ? "TCP" : "UDP", e.ColumnValueList[1], e.ColumnValueList[2], e.ColumnValueList[3]);
-                                    Add(onePlugin.CreateOption(_kernel, "Option", String.Format("Tunnel-{0}", name)));
-                                }
+                                if (!e.Enable) continue;
+                                string name = string.Format("{0}:{1}:{2}:{3}", (e.ColumnValueList[0] == "0") ? "TCP" : "UDP", e.ColumnValueList[1], e.ColumnValueList[2], e.ColumnValueList[3]);
+                                Add(onePlugin.CreateOption(_kernel, "Option", String.Format("Tunnel-{0}", name)));
                             }
                         }
                     }
@@ -139,7 +135,7 @@ namespace Bjd.Options
                     //DnsServerのプラグイン固有オプションの生成
                     if (oneOption.NameTag == "Dns")
                     {
-                        OneOption o = onePlugin.CreateOption(_kernel, "OptionDnsDomain", "DnsDomain");
+                        SmartOption o = onePlugin.CreateOption(_kernel, "OptionDnsDomain", "DnsDomain");
                         if (Add(o))
                         {
                             var dat = (Dat)o.GetValue("domainList");
@@ -147,10 +143,8 @@ namespace Bjd.Options
                             {
                                 foreach (var e in dat)
                                 {
-                                    if (e.Enable)
-                                    {
-                                        Add(onePlugin.CreateOption(_kernel, "OptionDnsResource", String.Format("Resource-{0}", e.ColumnValueList[0])));
-                                    }
+                                    if (!e.Enable) continue;
+                                    Add(onePlugin.CreateOption(_kernel, "OptionDnsResource", String.Format("Resource-{0}", e.ColumnValueList[0])));
                                 }
                             }
                         }
@@ -158,7 +152,7 @@ namespace Bjd.Options
                     else if (oneOption.NameTag == "Smtp")
                     {
                         //Ver6.0.0
-                        OneOption o = onePlugin.CreateOption(_kernel, "OptionMl", "Ml");
+                        SmartOption o = onePlugin.CreateOption(_kernel, "OptionMl", "Ml");
                         //var o = (OneOption)Util.CreateInstance(kernel, path, "OptionMl", new object[] { kernel, path, "Ml" });
                         if (Add(o))
                         {
@@ -167,10 +161,8 @@ namespace Bjd.Options
                             {
                                 foreach (var e in dat)
                                 {
-                                    if (e.Enable)
-                                    {
-                                        Add(onePlugin.CreateOption(_kernel, "OptionOneMl", String.Format("Ml-{0}", e.ColumnValueList[0])));
-                                    }
+                                    if (!e.Enable) continue;
+                                    Add(onePlugin.CreateOption(_kernel, "OptionOneMl", String.Format("Ml-{0}", e.ColumnValueList[0])));
                                 }
                             }
                         }
@@ -179,7 +171,7 @@ namespace Bjd.Options
             }
             if (Get("Smtp") != null || Get("Pop3") != null || Get("WebApi") != null)
             {
-                Add(new OptionMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
+                Add(new SmartOptionMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
             }
         }
 

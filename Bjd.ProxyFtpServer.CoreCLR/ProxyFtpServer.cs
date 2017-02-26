@@ -26,9 +26,9 @@ namespace Bjd.ProxyFtpServer
             }
         }
 
-        OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new ProxyFtpServer.Option(kernel, path, nameTag);
+            return new ProxyFtpServer.ProxyFtpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

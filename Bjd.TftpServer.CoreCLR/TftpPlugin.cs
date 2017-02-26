@@ -29,9 +29,9 @@ namespace Bjd.TftpServer
             }
         }
 
-        OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new TftpServer.Option(kernel, path, nameTag);
+            return new TftpServer.TftpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

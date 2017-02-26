@@ -28,7 +28,7 @@ namespace Bjd.Test.Mails
 
         public MailBoxTest(ITestOutputHelper helper)
         {
-            const string dir = "mailbox";
+            //const string dir = "mailbox";
 
             _service = TestService.CreateTestService();
             _service.CreateMailbox("user1");

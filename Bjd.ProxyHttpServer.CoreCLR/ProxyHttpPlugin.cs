@@ -26,9 +26,9 @@ namespace Bjd.ProxyHttpServer
             }
         }
 
-        OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new ProxyHttpServer.Option(kernel, path, nameTag);
+            return new ProxyHttpServer.ProxyHttpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

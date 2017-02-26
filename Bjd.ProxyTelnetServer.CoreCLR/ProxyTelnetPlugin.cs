@@ -26,9 +26,9 @@ namespace Bjd.ProxyTelnetServer
             }
         }
 
-        OneOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new ProxyTelnetServer.Option(kernel, path, nameTag);
+            return new ProxyTelnetServer.ProxyTelnetOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)
