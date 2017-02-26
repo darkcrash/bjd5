@@ -61,6 +61,45 @@ cd Bjd.CoreCLR
 dotnet run
 ```
 
+## Command Options
+
+**It's possible to choose only one.**
+
+* --interactive (defualt)
+
+  interactive, using standard input and standard output.
+  It's checked only by Windows.
+
+* --console
+
+  standard output log.
+  for docker.
+
+* --service
+
+  standard output null.
+
+Example --console
+```Bash:
+dotnet run --console
+dotnet Bjd.CoreCLR.dll --console
+```
+Example --service
+```Bash:
+dotnet run --service
+dotnet Bjd.CoreCLR.dll --service
+```
+Example --interactive
+```Bash:
+dotnet run
+dotnet Bjd.CoreCLR.dll
+dotnet run --interactive
+dotnet Bjd.CoreCLR.dll --interactive
+```
+
+
+
+
 ## Default Directory (dotnet publish)
 ```
 publish
@@ -108,7 +147,7 @@ publish
 TAG
 
 * darkcrash/blackjumbodog-dotnet-core:latest-run
- * ` dotnet restore ` ` dotnet run `
+ * ` dotnet restore ` ` dotnet run --console`
 
 * darkcrash/blackjumbodog-dotnet-core:latest
  * ` dotnet publish -c Relaese`
