@@ -7,7 +7,7 @@ namespace Bjd.Console.Controls
 {
     public class MenuControl : Control
     {
-        private int maxMenu = 4;
+        private int maxMenu = 5;
         public MenuControl(ControlContext cc) : base(cc)
         {
             Row = 3;
@@ -30,8 +30,9 @@ namespace Bjd.Console.Controls
             }
             cContext.Server.Visible = (ActiveMenu == 1);
             cContext.Logs.Visible = (ActiveMenu == 2);
-            cContext.Info.Visible = (ActiveMenu == 3);
-            cContext.Service.Visible = (ActiveMenu == 4);
+            cContext.Option.Visible = (ActiveMenu == 3);
+            cContext.Info.Visible = (ActiveMenu == 4);
+            cContext.Service.Visible = (ActiveMenu == 5);
 
             return result;
 
@@ -50,9 +51,11 @@ namespace Bjd.Console.Controls
                     context.Write("|");
                     context.Write(" Logs    ", (ActiveMenu == 2 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 2 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Info    ", (ActiveMenu == 3 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 3 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Option  ", (ActiveMenu == 3 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 3 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Service ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Info    ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write("|");
+                    context.Write(" Service ", (ActiveMenu == 5 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 5 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
                     break;
                 case 2:

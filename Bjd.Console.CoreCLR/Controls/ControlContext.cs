@@ -21,6 +21,7 @@ namespace Bjd.Console.Controls
         public MenuControl Menu { get; }
         public ServerControl Server { get; }
         public LogsControl Logs { get; }
+        public OptionControl Option { get; }
         public InfoControl Info { get; }
         public ServiceControl Service { get; }
 
@@ -40,6 +41,9 @@ namespace Bjd.Console.Controls
             Logs = new LogsControl(this);
             ctrls.Add(Logs);
 
+            Option = new OptionControl(this);
+            ctrls.Add(Option);
+
             Info = new InfoControl(this);
             ctrls.Add(Info);
 
@@ -57,6 +61,10 @@ namespace Bjd.Console.Controls
             Logs.Visible = false;
             Logs.Focused = true;
             Logs.Top = 3;
+
+            Option.Visible = false;
+            Option.Focused = true;
+            Option.Top = 3;
 
             Info.Visible = false;
             Info.Focused = false;
