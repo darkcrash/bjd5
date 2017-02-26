@@ -32,6 +32,7 @@ namespace Bjd
         //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
         public ListServer ListServer { get; private set; }
+        public ListPlugin ListPlugin { get; private set; }
         public List<ILogService> LogServices { get; private set; } = new List<ILogService>();
         public bool IsJp { get; private set; } = true;
 
@@ -48,7 +49,6 @@ namespace Bjd
         private CancellationTokenSource CancelTokenSource { get; set; }
 
         private CancellationToken CancelToken { get; set; }
-
 
         public string ServerName
         {
@@ -150,15 +150,15 @@ namespace Bjd
 
 
             //var listPlugin = new ListPlugin(Define.ExecutableDirectory);
-            var listPlugin = new ListPlugin(this);
-            foreach (var o in listPlugin)
+            ListPlugin = new ListPlugin(this);
+            foreach (var o in ListPlugin)
             {
                 Logger.Set(LogKind.Detail, null, 9000008, string.Format("{0}Server", o.Name));
             }
 
             IsJp = Configuration.IsJp();
 
-            ListOption = new ListOption(this, listPlugin);
+            ListOption = new ListOption(this, ListPlugin);
 
             //OptionBasic
             var confBasic = new Conf(ListOption.Get("Basic"));
@@ -221,7 +221,7 @@ namespace Bjd
             }
 
 
-            ListServer = new ListServer(this, listPlugin);
+            ListServer = new ListServer(this, ListPlugin);
 
             //ListTool = new ListTool();
             //ListTool.Initialize(this);

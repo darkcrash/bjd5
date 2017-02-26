@@ -31,12 +31,7 @@ namespace Bjd.Console.Controls
             cContext.Server.Visible = (ActiveMenu == 1);
             cContext.Logs.Visible = (ActiveMenu == 2);
             cContext.Info.Visible = (ActiveMenu == 3);
-
-            if (key.Key == ConsoleKey.Enter && ActiveMenu == 4)
-            {
-                Services.InteractiveConsoleService.Stop();
-                result = true;
-            }
+            cContext.Service.Visible = (ActiveMenu == 4);
 
             return result;
 
@@ -57,7 +52,7 @@ namespace Bjd.Console.Controls
                     context.Write("|");
                     context.Write(" Info    ", (ActiveMenu == 3 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 3 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Exit    ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Service ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
                     break;
                 case 2:

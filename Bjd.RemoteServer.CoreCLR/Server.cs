@@ -159,7 +159,7 @@ namespace Bjd.RemoteServer
                 case RemoteDataKind.CmdRestart:
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Restart", false/*synchro*/);
-                    DefaultService.Restart();
+                    //DefaultService.Restart();
                     break;
                 case RemoteDataKind.CmdTool:
                     var tmp = (o.Str).Split(new[] { '-' }, 2);
@@ -212,7 +212,7 @@ namespace Bjd.RemoteServer
 
                     //自分自身（スレッド）を停止するため非同期で実行する
                     //Kernel.Menu.EnqueueMenu("StartStop_Reload", false/*synchro*/);
-                    DefaultService.Restart();
+                    //DefaultService.Restart();
                     break;
                 case RemoteDataKind.CmdTrace:
                     _kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");

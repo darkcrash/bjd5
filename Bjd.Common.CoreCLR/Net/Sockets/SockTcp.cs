@@ -602,7 +602,7 @@ namespace Bjd.Net.Sockets
                     this._ssl = null;
                 }
                 disposedValue = true;
-                SetError("Dispose");
+                //SetError("Dispose");
             }
 
             base.Dispose(disposing);

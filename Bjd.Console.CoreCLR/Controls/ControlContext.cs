@@ -9,8 +9,6 @@ namespace Bjd.Console.Controls
 {
     public class ControlContext
     {
-        public event EventHandler RequstRefresh;
-
         System.Threading.Tasks.Task KeyinputTask;
         System.Threading.Tasks.Task OutputTask;
         System.Threading.AutoResetEvent refresh = new System.Threading.AutoResetEvent(false);
@@ -24,44 +22,55 @@ namespace Bjd.Console.Controls
         public ServerControl Server { get; }
         public LogsControl Logs { get; }
         public InfoControl Info { get; }
+        public ServiceControl Service { get; }
 
         public Kernel Kernel { get { return _Kernel; } set { KernelChanged(value); } }
 
-        public LogInteractiveConsoleService LogService { get { return _LogService; }  set { LogServiceChanged(value); } }
+        public LogInteractiveConsoleService LogService { get { return _LogService; } set { LogServiceChanged(value); } }
 
-        public ControlContext(System.Threading.CancellationToken token )
+        public ControlContext(System.Threading.CancellationToken token)
         {
 
             Menu = new MenuControl(this);
-            Menu.Visible = true;
-            Menu.Focused = true;
-            Menu.Top = 0;
             ctrls.Add(Menu);
 
             Server = new ServerControl(this);
-            Server.Visible = true;
-            Server.Focused = true;
-            Server.Top = 3;
             ctrls.Add(Server);
 
             Logs = new LogsControl(this);
-            Logs.Visible = false;
-            Logs.Focused = false;
-            Logs.Top = 3;
             ctrls.Add(Logs);
 
             Info = new InfoControl(this);
+            ctrls.Add(Info);
+
+            Service = new ServiceControl(this);
+            ctrls.Add(Service);
+
+            Menu.Visible = true;
+            Menu.Focused = true;
+            Menu.Top = 0;
+
+            Server.Visible = true;
+            Server.Focused = true;
+            Server.Top = 3;
+
+            Logs.Visible = false;
+            Logs.Focused = true;
+            Logs.Top = 3;
+
             Info.Visible = false;
             Info.Focused = false;
             Info.Top = 3;
-            ctrls.Add(Info);
+
+            Service.Visible = false;
+            Service.Focused = true;
+            Service.Top = 3;
 
             OutputTask = new System.Threading.Tasks.Task(() => Output(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
             OutputTask.Start();
 
             KeyinputTask = new System.Threading.Tasks.Task(() => KeyInputLoop(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
             KeyinputTask.Start();
-
 
         }
 
@@ -75,7 +84,11 @@ namespace Bjd.Console.Controls
                 {
                     if (!ctrl.Visible) continue;
                     if (!ctrl.Focused) continue;
-                    if (ctrl.Input(key)) reqRefresh = true;
+                    if (ctrl.Input(key))
+                    {
+                        reqRefresh = true;
+                        ctrl.Redraw = true;
+                    }
                 }
                 if (reqRefresh) refresh.Set();
             }
@@ -87,27 +100,39 @@ namespace Bjd.Console.Controls
             var cc = new ConsoleContext();
             while (true)
             {
-                var maxHeight = System.Console.WindowHeight - 1;
+                var isWindowStateChanged = cc.WindowStateChanged();
+
                 int height = 0;
-                System.Console.SetCursorPosition(0, 0);
 
                 foreach (var ctrl in ctrls)
                 {
-                    if (height >= maxHeight) break;
+                    if (height >= cc.MaxHeight) break;
                     if (!ctrl.Visible) continue;
                     cc.SetTop(ctrl);
+                    if (!isWindowStateChanged && !ctrl.Redraw)
+                    {
+                        height += ctrl.Row;
+                        if (height >= cc.MaxHeight) height = cc.MaxHeight;
+                        continue;
+                    }
                     for (var i = 0; i < ctrl.Row; i++)
                     {
-                        if (height >= maxHeight) break;
+                        if (height >= cc.MaxHeight) break;
                         System.Console.SetCursorPosition(0, height);
                         cc.WriteBlank();
                         System.Console.SetCursorPosition(0, height);
-                        ctrl.Output(i, cc);
+                        try
+                        {
+                            ctrl.Output(i, cc);
+                        }
+                        catch (Exception ex) { }
                         height++;
                     }
+                    ctrl.Redraw = false;
                 }
 
                 // clear Blank
+                System.Console.SetCursorPosition(0, height);
                 cc.BlankToEnd();
 
                 refresh.WaitOne();
@@ -133,12 +158,16 @@ namespace Bjd.Console.Controls
 
         private void _LogService_Appended(object sender, EventArgs e)
         {
-            if (Logs.Visible) Refresh();
+            if (!Logs.Visible) return;
+            Logs.Redraw = true;
+            Refresh();
+
         }
 
         public void Refresh()
         {
-            refresh.Set();
+            if (refresh != null)
+                refresh.Set();
         }
 
     }

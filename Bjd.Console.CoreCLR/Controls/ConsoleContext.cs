@@ -21,26 +21,40 @@ namespace Bjd.Console.Controls
 
         public int VisibleRows = 0;
 
-        public string Blank { get; }
-        public string BlankLeft { get; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int MaxHeight { get; private set; }
+        public string Blank { get; private set; }
+        public string BlankLeft { get; private set; }
 
         public ConsoleContext()
         {
             System.Console.CursorVisible = false;
-            Blank = new string(' ', System.Console.WindowWidth);
-            BlankLeft = new string(' ', System.Console.WindowWidth - 1);
+            WindowStateChanged();
+        }
 
+        public bool WindowStateChanged()
+        {
+            if (Width == System.Console.WindowWidth && Height == System.Console.WindowHeight) return false;
+            Width = System.Console.WindowWidth;
+            Height = System.Console.WindowHeight;
+            MaxHeight = Height - 1;
+            Blank = new string(' ', Width);
+            BlankLeft = new string(' ', Width - 1);
+            System.Console.CursorVisible = false;
+            return true;
         }
 
         public void SetTop(Control ctrl)
         {
             System.Console.SetCursorPosition(0, ctrl.Top);
-            ctrl.VisibleRows = System.Console.WindowHeight - ctrl.Top;
+            ctrl.VisibleRow = Height - ctrl.Top;
+            ctrl.Column = Width;
         }
 
         public void Write(string message)
         {
-            if (System.Console.BufferWidth < message.Length) message = message.Remove(System.Console.BufferWidth);
+            if (System.Console.WindowWidth < message.Length) message = message.Remove(System.Console.WindowWidth);
             System.Console.Write(message);
         }
 
@@ -72,10 +86,19 @@ namespace Bjd.Console.Controls
 
         public void BlankToEnd()
         {
-            for (var i = System.Console.CursorTop + 1; i < System.Console.WindowHeight; i++)
+            var stPos = System.Console.CursorTop;
+            var edPos = System.Console.WindowHeight;
+            for (var i = stPos; i < edPos; i++)
             {
                 System.Console.SetCursorPosition(0, i);
-                WriteBlank();
+                if (i == edPos - 1)
+                {
+                    System.Console.Write(BlankLeft);
+                }
+                else
+                {
+                    System.Console.Write(Blank);
+                }
             }
         }
 

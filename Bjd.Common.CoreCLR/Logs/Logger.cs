@@ -403,25 +403,25 @@ namespace Bjd.Logs
         [Conditional("TRACE")]
         public void TraceInformation(string message)
         {
-            FormatWriteLine(message);
+            FormatWriteLine(message, (l, m) => l.TraceInformation(m));
         }
 
         [Conditional("TRACE")]
         public void TraceWarning(string message)
         {
-            FormatWriteLine(message);
+            FormatWriteLine(message, (l, m) => l.TraceWarning(m));
         }
 
         [Conditional("TRACE")]
         public void TraceError(string message)
         {
-            FormatWriteLine(message);
+            FormatWriteLine(message, (l, m) => l.TraceError(m));
         }
 
         [Conditional("TRACE")]
         public void Fail(string message)
         {
-            FormatWriteLine(message);
+            FormatWriteLine(message, (l, m) => l.TraceError(m));
         }
 
         private int indentCount = 0;
@@ -451,9 +451,13 @@ namespace Bjd.Logs
         }
         protected virtual void FormatWriteLine(string message)
         {
+            FormatWriteLine(message, (l, m) => l.WriteLine(m));
+        }
+        protected virtual void FormatWriteLine(string message, Action<ILogService, string> action)
+        {
             var info = CreateTraceInfo(message);
 
-            var t = new System.Threading.Tasks.Task(() => WriteLineAll(info));
+            var t = new System.Threading.Tasks.Task(() => WriteLineAll(info, action));
             t.Start(sts);
         }
 
@@ -467,6 +471,16 @@ namespace Bjd.Logs
             return info;
         }
 
+        internal void WriteLineAll(TraceStruct info, Action<ILogService, string> action)
+        {
+            var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
+            var tidtext = info.tid.ToString().PadLeft(3);
+            var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
+            foreach (var writer in _logServices)
+            {
+                action(writer, msg);
+            }
+        }
         internal void WriteLineAll(TraceStruct info)
         {
             var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
@@ -477,7 +491,6 @@ namespace Bjd.Logs
                 writer.WriteLine(msg);
             }
         }
-
 
         internal struct TraceStruct
         {

@@ -12,7 +12,7 @@ namespace Bjd.Services
         Kernel _kernel;
         ControlContext controlContext;
         static System.Threading.CancellationTokenSource signal = new System.Threading.CancellationTokenSource();
-        static InteractiveConsoleService instance = new InteractiveConsoleService();
+        internal static InteractiveConsoleService instance = new InteractiveConsoleService();
 
         public static void Start()
         {
@@ -27,14 +27,6 @@ namespace Bjd.Services
             System.Console.CancelKeyPress += Console_CancelKeyPress;
             signal.Token.WaitHandle.WaitOne();
             Trace.TraceInformation("InteractiveConsoleService.ServiceMain End");
-        }
-
-        public static void Restart()
-        {
-            Trace.TraceInformation("InteractiveConsoleService.Restart Start");
-            instance.OnStop();
-            instance.OnStart();
-            Trace.TraceInformation("InteractiveConsoleService.Restart End");
         }
 
         public static void Stop()
@@ -75,21 +67,21 @@ namespace Bjd.Services
             controlContext = new ControlContext(signal.Token);
         }
 
-        protected void OnStart()
+        internal void OnStart()
         {
             Trace.TraceInformation("InteractiveConsoleService.OnStart Start");
 
+            if (_kernel == null)
+            {
+                _kernel = new Kernel();
+                _kernel.Events.RequestLogService += KernelEvents_RequestLogService;
+                _kernel.ListInitialize();
+                _kernel.Start();
 
-            _kernel = new Kernel();
-            _kernel.Events.RequestLogService += KernelEvents_RequestLogService;
-            _kernel.ListInitialize();
-            _kernel.Start();
+                controlContext.Kernel = _kernel;
 
-            controlContext.Kernel = _kernel;
-
+            }
             Trace.TraceInformation("InteractiveConsoleService.OnStart End");
-
-
         }
 
         private void KernelEvents_RequestLogService(object sender, EventArgs e)
@@ -99,26 +91,18 @@ namespace Bjd.Services
             _kernel.LogServices.Add(logService);
         }
 
-        protected void OnPause()
-        {
-            Trace.TraceInformation("InteractiveConsoleService.OnPause Start");
-            _kernel.Stop();
-            Trace.TraceInformation("InteractiveConsoleService.OnPause End");
-        }
-        protected void OnContinue()
-        {
-            Trace.TraceInformation("InteractiveConsoleService.OnContinue Start");
-            _kernel.Start();
-            Trace.TraceInformation("InteractiveConsoleService.OnContinue End");
-        }
 
-        protected void OnStop()
+        internal void OnStop()
         {
             Trace.TraceInformation("InteractiveConsoleService.OnStop Start");
-            _kernel.Stop();
-            _kernel.Events.RequestLogService -= KernelEvents_RequestLogService;
-            _kernel.Dispose();
-            _kernel = null;
+            if (_kernel != null)
+            {
+                _kernel.Stop();
+                _kernel.Events.RequestLogService -= KernelEvents_RequestLogService;
+                _kernel.Dispose();
+                _kernel = null;
+                controlContext.Kernel = null;
+            }
             Trace.TraceInformation("InteractiveConsoleService.OnStop End");
         }
 

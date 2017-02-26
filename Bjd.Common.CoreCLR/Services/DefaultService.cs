@@ -23,14 +23,6 @@ namespace Bjd.Services
             Trace.TraceInformation("DefaultService.ServiceMain End");
         }
 
-        public static void Restart()
-        {
-            Trace.TraceInformation("DefaultService.Restart Start");
-            instance.OnStop();
-            instance.OnStart();
-            Trace.TraceInformation("DefaultService.Restart End");
-        }
-
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             Trace.TraceInformation("DefaultService.ConsoleCancel Start");
@@ -47,20 +39,6 @@ namespace Bjd.Services
             _kernel.ListInitialize();
             _kernel.Start();
             Trace.TraceInformation("DefaultService.OnStart End");
-        }
-
-
-        protected void OnPause()
-        {
-            Trace.TraceInformation("DefaultService.OnPause Start");
-            _kernel.Stop();
-            Trace.TraceInformation("DefaultService.OnPause End");
-        }
-        protected void OnContinue()
-        {
-            Trace.TraceInformation("DefaultService.OnContinue Start");
-            _kernel.Start();
-            Trace.TraceInformation("DefaultService.OnContinue End");
         }
 
         protected void OnStop()

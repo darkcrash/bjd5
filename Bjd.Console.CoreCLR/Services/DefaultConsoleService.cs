@@ -43,14 +43,6 @@ namespace Bjd.Services
             Trace.TraceInformation("DefaultConsoleService.ServiceMain End");
         }
 
-        public static void Restart()
-        {
-            Trace.TraceInformation("DefaultConsoleService.Restart Start");
-            instance.OnStop();
-            instance.OnStart();
-            Trace.TraceInformation("DefaultConsoleService.Restart End");
-        }
-
         private static void Define_ChangeOperationSystem(object sender, EventArgs e)
         {
             // fix Windows ja-jp to codepage 932
@@ -90,19 +82,6 @@ namespace Bjd.Services
         private void KernelEvents_RequestLogService(object sender, EventArgs e)
         {
             _kernel.LogServices.Add(new Logs.LogConsoleService());
-        }
-
-        protected void OnPause()
-        {
-            Trace.TraceInformation("DefaultConsoleService.OnPause Start");
-            _kernel.Stop();
-            Trace.TraceInformation("DefaultConsoleService.OnPause End");
-        }
-        protected void OnContinue()
-        {
-            Trace.TraceInformation("DefaultConsoleService.OnContinue Start");
-            _kernel.Start();
-            Trace.TraceInformation("DefaultConsoleService.OnContinue End");
         }
 
         protected void OnStop()

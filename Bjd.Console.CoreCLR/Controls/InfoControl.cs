@@ -7,9 +7,10 @@ namespace Bjd.Console.Controls
 {
     public class InfoControl : Control
     {
-        public InfoControl(ControlContext cContext) :base (cContext)
+        private const int headerRow = 2;
+        public InfoControl(ControlContext cContext) : base(cContext)
         {
-            Row = 4;
+            Row = headerRow;
         }
 
         public override bool Input(ConsoleKeyInfo key)
@@ -19,19 +20,34 @@ namespace Bjd.Console.Controls
 
         public override void Output(int row, ConsoleContext context)
         {
-            switch(row)
+            switch (row)
             {
                 case 0:
+                    context.Write($" {Define.ApplicationName} - {Define.ProductVersion}  {Define.Copyright}");
                     break;
                 case 1:
-                    context.Write($" {Define.ApplicationName} - {Define.ProductVersion}");
-                    break;
-                case 2:
-                    context.Write($" {Define.Copyright}");
-                    break;
-                case 3:
+                    context.Write($" {Define.HostName} {Define.OperatingSystem} ");
                     break;
             }
+            var pgList = cContext.Kernel.ListPlugin;
+            var idx = row - headerRow;
+            var pg = pgList[idx];
+            context.Write($"    {pg.Name} on {pg.PluginName}");
+        }
+
+        public override void KernelChanged()
+        {
+            base.KernelChanged();
+            if (cContext.Kernel != null)
+            {
+                var pg = cContext.Kernel.ListPlugin;
+                Row = headerRow + pg.Count;
+            }
+            else
+            {
+                Row = headerRow;
+            }
+            Redraw = true;
         }
 
     }

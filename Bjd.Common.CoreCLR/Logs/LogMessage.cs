@@ -19,6 +19,8 @@ namespace Bjd.Logs
         private String _detailInfomation;
         private static int _pid = System.Diagnostics.Process.GetCurrentProcess().Id;
 
+        public LogKind LogKind { get { return _logKind; } }
+
         public LogMessage(DateTime dt, LogKind logKind, String nameTag, long threadId, String remoteHostname, int messageNo, String message, String detailInfomation)
         {
             _dt = dt;
