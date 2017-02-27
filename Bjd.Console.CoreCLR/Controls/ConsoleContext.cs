@@ -81,6 +81,15 @@ namespace Bjd.Console.Controls
                 System.Console.Write(BlankLeft);
                 return;
             }
+            var left = System.Console.CursorLeft;
+            if (left > 0)
+            {
+                var width = System.Console.WindowWidth;
+                var rightSize = width - left;
+                var bl = new string(' ', rightSize);
+                System.Console.Write(bl);
+                return;
+            }
             System.Console.Write(Blank);
         }
 

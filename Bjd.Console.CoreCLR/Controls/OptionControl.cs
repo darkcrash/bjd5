@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using Bjd.Options;
+using System.Collections.Generic;
 
 namespace Bjd.Console.Controls
 {
@@ -10,6 +11,7 @@ namespace Bjd.Console.Controls
     {
         private const int headerRow = 2;
         private ListOption options;
+        private List<string> optionsList;
         private SmartOption currentOption;
         private Dat currentDat;
         private int ActiveIndex = 0;
@@ -18,6 +20,7 @@ namespace Bjd.Console.Controls
         private int ActiveOptionIndexOffset = 0;
         private int ActiveListValIndex = 0;
         private int ActiveListValIndexOffset = 0;
+        private string title = "";
 
         public OptionControl(ControlContext cContext) : base(cContext)
         {
@@ -29,7 +32,7 @@ namespace Bjd.Console.Controls
             var count = 0;
             if (currentDat != null)
             {
-                count = currentDat.Count;
+                count = currentDat.GetList().Count;
                 if (key.Key == ConsoleKey.Backspace || key.Key == ConsoleKey.Escape)
                 {
                     currentDat = null;
@@ -50,6 +53,7 @@ namespace Bjd.Console.Controls
                     ActiveIndex = ActiveOptionIndex;
                     ActiveIndexOffset = ActiveOptionIndexOffset;
                     SetActiveServerViewIndex();
+                    title = "";
                     return true;
                 }
                 var item = currentOption.ListVal[ActiveIndex];
@@ -58,13 +62,13 @@ namespace Bjd.Console.Controls
                     ActiveListValIndex = ActiveIndex;
                     ActiveListValIndexOffset = ActiveIndexOffset;
                     currentDat = item.Value as Dat;
-                    Row = currentDat.Count + headerRow;
+                    Row = currentDat.GetList().Count + headerRow;
                     ActiveIndex = 0;
-                    SetActiveServerViewIndex();
+                    ActiveIndexOffset = 0;
                     return true;
                 }
             }
-            else
+            else if (options != null)
             {
                 count = options.Count;
                 if (key.Key == ConsoleKey.Enter)
@@ -74,7 +78,16 @@ namespace Bjd.Console.Controls
                     currentOption = options[ActiveIndex];
                     Row = currentOption.ListVal.Count + headerRow;
                     ActiveIndex = 0;
-                    SetActiveServerViewIndex();
+                    ActiveIndexOffset = 0;
+
+                    if (currentOption != null)
+                    {
+                        try { title = $"[{currentOption.MenuStr}]"; }
+                        catch
+                        {
+                            try { title = $"[{currentOption.NameTag}]"; } catch { }
+                        }
+                    }
                     return true;
                 }
             }
@@ -100,16 +113,17 @@ namespace Bjd.Console.Controls
             switch (row)
             {
                 case 0:
-                    var title = (currentOption != null ? $"[{currentOption.MenuStr}]" : "");
                     context.Write($" ->{title}");
                     if (currentDat != null)
                     {
                         var title2 = $"[{currentOption.ListVal[ActiveListValIndex].Name}]";
                         context.Write($"->{title2}");
                     }
+                    base.Output(row, context);
                     return;
                 case 1:
                     context.Write($" return select option [BackSpace] or [Escape]{""} ");
+                    base.Output(row, context);
                     return;
             }
             var idx = row - headerRow + ActiveIndexOffset;
@@ -117,19 +131,23 @@ namespace Bjd.Console.Controls
             var frColor = (ActiveIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
             if (currentDat != null)
             {
-                var lo = currentDat[idx];
-                context.Write($"    {lo.ToString()}", frColor, bgColor);
+                var lo = currentDat.GetList()[idx];
+                context.Write($"    {lo.Name}:{lo.ToCtrlString()}", frColor, bgColor);
             }
             else if (currentOption != null)
             {
                 var lv = currentOption.ListVal[idx];
-                context.Write($"    {lv.Name}:{lv.Value}", frColor, bgColor);
+                context.Write($"    {lv.Name}:{lv.ToCtrlString()}", frColor, bgColor);
             }
             else
             {
-                var lo = options[idx];
-                context.Write($"    {lo.NameTag} on {lo.MenuStr}", frColor, bgColor);
+                var item = optionsList[idx];
+                context.Write(item, frColor, bgColor);
+                //var lo = options[idx];
+                //context.Write($"    {lo.NameTag} -> {lo.MenuStr}", frColor, bgColor);
             }
+            base.Output(row, context);
+
         }
 
         public override void KernelChanged()
@@ -139,6 +157,11 @@ namespace Bjd.Console.Controls
             {
                 options = cContext.Kernel.ListOption;
                 Row = headerRow + options.Count;
+                optionsList = new List<string>();
+                foreach (var item in options)
+                {
+                    optionsList.Add($"    {item.NameTag} -> {item.MenuStr}");
+                }
             }
             else
             {

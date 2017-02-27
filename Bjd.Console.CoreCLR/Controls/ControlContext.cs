@@ -98,7 +98,7 @@ namespace Bjd.Console.Controls
                         ctrl.Redraw = true;
                     }
                 }
-                if (reqRefresh) refresh.Set();
+                if (reqRefresh) Refresh();
             }
         }
 
@@ -127,8 +127,8 @@ namespace Bjd.Console.Controls
                     {
                         if (height >= cc.MaxHeight) break;
                         System.Console.SetCursorPosition(0, height);
-                        cc.WriteBlank();
-                        System.Console.SetCursorPosition(0, height);
+                        //cc.WriteBlank();
+                        //System.Console.SetCursorPosition(0, height);
                         try
                         {
                             ctrl.Output(i, cc);
@@ -143,6 +143,11 @@ namespace Bjd.Console.Controls
                 System.Console.SetCursorPosition(0, height);
                 cc.BlankToEnd();
 
+                if (requestRefresh)
+                {
+                    requestRefresh = false;
+                    continue;
+                }
                 refresh.WaitOne();
             }
         }
@@ -172,8 +177,11 @@ namespace Bjd.Console.Controls
 
         }
 
+        private bool requestRefresh = false;
+
         public void Refresh()
         {
+            requestRefresh = true;
             if (refresh != null)
                 refresh.Set();
         }

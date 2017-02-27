@@ -42,6 +42,7 @@ namespace Bjd.Console.Controls
                 internalBuffer = cContext.LogService.GetBuffer(VisibleRow - 1);
                 
                 context.Write($"[I] Infomation:{cContext.LogService.InformationEnabled} [D] Detail:{cContext.LogService.DetailEnabled} [W] Warnning:{cContext.LogService.WarningEnabled}");
+                base.Output(row, context);
                 return;
             }
             var idx = VisibleRow - 1 - row;
@@ -49,6 +50,8 @@ namespace Bjd.Console.Controls
             {
                 context.Write(internalBuffer[idx]);
             }
+
+            base.Output(row, context);
 
         }
 

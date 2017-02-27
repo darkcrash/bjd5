@@ -67,6 +67,7 @@ namespace Bjd.Console.Controls
 
         public virtual void Output(int row, ConsoleContext context)
         {
+            context.WriteBlank();
         }
 
         public virtual bool Input(ConsoleKeyInfo key)

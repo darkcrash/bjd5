@@ -24,15 +24,18 @@ namespace Bjd.Console.Controls
             {
                 case 0:
                     context.Write($" {Define.ApplicationName} - {Define.ProductVersion}  {Define.Copyright}");
-                    break;
+                    base.Output(row, context);
+                    return;
                 case 1:
                     context.Write($" {Define.HostName} {Define.OperatingSystem} ");
-                    break;
+                    base.Output(row, context);
+                    return;
             }
             var pgList = cContext.Kernel.ListPlugin;
             var idx = row - headerRow;
             var pg = pgList[idx];
             context.Write($"    {pg.Name} on {pg.PluginName}");
+            base.Output(row, context);
         }
 
         public override void KernelChanged()

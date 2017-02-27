@@ -97,9 +97,11 @@ namespace Bjd.Console.Controls
             {
                 case 0:
                     context.Write($"[R] Reload. [I] Refresh interval({isRefreshInterval} - {RefreshInterval}). [+][-] Up Down Interval.");
+                    base.Output(row, context);
                     return;
                 case 1:
                     context.Write($"[Shift]+[+][-] Up Down MaxThread.");
+                    base.Output(row, context);
                     return;
             }
             var idx = row - headerRow + ActiveServerIndexOffset;
@@ -108,6 +110,7 @@ namespace Bjd.Console.Controls
             var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
             var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
             context.Write($" {sv.ToConsoleString()}", frColor, bgColor);
+            base.Output(row, context);
 
         }
 

@@ -80,6 +80,8 @@ namespace Bjd.Console.Controls
                     context.Write($" Exit     ", frColor, bgColor);
                     break;
             }
+            base.Output(row, context);
+
         }
 
         private void SetActiveViewIndex()
