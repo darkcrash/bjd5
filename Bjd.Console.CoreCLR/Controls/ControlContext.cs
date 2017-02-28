@@ -127,8 +127,6 @@ namespace Bjd.Console.Controls
                     {
                         if (height >= cc.MaxHeight) break;
                         System.Console.SetCursorPosition(0, height);
-                        //cc.WriteBlank();
-                        //System.Console.SetCursorPosition(0, height);
                         try
                         {
                             ctrl.Output(i, cc);
