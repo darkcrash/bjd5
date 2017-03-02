@@ -4,6 +4,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using Bjd.Options;
 using System.Collections.Generic;
+using Bjd.Controls;
+using Bjd.Console.Controls.Editors;
 
 namespace Bjd.Console.Controls
 {
@@ -12,6 +14,7 @@ namespace Bjd.Console.Controls
         public string Title;
 
         private const int headerRow = 2;
+        private OneVal currentVal;
         private Editors.IEditor editor;
         private Editors.IEditor activeEditor;
 
@@ -20,12 +23,35 @@ namespace Bjd.Console.Controls
             Row = headerRow;
         }
 
+        public bool StartEdit(OneVal val)
+        {
+            currentVal = val;
+            switch (val.CtrlType)
+            {
+                case CtrlType.Int:
+                    var intEd = new IntEditor();
+                    editor = intEd;
+                    activeEditor = editor;
+                    intEd.Value = (int)val.Value;
+                    Row = headerRow + editor.Row;
+                    return true;
+            }
+
+            return false;
+        }
+
         public override bool Input(ConsoleKeyInfo key)
         {
-            if (activeEditor != null)
+            if (key.Key == ConsoleKey.Escape)
             {
-                var result = activeEditor.Input(key);
-                if (result) return true;
+                cContext.EndEdit();
+                return true;
+            }
+            if (key.Key == ConsoleKey.Enter)
+            {
+                currentVal.SetValue(editor.EditValue);
+                cContext.EndEdit();
+                return true;
             }
             if (key.Key == ConsoleKey.Tab)
             {
@@ -40,6 +66,11 @@ namespace Bjd.Console.Controls
                     return true;
                 }
             }
+            if (activeEditor != null)
+            {
+                var result = activeEditor.Input(key);
+                if (result) return true;
+            }
 
             return false;
         }
@@ -49,17 +80,29 @@ namespace Bjd.Console.Controls
             switch (r)
             {
                 case 0:
-                    context.Write($" {Title} ");
+                    var lv = currentVal;
+                    var lvValue = "";
+                    try { lvValue = lv.Value.ToString(); } catch { }
+                    context.Write($" {lv.Name}:{lv.ToCtrlString()}={currentVal.Value.ToString()}");
                     base.Output(r, context);
                     return;
                 case 1:
-                    context.Write($" return select option [BackSpace] or [Escape]{""} ");
+                    context.Write($" return option [Escape]. save [Enter]{""} ");
                     base.Output(r, context);
                     return;
             }
-            if (r == Row)
+            if (r == Row - 1)
             {
-
+                Func<int, int, int> Div = (v1, v2) =>
+                {
+                    int result = 0;
+                    while (v1 > v2) { result++; v1 -= v2; }
+                    return result;
+                };
+                var offset = Div(context.Width - editor.Width - 1, 2);
+                context.Write(new string(' ', offset));
+                editor.Output(context);
+                context.WriteBlank();
                 return;
             }
 

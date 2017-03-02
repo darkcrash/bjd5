@@ -412,7 +412,7 @@ namespace Bjd.Utils
             }
         }
 
-        private bool SaveJson(string nameTag, ListVal listVal)
+        public bool SaveJson(string nameTag, ListVal listVal)
         {
             var numberList = new List<Type> { typeof(int) };
             var boolList = new List<Type> { typeof(bool) };

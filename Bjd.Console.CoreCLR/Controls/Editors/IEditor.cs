@@ -12,6 +12,7 @@ namespace Bjd.Console.Controls.Editors
         int Width { get; }
         int Row { get; }
 
+        object EditValue { get; set; }
 
         bool Input(ConsoleKeyInfo key);
 

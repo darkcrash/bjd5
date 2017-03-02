@@ -57,15 +57,22 @@ namespace Bjd.Console.Controls
                     return true;
                 }
                 var item = currentOption.ListVal[ActiveIndex];
-                if (key.Key == ConsoleKey.Enter && item.ValueType == typeof(Dat))
+                if (key.Key == ConsoleKey.Enter)
                 {
-                    ActiveListValIndex = ActiveIndex;
-                    ActiveListValIndexOffset = ActiveIndexOffset;
-                    currentDat = item.Value as Dat;
-                    Row = currentDat.GetList().Count + headerRow;
-                    ActiveIndex = 0;
-                    ActiveIndexOffset = 0;
-                    return true;
+                    if (item.ValueType == typeof(Dat))
+                    {
+                        ActiveListValIndex = ActiveIndex;
+                        ActiveListValIndexOffset = ActiveIndexOffset;
+                        currentDat = item.Value as Dat;
+                        Row = currentDat.GetList().Count + headerRow;
+                        ActiveIndex = 0;
+                        ActiveIndexOffset = 0;
+                        return true;
+                    }
+                    if (cContext.StartEdit(item))
+                    {
+                        return true;
+                    }
                 }
             }
             else if (options != null)
@@ -90,6 +97,14 @@ namespace Bjd.Console.Controls
                     }
                     return true;
                 }
+
+                if (key.Key == ConsoleKey.S && key.Modifiers == ConsoleModifiers.Control)
+                {
+                    var opt = options[ActiveIndex];
+                    cContext.Kernel.Configuration.SaveJson(opt.NameTag, opt.ListVal);
+                    return true;
+                }
+
             }
 
             if (key.Key == ConsoleKey.UpArrow && ActiveIndex > 0)
@@ -104,6 +119,7 @@ namespace Bjd.Console.Controls
                 SetActiveServerViewIndex();
                 return true;
             }
+
 
             return false;
         }
@@ -122,7 +138,15 @@ namespace Bjd.Console.Controls
                     base.Output(row, context);
                     return;
                 case 1:
-                    context.Write($" return select option [BackSpace] or [Escape]{""} ");
+                    if (currentOption == null)
+                    {
+                        var item = optionsList[ActiveIndex];
+                        context.Write($"Save [CTRL] +[S]  {item} ");
+                    }
+                    else
+                    {
+                        context.Write($" return [BackSpace] or [Escape].");
+                    }
                     base.Output(row, context);
                     return;
             }
@@ -132,12 +156,16 @@ namespace Bjd.Console.Controls
             if (currentDat != null)
             {
                 var lo = currentDat.GetList()[idx];
-                context.Write($"    {lo.Name}:{lo.ToCtrlString()}", frColor, bgColor);
+                var loValue = "";
+                try { loValue = lo.Value.ToString(); } catch { }
+                context.Write($"    {lo.Name}:{lo.ToCtrlString()}={loValue}", frColor, bgColor);
             }
             else if (currentOption != null)
             {
                 var lv = currentOption.ListVal[idx];
-                context.Write($"    {lv.Name}:{lv.ToCtrlString()}", frColor, bgColor);
+                var lvValue = "";
+                try { lvValue = lv.Value.ToString(); } catch { }
+                context.Write($"    {lv.Name}:{lv.ToCtrlString()}={lvValue}", frColor, bgColor);
             }
             else
             {
@@ -149,6 +177,7 @@ namespace Bjd.Console.Controls
             base.Output(row, context);
 
         }
+
 
         public override void KernelChanged()
         {

@@ -4,6 +4,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using System.Collections.Generic;
 using Bjd.Logs;
+using Bjd.Options;
 
 namespace Bjd.Console.Controls
 {
@@ -17,6 +18,7 @@ namespace Bjd.Console.Controls
         private LogInteractiveConsoleService _LogService;
         private List<Control> ctrls = new List<Control>();
         private ConsoleContext consoleContext;
+        private int beforeOptionRow;
 
         public List<Control> Controls { get { return ctrls; } }
 
@@ -26,6 +28,7 @@ namespace Bjd.Console.Controls
         public OptionControl Option { get; }
         public InfoControl Info { get; }
         public ServiceControl Service { get; }
+        public EditControl Edit { get; }
 
         public Kernel Kernel { get { return _Kernel; } set { KernelChanged(value); } }
 
@@ -52,6 +55,9 @@ namespace Bjd.Console.Controls
             Service = new ServiceControl(this);
             ctrls.Add(Service);
 
+            Edit = new EditControl(this);
+            ctrls.Add(Edit);
+
             Menu.Visible = true;
             Menu.Focused = true;
             Menu.Top = 0;
@@ -75,6 +81,10 @@ namespace Bjd.Console.Controls
             Service.Visible = false;
             Service.Focused = true;
             Service.Top = 3;
+
+            Edit.Visible = false;
+            Edit.Focused = true;
+            Edit.Top = 5;
 
             consoleContext = new ConsoleContext(token);
 
@@ -102,12 +112,12 @@ namespace Bjd.Console.Controls
                     {
                         reqRefresh = true;
                         ctrl.Redraw = true;
+                        break;
                     }
                 }
                 if (reqRefresh) Refresh();
             }
         }
-
 
         protected void Output()
         {
@@ -187,6 +197,31 @@ namespace Bjd.Console.Controls
             requestRefresh = true;
             if (refresh != null)
                 refresh.Set();
+        }
+
+
+        public bool StartEdit(OneVal val)
+        {
+            var result = Edit.StartEdit(val);
+            if (result)
+            {
+                Edit.Visible = true;
+                Menu.Focused = false;
+                Option.Focused = false;
+                beforeOptionRow = Option.Row;
+                Option.Row = 1;
+                return true;
+            }
+            return false;
+        }
+
+
+        public void EndEdit()
+        {
+            Edit.Visible = false;
+            Menu.Focused = true;
+            Option.Focused = true;
+            Option.Row = beforeOptionRow;
         }
 
     }
