@@ -16,6 +16,8 @@ namespace Bjd.Console.Controls
         private Kernel _Kernel;
         private LogInteractiveConsoleService _LogService;
         private List<Control> ctrls = new List<Control>();
+        private ConsoleContext consoleContext;
+
         public List<Control> Controls { get { return ctrls; } }
 
         public MenuControl Menu { get; }
@@ -74,13 +76,17 @@ namespace Bjd.Console.Controls
             Service.Focused = true;
             Service.Top = 3;
 
+            consoleContext = new ConsoleContext(token);
+
             OutputTask = new System.Threading.Tasks.Task(() => Output(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
             OutputTask.Start();
 
             KeyinputTask = new System.Threading.Tasks.Task(() => KeyInputLoop(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
             KeyinputTask.Start();
 
+
         }
+
 
         protected void KeyInputLoop()
         {
@@ -105,31 +111,30 @@ namespace Bjd.Console.Controls
 
         protected void Output()
         {
-            var cc = new ConsoleContext();
             while (true)
             {
-                var isWindowStateChanged = cc.WindowStateChanged();
+                var isWindowStateChanged = consoleContext.WindowStateChanged();
 
-                int height = 0;
+                int height = consoleContext.InitialCursorTop;
 
                 foreach (var ctrl in ctrls)
                 {
-                    if (height >= cc.MaxHeight) break;
+                    if (height >= consoleContext.MaxHeight) break;
                     if (!ctrl.Visible) continue;
-                    cc.SetTop(ctrl);
+                    consoleContext.SetTop(ctrl);
                     if (!isWindowStateChanged && !ctrl.Redraw)
                     {
                         height += ctrl.Row;
-                        if (height >= cc.MaxHeight) height = cc.MaxHeight;
+                        if (height >= consoleContext.MaxHeight) height = consoleContext.MaxHeight;
                         continue;
                     }
                     for (var i = 0; i < ctrl.Row; i++)
                     {
-                        if (height >= cc.MaxHeight) break;
+                        if (height >= consoleContext.MaxHeight) break;
                         System.Console.SetCursorPosition(0, height);
                         try
                         {
-                            ctrl.Output(i, cc);
+                            ctrl.Output(i, consoleContext);
                         }
                         catch (Exception ex) { }
                         height++;
@@ -139,7 +144,7 @@ namespace Bjd.Console.Controls
 
                 // clear Blank
                 System.Console.SetCursorPosition(0, height);
-                cc.BlankToEnd();
+                consoleContext.BlankToEnd();
 
                 if (requestRefresh)
                 {

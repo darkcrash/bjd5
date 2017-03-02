@@ -19,6 +19,8 @@ namespace Bjd.Console.Controls
             set { System.Console.ForegroundColor = value; }
         }
 
+        public int InitialCursorTop { get { return _initialCursorTop; } }
+        private int _initialCursorTop = 0;
         public int VisibleRows = 0;
 
         public int Width { get; private set; }
@@ -27,10 +29,20 @@ namespace Bjd.Console.Controls
         public string Blank { get; private set; }
         public string BlankLeft { get; private set; }
 
-        public ConsoleContext()
+        public ConsoleContext(System.Threading.CancellationToken token)
         {
+            _initialCursorTop = System.Console.CursorTop;
+
             System.Console.CursorVisible = false;
             WindowStateChanged();
+
+            token.Register(CancelAction);
+
+        }
+
+        private void CancelAction()
+        {
+            System.Console.CursorVisible = true;
         }
 
         public bool WindowStateChanged()

@@ -57,6 +57,7 @@ namespace Bjd.Console.Controls
                     context.Write("|");
                     context.Write(" Service ", (ActiveMenu == 5 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 5 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
+                    context.WriteBlank();
                     break;
                 case 2:
                     context.Write(new string('-', Column));
