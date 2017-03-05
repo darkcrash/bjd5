@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Bjd.Console.Controls
 {
-    public class ConsoleContext
+    public class ConsoleContext : IDisposable
     {
         public ConsoleColor BackColor
         {
@@ -32,12 +32,19 @@ namespace Bjd.Console.Controls
         public ConsoleContext(System.Threading.CancellationToken token)
         {
             _initialCursorTop = System.Console.CursorTop;
+            System.Console.WindowTop = _initialCursorTop;
 
             System.Console.CursorVisible = false;
             WindowStateChanged();
 
             token.Register(CancelAction);
 
+        }
+
+        public void Dispose()
+        {
+            System.Console.CursorTop = _initialCursorTop + System.Console.WindowHeight;
+            System.Console.WindowTop = _initialCursorTop + System.Console.WindowHeight;
         }
 
         private void CancelAction()
@@ -54,12 +61,13 @@ namespace Bjd.Console.Controls
             Blank = new string(' ', Width);
             BlankLeft = new string(' ', Width - 1);
             System.Console.CursorVisible = false;
+            System.Console.WindowTop = _initialCursorTop;
             return true;
         }
 
         public void SetTop(Control ctrl)
         {
-            System.Console.SetCursorPosition(0, ctrl.Top);
+            System.Console.SetCursorPosition(0, ctrl.Top + _initialCursorTop);
             ctrl.VisibleRow = Height - ctrl.Top;
             ctrl.Column = Width;
         }
@@ -88,7 +96,9 @@ namespace Bjd.Console.Controls
 
         public void WriteBlank()
         {
-            if (System.Console.CursorTop == System.Console.WindowHeight - 1)
+            var stPos = System.Console.CursorTop + _initialCursorTop;
+            var edPos = System.Console.WindowHeight + _initialCursorTop - 1;
+            if (stPos == edPos)
             {
                 System.Console.Write(BlankLeft);
                 return;
@@ -108,7 +118,7 @@ namespace Bjd.Console.Controls
         public void BlankToEnd()
         {
             var stPos = System.Console.CursorTop;
-            var edPos = System.Console.WindowHeight;
+            var edPos = System.Console.WindowHeight + _initialCursorTop;
             for (var i = stPos; i < edPos; i++)
             {
                 System.Console.SetCursorPosition(0, i);

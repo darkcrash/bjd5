@@ -104,6 +104,7 @@ namespace Bjd.Services
                 controlContext.Kernel = null;
             }
             Trace.TraceInformation("InteractiveConsoleService.OnStop End");
+            controlContext.Dispose();
         }
 
 

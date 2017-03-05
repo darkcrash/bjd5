@@ -8,7 +8,7 @@ using Bjd.Options;
 
 namespace Bjd.Console.Controls
 {
-    public class ControlContext
+    public class ControlContext : IDisposable
     {
         System.Threading.Tasks.Task KeyinputTask;
         System.Threading.Tasks.Task OutputTask;
@@ -97,6 +97,11 @@ namespace Bjd.Console.Controls
 
         }
 
+        public void Dispose()
+        {
+            consoleContext.Dispose();
+        }
+
 
         protected void KeyInputLoop()
         {
@@ -126,21 +131,22 @@ namespace Bjd.Console.Controls
                 var isWindowStateChanged = consoleContext.WindowStateChanged();
 
                 int height = consoleContext.InitialCursorTop;
+                int maxHeightOffset = consoleContext.MaxHeight + consoleContext.InitialCursorTop;
 
                 foreach (var ctrl in ctrls)
                 {
-                    if (height >= consoleContext.MaxHeight) break;
+                    if (height >= maxHeightOffset) break;
                     if (!ctrl.Visible) continue;
                     consoleContext.SetTop(ctrl);
                     if (!isWindowStateChanged && !ctrl.Redraw)
                     {
                         height += ctrl.Row;
-                        if (height >= consoleContext.MaxHeight) height = consoleContext.MaxHeight;
+                        if (height >= maxHeightOffset) height = maxHeightOffset;
                         continue;
                     }
                     for (var i = 0; i < ctrl.Row; i++)
                     {
-                        if (height >= consoleContext.MaxHeight) break;
+                        if (height >= maxHeightOffset) break;
                         System.Console.SetCursorPosition(0, height);
                         try
                         {
