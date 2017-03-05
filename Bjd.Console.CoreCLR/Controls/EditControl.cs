@@ -35,6 +35,13 @@ namespace Bjd.Console.Controls
                     intEd.Value = (int)val.Value;
                     Row = headerRow + editor.Row;
                     return true;
+                case CtrlType.CheckBox:
+                    var chkEd = new CheckBoxEditor();
+                    editor = chkEd;
+                    activeEditor = editor;
+                    chkEd.Value = (bool)val.Value;
+                    Row = headerRow + editor.Row;
+                    return true;
             }
 
             return false;
