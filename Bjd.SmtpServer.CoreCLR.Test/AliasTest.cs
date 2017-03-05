@@ -4,7 +4,7 @@ using System.IO;
 using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;

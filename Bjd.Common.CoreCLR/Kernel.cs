@@ -9,7 +9,7 @@ using Bjd.Browse;
 using Bjd.Logs;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Plugins;
 using Bjd.Remote;
 using Bjd.Servers;

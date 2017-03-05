@@ -1,5 +1,5 @@
 ﻿using Bjd;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Utils;
 

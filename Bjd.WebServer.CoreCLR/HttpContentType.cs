@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using Bjd;
-using Bjd.Options;
+using Bjd.Configurations;
 using System.Collections.Generic;
 
 namespace Bjd.WebServer

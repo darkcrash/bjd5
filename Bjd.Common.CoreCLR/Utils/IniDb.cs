@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Bjd.Controls;
-using Bjd.Options;
+using Bjd.Configurations;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 

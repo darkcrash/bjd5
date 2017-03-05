@@ -1,7 +1,7 @@
 ﻿using Bjd;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using System.Collections.Generic;
 
 namespace Bjd.ProxyTelnetServer

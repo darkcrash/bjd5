@@ -2,7 +2,7 @@
 using System.Text;
 using Bjd;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Test;

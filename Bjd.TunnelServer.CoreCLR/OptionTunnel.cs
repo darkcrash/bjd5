@@ -2,7 +2,7 @@
 
 using Bjd;
 using Bjd.Controls;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Net;
 
 namespace Bjd.TunnelServer

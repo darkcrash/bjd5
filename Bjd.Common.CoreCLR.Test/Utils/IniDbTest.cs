@@ -6,7 +6,7 @@ using System.Text;
 using Bjd;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Xunit;
 using Bjd.Services;

@@ -1,5 +1,5 @@
 ﻿using Bjd.Logs;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.WebServer.Outside;
 using System;
 using System.Collections.Generic;

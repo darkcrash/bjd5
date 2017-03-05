@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.Logs
 {

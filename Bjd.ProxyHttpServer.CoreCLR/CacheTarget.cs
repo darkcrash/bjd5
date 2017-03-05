@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.ProxyHttpServer {
     //大文字・小文字は区別されない

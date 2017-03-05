@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Plugins;
 using Bjd.Utils;
 using System.Collections.Generic;

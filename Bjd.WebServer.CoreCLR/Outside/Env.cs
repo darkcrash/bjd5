@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Bjd;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Net.Sockets;
 
 namespace Bjd.WebServer.Outside

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Bjd.Options
+namespace Bjd.Configurations
 {
     public enum FetchSynchronizeKind
     {

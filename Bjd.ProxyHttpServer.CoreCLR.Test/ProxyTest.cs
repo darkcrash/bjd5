@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using Bjd.ProxyHttpServer;
 using Bjd.Services;
 using Bjd.Threading;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace ProxyHttpServerTest
 {

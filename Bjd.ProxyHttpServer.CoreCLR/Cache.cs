@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Threading;
 
 namespace Bjd.ProxyHttpServer

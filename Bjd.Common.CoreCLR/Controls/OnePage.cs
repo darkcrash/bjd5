@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.Controls
 {

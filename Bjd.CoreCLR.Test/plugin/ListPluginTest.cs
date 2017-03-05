@@ -1,6 +1,6 @@
 ﻿using Bjd;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Plugins;
 using Bjd.Services;
 using Xunit;

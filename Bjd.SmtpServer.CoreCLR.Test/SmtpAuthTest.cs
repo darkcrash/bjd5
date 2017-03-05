@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bjd.Controls;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;

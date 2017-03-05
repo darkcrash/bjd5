@@ -6,7 +6,7 @@ using System.Text;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.DnsServer
 {

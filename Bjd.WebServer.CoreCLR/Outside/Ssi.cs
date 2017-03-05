@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.WebServer.IO;

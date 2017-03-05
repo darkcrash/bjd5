@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Test;
 using Xunit;

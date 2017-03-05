@@ -4,7 +4,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using System.Collections.Generic;
 using Bjd.Logs;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.Console.Controls
 {

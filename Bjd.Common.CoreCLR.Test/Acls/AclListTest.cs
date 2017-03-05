@@ -2,7 +2,7 @@
 using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd;
 using Bjd.Services;

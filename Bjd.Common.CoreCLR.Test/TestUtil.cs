@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Bjd;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Xunit;
 

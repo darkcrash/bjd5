@@ -1,7 +1,7 @@
 ﻿using System;
 using Bjd.Controls;
 using Bjd.Mails;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd;

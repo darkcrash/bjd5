@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bjd;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Newtonsoft.Json;

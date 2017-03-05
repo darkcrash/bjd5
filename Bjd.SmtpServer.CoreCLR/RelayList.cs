@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Acls;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.SmtpServer
 {

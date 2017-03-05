@@ -6,7 +6,7 @@ using Bjd.Test;
 using System.IO;
 using Bjd.Net.Sockets;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using System.Collections.Generic;
 using Xunit.Abstractions;
 using Bjd.Test.Logs;

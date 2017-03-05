@@ -14,7 +14,7 @@ using Bjd.Acls;
 using Bjd.Logs;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 

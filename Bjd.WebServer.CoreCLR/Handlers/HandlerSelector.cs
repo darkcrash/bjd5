@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Bjd.WebServer.WebDav;
 

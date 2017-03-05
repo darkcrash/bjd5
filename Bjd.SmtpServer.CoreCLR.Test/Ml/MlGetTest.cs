@@ -4,7 +4,7 @@ using System.Linq;
 using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Bjd.Test;
 using Xunit;

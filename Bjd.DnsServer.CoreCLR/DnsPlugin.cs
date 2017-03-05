@@ -1,7 +1,7 @@
 ﻿using System;
 using Bjd.Plugins;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 
 namespace Bjd.DnsServer

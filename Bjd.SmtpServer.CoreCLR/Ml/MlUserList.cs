@@ -2,7 +2,7 @@
 using System.Collections;
 using Bjd.Controls;
 using Bjd.Mails;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 
 namespace Bjd.SmtpServer

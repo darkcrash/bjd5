@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.ProxyHttpServer {
     //URL制限

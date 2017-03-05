@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
-using Bjd.Options;
+using Bjd.Configurations;
 using System.Collections.Generic;
 using Bjd.Controls;
 using Bjd.Console.Controls.Editors;

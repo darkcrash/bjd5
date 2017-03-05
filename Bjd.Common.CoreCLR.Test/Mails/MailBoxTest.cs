@@ -6,7 +6,7 @@ using Bjd.Controls;
 using Bjd.Logs;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd;
 using System.Security.Cryptography;

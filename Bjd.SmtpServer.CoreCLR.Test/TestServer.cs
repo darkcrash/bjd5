@@ -5,7 +5,7 @@ using System.Threading;
 using Bjd;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Test;
 using Bjd.Services;

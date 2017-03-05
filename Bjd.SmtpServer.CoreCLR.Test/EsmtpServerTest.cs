@@ -1,7 +1,7 @@
 ﻿using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Services;
 using Bjd.SmtpServer;
 using Bjd.Test;

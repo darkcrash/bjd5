@@ -2,7 +2,7 @@
 using Bjd;
 using Bjd.Logs;
 using Bjd.Mails;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd.Services;
 

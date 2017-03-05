@@ -9,7 +9,7 @@ using Bjd.Test;
 using Bjd.Threading;
 using Bjd.Mails;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Services;
 using Bjd.Test.Logs;

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Bjd.Test;
 using Bjd.DnsServer;

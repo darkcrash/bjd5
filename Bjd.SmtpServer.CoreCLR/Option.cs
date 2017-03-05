@@ -4,7 +4,7 @@
 using Bjd;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 
 namespace Bjd.SmtpServer
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
 

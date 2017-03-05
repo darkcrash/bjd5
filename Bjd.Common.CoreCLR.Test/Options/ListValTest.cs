@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Bjd.Controls;
-using Bjd.Options;
+using Bjd.Configurations;
 using Bjd.Utils;
 using Xunit;
 using Bjd.Services;

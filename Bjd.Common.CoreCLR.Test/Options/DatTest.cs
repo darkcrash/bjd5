@@ -1,6 +1,6 @@
 ﻿using System;
 using Bjd.Controls;
-using Bjd.Options;
+using Bjd.Configurations;
 using Xunit;
 
 namespace Bjd.Test.Options

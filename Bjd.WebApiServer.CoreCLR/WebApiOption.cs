@@ -2,8 +2,8 @@
 using Bjd;
 using Bjd.Controls;
 using Bjd.Net;
-using Bjd.Options;
-using Bjd.Options.Attributes;
+using Bjd.Configurations;
+using Bjd.Configurations.Attributes;
 
 namespace Bjd.WebApiServer
 {
