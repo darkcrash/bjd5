@@ -98,7 +98,7 @@ namespace Bjd.Console.Controls
                     return true;
                 }
 
-                if (key.Key == ConsoleKey.S && key.Modifiers == ConsoleModifiers.Control)
+                if (key.Key == ConsoleKey.S)
                 {
                     var opt = options[ActiveIndex];
                     cContext.Kernel.Configuration.SaveJson(opt.NameTag, opt.ListVal);
@@ -141,7 +141,7 @@ namespace Bjd.Console.Controls
                     if (currentOption == null)
                     {
                         var item = optionsList[ActiveIndex];
-                        context.Write($"Save [CTRL] +[S]  {item} ");
+                        context.Write($"Save [S]  {item} ");
                     }
                     else
                     {
