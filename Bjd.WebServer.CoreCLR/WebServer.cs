@@ -36,7 +36,7 @@ namespace Bjd.WebServer
         readonly List<WebDavDb> _webDavDbList = new List<WebDavDb>();
         WebDavDb _webDavDb;//WevDAVのDethプロパテイを管理するクラス
 
-        protected List<OneOption> WebOptionList = null;
+        protected List<ConfigurationBase> WebOptionList = null;
 
         private CultureInfo _culture = new CultureInfo("en-US");
 
@@ -49,7 +49,7 @@ namespace Bjd.WebServer
         {
 
             //同一ポートで待ち受けている仮想サーバのオプションをすべてリストする
-            WebOptionList = new List<OneOption>();
+            WebOptionList = new List<ConfigurationBase>();
             foreach (var o in kernel.ListOption)
             {
                 if (o.NameTag == _conf.NameTag)

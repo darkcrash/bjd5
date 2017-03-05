@@ -12,7 +12,7 @@ namespace Bjd.Plugins
 
         string Name { get; }
 
-        SmartOption CreateOption(Kernel kernel, string path, string nameTag);
+        ConfigurationSmart CreateOption(Kernel kernel, string path, string nameTag);
 
         OneServer CreateServer(Kernel kernel, Conf conf, OneBind oneBind);
 

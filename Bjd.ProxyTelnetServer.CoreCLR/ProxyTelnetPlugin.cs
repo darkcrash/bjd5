@@ -26,7 +26,7 @@ namespace Bjd.ProxyTelnetServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             return new ProxyTelnetServer.ProxyTelnetOption(kernel, path, nameTag);
         }

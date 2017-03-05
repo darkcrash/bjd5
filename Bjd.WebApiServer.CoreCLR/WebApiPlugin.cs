@@ -29,9 +29,9 @@ namespace Bjd.WebApiServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new WebApiServer.WebApiOption(kernel, path, nameTag);
+            return new WebApiServer.Configurations.WebApiOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

@@ -23,7 +23,7 @@ namespace Bjd.Test.Mails
             var kernel = _service.Kernel;
             kernel.ListInitialize();
 
-            var oneOption = new OptionMailBox(kernel, _service.MailboxPath);
+            var oneOption = new ConfigurationMailBox(kernel, _service.MailboxPath);
             _conf = new Conf(oneOption);
         }
 

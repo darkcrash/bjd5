@@ -53,7 +53,7 @@ namespace Bjd.Servers
         {
             Ar.Clear();
 
-            foreach (OneOption op in kernel.ListOption)
+            foreach (ConfigurationBase op in kernel.ListOption)
             {
 
                 if (!op.UseServer)
@@ -80,7 +80,7 @@ namespace Bjd.Servers
                     {
                         if (sv.NameTag.IndexOf("Web-") == 0)
                         {
-                            OneOption o = kernel.ListOption.Get(sv.NameTag);
+                            ConfigurationBase o = kernel.ListOption.Get(sv.NameTag);
                             if (o != null)
                             {
                                 //同一ポートの設定が既にリストされているかどうか

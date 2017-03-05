@@ -22,7 +22,7 @@ namespace WebServerTest
     {
         private TestService _service;
         private Kernel _kernel;
-        private OneOption _option;
+        private ConfigurationBase _option;
 
         public CgiTest(ITestOutputHelper output)
         {

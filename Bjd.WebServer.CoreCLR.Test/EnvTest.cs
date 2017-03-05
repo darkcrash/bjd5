@@ -18,7 +18,7 @@ namespace WebServerTest
     {
         internal Kernel _kernel;
         internal TestService _service;
-        internal OneOption option;
+        internal ConfigurationBase option;
         internal Conf conf;
         internal int port = 90;
 

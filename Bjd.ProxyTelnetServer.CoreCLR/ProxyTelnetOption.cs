@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Bjd.ProxyTelnetServer
 {
-    class ProxyTelnetOption : SmartOption
+    class ProxyTelnetOption : ConfigurationSmart
     {
 
         public override char Mnemonic { get { return 'T'; } }

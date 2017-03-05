@@ -26,9 +26,9 @@ namespace Bjd.RemoteServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new RemoteServer.RemoteOption(kernel, path, nameTag);
+            return new RemoteServer.Configurations.RemoteOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

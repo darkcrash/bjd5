@@ -12,7 +12,7 @@ namespace Bjd.Console.Controls
         private const int headerRow = 2;
         private ListOption options;
         private List<string> optionsList;
-        private SmartOption currentOption;
+        private ConfigurationSmart currentOption;
         private Dat currentDat;
         private int ActiveIndex = 0;
         private int ActiveIndexOffset = 0;

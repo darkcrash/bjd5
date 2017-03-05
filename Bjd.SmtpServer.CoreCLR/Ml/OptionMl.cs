@@ -6,7 +6,7 @@ using Bjd.Configurations;
 
 namespace Bjd.SmtpServer
 {
-    class OptionMl : OneOption
+    class OptionMl : ConfigurationBase
     {
 
         public override char Mnemonic { get { return 'A'; } }

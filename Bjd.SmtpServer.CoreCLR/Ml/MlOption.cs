@@ -16,7 +16,7 @@ namespace Bjd.SmtpServer
         public int TitleKind { get; private set; }
         public Dat MemberList { get; private set; }
 
-        public MlOption(Kernel kernel,OneOption op){
+        public MlOption(Kernel kernel,ConfigurationBase op){
             var maxSummary = (int)op.GetValue("maxSummary");
             var maxGet = (int)op.GetValue("maxGet");
             var autoRegistration = (bool)op.GetValue("autoRegistration");//自動登録

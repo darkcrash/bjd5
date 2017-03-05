@@ -26,9 +26,9 @@ namespace Bjd.ProxySmtpServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new ProxySmtpServer.ProxySmtpOption(kernel, path, nameTag);
+            return new ProxySmtpServer.Configurations.ProxySmtpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

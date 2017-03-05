@@ -7,7 +7,7 @@ using Bjd.Configurations.Attributes;
 
 namespace Bjd.WebServer.Configurations
 {
-    public class VirtualHostOption : SmartOption
+    public class VirtualHostOption : ConfigurationSmart
     {
 
         [Dat]

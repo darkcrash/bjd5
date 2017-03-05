@@ -6,7 +6,7 @@ namespace Bjd.Configurations
 {
     //オプションのリストを表現するクラス
     //Kernelの中で使用される
-    public class ListOption : ListBase<SmartOption>
+    public class ListOption : ListBase<ConfigurationSmart>
     {
 
         private readonly Kernel _kernel;
@@ -31,7 +31,7 @@ namespace Bjd.Configurations
             }
         }
 
-        public SmartOption Get(String nameTag)
+        public ConfigurationSmart Get(String nameTag)
         {
             foreach (var o in Ar)
             {
@@ -44,7 +44,7 @@ namespace Bjd.Configurations
         }
 
         //Ver6.0.0.
-        public void Replice(SmartOption oneOption)
+        public void Replice(ConfigurationSmart oneOption)
         {
             for (int i = 0; i < Ar.Count; i++)
             {
@@ -57,7 +57,7 @@ namespace Bjd.Configurations
         }
 
         //null追加を回避するために、Ar.Add()は、このファンクションを使用する
-        private bool Add(SmartOption o)
+        private bool Add(ConfigurationSmart o)
         {
             if (o == null)
             {
@@ -85,8 +85,8 @@ namespace Bjd.Configurations
 
             //固定的にBasicとLogを生成する
             const string executePath = ""; // Application.ExecutablePath
-            Add(new SmartOptionBasic(_kernel, executePath)); //「基本」オプション
-            Add(new SmartOptionLog(_kernel, executePath)); //「ログ」オプション
+            Add(new ConfigurationBasic(_kernel, executePath)); //「基本」オプション
+            Add(new ConfigurationLog(_kernel, executePath)); //「ログ」オプション
 
             foreach (var onePlugin in listPlugin)
             {
@@ -95,7 +95,7 @@ namespace Bjd.Configurations
                 if (oneOption.NameTag == "Web")
                 {
                     //WebServerの場合は、バーチャルホストごとに１つのオプションを初期化する
-                    SmartOption o = onePlugin.CreateOption(_kernel, "OptionVirtualHost", "VirtualHost");
+                    ConfigurationSmart o = onePlugin.CreateOption(_kernel, "OptionVirtualHost", "VirtualHost");
                     if (Add(o))
                     {
                         var dat = (Dat)o.GetValue("hostList");
@@ -113,7 +113,7 @@ namespace Bjd.Configurations
                 else if (oneOption.NameTag == "Tunnel")
                 {
                     //TunnelServerの場合は、１トンネルごとに１つのオプションを初期化する
-                    SmartOption o = onePlugin.CreateOption(_kernel, "OptionTunnel", "TunnelList");
+                    ConfigurationSmart o = onePlugin.CreateOption(_kernel, "OptionTunnel", "TunnelList");
                     if (Add(o))
                     {
                         var dat = (Dat)o.GetValue("tunnelList");
@@ -135,7 +135,7 @@ namespace Bjd.Configurations
                     //DnsServerのプラグイン固有オプションの生成
                     if (oneOption.NameTag == "Dns")
                     {
-                        SmartOption o = onePlugin.CreateOption(_kernel, "OptionDnsDomain", "DnsDomain");
+                        ConfigurationSmart o = onePlugin.CreateOption(_kernel, "OptionDnsDomain", "DnsDomain");
                         if (Add(o))
                         {
                             var dat = (Dat)o.GetValue("domainList");
@@ -152,7 +152,7 @@ namespace Bjd.Configurations
                     else if (oneOption.NameTag == "Smtp")
                     {
                         //Ver6.0.0
-                        SmartOption o = onePlugin.CreateOption(_kernel, "OptionMl", "Ml");
+                        ConfigurationSmart o = onePlugin.CreateOption(_kernel, "OptionMl", "Ml");
                         //var o = (OneOption)Util.CreateInstance(kernel, path, "OptionMl", new object[] { kernel, path, "Ml" });
                         if (Add(o))
                         {
@@ -171,7 +171,7 @@ namespace Bjd.Configurations
             }
             if (Get("Smtp") != null || Get("Pop3") != null || Get("WebApi") != null)
             {
-                Add(new SmartOptionMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
+                Add(new ConfigurationMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
             }
         }
 

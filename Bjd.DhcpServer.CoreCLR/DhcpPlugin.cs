@@ -26,9 +26,9 @@ namespace Bjd.DhcpServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new DhcpServer.DhcpOption(kernel, path, nameTag);
+            return new DhcpServer.Configurations.Dhcp(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

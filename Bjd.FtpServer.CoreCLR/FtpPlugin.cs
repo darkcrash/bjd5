@@ -26,9 +26,9 @@ namespace Bjd.FtpServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new FtpServer.FtpOption(kernel, path, nameTag);
+            return new FtpServer.Configurations.FtpOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

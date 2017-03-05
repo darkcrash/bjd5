@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Bjd.ProxyTelnetServer
 {
-    class Option : OneOption
+    class Option : ConfigurationBase
     {
 
         public override char Mnemonic { get { return 'T'; } }

@@ -9,7 +9,7 @@ using Bjd.Configurations.Attributes;
 
 namespace Bjd.WebServer.Configurations
 {
-    public class WebServerOption : SmartOption
+    public class WebServerOption : ConfigurationSmart
     {
         [TabPage]
         public string tab = null;

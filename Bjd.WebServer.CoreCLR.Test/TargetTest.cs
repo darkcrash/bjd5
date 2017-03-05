@@ -16,7 +16,7 @@ namespace WebServerTest
     {
         public class ServerFixture : IDisposable
         {
-            internal OneOption option;
+            internal ConfigurationBase option;
             internal TestService _service;
             private WebServer _v6Sv; //サーバ
             internal WebServer _v4Sv; //サーバ

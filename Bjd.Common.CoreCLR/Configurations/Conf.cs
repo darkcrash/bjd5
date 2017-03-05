@@ -19,7 +19,7 @@ namespace Bjd.Configurations
             NameTag = "";
         }
 
-        public Conf(OneOption oneOption)
+        public Conf(ConfigurationBase oneOption)
         {
 
             NameTag = oneOption.NameTag;

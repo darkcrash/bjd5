@@ -29,14 +29,14 @@ namespace Bjd.TunnelServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             switch(path)
             {
                 case "OptionTunnel":
-                    return new TunnelServer.TunnelListOption(kernel, path, nameTag);
+                    return new TunnelServer.Configurations.TunnelListOption(kernel, path, nameTag);
             }
-            return new TunnelServer.TunnelOption(kernel, path, nameTag);
+            return new TunnelServer.Configurations.TunnelOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

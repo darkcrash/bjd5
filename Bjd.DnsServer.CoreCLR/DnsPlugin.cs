@@ -26,16 +26,16 @@ namespace Bjd.DnsServer
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             switch(path)
             {
                 case "OptionDnsDomain":
-                    return new DnsServer.DnsDomainOption(kernel, path, nameTag);
+                    return new DnsServer.Configurations.DnsDomainOption(kernel, path, nameTag);
                 case "OptionDnsResource":
-                    return new DnsServer.DnsResourceOption(kernel, path, nameTag);
+                    return new DnsServer.Configurations.DnsResourceOption(kernel, path, nameTag);
             }
-            return new DnsServer.DnsOption(kernel, path, nameTag);
+            return new DnsServer.Configurations.DnsOption(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

@@ -26,9 +26,9 @@ namespace Bjd.ProxyPop3Server
             }
         }
 
-        SmartOption IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
+        ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new ProxyPop3Server.ProxyPop3Option(kernel, path, nameTag);
+            return new ProxyPop3Server.Configurations.ProxyPop3Option(kernel, path, nameTag);
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)
