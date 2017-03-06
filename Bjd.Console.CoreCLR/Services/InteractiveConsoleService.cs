@@ -9,14 +9,16 @@ namespace Bjd.Services
 {
     public class InteractiveConsoleService
     {
-        Kernel _kernel;
-        ControlContext controlContext;
+        static ControlContext controlContext;
+        static System.Threading.CancellationTokenSource sigContext = new System.Threading.CancellationTokenSource();
         static System.Threading.CancellationTokenSource signal = new System.Threading.CancellationTokenSource();
         internal static InteractiveConsoleService instance = new InteractiveConsoleService();
 
         public static void Start()
         {
             Trace.TraceInformation("InteractiveConsoleService.ServiceMain Start");
+
+            controlContext = new ControlContext(sigContext.Token);
 
             //Console.WriteLine($"ConsoleTraceListner CodePage={Console.Out.Encoding.CodePage}");
             Define.ChangeOperationSystem += Define_ChangeOperationSystem;
@@ -33,7 +35,13 @@ namespace Bjd.Services
         {
             Trace.TraceInformation("InteractiveConsoleService.Stop Start");
             InteractiveConsoleService.instance.OnStop();
+
+            sigContext.Cancel();
+            controlContext.Dispose();
+            controlContext = null;
+            sigContext.Dispose();
             signal.Cancel();
+
             Trace.TraceInformation("InteractiveConsoleService.Stop End");
         }
 
@@ -62,9 +70,10 @@ namespace Bjd.Services
         }
 
 
+        Kernel _kernel;
+
         public InteractiveConsoleService()
         {
-            controlContext = new ControlContext(signal.Token);
         }
 
         internal void OnStart()
@@ -104,7 +113,6 @@ namespace Bjd.Services
                 controlContext.Kernel = null;
             }
             Trace.TraceInformation("InteractiveConsoleService.OnStop End");
-            controlContext.Dispose();
         }
 
 

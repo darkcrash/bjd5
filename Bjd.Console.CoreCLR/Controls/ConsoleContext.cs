@@ -29,31 +29,48 @@ namespace Bjd.Console.Controls
         public string Blank { get; private set; }
         public string BlankLeft { get; private set; }
 
+        private bool isDisposed = false;
+
         public ConsoleContext(System.Threading.CancellationToken token)
         {
             _initialCursorTop = System.Console.CursorTop;
+            InitializePos();
             System.Console.WindowTop = _initialCursorTop;
 
-            System.Console.CursorVisible = false;
             WindowStateChanged();
 
-            token.Register(CancelAction);
 
         }
 
         public void Dispose()
         {
-            System.Console.CursorTop = _initialCursorTop + System.Console.WindowHeight;
-            System.Console.WindowTop = _initialCursorTop + System.Console.WindowHeight;
+            if (isDisposed) return;
+            isDisposed = true;
+            //System.Console.CursorTop = _initialCursorTop + System.Console.WindowHeight;
+            //System.Console.WindowTop = _initialCursorTop + System.Console.WindowHeight;
+            var blk = new string(' ', System.Console.WindowWidth);
+            System.Console.CursorTop = System.Console.WindowTop;
+            for (var i = 0; i < System.Console.WindowHeight; i++)
+            {
+                System.Console.Write(blk);
+            }
+            System.Console.CursorLeft = 0;
+            System.Console.CursorVisible = true;
         }
 
-        private void CancelAction()
+        private void InitializePos()
         {
-            System.Console.CursorVisible = true;
+            var spaceHeight = System.Console.BufferHeight - _initialCursorTop;
+            if (spaceHeight < System.Console.WindowHeight)
+            {
+                _initialCursorTop = System.Console.BufferHeight - System.Console.WindowHeight;
+            }
+
         }
 
         public bool WindowStateChanged()
         {
+            if (isDisposed) return false;
             if (Width == System.Console.WindowWidth && Height == System.Console.WindowHeight) return false;
             Width = System.Console.WindowWidth;
             Height = System.Console.WindowHeight;
@@ -61,6 +78,7 @@ namespace Bjd.Console.Controls
             Blank = new string(' ', Width);
             BlankLeft = new string(' ', Width - 1);
             System.Console.CursorVisible = false;
+            InitializePos();
             System.Console.WindowTop = _initialCursorTop;
             return true;
         }
@@ -74,6 +92,7 @@ namespace Bjd.Console.Controls
 
         public void Write(string message)
         {
+            if (isDisposed) return;
             if (System.Console.WindowWidth < message.Length) message = message.Remove(System.Console.WindowWidth);
             System.Console.Write(message);
         }
@@ -96,6 +115,7 @@ namespace Bjd.Console.Controls
 
         public void WriteBlank()
         {
+            if (isDisposed) return;
             var stPos = System.Console.CursorTop + _initialCursorTop;
             var edPos = System.Console.WindowHeight + _initialCursorTop - 1;
             if (stPos == edPos)
@@ -117,6 +137,7 @@ namespace Bjd.Console.Controls
 
         public void BlankToEnd()
         {
+            if (isDisposed) return;
             var stPos = System.Console.CursorTop;
             var edPos = System.Console.WindowHeight + _initialCursorTop;
             for (var i = stPos; i < edPos; i++)

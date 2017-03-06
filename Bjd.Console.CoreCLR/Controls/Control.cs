@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Bjd.Console.Controls
 {
-    public class Control
+    public class Control : IDisposable
     {
         protected ControlContext cContext;
         private bool _Visible = false;
@@ -95,6 +95,10 @@ namespace Bjd.Console.Controls
         protected virtual void OnVisibleRowChanged()
         {
             Redraw = Visible;
+        }
+
+        public virtual void Dispose()
+        {
         }
 
     }

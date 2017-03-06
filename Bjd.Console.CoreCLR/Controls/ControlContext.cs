@@ -12,7 +12,7 @@ namespace Bjd.Console.Controls
     {
         System.Threading.Tasks.Task KeyinputTask;
         System.Threading.Tasks.Task OutputTask;
-        System.Threading.AutoResetEvent refresh = new System.Threading.AutoResetEvent(false);
+        System.Threading.ManualResetEventSlim refresh = new System.Threading.ManualResetEventSlim(false);
 
         private Kernel _Kernel;
         private LogInteractiveConsoleService _LogService;
@@ -88,7 +88,7 @@ namespace Bjd.Console.Controls
 
             consoleContext = new ConsoleContext(token);
 
-            OutputTask = new System.Threading.Tasks.Task(() => Output(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
+            OutputTask = new System.Threading.Tasks.Task(() => Output(token), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
             OutputTask.Start();
 
             KeyinputTask = new System.Threading.Tasks.Task(() => KeyInputLoop(), token, System.Threading.Tasks.TaskCreationOptions.LongRunning);
@@ -97,8 +97,22 @@ namespace Bjd.Console.Controls
 
         }
 
+        private bool isDisposed = false;
+
         public void Dispose()
         {
+            if (isDisposed) return;
+            isDisposed = true;
+
+            foreach(var ctrl in ctrls)
+            {
+                ctrl.Dispose();
+            }
+
+            OutputTask.Wait();
+
+            refresh.Dispose();
+
             consoleContext.Dispose();
         }
 
@@ -108,6 +122,7 @@ namespace Bjd.Console.Controls
             while (true)
             {
                 var key = System.Console.ReadKey(true);
+                if (isDisposed) return;
                 var reqRefresh = false;
                 foreach (var ctrl in ctrls)
                 {
@@ -124,10 +139,11 @@ namespace Bjd.Console.Controls
             }
         }
 
-        protected void Output()
+        protected void Output(System.Threading.CancellationToken token)
         {
             while (true)
             {
+                if (token.IsCancellationRequested) return;
                 var isWindowStateChanged = consoleContext.WindowStateChanged();
 
                 int height = consoleContext.InitialCursorTop;
@@ -152,7 +168,8 @@ namespace Bjd.Console.Controls
                         {
                             ctrl.Output(i, consoleContext);
                         }
-                        catch (Exception ex) { }
+                        catch (OperationCanceledException) { throw; }
+                        catch (Exception) { }
                         height++;
                     }
                     ctrl.Redraw = false;
@@ -167,7 +184,8 @@ namespace Bjd.Console.Controls
                     requestRefresh = false;
                     continue;
                 }
-                refresh.WaitOne();
+                refresh.Wait(token);
+                refresh.Reset();
             }
         }
 

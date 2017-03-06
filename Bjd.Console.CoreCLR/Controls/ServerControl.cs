@@ -34,6 +34,22 @@ namespace Bjd.Console.Controls
 
         }
 
+        public override void Dispose()
+        {
+            RefreshIntervalCancel.Cancel(true);
+
+            try { RefreshIntervalTask.Wait(); } catch { }
+
+            RefreshIntervalCancel.Dispose();
+            RefreshIntervalSignal.Dispose();
+
+            RefreshIntervalCancel = null;
+            RefreshIntervalSignal = null;
+
+            base.Dispose();
+
+        }
+
         public override bool Input(ConsoleKeyInfo key)
         {
             if (key.Key == ConsoleKey.R)
@@ -173,8 +189,10 @@ namespace Bjd.Console.Controls
         {
             while (true)
             {
-                RefreshIntervalSignal.Wait();
-                Task.Delay(RefreshInterval, RefreshIntervalCancel.Token).Wait();
+                RefreshIntervalSignal.Wait(RefreshIntervalCancel.Token);
+                if (RefreshIntervalCancel.IsCancellationRequested) return;
+                Task.Delay(RefreshInterval).Wait(RefreshIntervalCancel.Token);
+                if (RefreshIntervalCancel.IsCancellationRequested) return;
                 if (!Visible) continue;
                 Redraw = true;
                 if (cContext != null)
