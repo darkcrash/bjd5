@@ -45,6 +45,8 @@
                     return "INT";
                 case CtrlType.AddressV4:
                     return "ADDRESS_V4";
+                case CtrlType.AddressV6:
+                    return "ADDRESS_V6";
                 case CtrlType.BindAddr:
                     return "BINDADDR";
                 case CtrlType.Font:
