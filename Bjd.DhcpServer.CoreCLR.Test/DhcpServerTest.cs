@@ -17,8 +17,8 @@ namespace DhcpServerTest
 
     public class DhcpServerTest : IDisposable
     {
-        private static TestService _service;
-        private static Server _sv; //サーバ
+        private TestService _service;
+        private Server _sv; //サーバ
 
         public DhcpServerTest()
         {
