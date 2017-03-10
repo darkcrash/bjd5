@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Bjd.Console Class Library</Description>
+    <Copyright>Copyright(c) 1998/05.. by SIN/SapporoWorks</Copyright>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>SIN/SapporoWorks;yasuaki.matsuda</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>Bjd.Console</AssemblyName>
+    <PackageId>Bjd.Console</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bjd.Common\Bjd.Common.csproj" />
+  </ItemGroup>
+
+</Project>
