@@ -40,7 +40,7 @@ namespace Bjd.SmtpServer.Test
         [InlineData("get", MlCmdKind.Get, "")]
         [InlineData("add", MlCmdKind.Add, "")]
 
-        public void Test(string cmdStr, MlCmdKind mlCmdKind, string paramStr)
+        public void TestWithStringParam(string cmdStr, MlCmdKind mlCmdKind, string paramStr)
         {
             var mail = new Mail(_kernel);
             mail.AppendLine(Encoding.ASCII.GetBytes("\r\n"));//区切り行(ヘッダ終了)

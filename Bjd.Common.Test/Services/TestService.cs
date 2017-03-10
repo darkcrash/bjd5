@@ -175,13 +175,14 @@ namespace Bjd.Services
         {
             var src = Path.Combine(paths);
             CreateDirectory(Env, src);
-            var srcPath = System.IO.Path.Combine(ProjectDirectory, src);
+            var prjDir = ProjectDirectory;
+            var srcPath = System.IO.Path.Combine(prjDir, src);
             foreach (var f in Directory.GetFiles(srcPath))
             {
-                var fPath = f.Substring(ProjectDirectory.Length + 1);
+                var fPath = f.Substring(prjDir.Length + 1);
                 Copy(Env, fPath, fPath);
             }
-            foreach (var d in Directory.GetDirectories(src))
+            foreach (var d in Directory.GetDirectories(srcPath))
             {
                 ContentDirectory(d);
             }

@@ -138,6 +138,7 @@ namespace Bjd.Threading
         //Override可能
         public void Stop()
         {
+            if (isDisposed) return;
             _kernel.Logger.TraceWarning($"{this.GetType().FullName}.Stop Begin");
             if (_t != null && _threadBaseKind == ThreadBaseKind.Running)
             {

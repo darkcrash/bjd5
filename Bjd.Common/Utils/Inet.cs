@@ -39,12 +39,12 @@ namespace Bjd.Utils
 
         //Ver5.0.0-a11 高速化
         //テキスト処理クラス　stringを\r\nでList<string>に分割する
-        static public List<string> GetLines(string str)
+        public static List<string> GetLines(string str)
         {
             return str.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
         }
 
-        static public List<byte[]> GetLines(byte[] buf)
+        public static List<byte[]> GetLines(byte[] buf)
         {
             var lines = new List<byte[]>();
 

@@ -34,6 +34,7 @@ namespace Bjd.ProxyHttpServer
 
         System.Threading.Timer _timer;
         bool _cacheRefresh;//キャッシュ清掃
+        private bool isDisposed = false;
 
         public Cache(Kernel kernel, Logger logger, Conf conf)
             : base(kernel, logger)
@@ -81,6 +82,7 @@ namespace Bjd.ProxyHttpServer
 
         new public void Dispose()
         {
+            if (isDisposed) return;
             if (_timer != null)
                 _timer.Dispose();
             Stop();
@@ -97,7 +99,7 @@ namespace Bjd.ProxyHttpServer
                     _memoryCache.Remove(oneCache.HostName, oneCache.Port, oneCache.Uri);
                 }
             }
-
+            isDisposed = true;
             base.Dispose();
         }
         override protected bool OnStartThread()

@@ -72,7 +72,7 @@ namespace Bjd.Test.Utils
         [InlineData(new byte[] { 0x0d, 0x0a }, 1)]
         [InlineData(new byte[] { }, 0)]
         [InlineData(null, 0)]
-        public void GetLinesTest(byte[] buf, int count)
+        public void GetLinesTestForByteArray(byte[] buf, int count)
         {
             var lines = Inet.GetLines(buf);
             Assert.Equal(lines.Count, count);
