@@ -1,14 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4E14581-EEDC-4FE1-BBF9-ABF8ED910C43}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		build.sh = build.sh
 		Dockerfile = Dockerfile
-		global.json = global.json
 		init.sh = init.sh
 		MyGet.bat = MyGet.bat
 		pre-MyGet.bat = pre-MyGet.bat
@@ -17,72 +16,72 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		run.sh = run.sh
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.CoreCLR", "Bjd.CoreCLR\Bjd.CoreCLR.xproj", "{2AD95029-FF06-4C7A-B516-F4EAE85C601C}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebServer.CoreCLR", "Bjd.WebServer.CoreCLR\Bjd.WebServer.CoreCLR.xproj", "{98424797-EAEF-4717-B8D9-BDF587AA370B}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Common.CoreCLR", "Bjd.Common.CoreCLR\Bjd.Common.CoreCLR.xproj", "{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.FtpServer.CoreCLR", "Bjd.FtpServer.CoreCLR\Bjd.FtpServer.CoreCLR.xproj", "{0BCCDB32-14E6-4705-A2B2-BD608C770280}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DnsServer.CoreCLR", "Bjd.DnsServer.CoreCLR\Bjd.DnsServer.CoreCLR.xproj", "{2E294B64-0F25-4342-8181-E082F3309B5C}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.TunnelServer.CoreCLR", "Bjd.TunnelServer.CoreCLR\Bjd.TunnelServer.CoreCLR.xproj", "{408A5086-D802-4F25-8E9B-82F0E3830721}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.TftpServer.CoreCLR", "Bjd.TftpServer.CoreCLR\Bjd.TftpServer.CoreCLR.xproj", "{A269B873-2D8F-4C83-B1A5-03FF35FF48ED}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebApiServer.CoreCLR", "Bjd.WebApiServer.CoreCLR\Bjd.WebApiServer.CoreCLR.xproj", "{EC34B552-06A6-4510-86DD-D18B137A2F47}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.SmtpServer.CoreCLR", "Bjd.SmtpServer.CoreCLR\Bjd.SmtpServer.CoreCLR.xproj", "{FE47EE07-A4F0-45D7-A20F-3CC4C59ED09E}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Pop3Server.CoreCLR", "Bjd.Pop3Server.CoreCLR\Bjd.Pop3Server.CoreCLR.xproj", "{699DAAD6-AF4B-4BEC-9A8D-476DA30DA3D4}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.RemoteServer.CoreCLR", "Bjd.RemoteServer.CoreCLR\Bjd.RemoteServer.CoreCLR.xproj", "{2220A470-171E-4067-9088-8274BC6817E8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.SipServer.CoreCLR", "Bjd.SipServer.CoreCLR\Bjd.SipServer.CoreCLR.xproj", "{E011131B-9B1C-4A8D-B049-802447D96EE6}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyTelnetServer.CoreCLR", "Bjd.ProxyTelnetServer.CoreCLR\Bjd.ProxyTelnetServer.CoreCLR.xproj", "{C034CB28-EB30-44A6-9F83-EA1A43F48740}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxySmtpServer.CoreCLR", "Bjd.ProxySmtpServer.CoreCLR\Bjd.ProxySmtpServer.CoreCLR.xproj", "{FD251B60-AFF5-4C98-BA3E-A56DDC4213FD}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyPop3Server.CoreCLR", "Bjd.ProxyPop3Server.CoreCLR\Bjd.ProxyPop3Server.CoreCLR.xproj", "{CC074381-B11D-4310-A033-139F863D58D9}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyHttpServer.CoreCLR", "Bjd.ProxyHttpServer.CoreCLR\Bjd.ProxyHttpServer.CoreCLR.xproj", "{0FD8CF7A-CB45-48A2-9175-53D869694935}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyFtpServer.CoreCLR", "Bjd.ProxyFtpServer.CoreCLR\Bjd.ProxyFtpServer.CoreCLR.xproj", "{5AC27898-65C7-45CC-842B-09997E481701}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DhcpServer.CoreCLR", "Bjd.DhcpServer.CoreCLR\Bjd.DhcpServer.CoreCLR.xproj", "{CD1276EE-55F6-4AE8-97B8-5FE3222EE63A}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DhcpServer.CoreCLR.Test", "Bjd.DhcpServer.CoreCLR.Test\Bjd.DhcpServer.CoreCLR.Test.xproj", "{83CA1BE5-58AB-48F9-91D6-9B4C22322F3A}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.DnsServer.CoreCLR.Test", "Bjd.DnsServer.CoreCLR.Test\Bjd.DnsServer.CoreCLR.Test.xproj", "{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.FtpServer.CoreCLR.Test", "Bjd.FtpServer.CoreCLR.Test\Bjd.FtpServer.CoreCLR.Test.xproj", "{6F407C21-A6AC-4851-965B-4F8C20B38F56}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Pop3Server.CoreCLR.Test", "Bjd.Pop3Server.CoreCLR.Test\Bjd.Pop3Server.CoreCLR.Test.xproj", "{65E3A9C9-DEBC-40D0-9DE0-E3C3AA489DB2}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Common.CoreCLR.Test", "Bjd.Common.CoreCLR.Test\Bjd.Common.CoreCLR.Test.xproj", "{115D72BB-5ADF-49A9-A273-59068B5819DF}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.SmtpServer.CoreCLR.Test", "Bjd.SmtpServer.CoreCLR.Test\Bjd.SmtpServer.CoreCLR.Test.xproj", "{4CCE877E-32E5-49E6-B294-C404B0F42492}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.SipServer.CoreCLR.Test", "Bjd.SipServer.CoreCLR.Test\Bjd.SipServer.CoreCLR.Test.xproj", "{726A40E5-3135-4C3E-A391-3C1BFCE5C6CB}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebServer.CoreCLR.Test", "Bjd.WebServer.CoreCLR.Test\Bjd.WebServer.CoreCLR.Test.xproj", "{C92878E0-61F7-45B9-973C-39F96A378D86}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyHttpServer.CoreCLR.Test", "Bjd.ProxyHttpServer.CoreCLR.Test\Bjd.ProxyHttpServer.CoreCLR.Test.xproj", "{225DFCD8-2B6F-406C-8E5C-C6019ACB8127}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.ProxyPop3Server.CoreCLR.Test", "Bjd.ProxyPop3Server.CoreCLR.Test\Bjd.ProxyPop3Server.CoreCLR.Test.xproj", "{0454EBCE-084B-41C1-85DE-77DAD9FACA62}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.WebApiServer.CoreCLR.Test", "Bjd.WebApiServer.CoreCLR.Test\Bjd.WebApiServer.CoreCLR.Test.xproj", "{3261384C-4B07-497E-BE68-0AE1F8C03755}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.CoreCLR.Test", "Bjd.CoreCLR.Test\Bjd.CoreCLR.Test.xproj", "{3B59D154-A891-4741-A18D-4F4BC5CA3A52}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "portable", "portable", "{A25A2CA1-32E6-4441-960D-4E02E423A3DE}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile-portable\Dockerfile = Dockerfile-portable\Dockerfile
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Bjd.Console.CoreCLR", "Bjd.Console.CoreCLR\Bjd.Console.CoreCLR.xproj", "{15B832D8-D6AE-4926-938E-8273B9B22394}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.CoreCLR", "Bjd.CoreCLR\Bjd.CoreCLR.csproj", "{2AD95029-FF06-4C7A-B516-F4EAE85C601C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.WebServer.CoreCLR", "Bjd.WebServer.CoreCLR\Bjd.WebServer.CoreCLR.csproj", "{98424797-EAEF-4717-B8D9-BDF587AA370B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Common.CoreCLR", "Bjd.Common.CoreCLR\Bjd.Common.CoreCLR.csproj", "{E12B4DAC-A11D-4F8F-8D38-6B4CAE9F156E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.FtpServer.CoreCLR", "Bjd.FtpServer.CoreCLR\Bjd.FtpServer.CoreCLR.csproj", "{0BCCDB32-14E6-4705-A2B2-BD608C770280}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.DnsServer.CoreCLR", "Bjd.DnsServer.CoreCLR\Bjd.DnsServer.CoreCLR.csproj", "{2E294B64-0F25-4342-8181-E082F3309B5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.TunnelServer.CoreCLR", "Bjd.TunnelServer.CoreCLR\Bjd.TunnelServer.CoreCLR.csproj", "{408A5086-D802-4F25-8E9B-82F0E3830721}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.TftpServer.CoreCLR", "Bjd.TftpServer.CoreCLR\Bjd.TftpServer.CoreCLR.csproj", "{A269B873-2D8F-4C83-B1A5-03FF35FF48ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.WebApiServer.CoreCLR", "Bjd.WebApiServer.CoreCLR\Bjd.WebApiServer.CoreCLR.csproj", "{EC34B552-06A6-4510-86DD-D18B137A2F47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.SmtpServer.CoreCLR", "Bjd.SmtpServer.CoreCLR\Bjd.SmtpServer.CoreCLR.csproj", "{FE47EE07-A4F0-45D7-A20F-3CC4C59ED09E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Pop3Server.CoreCLR", "Bjd.Pop3Server.CoreCLR\Bjd.Pop3Server.CoreCLR.csproj", "{699DAAD6-AF4B-4BEC-9A8D-476DA30DA3D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.RemoteServer.CoreCLR", "Bjd.RemoteServer.CoreCLR\Bjd.RemoteServer.CoreCLR.csproj", "{2220A470-171E-4067-9088-8274BC6817E8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.SipServer.CoreCLR", "Bjd.SipServer.CoreCLR\Bjd.SipServer.CoreCLR.csproj", "{E011131B-9B1C-4A8D-B049-802447D96EE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyTelnetServer.CoreCLR", "Bjd.ProxyTelnetServer.CoreCLR\Bjd.ProxyTelnetServer.CoreCLR.csproj", "{C034CB28-EB30-44A6-9F83-EA1A43F48740}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxySmtpServer.CoreCLR", "Bjd.ProxySmtpServer.CoreCLR\Bjd.ProxySmtpServer.CoreCLR.csproj", "{FD251B60-AFF5-4C98-BA3E-A56DDC4213FD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyPop3Server.CoreCLR", "Bjd.ProxyPop3Server.CoreCLR\Bjd.ProxyPop3Server.CoreCLR.csproj", "{CC074381-B11D-4310-A033-139F863D58D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyHttpServer.CoreCLR", "Bjd.ProxyHttpServer.CoreCLR\Bjd.ProxyHttpServer.CoreCLR.csproj", "{0FD8CF7A-CB45-48A2-9175-53D869694935}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyFtpServer.CoreCLR", "Bjd.ProxyFtpServer.CoreCLR\Bjd.ProxyFtpServer.CoreCLR.csproj", "{5AC27898-65C7-45CC-842B-09997E481701}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.DhcpServer.CoreCLR", "Bjd.DhcpServer.CoreCLR\Bjd.DhcpServer.CoreCLR.csproj", "{CD1276EE-55F6-4AE8-97B8-5FE3222EE63A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.DhcpServer.CoreCLR.Test", "Bjd.DhcpServer.CoreCLR.Test\Bjd.DhcpServer.CoreCLR.Test.csproj", "{83CA1BE5-58AB-48F9-91D6-9B4C22322F3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.DnsServer.CoreCLR.Test", "Bjd.DnsServer.CoreCLR.Test\Bjd.DnsServer.CoreCLR.Test.csproj", "{35F7ABA6-8E8E-4DF5-9AFE-2F49A353825C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.FtpServer.CoreCLR.Test", "Bjd.FtpServer.CoreCLR.Test\Bjd.FtpServer.CoreCLR.Test.csproj", "{6F407C21-A6AC-4851-965B-4F8C20B38F56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Pop3Server.CoreCLR.Test", "Bjd.Pop3Server.CoreCLR.Test\Bjd.Pop3Server.CoreCLR.Test.csproj", "{65E3A9C9-DEBC-40D0-9DE0-E3C3AA489DB2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Common.CoreCLR.Test", "Bjd.Common.CoreCLR.Test\Bjd.Common.CoreCLR.Test.csproj", "{115D72BB-5ADF-49A9-A273-59068B5819DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.SmtpServer.CoreCLR.Test", "Bjd.SmtpServer.CoreCLR.Test\Bjd.SmtpServer.CoreCLR.Test.csproj", "{4CCE877E-32E5-49E6-B294-C404B0F42492}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.SipServer.CoreCLR.Test", "Bjd.SipServer.CoreCLR.Test\Bjd.SipServer.CoreCLR.Test.csproj", "{726A40E5-3135-4C3E-A391-3C1BFCE5C6CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.WebServer.CoreCLR.Test", "Bjd.WebServer.CoreCLR.Test\Bjd.WebServer.CoreCLR.Test.csproj", "{C92878E0-61F7-45B9-973C-39F96A378D86}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyHttpServer.CoreCLR.Test", "Bjd.ProxyHttpServer.CoreCLR.Test\Bjd.ProxyHttpServer.CoreCLR.Test.csproj", "{225DFCD8-2B6F-406C-8E5C-C6019ACB8127}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyPop3Server.CoreCLR.Test", "Bjd.ProxyPop3Server.CoreCLR.Test\Bjd.ProxyPop3Server.CoreCLR.Test.csproj", "{0454EBCE-084B-41C1-85DE-77DAD9FACA62}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.WebApiServer.CoreCLR.Test", "Bjd.WebApiServer.CoreCLR.Test\Bjd.WebApiServer.CoreCLR.Test.csproj", "{3261384C-4B07-497E-BE68-0AE1F8C03755}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.CoreCLR.Test", "Bjd.CoreCLR.Test\Bjd.CoreCLR.Test.csproj", "{3B59D154-A891-4741-A18D-4F4BC5CA3A52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Console.CoreCLR", "Bjd.Console.CoreCLR\Bjd.Console.CoreCLR.csproj", "{15B832D8-D6AE-4926-938E-8273B9B22394}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Bjd.SipServer.CoreCLR.Test Class Library</Description>
+    <Copyright>Copyright(c) 1998/05.. by SIN/SapporoWorks</Copyright>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>SIN/SapporoWorks;yasuaki.matsuda</Authors>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <AssemblyName>Bjd.SipServer.CoreCLR.Test</AssemblyName>
+    <PackageId>Bjd.SipServer.CoreCLR.Test</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
+    <ProjectReference Include="..\Bjd.Common.CoreCLR\Bjd.Common.CoreCLR.csproj" />
+    <ProjectReference Include="..\Bjd.Common.CoreCLR.Test\Bjd.Common.CoreCLR.Test.csproj" />
+    <ProjectReference Include="..\Bjd.SipServer.CoreCLR\Bjd.SipServer.CoreCLR.csproj" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170106-08" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-beta5-build1225" />
+    <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />
+  </ItemGroup>
+
+</Project>
