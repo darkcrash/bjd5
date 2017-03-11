@@ -1,7 +1,7 @@
 FROM microsoft/dotnet:1.1.0-sdk-projectjson
 
 RUN cd / \
- && git clone https://github.com/darkcrash/bjd5.git \
+ && git clone -b CoreCLR-VS2015 https://github.com/darkcrash/bjd5.git \
  && cd /bjd5 \
  && rm -fr .git \
  && rm -fr *.Test \
