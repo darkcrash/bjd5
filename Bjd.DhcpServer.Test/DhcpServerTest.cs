@@ -19,19 +19,22 @@ namespace DhcpServerTest
     {
         private TestService _service;
         private Server _sv; //サーバ
+        private int port;
 
         public DhcpServerTest()
         {
             _service = TestService.CreateTestService();
             _service.SetOption("DhcpServerTest.ini");
 
-
-            OneBind oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Udp);
+            var ip = new Ip(IpKind.V4Localhost);
+            OneBind oneBind = new OneBind(ip, ProtocolKind.Udp);
             Kernel kernel = _service.Kernel;
             kernel.ListInitialize();
 
             var option = kernel.ListOption.Get("Dhcp");
             Conf conf = new Conf(option);
+            
+            port = _service.GetAvailableUdpPort(ip, conf);
 
             //サーバ起動
             _sv = new Server(kernel, conf, oneBind);
@@ -61,7 +64,7 @@ namespace DhcpServerTest
             //cl.Connect((new Ip(IpKind.V4Localhost)).IPAddress, 67); //クライアントのポートが67でないとサーバが応答しない
             //cl.Send(buf, buf.Length);
 
-            var ip = new IPEndPoint((new Ip(IpKind.V4Localhost)).IPAddress, 67);
+            var ip = new IPEndPoint((new Ip(IpKind.V4Localhost)).IPAddress, port);
             var resultSend = cl.SendAsync(buf, buf.Length, ip);
             resultSend.Wait();
 
@@ -88,7 +91,7 @@ namespace DhcpServerTest
         public void ステータス情報_ToString_の出力確認()
         {
 
-            var expected = "+ サービス中 \t                Dhcp\t[127.0.0.1\t:UDP 67]\tThread";
+            var expected = $"+ サービス中 \t                Dhcp\t[127.0.0.1\t:UDP {port}]\tThread";
 
             //exercise
             var actual = _sv.ToString().Substring(0, 56);
