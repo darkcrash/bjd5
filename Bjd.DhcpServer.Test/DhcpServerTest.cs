@@ -33,7 +33,7 @@ namespace DhcpServerTest
 
             var option = kernel.ListOption.Get("Dhcp");
             Conf conf = new Conf(option);
-            
+
             port = _service.GetAvailableUdpPort(ip, conf);
 
             //サーバ起動
@@ -60,7 +60,22 @@ namespace DhcpServerTest
         PacketDhcp Access(byte[] buf)
         {
             //クライアントソケット生成、及び送信
-            var cl = new UdpClient(68);
+            UdpClient cl;
+            int retry = 0;
+            while (true)
+            {
+                try
+                {
+                    cl = new UdpClient(68);
+                    break;
+                }
+                catch (System.Net.Sockets.SocketException)
+                {
+                    retry++;
+                    if (retry > 30) throw;
+                    System.Threading.Tasks.Task.Delay(500).Wait();
+                }
+            }
             //cl.Connect((new Ip(IpKind.V4Localhost)).IPAddress, 67); //クライアントのポートが67でないとサーバが応答しない
             //cl.Send(buf, buf.Length);
 
