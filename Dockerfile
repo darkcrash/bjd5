@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.0-sdk-projectjson
+FROM microsoft/dotnet:1.1.1-sdk
 
 RUN mkdir -p /dotnetapp
 COPY . /dotnetapp
@@ -9,7 +9,7 @@ RUN cd / \
  && rm -fr *.sh \
  && dotnet restore
 
-WORKDIR /dotnetapp/Bjd.CoreCLR
+WORKDIR /dotnetapp/Bjd.Startup
 
 ENTRYPOINT ["dotnet", "run", "--console"]
 
