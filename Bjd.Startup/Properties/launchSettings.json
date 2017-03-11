@@ -1,17 +1,17 @@
 {
   "profiles": {
-    "Bjd.CoreCLR": {
+    "Bjd.Startup": {
       "commandName": "Project"
     },
-    "Bjd.CoreCLR --console": {
+    "Bjd.Startup --console": {
       "commandName": "Project",
       "commandLineArgs": "--console"
     },
-    "BjdCoreCLR --interactive": {
+    "Bjd.Startup --interactive": {
       "commandName": "Project",
       "commandLineArgs": "--interactive"
     },
-    "Bjd.CoreCLR --service": {
+    "Bjd.Startup --service": {
       "commandName": "Project",
       "commandLineArgs": "--service"
     }
