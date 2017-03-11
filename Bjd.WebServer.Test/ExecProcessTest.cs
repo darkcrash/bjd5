@@ -18,6 +18,7 @@ namespace WebServerTest
         public ExecProcessTest()
         {
             _service = TestService.CreateTestService();
+            _service.ContentFile("cat.exe");
             directory = _service.Kernel.Enviroment.ExecutableDirectory;
         }
 
@@ -35,10 +36,12 @@ namespace WebServerTest
             //var srcDir = string.Format("{0}\\WebServerTest", TestUtil.ProjectDirectory());
             //var srcDir = AppContext.BaseDirectory;
 
+            var cmd = Path.Combine(directory, "cat.exe");
+
             //こちらの自作cat.exeでは、200Mbyteまでしか対応できていない
             //var execProcess = new ExecProcess(string.Format("{0}\\cat.exe", srcDir), "", srcDir, null);
             //var execProcess = new ExecProcess(Path.Combine(srcDir, "cat.exe"), "", srcDir, null);
-            var execProcess = new ExecProcess("cat.exe", "", directory, null);
+            var execProcess = new ExecProcess(cmd, "", directory, null);
 
             var buf = new byte[block];
             for (var b = 0; b < block; b++)
