@@ -14,13 +14,14 @@ BlackJumboDog
 
 | Projects | AppVeyor Project Status |
 |---|:-----:|
-|Bjd.Common.CoreCLR.Test    |[![Build status](https://ci.appveyor.com/api/projects/status/p8i96er4tg3j8fbd?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5)|
-|Bjd.DnsServer.CoreCLR.Test |[![Build status](https://ci.appveyor.com/api/projects/status/xwv7m92c86qb3c85?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-3cwig)|
-|Bjd.FtpServer.CoreCLR.Test |[![Build status](https://ci.appveyor.com/api/projects/status/k10ucsh59xtyx7t9?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-5pd0r)|
-|Bjd.Pop3Server.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/t0250q5wge4xuikt?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-hpn2n)|
-|Bjd.SmtpServer.CoreCLR.Test|[![Build status](https://ci.appveyor.com/api/projects/status/hv9pu705wpb5l7ri?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qqab7)|
-|Bjd.WebServer.CoreCLR.Test |[![Build status](https://ci.appveyor.com/api/projects/status/8769awquopw95l59?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qhoq4)|
-|Bjd.CoreCLR.Test           |[![Build status](https://ci.appveyor.com/api/projects/status/by5u3anq3g2gjb05?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-p6o91)|
+|Bjd.Common.Test    |[![Build status](https://ci.appveyor.com/api/projects/status/p8i96er4tg3j8fbd?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5)|
+|Bjd.DhcpServer.Test|[![Build status](https://ci.appveyor.com/api/projects/status/1ueg48oy4ha35qmv?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-vc4ju)|
+|Bjd.DnsServer.Test |[![Build status](https://ci.appveyor.com/api/projects/status/xwv7m92c86qb3c85?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-3cwig)|
+|Bjd.FtpServer.Test |[![Build status](https://ci.appveyor.com/api/projects/status/k10ucsh59xtyx7t9?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-5pd0r)|
+|Bjd.Pop3Server.Test|[![Build status](https://ci.appveyor.com/api/projects/status/t0250q5wge4xuikt?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-hpn2n)|
+|Bjd.SmtpServer.Test|[![Build status](https://ci.appveyor.com/api/projects/status/hv9pu705wpb5l7ri?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qqab7)|
+|Bjd.WebServer.Test |[![Build status](https://ci.appveyor.com/api/projects/status/8769awquopw95l59?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-qhoq4)|
+|Bjd.Startup.Test   |[![Build status](https://ci.appveyor.com/api/projects/status/by5u3anq3g2gjb05?svg=true)](https://ci.appveyor.com/project/darkcrash/bjd5-p6o91)|
 
 ## Future
 * shift-jis be abolished. to utf-8.
@@ -40,8 +41,8 @@ BlackJumboDog
 ## TargetFramework
 * NETStandard.Library 1.6.1
 * Microsoft.NETCore.App 1.1.0
-* Microsoft .NET Core SDK 1.1
-* Microsoft .NET Core SDK 1.0.1 VS 2015 Tooling Preview2
+* Microsoft .NET Core 1.1.1
+* Microsoft .NET Core Tools for Visual Studio 2017
 
 ## Deployments
 * Windows10
@@ -57,7 +58,7 @@ Shell on Ubuntu
 git clone https://github.com/darkcrash/bjd5.git
 cd bjd5
 dotnet restore
-cd Bjd.CoreCLR
+cd Bjd.Startup
 dotnet run
 ```
 
@@ -82,19 +83,19 @@ dotnet run
 Example --console
 ```Bash:
 dotnet run --console
-dotnet Bjd.CoreCLR.dll --console
+dotnet Bjd.Startup.dll --console
 ```
 Example --service
 ```Bash:
 dotnet run --service
-dotnet Bjd.CoreCLR.dll --service
+dotnet Bjd.Startup.dll --service
 ```
 Example --interactive
 ```Bash:
 dotnet run
-dotnet Bjd.CoreCLR.dll
+dotnet Bjd.Startup.dll
 dotnet run --interactive
-dotnet Bjd.CoreCLR.dll --interactive
+dotnet Bjd.Startup.dll --interactive
 ```
 
 
@@ -125,7 +126,8 @@ publish
  |-example.pfx
  |-named.ca
  |-Option.def
- |-Option.ini
+ |-Option.ini[* not used]
+ |-Option.json
  |-Bjd.*.dll
  |
  |--runtimes
