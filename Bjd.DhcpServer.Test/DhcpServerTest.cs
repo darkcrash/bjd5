@@ -5,6 +5,7 @@ using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Xunit;
+using Xunit.Extensions;
 using Bjd.DhcpServer;
 using Bjd;
 using Bjd.Test;
@@ -15,46 +16,103 @@ using Microsoft.Extensions.PlatformAbstractions;
 namespace DhcpServerTest
 {
 
-    public class DhcpServerTest : IDisposable
+    public class DhcpServerTest : IDisposable, IClassFixture<DhcpServerTest.ServerFixture>
     {
+        public class ServerFixture : IDisposable
+        {
+            public TestService _service;
+            //public Server _sv; //サーバ
+            public OneBind oneBind;
+            public ConfigurationSmart option;
+            public Conf conf;
+            public int port;
+            public ServerFixture()
+            {
+                _service = TestService.CreateTestService();
+                _service.SetOption("DhcpServerTest.ini");
+
+                var ip = new Ip(IpKind.V4Localhost);
+                oneBind = new OneBind(ip, ProtocolKind.Udp);
+                Kernel kernel = _service.Kernel;
+                kernel.ListInitialize();
+
+                option = kernel.ListOption.Get("Dhcp");
+                conf = new Conf(option);
+
+                port = _service.GetAvailableUdpPort(ip, conf);
+
+                ////サーバ起動
+                //_sv = new Server(kernel, conf, oneBind);
+                //_sv.Start();
+
+            }
+
+            public void Dispose()
+            {
+                //サーバ停止
+                try
+                {
+                    //_sv.Stop();
+                    //_sv.Dispose();
+                }
+                finally
+                {
+                    //設定ファイルのリストア
+                    _service.Dispose();
+                }
+
+            }
+        }
+
         private TestService _service;
         private Server _sv; //サーバ
         private int port;
 
-        public DhcpServerTest()
+        public DhcpServerTest(ServerFixture server)
         {
-            _service = TestService.CreateTestService();
-            _service.SetOption("DhcpServerTest.ini");
+            _service = server._service;
+            //_sv = server._sv;
+            port = server.port;
+            //_service = TestService.CreateTestService();
+            //_service.SetOption("DhcpServerTest.ini");
 
-            var ip = new Ip(IpKind.V4Localhost);
-            OneBind oneBind = new OneBind(ip, ProtocolKind.Udp);
+            //var ip = new Ip(IpKind.V4Localhost);
+            //OneBind oneBind = new OneBind(ip, ProtocolKind.Udp);
+            //Kernel kernel = _service.Kernel;
+            //kernel.ListInitialize();
+
+            //var option = kernel.ListOption.Get("Dhcp");
+            //Conf conf = new Conf(option);
+
+            ////port = _service.GetAvailableUdpPort(ip, conf);
+            //port = 67;
+
             Kernel kernel = _service.Kernel;
-            kernel.ListInitialize();
-
-            var option = kernel.ListOption.Get("Dhcp");
-            Conf conf = new Conf(option);
-
-            port = _service.GetAvailableUdpPort(ip, conf);
+            var conf = server.conf;
+            var oneBind = server.oneBind;
 
             //サーバ起動
             _sv = new Server(kernel, conf, oneBind);
             _sv.Start();
 
+
         }
 
         public void Dispose()
         {
-            //サーバ停止
-            try
-            {
-                _sv.Stop();
-                _sv.Dispose();
-            }
-            finally
-            {
-                //設定ファイルのリストア
-                _service.Dispose();
-            }
+            _sv.Stop();
+            _sv.Dispose();
+            ////サーバ停止
+            //try
+            //{
+            //    _sv.Stop();
+            //    _sv.Dispose();
+            //}
+            //finally
+            //{
+            //    //設定ファイルのリストア
+            //    _service.Dispose();
+            //}
         }
 
         PacketDhcp Access(byte[] buf)
