@@ -3,7 +3,8 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Bjd.Utils {
+namespace Bjd.Utils
+{
     public class Crypt {
 
         private Crypt() { }//デフォルトコンストラクタの隠蔽

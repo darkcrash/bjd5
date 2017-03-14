@@ -80,7 +80,7 @@ namespace Bjd.Net
         }
 
         //キャッシュの件数取得(デバッグ用)
-        public int size()
+        public int Size()
         {
             return ar.Count;
         }

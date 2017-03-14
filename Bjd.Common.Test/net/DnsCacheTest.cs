@@ -66,7 +66,7 @@ namespace Bjd.Test.Net
 
             //exercise
             sut.GetAddress("www.sapporoworks.ne.jp");
-            var actual = sut.size();
+            var actual = sut.Size();
 
             //verify
             Assert.Equal(expected, actual);
@@ -84,7 +84,7 @@ namespace Bjd.Test.Net
             sut.GetAddress("www.sapporoworks.ne.jp");
             sut.GetAddress("www.sapporoworks.ne.jp");
             sut.GetAddress("www.sapporoworks.ne.jp");
-            var actual = sut.size();
+            var actual = sut.Size();
 
             //verify
             Assert.Equal(expected, actual);
@@ -102,7 +102,7 @@ namespace Bjd.Test.Net
             //exercise
             sut.GetAddress("www.sapporoworks.ne.jp");
             sut.GetAddress("www.google.com");
-            var actual = sut.size();
+            var actual = sut.Size();
 
             //verify
             Assert.Equal(expected, actual);

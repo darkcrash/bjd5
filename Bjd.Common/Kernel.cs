@@ -44,7 +44,7 @@ namespace Bjd
         public WebApi WebApi { get; private set; }
 
         //Ver5.8.6
-        public IniDb Configuration { get; private set; }
+        public ConfigurationDb Configuration { get; private set; }
 
         private CancellationTokenSource CancelTokenSource { get; set; }
 
@@ -119,7 +119,7 @@ namespace Bjd
             //プロセス起動時に初期化される
             DnsCache = new DnsCache();
 
-            Configuration = new IniDb(this, this.Enviroment.ExecutableDirectory, "Option");
+            Configuration = new ConfigurationDb(this, this.Enviroment.ExecutableDirectory, "Option");
             MailBox = null;
 
             //************************************************************

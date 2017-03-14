@@ -38,7 +38,7 @@ namespace Bjd.Configurations
 
 
         //レジストリへ保存
-        public virtual void Save(IniDb iniDb)
+        public virtual void Save(ConfigurationDb iniDb)
         {
             iniDb.Save(NameTag, ListVal);//レジストリへ保存
         }
@@ -46,7 +46,7 @@ namespace Bjd.Configurations
 
 
         //レジストリからの読み込み
-        public virtual void Read(IniDb iniDb)
+        public virtual void Read(ConfigurationDb iniDb)
         {
             iniDb.Read(NameTag, ListVal);
         }
@@ -101,7 +101,7 @@ namespace Bjd.Configurations
         }
 
         //値の設定
-        public void SetVal(IniDb iniDb, string name, object value)
+        public void SetVal(ConfigurationDb iniDb, string name, object value)
         {
             var oneVal = ListVal.Search(name);
             if (oneVal == null)

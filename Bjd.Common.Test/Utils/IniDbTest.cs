@@ -40,7 +40,7 @@ namespace Bjd.Test.Utils
                 string progDir = _service.Kernel.Enviroment.ExecutableDirectory;
                 //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
                 string path = Path.Combine(progDir, fileName + ".ini");
-                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
+                ConfigurationDb sut = new ConfigurationDb(_service.Kernel, progDir, fileName);
 
                 ListVal listVal = new ListVal();
                 listVal.Add(Assistance.createOneVal(_service.Kernel, ctrlType, value));
@@ -84,7 +84,7 @@ namespace Bjd.Test.Utils
                 string path = Path.Combine(progDir, fileName + ".ini");
 
 
-                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
+                ConfigurationDb sut = new ConfigurationDb(_service.Kernel, progDir, fileName);
                 sut.Delete();
 
                 String expected = value;
@@ -120,7 +120,7 @@ namespace Bjd.Test.Utils
                 string progDir = Directory.GetCurrentDirectory();
                 //string path = string.Format("{0}\\{1}.ini", progDir, fileName);
                 string path = Path.Combine(progDir, fileName + ".ini");
-                IniDb sut = new IniDb(_service.Kernel, progDir, fileName);
+                ConfigurationDb sut = new ConfigurationDb(_service.Kernel, progDir, fileName);
 
                 ListVal listVal = new ListVal();
                 var l = new ListVal();

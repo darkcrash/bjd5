@@ -114,14 +114,14 @@ namespace Bjd.Configurations
 
 
         //レジストリへ保存
-        public override void Save(IniDb iniDb)
+        public override void Save(ConfigurationDb iniDb)
         {
             iniDb.Save(NameTag, ListVal);//レジストリへ保存
         }
 
 
         //レジストリからの読み込み
-        public override void Read(IniDb iniDb)
+        public override void Read(ConfigurationDb iniDb)
         {
             // add options from members by Reflection
             MemberLoad();

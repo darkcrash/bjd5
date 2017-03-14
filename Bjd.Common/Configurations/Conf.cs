@@ -69,7 +69,7 @@ namespace Bjd.Configurations
             }
         }
 
-        public void Save(IniDb iniDb)
+        public void Save(ConfigurationDb iniDb)
         {
             throw new NotImplementedException();
         }

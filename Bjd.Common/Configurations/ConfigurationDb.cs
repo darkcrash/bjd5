@@ -4,23 +4,23 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using Bjd.Controls;
-using Bjd.Configurations;
+using Bjd.Utils;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Bjd.Utils
+namespace Bjd.Configurations
 {
     //ファイルを使用した設定情報の保存<br>
     //1つのデフォルト値ファイルを使用して2つのファイルを出力する<br>
-    public class IniDb
+    public class ConfigurationDb
     {
         private readonly Kernel _kernel;
         private readonly string _fileIni;
         private readonly string _fileDef;
         private readonly string _fileTxt;
-        private readonly string _fileIniJson;
+        private readonly string _fileJson;
 
-        public IniDb(Kernel kernel, string progDir, string fileName)
+        public ConfigurationDb(Kernel kernel, string progDir, string fileName)
         {
             //_fileIni = progDir + "\\" + fileName + ".ini";
             //_fileDef = progDir + "\\" + fileName + ".def";
@@ -29,7 +29,7 @@ namespace Bjd.Utils
             _fileIni = System.IO.Path.Combine(progDir, fileName + ".ini");
             _fileDef = System.IO.Path.Combine(progDir, fileName + ".def");
             _fileTxt = System.IO.Path.Combine(progDir, fileName + ".txt");
-            _fileIniJson = System.IO.Path.Combine(progDir, fileName + ".json");
+            _fileJson = System.IO.Path.Combine(progDir, fileName + ".json");
 
         }
 
@@ -128,17 +128,17 @@ namespace Bjd.Utils
 
         private bool ReadJson(string nameTag, ListVal listVal)
         {
-            if (!File.Exists(_fileIniJson))
+            if (!File.Exists(_fileJson))
                 return false;
             var isRead = false;
 
             // read json object from file
             JObject jObject = null;
-            if (File.Exists(_fileIniJson))
+            if (File.Exists(_fileJson))
             {
                 try
                 {
-                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read,  FileShare.Write))
+                    using (var fs = new FileStream(_fileJson, FileMode.Open, FileAccess.Read,  FileShare.Write))
                     using (var reader = new StreamReader(fs))
                     {
                         var jsonReader = new JsonTextReader(reader);
@@ -332,9 +332,9 @@ namespace Bjd.Utils
             {
                 File.Delete(_fileIni);
             }
-            if (File.Exists(_fileIniJson))
+            if (File.Exists(_fileJson))
             {
-                File.Delete(_fileIniJson);
+                File.Delete(_fileJson);
             }
         }
 
@@ -419,11 +419,11 @@ namespace Bjd.Utils
 
             // read json object from file
             JObject jObject = null;
-            if (File.Exists(_fileIniJson))
+            if (File.Exists(_fileJson))
             {
                 try
                 {
-                    using (var fs = new FileStream(_fileIniJson, FileMode.Open, FileAccess.Read))
+                    using (var fs = new FileStream(_fileJson, FileMode.Open, FileAccess.Read))
                     using (var reader = new StreamReader(fs))
                     {
                         var jsonReader = new JsonTextReader(reader);
@@ -444,7 +444,7 @@ namespace Bjd.Utils
             }
 
             // write file from json object
-            using (var fs = new FileStream(_fileIniJson, FileMode.Create, FileAccess.Write))
+            using (var fs = new FileStream(_fileJson, FileMode.Create, FileAccess.Write))
             using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 var jsonWriter = new JsonTextWriter(writer);

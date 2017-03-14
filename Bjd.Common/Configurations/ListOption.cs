@@ -68,7 +68,7 @@ namespace Bjd.Configurations
         }
 
         //Kernel.Dispose()で、有効なオプションだけを出力するために使用する
-        public void Save(IniDb iniDb)
+        public void Save(ConfigurationDb iniDb)
         {
             foreach (var o in Ar)
             {
