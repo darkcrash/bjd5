@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BJD.WebServer.CoreCLR")]
+[assembly: AssemblyTitle("Bjd.WebServer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BJD.WebServer.CoreCLR")]
+[assembly: AssemblyProduct("Bjd.WebServer")]
 [assembly: AssemblyCopyright("Copyright(c) 1998/05.. by SIN/SapporoWorks")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

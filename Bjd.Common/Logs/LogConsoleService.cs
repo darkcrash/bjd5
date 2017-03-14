@@ -40,6 +40,7 @@ namespace Bjd.Logs
 
         public void Dispose()
         {
+            if (isDisposed) return;
             isDisposed = true;
         }
 
