@@ -11,6 +11,7 @@ using Xunit;
 using Bjd;
 using Bjd.Services;
 using System.IO;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -21,12 +22,13 @@ namespace Bjd.SmtpServer.Test
         private Ml _ml;
         private TsMailSave _tsMailSave;
 
-        public MlSummaryTest()
+        public MlSummaryTest(ITestOutputHelper output)
         {
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
             _service = TestService.CreateTestService();
             _service.SetOption("MlSummaryTest.ini");
+            _service.AddOutput(output);
 
             var kernel = _service.Kernel;
             kernel.ListInitialize();

@@ -5,6 +5,7 @@ using Xunit;
 using System.IO;
 using System.Reflection;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails
 {
@@ -13,11 +14,12 @@ namespace Bjd.Test.Mails
 
         private string _dfFile;
         private TestService service;
-        public MailInfoTest()
+        public MailInfoTest(ITestOutputHelper output)
         {
             var srcFile = "DF_MailInfoTest.dat";
             service = TestService.CreateTestService();
             service.ContentFile(srcFile);
+            service.AddOutput(output);
             var dir = service.Kernel.Enviroment.ExecutableDirectory;
             _dfFile = Path.Combine(dir, srcFile);
 

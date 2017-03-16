@@ -13,6 +13,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {

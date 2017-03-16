@@ -12,6 +12,7 @@ using Bjd.SmtpServer;
 using System.Collections.Generic;
 using Bjd.Threading;
 using System.Text;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -28,9 +29,10 @@ namespace Bjd.SmtpServer.Test
 
         private SmtpTestServer _testServer;
 
-        public ServerTestMail(SmtpTestServer server)
+        public ServerTestMail(ITestOutputHelper output, SmtpTestServer server)
         {
             _testServer = server;
+            _testServer._service.AddOutput(output);
             _testServer._service.CleanMailbox("user1");
 
         }

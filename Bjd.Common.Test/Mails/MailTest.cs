@@ -6,6 +6,7 @@ using Bjd.Logs;
 using Bjd.Mails;
 using Xunit;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails
 {
@@ -16,9 +17,10 @@ namespace Bjd.Test.Mails
         private TestService _service;
         private Kernel _kernel;
 
-        public MailTest()
+        public MailTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _kernel = _service.Kernel;
 
             sut = new Mail(_kernel);

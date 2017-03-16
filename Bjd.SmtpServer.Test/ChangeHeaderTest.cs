@@ -7,18 +7,25 @@ using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
-
-
     public class ChangeHeaderTest
     {
+        private ITestOutputHelper output;
+
+        public ChangeHeaderTest(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
         [Fact]
         public void Relpaceによるヘッダの置き換え()
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.AddOutput(output);
                 sv.Kernel.ListInitialize();
 
                 //setUp
@@ -49,6 +56,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.AddOutput(output);
                 sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
@@ -77,6 +85,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.AddOutput(output);
                 sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
@@ -105,6 +114,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.AddOutput(output);
                 sv.Kernel.ListInitialize();
                 //setUp
                 var replace = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
@@ -134,6 +144,7 @@ namespace Bjd.SmtpServer.Test
         {
             using (var sv = TestService.CreateTestService())
             {
+                sv.AddOutput(output);
                 sv.Kernel.ListInitialize();
                 //setUp
                 var appned = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });

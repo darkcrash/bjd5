@@ -31,6 +31,7 @@ namespace Bjd.Test.Mails
             //const string dir = "mailbox";
 
             _service = TestService.CreateTestService();
+            _service.AddOutput(helper);
             _service.CreateMailbox("user1");
             _service.CreateMailbox("user2");
             _service.CreateMailbox("user3");

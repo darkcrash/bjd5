@@ -4,6 +4,7 @@ using Xunit;
 using Bjd.Services;
 using System;
 using Bjd.Threading;
+using Xunit.Abstractions;
 
 namespace Bjd.Test
 {
@@ -44,9 +45,10 @@ namespace Bjd.Test
 
         TestService _service;
 
-        public ThreadBaseTest()
+        public ThreadBaseTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
         }
 
         public void Dispose()

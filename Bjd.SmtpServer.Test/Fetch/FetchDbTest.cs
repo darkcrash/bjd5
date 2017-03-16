@@ -4,6 +4,7 @@ using Xunit;
 using Bjd.SmtpServer;
 using System;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -12,9 +13,10 @@ namespace Bjd.SmtpServer.Test
 
         private TestService _service;
 
-        public FetchDbTest()
+        public FetchDbTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
         }
         public void Dispose()
         {

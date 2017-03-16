@@ -10,6 +10,7 @@ using Bjd;
 using System.Net;
 using Bjd.Services;
 using Bjd.WebServer.Outside;
+using Xunit.Abstractions;
 
 namespace WebServerTest
 {
@@ -22,12 +23,13 @@ namespace WebServerTest
         internal Conf conf;
         internal int port = 90;
 
-        public EnvTest()
+        public EnvTest(ITestOutputHelper output)
         {
 
             _service = TestService.CreateTestService();
             _service.SetOption("EnvTest.ini");
             _service.ContentDirectory("public_html");
+            _service.AddOutput(output);
 
             _kernel = _service.Kernel;
             _kernel.ListInitialize();

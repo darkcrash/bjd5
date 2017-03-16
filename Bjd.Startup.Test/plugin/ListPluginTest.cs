@@ -4,12 +4,20 @@ using Bjd.Configurations;
 using Bjd.Plugins;
 using Bjd.Services;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Bjd.Common.Test.plugin
 {
 
     public class ListPluginTest
     {
+
+        private ITestOutputHelper output;
+
+        public ListPluginTest(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
 
         [Fact]
         public void Pluginsフォルダの中のdllファイルを列挙()
@@ -18,6 +26,7 @@ namespace Bjd.Common.Test.plugin
             {
                 service.SetOption("Option.ini");
                 //service.ContentDirectory("mailbox");
+                service.AddOutput(output);
 
                 //const string currentDir = @"C:\tmp2\bjd5\BJD\out";
 
@@ -39,6 +48,7 @@ namespace Bjd.Common.Test.plugin
             {
                 service.SetOption("Option.ini");
                 //service.ContentDirectory("mailbox");
+                service.AddOutput(output);
 
                 //var kernel = new Kernel();
                 var kernel = service.Kernel;

@@ -5,6 +5,7 @@ using Bjd.Mails;
 using Bjd.Configurations;
 using Xunit;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails
 {
@@ -15,10 +16,11 @@ namespace Bjd.Test.Mails
         private static TestService _service;
         private Conf _conf;
 
-        public MailBoxTest2()
+        public MailBoxTest2(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
             _service.SetOption("MailBoxTest2.ini");
+            _service.AddOutput(output);
 
             var kernel = _service.Kernel;
             kernel.ListInitialize();

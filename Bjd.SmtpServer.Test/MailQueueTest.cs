@@ -10,6 +10,7 @@ using Bjd.Net;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -19,9 +20,10 @@ namespace Bjd.SmtpServer.Test
         private TestService _service;
         private Kernel _kernel;
 
-        public MailQueueTest()
+        public MailQueueTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             var path = _service.Kernel.Enviroment.ExecutableDirectory;
             _kernel = _service.Kernel;
             sut = new MailQueue(_kernel, path);

@@ -7,6 +7,7 @@ using Xunit;
 using Bjd;
 using Bjd.Services;
 using System;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Acls
 {
@@ -16,9 +17,10 @@ namespace Bjd.Test.Acls
         TestService _service;
         Kernel _kernel;
 
-        public AclListTest()
+        public AclListTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _kernel = _service.Kernel;
         }
 

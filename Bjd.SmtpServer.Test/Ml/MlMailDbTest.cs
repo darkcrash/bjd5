@@ -7,6 +7,7 @@ using Bjd;
 using System.IO;
 using System;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test {
     public class MlMailDbTest : IDisposable
@@ -14,9 +15,10 @@ namespace Bjd.SmtpServer.Test {
         TestService service;
         Kernel _kernel;
 
-        public MlMailDbTest()
+        public MlMailDbTest(ITestOutputHelper output)
         {
             service = TestService.CreateTestService();
+            service.AddOutput(output);
             _kernel = service.Kernel;
         }
 

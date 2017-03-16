@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -13,9 +14,10 @@ namespace Bjd.SmtpServer.Test
         TestService _service;
         Kernel _kernel;
 
-        public MlCreatorTest()
+        public MlCreatorTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _kernel = _service.Kernel;
 
             var mlAddr = new MlAddr("1ban", new List<string> { "example.com" });

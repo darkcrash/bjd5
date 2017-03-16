@@ -6,6 +6,7 @@ using Bjd.Mails;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -16,9 +17,10 @@ namespace Bjd.SmtpServer.Test
         private TestService _service;
         private Kernel _kernel;
 
-        public MlCmdTest()
+        public MlCmdTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _kernel = _service.Kernel;
             _user1 = new MlOneUser(true, "USER1", new MailAddress("user1@example.com"), false, true, true, "password");
         }

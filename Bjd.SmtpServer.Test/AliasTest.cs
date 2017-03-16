@@ -8,6 +8,7 @@ using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -18,9 +19,10 @@ namespace Bjd.SmtpServer.Test
         private MailBox _mailBox;
         private List<String> _domainList;
 
-        public AliasTest()
+        public AliasTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             _kernel = _service.Kernel;
             _kernel.ListInitialize();
 

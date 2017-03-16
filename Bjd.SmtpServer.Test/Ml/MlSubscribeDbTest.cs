@@ -7,6 +7,7 @@ using Bjd;
 using System.Threading;
 using System.IO;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -16,10 +17,11 @@ namespace Bjd.SmtpServer.Test
         MlSubscribeDb _mlSubscribeDb;
         private const double EffectiveMsec = 50; //50msec(本来は60秒以上とするが、テストのため50msecで初期化する)
 
-        public MlSubscribeDbTest()
+        public MlSubscribeDbTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
             _service.SetOption("MlSubscribeDbTest.ini");
+            _service.AddOutput(output);
 
             var manageDir = _service.GetTmpDir("TestDir");
 

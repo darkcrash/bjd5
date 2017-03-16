@@ -12,6 +12,7 @@ using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -20,9 +21,10 @@ namespace Bjd.SmtpServer.Test
         private MailBox _mailBox;
         private TestService _service;
 
-        public PopBeforeSmtpTest()
+        public PopBeforeSmtpTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
             
 
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });

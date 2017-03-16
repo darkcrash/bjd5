@@ -2,6 +2,7 @@
 using Bjd.WebServer;
 using Xunit;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace WebServerTest
 {
@@ -12,9 +13,10 @@ namespace WebServerTest
         TestService _service;
         HttpRequest _request;
 
-        public RequestTest()
+        public RequestTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(output);
 
             _request = new HttpRequest(_service.Kernel, null, null);
 

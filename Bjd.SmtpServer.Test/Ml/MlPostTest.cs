@@ -10,6 +10,7 @@ using Bjd.SmtpServer;
 using Bjd;
 using Bjd.Services;
 using System.IO;
+using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
@@ -20,12 +21,13 @@ namespace Bjd.SmtpServer.Test
         private Ml _ml;
         private TsMailSave _tsMailSave;
 
-        public MlPostTest()
+        public MlPostTest(ITestOutputHelper output)
         {
             const string mlName = "1ban";
             var domainList = new List<string> { "example.com" };
             _service = TestService.CreateTestService();
             _service.SetOption("MlPostTest.ini");
+            _service.AddOutput(output);
 
             var kernel = _service.Kernel;
             var logger = new Logger(kernel);
