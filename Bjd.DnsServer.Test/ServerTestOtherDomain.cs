@@ -13,6 +13,7 @@ using Bjd.Test;
 using Bjd.DnsServer;
 using Xunit;
 using Bjd.Services;
+using Xunit.Abstractions;
 
 namespace DnsServerTest
 {
@@ -30,12 +31,13 @@ namespace DnsServerTest
         private int port;
         private ServerTestOtherDomain.Fixture _server;
 
-        public ServerTestOtherDomain(ServerTestOtherDomain.Fixture fixture)
+        public ServerTestOtherDomain(ITestOutputHelper output, ServerTestOtherDomain.Fixture fixture)
         {
             _server = fixture;
             _service = _server._service;
             _sv = _server._sv;
             port = _server.port;
+            _service.AddOutput(output);
 
         }
 
@@ -269,11 +271,28 @@ namespace DnsServerTest
                 if (p.GetCount(RrKind.AN) > 0) break;
             }
 
+            var arList = new List<String>();
+            //arList.Add("Cname www.yahoo.co.jp. TTL=900 www.g.yahoo.co.jp.");
+            arList.Add("Cname www.yahoo.co.jp. TTL=900 edge.g.yimg.jp.");
+            arList.Add("A edge.g.yimg.jp. TTL=60 182.22.24.124");
+            arList.Add("Ns yahoo.co.jp. TTL=86400 ns01.yahoo.co.jp.");
+            arList.Add("A ns01.yahoo.co.jp. TTL=86400 118.151.254.133");
+            arList.Add("Ns yahoo.co.jp. TTL=86400 ns12.yahoo.co.jp.");
+            arList.Add("A ns12.yahoo.co.jp. TTL=86400 124.83.255.101");
+            arList.Add("Ns yahoo.co.jp. TTL=86400 ns11.yahoo.co.jp.");
+            arList.Add("A ns11.yahoo.co.jp. TTL=86400 124.83.255.37");
+            arList.Add("Ns yahoo.co.jp. TTL=86400 ns02.yahoo.co.jp.");
+            arList.Add("A ns02.yahoo.co.jp. TTL=86400 118.151.254.149");
+
+
             //verify
             //Assert.Equal(Print(p), "QD=1 AN=5 NS=4 AR=4");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Cname www.yahoo.co.jp. TTL=900 www.g.yahoo.co.jp.");
+            //Assert.Equal(Print(p, RrKind.AN, 0), "Cname www.yahoo.co.jp. TTL=900 www.g.yahoo.co.jp.");
             //AN.1のAレコードは、ダイナミックにIPが変わるので、Testの対象外とする
             //Assert.Equal(Print(p, RrKind.AN, 1), "A www.g.yahoo.co.jp. TTL=60 203.216.235.189");
+
+            Assert.Contains<string>(Print(p, RrKind.AR, 0), arList);
+
         }
 
         [Fact]
