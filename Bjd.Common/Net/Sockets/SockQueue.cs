@@ -13,11 +13,16 @@ namespace Bjd.Net.Sockets
         int _dbStart = 0;
         int _length = 0;
 
+        int sendCounter = 0;
+        int recvCounter = 0;
+        int recvLength = 0;
+
+        const byte Cr = 0x0d;
+        const byte Lf = 0x0A;
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
-        //TODO modifyの動作に不安あり（これ必要なのか？） 
-        bool _modify; //バッファに追加があった場合にtrueに変更される
+
         ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
         object _lock = new object();
 
@@ -40,11 +45,13 @@ namespace Bjd.Net.Sockets
             _dbNext = 0;
             _dbStart = 0;
             _length = 0;
+            sendCounter = 0;
+            recvCounter = 0;
+            recvLength = 0;
         }
 
         private void SetModify(bool modify)
         {
-            _modify = modify;
             if (modify)
             {
                 _modifyEvent.Set();
@@ -71,14 +78,20 @@ namespace Bjd.Net.Sockets
                 throw new ArgumentOutOfRangeException("queue overflow");
             }
 
-            lock (_lock)
-            {
-                _dbNext += len;
-                _length += len;
-                if (_dbNext >= max) _dbNext = 0;
-                //_modify = true; //データベースの内容が変化した
-                SetModify(true);
-            }
+            int workdbNext = _dbNext;
+            workdbNext += len;
+
+            if (workdbNext >= max) workdbNext = 0;
+            _dbNext = workdbNext;
+
+            //_length += len;
+            System.Threading.Interlocked.Add(ref _length, len);
+
+            if (sendCounter == int.MaxValue) sendCounter = 0;
+            sendCounter++;
+
+            //_modify = true; //データベースの内容が変化した
+            SetModify(true);
         }
 
         //キューへの追加
@@ -95,32 +108,39 @@ namespace Bjd.Net.Sockets
                 return 0;
             }
 
-            lock (_lock)
+            // 追加データをコピー
+            var afterSpace = this.AfterSpace;
+            int workdbNext = _dbNext;
+            if (afterSpace < len)
             {
-                // 追加データをコピー
-                var afterSpace = this.AfterSpace;
-                if (afterSpace < len)
-                {
-                    // 分割コピー
-                    Buffer.BlockCopy(buf, 0, _db, _dbNext, afterSpace);
-                    _dbNext = 0;
+                // 分割コピー
+                Buffer.BlockCopy(buf, 0, _db, workdbNext, afterSpace);
+                workdbNext = 0;
 
-                    // 分割点取得
-                    var splitLen = len - afterSpace;
-                    Buffer.BlockCopy(buf, 0, _db, 0, splitLen);
-                    _dbNext += splitLen;
-                }
-                else
-                {
-                    // そのままコピー
-                    Buffer.BlockCopy(buf, 0, _db, _dbNext, len);
-                    _dbNext += len;
-                }
-                _length += len;
-                if (_dbNext >= max) _dbNext = 0;
-                //_modify = true; //データベースの内容が変化した
-                SetModify(true);
+                // 分割点取得
+                var splitLen = len - afterSpace;
+                Buffer.BlockCopy(buf, 0, _db, 0, splitLen);
+                workdbNext += splitLen;
             }
+            else
+            {
+                // そのままコピー
+                Buffer.BlockCopy(buf, 0, _db, workdbNext, len);
+                workdbNext += len;
+            }
+
+
+            if (workdbNext >= max) workdbNext = 0;
+            _dbNext = workdbNext;
+
+            //_length += len;
+            System.Threading.Interlocked.Add(ref _length, len);
+
+            if (sendCounter == int.MaxValue) sendCounter = 0;
+            sendCounter++;
+
+            //_modify = true; //データベースの内容が変化した
+            SetModify(true);
 
             return len;
 
@@ -128,152 +148,160 @@ namespace Bjd.Net.Sockets
 
         public byte[] DequeueWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            lock (_lock)
+            while (true)
             {
-                //要求サイズが現有数を超える場合は待機する
-                if (_length < len)
+                if (cancellationToken.IsCancellationRequested) return empty;
+                var result = Dequeue(len);
+                if (result == empty)
                 {
-                    SetModify(false);
+                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
+                    catch (OperationCanceledException) { return empty; }
+                    continue;
                 }
+                return result;
             }
-            bool wait;
-            try { wait = _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
-            catch (OperationCanceledException) { return empty; }
-            if (!wait)
-            {
-                lock (_lock)
-                {
-                    SetModify(true);
-                }
-            }
-            return Dequeue(len);
         }
 
         //キューからのデータ取得
         public byte[] Dequeue(int len)
         {
             //if (_db.Length == 0 || len == 0 || !_modify)
-            if (_length == 0 || len == 0 || !_modify)
+            //if (_length == 0 || len == 0 || !_modify)
+            if ((recvLength == _length && recvCounter == sendCounter))
+            {
+                return empty;
+            }
+            // 次に何か受信するまで処理の必要はない
+            SetModify(false);
+            recvCounter = sendCounter;
+            recvLength = _length;
+
+            if (recvLength == 0 || len == 0)
             {
                 return empty;
             }
 
-            lock (_lock)
+            //要求サイズが現有数を超える場合はカットする
+            if (recvLength < len)
             {
-                //要求サイズが現有数を超える場合はカットする
-                if (_length < len)
-                {
-                    len = _length;
-                }
-
-                // 出力用バッファ
-                var retBuf = new byte[len];
-
-
-                var afterLength = this.AfterLength;
-                if (afterLength < len)
-                {
-                    // 分割あり
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, afterLength);
-                    _dbStart = 0;
-
-                    // 分割点取得
-                    var splitLen = len - afterLength;
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, afterLength, splitLen);
-                    _dbStart += splitLen;
-
-                }
-                else
-                {
-                    // 分割なし
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
-                    _dbStart += len;
-                }
-
-                _length -= len;
-                if (_dbStart >= max) _dbStart = 0;
-
-                if (_length == 0)
-                {
-                    // 次に何か受信するまで処理の必要はない
-                    //_modify = false;
-                    SetModify(false);
-                }
-                return retBuf;
+                len = recvLength;
             }
+
+            // 出力用バッファ
+            var retBuf = new byte[len];
+
+
+            var afterLength = this.AfterLength;
+            if (afterLength < len)
+            {
+                // 分割あり
+                Buffer.BlockCopy(_db, _dbStart, retBuf, 0, afterLength);
+                _dbStart = 0;
+
+                // 分割点取得
+                var splitLen = len - afterLength;
+                Buffer.BlockCopy(_db, _dbStart, retBuf, afterLength, splitLen);
+                _dbStart += splitLen;
+
+            }
+            else
+            {
+                // 分割なし
+                Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
+                _dbStart += len;
+            }
+
+            //_length -= len;
+            System.Threading.Interlocked.Add(ref _length, -len);
+            if (_dbStart >= max) _dbStart = 0;
+
+            return retBuf;
 
         }
 
         public byte[] DequeueLineWait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var result = DequeueLine();
-            if (result == empty)
+            while (true)
             {
-                try { _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
-                catch (OperationCanceledException) { return empty; }
-                result = DequeueLine();
+                if (cancellationToken.IsCancellationRequested) return empty;
+                var result = DequeueLine();
+                if (result == empty)
+                {
+                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
+                    catch (OperationCanceledException) { return empty; }
+                    continue;
+                }
+                return result;
             }
-            return result;
         }
 
 
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
-            if (!_modify)
+            if (recvLength == _length && recvCounter == sendCounter)
             {
                 return empty;
             }
+            //_modify = false; //次に何か受信するまで処理の必要はない
+            SetModify(false);
+            recvCounter = sendCounter;
+            recvLength = _length;
 
-            lock (_lock)
+            int dbNext = _dbNext;
+            int dbStart = _dbStart;
+            int length = recvLength;
+
+            var splited = dbStart > dbNext || (length == max && dbStart == dbNext);
+            var end = (splited ? max : dbNext);
+
+            // 分割なしの範囲
+            for (var i = dbStart; i < end; i++)
             {
-                var splited = _dbStart > _dbNext || (_length == max && _dbStart == _dbNext);
-                var end = (splited ? max : _dbNext);
+                //if (_db[i] != '\n') continue;
+                if (_db[i] != Lf) continue;
 
-                // 分割なしの範囲
-                for (var i = _dbStart; i < end; i++)
+                // 出力サイズとバッファ
+                var len = i + 1 - dbStart;
+                var retBuf = new byte[len]; //\r\nを削除しない
+
+                Buffer.BlockCopy(_db, dbStart, retBuf, 0, len);
+
+                _dbStart += len;
+                //_length -= len;
+                System.Threading.Interlocked.Add(ref _length, -len);
+                if (_dbStart >= max) _dbStart = 0;
+
+                return retBuf;
+            }
+
+            // 分割ありの場合
+            if (splited)
+            {
+                for (var i = 0; i < dbNext; i++)
                 {
-                    if (_db[i] != '\n') continue;
+                    //if (_db[i] != '\n') continue;
+                    if (_db[i] != Lf) continue;
 
                     // 出力サイズとバッファ
-                    var len = i + 1 - _dbStart;
+                    var splitCount = (max - dbStart);
+                    var splitEnd = i + 1;
+                    var len = splitEnd + splitCount;
                     var retBuf = new byte[len]; //\r\nを削除しない
 
-                    Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
-                    _dbStart += len;
-                    _length -= len;
-                    if (_dbStart >= max) _dbStart = 0;
+                    Buffer.BlockCopy(_db, dbStart, retBuf, 0, splitCount);
+                    Buffer.BlockCopy(_db, 0, retBuf, splitCount, splitEnd);
+
+
+                    _dbStart = splitEnd;
+                    //_length -= len;
+                    System.Threading.Interlocked.Add(ref _length, -len);
 
                     return retBuf;
                 }
 
-                // 分割ありの場合
-                if (splited)
-                {
-                    for (var i = 0; i < _dbNext; i++)
-                    {
-                        if (_db[i] != '\n') continue;
-
-                        // 出力サイズとバッファ
-                        var splitCount = (max - _dbStart);
-                        var splitEnd = i + 1;
-                        var len = splitEnd + splitCount;
-                        var retBuf = new byte[len]; //\r\nを削除しない
-
-                        Buffer.BlockCopy(_db, _dbStart, retBuf, 0, splitCount);
-                        Buffer.BlockCopy(_db, 0, retBuf, splitCount, splitEnd);
-                        _dbStart = splitEnd;
-                        _length -= len;
-
-                        return retBuf;
-                    }
-
-                }
-
-                //_modify = false; //次に何か受信するまで処理の必要はない
-                SetModify(false);
-
             }
+
 
             return empty;
         }

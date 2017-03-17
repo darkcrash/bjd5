@@ -51,10 +51,10 @@ namespace Bjd.Test.Sockets
 
                 int expected = max * 3;
 
-                for (var i = 0; i < 20; i++)
+                for (var i = 0; i < 200; i++)
                 {
                     if (sut.Length() == expected) break;
-                    Thread.Sleep(125);
+                    Thread.Sleep(10);
                 }
 
                 //exercise
@@ -97,7 +97,7 @@ namespace Bjd.Test.Sockets
                     var len = sockTcp.Send(tmp);
                     Assert.Equal(len, tmp.Length);
 
-                    Thread.Sleep(10);
+                    //Thread.Sleep(10);
 
                     var b = sockTcp.Recv(len, timeout, this);
                     recvCount += b.Length;
@@ -129,6 +129,52 @@ namespace Bjd.Test.Sockets
                 var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
                 var expectedText = new StringBuilder();
                 for (var s = 0; s < 10000; s++)
+                {
+                    expectedText.Append("本日は晴天なり");
+                }
+                expectedText.Append("\r\n");
+                var expected = Encoding.UTF8.GetBytes(expectedText.ToString());
+                var dataLength = expected.Length;
+
+                for (var p = 0; p < 2; p++)
+                {
+                    for (var i = 0; i < size; i += dataLength)
+                    {
+                        sut.Send(expected);
+                    }
+
+                    for (var i = 0; i < size; i += dataLength)
+                    {
+                        //exercise
+                        var actual = sut.LineRecv(timeout, this);
+                        //verify
+                        Assert.Equal(expected, actual);
+                    }
+                }
+
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
+            }
+
+        }
+
+        [Fact]
+        public void EchoServerToSendOverQueueLarge()
+        {
+            //setUp
+            var ip = new Ip("127.0.0.1");
+            //const int port = 9996;
+            int port = _service.GetAvailablePort(ip, 9996);
+            int size = 4000000;
+
+            using (var sv = new SockTcpTestEchoServer(_service.Kernel, ip, port))
+            {
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                var expectedText = new StringBuilder();
+                for (var s = 0; s < 80000; s++)
                 {
                     expectedText.Append("本日は晴天なり");
                 }
