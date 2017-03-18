@@ -187,17 +187,21 @@ namespace Bjd.Console.Controls
 
         private void RefreshIntervalLoop()
         {
-            while (true)
+            try
             {
-                RefreshIntervalSignal.Wait(RefreshIntervalCancel.Token);
-                if (RefreshIntervalCancel.IsCancellationRequested) return;
-                Task.Delay(RefreshInterval).Wait(RefreshIntervalCancel.Token);
-                if (RefreshIntervalCancel.IsCancellationRequested) return;
-                if (!Visible) continue;
-                Redraw = true;
-                if (cContext != null)
-                    cContext.Refresh();
+                while (true)
+                {
+                    RefreshIntervalSignal.Wait(RefreshIntervalCancel.Token);
+                    if (RefreshIntervalCancel.IsCancellationRequested) return;
+                    Task.Delay(RefreshInterval).Wait(RefreshIntervalCancel.Token);
+                    if (RefreshIntervalCancel.IsCancellationRequested) return;
+                    if (!Visible) continue;
+                    Redraw = true;
+                    if (cContext != null)
+                        cContext.Refresh();
+                }
             }
+            catch (OperationCanceledException) { }
         }
 
     }
