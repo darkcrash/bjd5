@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <Version>1.1.0</Version>
+    <Authors>SIN/SapporoWorks;yasuaki.matsuda</Authors>
+    <Company />
+    <Copyright>Copyright(c) 1998/05.. by SIN/SapporoWorks</Copyright>
+  </PropertyGroup>
+
+</Project>

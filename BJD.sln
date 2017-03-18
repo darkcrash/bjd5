@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4E14581-EEDC-4FE1-BBF9-ABF8ED910C43}"
 	ProjectSection(SolutionItems) = preProject
@@ -82,6 +82,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyHttpServer.Test", "Bjd.ProxyHttpServer.Test\Bjd.ProxyHttpServer.Test.csproj", "{9AAF39C8-484B-49E1-9C67-C3A4440EA528}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyFtpServer", "Bjd.ProxyFtpServer\Bjd.ProxyFtpServer.csproj", "{8A95962D-5889-4BB6-88A3-C3987236FBE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Mailbox", "Bjd.Mailbox\Bjd.Mailbox.csproj", "{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -213,6 +215,10 @@ Global
 		{8A95962D-5889-4BB6-88A3-C3987236FBE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A95962D-5889-4BB6-88A3-C3987236FBE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A95962D-5889-4BB6-88A3-C3987236FBE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
