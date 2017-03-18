@@ -12,16 +12,18 @@ namespace Bjd.Net.Sockets
         const int poolSize = 20;
 
         private ConcurrentBag<SockQueue> _queue = new ConcurrentBag<SockQueue>();
-        private CancellationTokenSource cancel = new CancellationTokenSource();
+        //private CancellationTokenSource cancel = new CancellationTokenSource();
         private int _leaseCount = 0;
+        private int _Count = 0;
 
         private SockQueuePool()
         {
             for (int i = 0; i < poolSize; i++)
             {
+                _Count++;
                 _queue.Add(new SockQueue());
             }
-            Cleanup();
+            //Cleanup();
         }
 
         ~SockQueuePool()
@@ -31,7 +33,7 @@ namespace Bjd.Net.Sockets
 
         public void Dispose()
         {
-            cancel.Cancel();
+            //cancel.Cancel();
             while (!_queue.IsEmpty)
             {
                 SockQueue outQ;
@@ -40,31 +42,31 @@ namespace Bjd.Net.Sockets
         }
 
 
-        private void Cleanup()
-        {
-            if (cancel.IsCancellationRequested) return;
-            try
-            {
-                if (_leaseCount > 0) return;
+        //private void Cleanup()
+        //{
+        //    if (cancel.IsCancellationRequested) return;
+        //    try
+        //    {
+        //        if (_leaseCount > 0) return;
 
-                var q = _queue.Count;
+        //        var q = _queue.Count;
 
-                int delete = q - poolSize;
-                if (delete > 0)
-                {
-                    SockQueue outQ;
-                    while (!_queue.TryTake(out outQ)) ;
-                    outQ.Dispose();
-                }
+        //        int delete = q - poolSize;
+        //        if (delete > 0)
+        //        {
+        //            SockQueue outQ;
+        //            while (!_queue.TryTake(out outQ)) ;
+        //            outQ.Dispose();
+        //        }
 
-            }
-            finally
-            {
-                var t = Task.Delay(1000);
-                t.ContinueWith(_ => Cleanup(), cancel.Token);
-            }
+        //    }
+        //    finally
+        //    {
+        //        var t = Task.Delay(1000);
+        //        t.ContinueWith(_ => Cleanup(), cancel.Token);
+        //    }
 
-        }
+        //}
 
         public SockQueue Get()
         {
@@ -74,12 +76,19 @@ namespace Bjd.Net.Sockets
             {
                 return outQ;
             }
+            Interlocked.Increment(ref _Count);
             return new SockQueue();
         }
 
         public void Pool(ref SockQueue q)
         {
             Interlocked.Decrement(ref _leaseCount);
+            if (poolSize < (_Count - _leaseCount))
+            {
+                Interlocked.Decrement(ref _Count);
+                q.Dispose();
+                return;
+            }
             q.Initialize();
             _queue.Add(q);
             q = null;
