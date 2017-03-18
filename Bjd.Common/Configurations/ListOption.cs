@@ -169,10 +169,10 @@ namespace Bjd.Configurations
                     }
                 }
             }
-            if (Get("Smtp") != null || Get("Pop3") != null || Get("WebApi") != null)
-            {
-                Add(new ConfigurationMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
-            }
+            //if (Get("Smtp") != null || Get("Pop3") != null || Get("WebApi") != null)
+            //{
+            //    Add(new ConfigurationMailBox(_kernel, Define.ExecutableDirectory)); //メールボックス
+            //}
         }
 
     }

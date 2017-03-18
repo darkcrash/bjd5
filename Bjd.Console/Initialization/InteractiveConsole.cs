@@ -5,18 +5,18 @@ using System.Reflection;
 using System.Collections.Generic;
 using Bjd.Console.Controls;
 
-namespace Bjd.Services
+namespace Bjd.Initialization
 {
-    public class InteractiveConsoleService
+    public class InteractiveConsole
     {
         static ControlContext controlContext;
         static System.Threading.CancellationTokenSource sigContext = new System.Threading.CancellationTokenSource();
         static System.Threading.CancellationTokenSource signal = new System.Threading.CancellationTokenSource();
-        internal static InteractiveConsoleService instance = new InteractiveConsoleService();
+        internal static InteractiveConsole instance = new InteractiveConsole();
 
         public static void Start()
         {
-            Trace.TraceInformation("InteractiveConsoleService.ServiceMain Start");
+            Trace.TraceInformation("InteractiveConsole Start");
 
             controlContext = new ControlContext(sigContext.Token);
 
@@ -25,16 +25,16 @@ namespace Bjd.Services
             Define_ChangeOperationSystem(instance, EventArgs.Empty);
 
             // service start
-            InteractiveConsoleService.instance.OnStart();
+            InteractiveConsole.instance.OnStart();
             System.Console.CancelKeyPress += Console_CancelKeyPress;
             signal.Token.WaitHandle.WaitOne();
-            Trace.TraceInformation("InteractiveConsoleService.ServiceMain End");
+            Trace.TraceInformation("InteractiveConsole End");
         }
 
         public static void Stop()
         {
-            Trace.TraceInformation("InteractiveConsoleService.Stop Start");
-            InteractiveConsoleService.instance.OnStop();
+            Trace.TraceInformation("InteractiveConsole.Stop Start");
+            InteractiveConsole.instance.OnStop();
 
             sigContext.Cancel();
             controlContext.Dispose();
@@ -42,7 +42,7 @@ namespace Bjd.Services
             sigContext.Dispose();
             signal.Cancel();
 
-            Trace.TraceInformation("InteractiveConsoleService.Stop End");
+            Trace.TraceInformation("InteractiveConsole.Stop End");
         }
 
         private static void Define_ChangeOperationSystem(object sender, EventArgs e)
@@ -63,22 +63,22 @@ namespace Bjd.Services
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Trace.TraceInformation("InteractiveConsoleService.ConsoleCancel Start");
+            Trace.TraceInformation("InteractiveConsole.ConsoleCancel Start");
             e.Cancel = true;
             Stop();
-            Trace.TraceInformation("InteractiveConsoleService.ConsoleCancel End");
+            Trace.TraceInformation("InteractiveConsole.ConsoleCancel End");
         }
 
 
         Kernel _kernel;
 
-        public InteractiveConsoleService()
+        public InteractiveConsole()
         {
         }
 
         internal void OnStart()
         {
-            Trace.TraceInformation("InteractiveConsoleService.OnStart Start");
+            Trace.TraceInformation("InteractiveConsole.OnStart Start");
 
             if (_kernel == null)
             {
@@ -90,7 +90,7 @@ namespace Bjd.Services
                 controlContext.Kernel = _kernel;
 
             }
-            Trace.TraceInformation("InteractiveConsoleService.OnStart End");
+            Trace.TraceInformation("InteractiveConsole.OnStart End");
         }
 
         private void KernelEvents_RequestLogService(object sender, EventArgs e)
@@ -103,7 +103,7 @@ namespace Bjd.Services
 
         internal void OnStop()
         {
-            Trace.TraceInformation("InteractiveConsoleService.OnStop Start");
+            Trace.TraceInformation("InteractiveConsole.OnStop Start");
             if (_kernel != null)
             {
                 _kernel.Stop();
@@ -112,7 +112,7 @@ namespace Bjd.Services
                 _kernel = null;
                 controlContext.Kernel = null;
             }
-            Trace.TraceInformation("InteractiveConsoleService.OnStop End");
+            Trace.TraceInformation("InteractiveConsole.OnStop End");
         }
 
 

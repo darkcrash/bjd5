@@ -6,12 +6,13 @@ using System.Threading;
 using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Configurations;
+using Bjd.Components;
 using Bjd.Utils;
 
-namespace Bjd.Mails
+namespace Bjd.Mailbox
 {
 
-    public class MailBox
+    public class MailBox : ComponentBase
     {
         private readonly List<OneMailBox> _ar = new List<OneMailBox>();
         private Logger _log;
@@ -27,14 +28,23 @@ namespace Bjd.Mails
             }
         }
 
-        public MailBox(Logger logger, Dat datUser, String dir)
+        public MailBox(Kernel kernel, Conf conf)
+            : base(kernel, conf)
         {
+            //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
+            //var op = kernel.ListOption.Get("MailBox");
+            //var conf = new Conf(op);
+            var confDir = kernel.ReplaceOptionEnv((string)conf.Get("dir"));
+            var datUser = (Dat)conf.Get("user");
+
             Status = true; //初期化状態 falseの場合は、初期化に失敗しているので使用できない
 
-            _log = logger;
+            //_log = logger;
+            _log = kernel.CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
 
             //MailBoxを配置するフォルダ
-            Dir = dir;
+            //Dir = dir;
+            Dir = Path.Combine(kernel.Enviroment.ExecutableDirectory, confDir);
             try
             {
                 Directory.CreateDirectory(Dir);
@@ -132,7 +142,8 @@ namespace Bjd.Mails
                         success = true;
                     }
                 }
-                else {
+                else
+                {
                     _log.Set(LogKind.Error, null, 9000059, mail.GetLastError());
                 }
             }

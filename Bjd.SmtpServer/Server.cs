@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
@@ -19,6 +19,7 @@ namespace Bjd.SmtpServer
     {
 
         public List<string> DomainList { get; private set; }
+        readonly MailBox _mailBox;
         readonly MailQueue _mailQueue;
         readonly MailSave _mailSave;
         readonly Agent _agent;//キュー処理スレッド
@@ -40,9 +41,10 @@ namespace Bjd.SmtpServer
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
+            _mailBox = kernel.GetMailBox();
 
             //メールボックスの初期化状態確認
-            if (kernel.MailBox == null || !kernel.MailBox.Status)
+            if (_mailBox == null || !_mailBox.Status)
             {
                 Logger.Set(LogKind.Error, null, 4, "");
                 return; //初期化失敗(サーバは機能しない)
@@ -64,7 +66,7 @@ namespace Bjd.SmtpServer
             }
 
             //エリアス初期化
-            Alias = new Alias(DomainList, kernel.MailBox);
+            Alias = new Alias(DomainList, _mailBox);
             foreach (var dat in (Dat)_conf.Get("aliasList"))
             {
                 if (dat.Enable)
@@ -80,7 +82,7 @@ namespace Bjd.SmtpServer
 
             //SaveMail初期化
             var receivedHeader = new ReceivedHeader(kernel, (string)_conf.Get("receivedHeader"));
-            _mailSave = new MailSave(kernel, kernel.MailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
+            _mailSave = new MailSave(kernel, _mailBox, Alias, _mailQueue, Logger, receivedHeader, DomainList);
 
             var always = (bool)_conf.Get("always");//キュー常時処理
             _agent = new Agent(kernel, this, _conf, Logger, _mailQueue, always);
@@ -89,11 +91,11 @@ namespace Bjd.SmtpServer
             _relay = new Relay((Dat)_conf.Get("allowList"), (Dat)_conf.Get("denyList"), (int)_conf.Get("order"), Logger);
 
             //PopBeforeSmtp
-            _popBeforeSmtp = new PopBeforeSmtp((bool)conf.Get("usePopBeforeSmtp"), (int)conf.Get("timePopBeforeSmtp"), kernel.MailBox);
+            _popBeforeSmtp = new PopBeforeSmtp((bool)conf.Get("usePopBeforeSmtp"), (int)conf.Get("timePopBeforeSmtp"), _mailBox);
 
 
             //usePopAccountがfalseの時、内部でmailBoxが無効化される
-            _smtpAuthUserList = new SmtpAuthUserList((bool)_conf.Get("usePopAcount"), _kernel.MailBox, (Dat)_conf.Get("esmtpUserList"));
+            _smtpAuthUserList = new SmtpAuthUserList((bool)_conf.Get("usePopAcount"), _mailBox, (Dat)_conf.Get("esmtpUserList"));
             _smtpAuthRange = new SmtpAuthRange((Dat)_conf.Get("range"), (int)_conf.Get("enableEsmtp"), Logger);
 
             //ヘッダ置換
@@ -123,7 +125,7 @@ namespace Bjd.SmtpServer
         override public string Cmd(string cmdStr)
         {
 
-            if (!_kernel.MailBox.Status)
+            if (!_mailBox.Status)
                 return "";
 
             if (cmdStr == "Refresh-MailBox")
@@ -139,10 +141,10 @@ namespace Bjd.SmtpServer
                     sb.Append('\b');
                 }
                 //ユーザメール一覧
-                foreach (var user in _kernel.MailBox.UserList)
+                foreach (var user in _mailBox.UserList)
                 {
                     //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-                    var folder = Path.Combine(_kernel.MailBox.Dir, user);
+                    var folder = Path.Combine(_mailBox.Dir, user);
                     files = Directory.GetFiles(folder, "DF_*");
                     Array.Sort(files);
                     foreach (string fileName in files)
@@ -200,7 +202,7 @@ namespace Bjd.SmtpServer
         MailInfo Search(string user, string uid, ref string folder)
         {
             //folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-            folder = Path.Combine(_kernel.MailBox.Dir, user);
+            folder = Path.Combine(_mailBox.Dir, user);
             if (user == "QUEUE")
                 folder = _mailQueue.Dir;
 
@@ -228,7 +230,7 @@ namespace Bjd.SmtpServer
                 _agent.Start();
 
             //Ver5.9.8
-            if (_kernel.MailBox == null || !_kernel.MailBox.Status)
+            if (_mailBox == null || !_mailBox.Status)
             {
                 return false;
             }
@@ -456,7 +458,7 @@ namespace Bjd.SmtpServer
                         if (!Alias.IsUser(mailAddress.User))
                         {
                             //有効なユーザかどうかの確認
-                            if (!_kernel.MailBox.IsUser(mailAddress.User))
+                            if (!_mailBox.IsUser(mailAddress.User))
                             {
                                 //Ver_Ml
                                 //有効なメーリングリスト名かどうかの確認
@@ -540,7 +542,7 @@ namespace Bjd.SmtpServer
                             continue;
                         }
                         //有効なユーザでない場合拒否する
-                        if (!_kernel.MailBox.IsUser(mailAddress.User))
+                        if (!_mailBox.IsUser(mailAddress.User))
                         {
                             Logger.Set(LogKind.Secure, sockTcp, 29, string.Format("From:{0}", mailAddress));
                             sockTcp.AsciiSend("530 There is not an email address in a local user");

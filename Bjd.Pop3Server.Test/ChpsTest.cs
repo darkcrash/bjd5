@@ -2,12 +2,13 @@
 using System.IO;
 using Bjd.Controls;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Xunit;
 using Bjd.Pop3Server;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd;
+using Xunit.Abstractions;
 
 namespace Pop3ServerTest
 {
@@ -18,22 +19,27 @@ namespace Pop3ServerTest
         private TestService _service;
         private Kernel _kernel;
 
-        public ChpsTest()
+        public ChpsTest(ITestOutputHelper helper)
         {
             _service = TestService.CreateTestService();
+            _service.SetOption("Pop3ServerTest.ini");
+            _service.AddOutput(helper);
+            _service.Kernel.ListInitialize();
 
             var datUser = new Dat(new CtrlType[2] { CtrlType.TextBox, CtrlType.TextBox });
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             datUser.Add(true, "user3\tXXX");
 
-            _conf = new Conf();
+            var option = _service.Kernel.ListOption.Get("Pop3");
+            _conf = new Conf(option);
             _conf.Add("user", datUser);
 
             _kernel = _service.Kernel;
 
             //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\Pop3Server\\mailbox");
-            _mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
+            //_mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
+            _mailBox = _kernel.GetMailBox();
         }
 
         public void Dispose()

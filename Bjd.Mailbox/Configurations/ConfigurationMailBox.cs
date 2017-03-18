@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Bjd.Controls;
+using Bjd.Configurations;
 using Bjd.Configurations.Attributes;
 
-namespace Bjd.Configurations
+namespace Bjd.Mailbox.Configurations
 {
     public class ConfigurationMailBox : ConfigurationSmart
     {

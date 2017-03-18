@@ -1,7 +1,7 @@
 ﻿using System;
 using Bjd.WebServer;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace WebServerTest

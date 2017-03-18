@@ -3,6 +3,8 @@ using Bjd.Plugins;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using System.Collections.Generic;
+using Bjd.Components;
 
 namespace Bjd.ProxyHttpServer
 {
@@ -10,11 +12,19 @@ namespace Bjd.ProxyHttpServer
     {
         public ProxyHttpPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.ProxyHttpServer.CoreCLR";
+                return "Bjd.ProxyHttpServer";
             }
         }
 
@@ -29,6 +39,11 @@ namespace Bjd.ProxyHttpServer
         ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             return new ProxyHttpServer.Configurations.ProxyHttpOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

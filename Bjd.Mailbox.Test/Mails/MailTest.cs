@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails

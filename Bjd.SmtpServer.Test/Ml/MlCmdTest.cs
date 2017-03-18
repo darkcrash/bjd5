@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test

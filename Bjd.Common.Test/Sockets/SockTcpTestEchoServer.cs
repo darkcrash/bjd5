@@ -5,7 +5,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 
 namespace Bjd.Test.Sockets

@@ -4,7 +4,7 @@ using System.Text;
 using Bjd.Net;
 using Bjd.Utils;
 
-namespace Bjd.Mails
+namespace Bjd.Mailbox
 {
     //**********************************************************************************
     //メール情報を表現（保持）するクラス

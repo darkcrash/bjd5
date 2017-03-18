@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using Bjd.Components;
 
 namespace Bjd.WebServer
 {
@@ -13,11 +14,19 @@ namespace Bjd.WebServer
     {
         public WebPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.WebServer.CoreCLR";
+                return "Bjd.WebServer";
             }
         }
 
@@ -37,6 +46,11 @@ namespace Bjd.WebServer
                     return new Bjd.WebServer.Configurations.VirtualHostOption(kernel, path, nameTag);
             }
             return new Bjd.WebServer.Configurations.WebServerOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

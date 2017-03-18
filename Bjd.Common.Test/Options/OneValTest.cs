@@ -6,7 +6,7 @@ using Bjd.Configurations;
 using Bjd.Controls;
 using Bjd.Utils;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace Bjd.Test.Options
 {

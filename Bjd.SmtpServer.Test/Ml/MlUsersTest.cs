@@ -1,6 +1,6 @@
 ﻿using System;
 using Bjd.Controls;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;

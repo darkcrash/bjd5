@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;

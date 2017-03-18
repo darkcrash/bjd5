@@ -85,6 +85,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyFtpServer", "Bjd.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Mailbox", "Bjd.Mailbox\Bjd.Mailbox.csproj", "{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bjd.Mailbox.Test", "Bjd.Mailbox.Test\Bjd.Mailbox.Test.csproj", "{E947AAE8-A454-44FF-A4BA-A3721A4D809B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -219,6 +221,10 @@ Global
 		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E947AAE8-A454-44FF-A4BA-A3721A4D809B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E947AAE8-A454-44FF-A4BA-A3721A4D809B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E947AAE8-A454-44FF-A4BA-A3721A4D809B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E947AAE8-A454-44FF-A4BA-A3721A4D809B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

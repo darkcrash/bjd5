@@ -9,7 +9,7 @@ using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Utils;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace Bjd.Test.Utils
 {

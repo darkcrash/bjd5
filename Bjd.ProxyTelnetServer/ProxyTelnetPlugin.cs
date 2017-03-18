@@ -3,6 +3,8 @@ using Bjd.Plugins;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using System.Collections.Generic;
+using Bjd.Components;
 
 namespace Bjd.ProxyTelnetServer
 {
@@ -10,11 +12,19 @@ namespace Bjd.ProxyTelnetServer
     {
         public ProxyTelnetPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.ProxyTelnetServer.CoreCLR";
+                return "Bjd.ProxyTelnetServer";
             }
         }
 
@@ -29,6 +39,11 @@ namespace Bjd.ProxyTelnetServer
         ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             return new ProxyTelnetServer.ProxyTelnetOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

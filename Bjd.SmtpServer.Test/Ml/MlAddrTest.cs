@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd;

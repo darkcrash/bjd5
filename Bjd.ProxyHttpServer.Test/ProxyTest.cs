@@ -5,7 +5,7 @@ using Xunit;
 using Bjd;
 using System.Net.Sockets;
 using Bjd.ProxyHttpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 using Bjd.Configurations;
 

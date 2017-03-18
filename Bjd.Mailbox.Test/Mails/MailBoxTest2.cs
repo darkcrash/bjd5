@@ -1,11 +1,12 @@
 ﻿using System;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
+using Bjd.Mailbox.Configurations;
 
 namespace Bjd.Test.Mails
 {
@@ -39,9 +40,11 @@ namespace Bjd.Test.Mails
         public void AuthTest(string user, string pass, bool expected)
         {
             //setUp
-            var dir = (String)_conf.Get("dir");
-            var datUser = (Dat)_conf.Get("user");
-            var sut = new MailBox(new Logger(_service.Kernel), datUser, dir);
+            //var dir = (String)_conf.Get("dir");
+            //var datUser = (Dat)_conf.Get("user");
+
+            //var sut = new MailBox(new Logger(_service.Kernel), datUser, dir);
+            var sut = new MailBox(_service.Kernel, _conf);
             //var expected = true;
             //exercise
             var actual = sut.Auth(user, pass);

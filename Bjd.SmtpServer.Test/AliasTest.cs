@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using Bjd.Controls;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
@@ -33,8 +33,19 @@ namespace Bjd.SmtpServer.Test
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             datUser.Add(true, "user3\tjNBu6GHNV633O4jMz1GJiQ==");
+
+            var opt = _kernel.ListOption.Get("MailBox") as Bjd.Mailbox.Configurations.ConfigurationMailBox;
+            //opt.user.Add(new Mailbox.Configurations.ConfigurationMailBox.userClass() {userName = "user1", password = "3OuFXZzV8+iY6TC747UpCA==" });
+            //opt.user.Add(new Mailbox.Configurations.ConfigurationMailBox.userClass() {userName = "user2", password = "NKfF4/Tw/WMhHZvTilAuJQ==" });
+            //opt.user.Add(new Mailbox.Configurations.ConfigurationMailBox.userClass() {userName = "user3", password = "jNBu6GHNV633O4jMz1GJiQ==" });
+
+            var conf = new Conf(opt);
+            conf.Add("user", datUser);
+
+
             //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
-            _mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
+            //_mailBox = new MailBox(new Logger(_kernel), datUser, _service.MailboxPath);
+            _mailBox = new MailBox(_kernel, conf);
 
         }
         public void Dispose()

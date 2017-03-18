@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Debug = System.Diagnostics.Debug;
 using Bjd.Threading;
 
@@ -117,7 +117,8 @@ namespace Bjd.SmtpServer
                 //メールボックスの状態を取得する
                 var localUidList = new List<string>();
                 //var folder = string.Format("{0}\\{1}", _kernel.MailBox.Dir, _oneFetch.LocalUser);
-                var folder = $"{_kernel.MailBox.Dir}{Path.DirectorySeparatorChar}{_oneFetch.LocalUser}";
+                var mb = _kernel.GetMailBox();
+                var folder = $"{mb.Dir}{Path.DirectorySeparatorChar}{_oneFetch.LocalUser}";
                 foreach (var fileName in Directory.GetFiles(folder, "DF_*"))
                 {
                     var mailInfo = new MailInfo(fileName);

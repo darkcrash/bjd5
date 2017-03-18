@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Xunit;
 using Bjd.Test;
 using System.IO;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test

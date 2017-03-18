@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Bjd.FtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd;
 using Xunit;
 using System;

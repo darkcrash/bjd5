@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 
 namespace Bjd.Pop3Server
 {

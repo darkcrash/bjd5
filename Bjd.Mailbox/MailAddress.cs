@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Bjd.Mails
+namespace Bjd.Mailbox
 {
     //**********************************************************************************
     //メールアドレスを表現（保持）するクラス

@@ -24,4 +24,8 @@
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="ProxyFtpPlugin.cs" />
+  </ItemGroup>
+
 </Project>

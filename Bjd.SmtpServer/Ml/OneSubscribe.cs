@@ -1,6 +1,6 @@
 using System;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Utils;
 
 namespace Bjd.SmtpServer

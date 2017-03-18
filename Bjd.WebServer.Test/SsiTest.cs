@@ -10,7 +10,7 @@ using Xunit;
 using System.Globalization;
 using System.IO;
 using Bjd.WebServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 using System.Collections.Generic;
 using Xunit.Abstractions;

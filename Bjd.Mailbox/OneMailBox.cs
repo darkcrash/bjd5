@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Bjd.Mails
+namespace Bjd.Mailbox
 {
     //クラスMailBoxの内部で使用するデータ構造
     class OneMailBox

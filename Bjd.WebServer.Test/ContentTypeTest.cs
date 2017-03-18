@@ -4,7 +4,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
 using Bjd;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace WebServerTest
 {

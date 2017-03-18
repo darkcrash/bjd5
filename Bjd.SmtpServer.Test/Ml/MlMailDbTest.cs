@@ -1,12 +1,12 @@
 ﻿using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd;
 using System.IO;
 using System;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test {

@@ -2,7 +2,7 @@
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Configurations;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.SmtpServer;
 using Bjd.Test;
 using Bjd.Threading;

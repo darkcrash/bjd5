@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading;
 using Bjd.Browse;
 using Bjd.Logs;
-using Bjd.Mails;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Plugins;
@@ -16,6 +15,7 @@ using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Bjd.Traces;
 using Bjd.Utils;
+using Bjd.Components;
 
 namespace Bjd
 {
@@ -27,10 +27,9 @@ namespace Bjd
         //プロセス起動時に初期化される変数 
         public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
         public DnsCache DnsCache { get; private set; }
-        public MailBox MailBox { get; private set; }
-
         //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
+        public ListComponent ListComponent { get; private set; }
         public ListServer ListServer { get; private set; }
         public ListPlugin ListPlugin { get; private set; }
         public List<ILogService> LogServices { get; private set; } = new List<ILogService>();
@@ -120,7 +119,7 @@ namespace Bjd
             DnsCache = new DnsCache();
 
             Configuration = new ConfigurationDb(this, this.Enviroment.ExecutableDirectory, "Option");
-            MailBox = null;
+            //MailBox = null;
 
             //************************************************************
             // 破棄
@@ -135,9 +134,14 @@ namespace Bjd
                 ListServer.Dispose();
                 ListServer = null;
             }
-            if (MailBox != null)
+            //if (MailBox != null)
+            //{
+            //    MailBox = null;
+            //}
+            if (ListComponent != null)
             {
-                MailBox = null;
+                ListComponent.Dispose();
+                ListComponent = null;
             }
 
             // initialize logServices
@@ -204,22 +208,23 @@ namespace Bjd
             if (tmpLogger != null)
                 tmpLogger.Release(Logger);
 
-            //Ver5.8.7 Java fix
-            //mailBox初期化
-            var useMailBoxTag = new[] { "Smtp", "Pop3", "WebApi" };
-            foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
-            {
-                //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
-                var op = ListOption.Get("MailBox");
-                var conf = new Conf(op);
-                var dir = ReplaceOptionEnv((String)conf.Get("dir"));
-                var datUser = (Dat)conf.Get("user");
-                var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
-                var dirFullPath = Path.Combine(this.Enviroment.ExecutableDirectory, dir);
-                MailBox = new MailBox(logger, datUser, dirFullPath);
-                break;
-            }
+            ////Ver5.8.7 Java fix
+            ////mailBox初期化
+            //var useMailBoxTag = new[] { "Smtp", "Pop3", "WebApi" };
+            //foreach (var o in ListOption.Where(_ => useMailBoxTag.Contains(_.NameTag) && _.UseServer))
+            //{
+            //    //SmtpServer若しくは、Pop3Serverが使用される場合のみメールボックスを初期化する                
+            //    var op = ListOption.Get("MailBox");
+            //    var conf = new Conf(op);
+            //    var dir = ReplaceOptionEnv((String)conf.Get("dir"));
+            //    var datUser = (Dat)conf.Get("user");
+            //    var logger = CreateLogger("MailBox", (bool)conf.Get("useDetailsLog"), null);
+            //    var dirFullPath = Path.Combine(this.Enviroment.ExecutableDirectory, dir);
+            //    MailBox = new MailBox(logger, datUser, dirFullPath);
+            //    break;
+            //}
 
+            ListComponent = new ListComponent(this, ListPlugin);
 
             ListServer = new ListServer(this, ListPlugin);
 
@@ -298,7 +303,8 @@ namespace Bjd
                 this.Stop();
 
                 if (ListOption != null) ListOption.Dispose();
-                MailBox = null;
+                //MailBox = null;
+                if (ListComponent != null) ListComponent.Dispose();
 
             }
             finally

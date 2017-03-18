@@ -2,11 +2,11 @@
 using System.IO;
 using Bjd.Controls;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
@@ -17,17 +17,25 @@ namespace Bjd.SmtpServer.Test
         private MailBox _mailBox;
         private Dat _esmtpUserList;
 
-        public  SmtpAuthUserListTest(ITestOutputHelper output)
+        public SmtpAuthUserListTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
             _service.AddOutput(output);
             _service.Kernel.ListInitialize();
 
-            //mailBoxに"user1"を登録
+            ////mailBoxに"user1"を登録
             var datUser = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
-            //_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
-            _mailBox = new MailBox(new Logger(_service.Kernel), datUser, _service.MailboxPath);
+            ////_mailBox = new MailBox(new Logger(), datUser, "c:\\tmp2\\bjd5\\SmtpServerTest\\mailbox");
+            //_mailBox = new MailBox(new Logger(_service.Kernel), datUser, _service.MailboxPath);
+
+
+            var opt = _service.Kernel.ListOption.Get("MailBox") as Bjd.Mailbox.Configurations.ConfigurationMailBox;
+            var conf = new Conf(opt);
+            conf.Add("user", datUser);
+            _mailBox = new MailBox(_service.Kernel, conf);
+
+
             //esmtpUserListに"user2"を登録
             _esmtpUserList = new Dat(new CtrlType[] { CtrlType.TextBox, CtrlType.TextBox });
             _esmtpUserList.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");

@@ -33,7 +33,7 @@ namespace Bjd.Configurations
 
         //値の取得
         //存在しないタグを指定すると実行事例がが発生する
-        public Object Get(String name)
+        public object Get(string name)
         {
             if (!_ar.ContainsKey(name))
             {
@@ -45,7 +45,7 @@ namespace Bjd.Configurations
 
         //値の設定
         //存在しないタグを指定すると実行事例がが発生する
-        public void Set(String name, Object value)
+        public void Set(string name, object value)
         {
             if (!_ar.ContainsKey(name))
             {
@@ -57,7 +57,7 @@ namespace Bjd.Configurations
 
         //値の設定
         //存在しないタグを指定できる（テスト用）
-        public void Add(String name, Object value)
+        public void Add(string name, object value)
         {
             if (!_ar.ContainsKey(name))
             {

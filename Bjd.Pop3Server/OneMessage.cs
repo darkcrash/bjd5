@@ -1,5 +1,5 @@
 using System.IO;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net.Sockets;
 
 namespace Bjd.Pop3Server

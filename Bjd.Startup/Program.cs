@@ -1,5 +1,5 @@
 ﻿using System;
-using Bjd.Services;
+using Bjd.Initialization;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -20,21 +20,21 @@ namespace Bjd.Common
                     var argsList = new List<string>(args);
                     if (argsList.Contains("--console"))
                     {
-                        DefaultConsoleService.Start();
+                        DefaultConsole.Start();
                         return;
                     }
                     if (argsList.Contains("--interactive"))
                     {
-                        InteractiveConsoleService.Start();
+                        InteractiveConsole.Start();
                         return;
                     }
                     if (argsList.Contains("--service"))
                     {
-                        DefaultService.Start();
+                        Default.Start();
                         return;
                     }
                 }
-                InteractiveConsoleService.Start();
+                InteractiveConsole.Start();
 
             }
             catch (Exception ex)

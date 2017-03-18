@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Test;

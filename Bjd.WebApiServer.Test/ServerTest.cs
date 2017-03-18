@@ -8,7 +8,7 @@ using Bjd.Utils;
 using Bjd.Test;
 using Xunit;
 using Bjd.WebApiServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 
 namespace WebApiServerTest

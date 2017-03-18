@@ -3,7 +3,7 @@ using System.Threading;
 using Xunit;
 using Bjd.SmtpServer;
 using System;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test

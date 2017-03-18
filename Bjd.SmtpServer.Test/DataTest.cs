@@ -7,7 +7,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Xunit;
 using Bjd.SmtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test

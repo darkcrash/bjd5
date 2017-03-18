@@ -5,7 +5,7 @@ using Bjd.Net;
 using Bjd.Configurations;
 using Xunit;
 using Bjd;
-using Bjd.Services;
+using Bjd.Initialization;
 using System;
 using Xunit.Abstractions;
 

@@ -12,7 +12,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.Pop3Server;
 using System.Collections.Generic;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 using Xunit.Abstractions;
 using Bjd.Test.Logs;

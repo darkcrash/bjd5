@@ -399,6 +399,10 @@ namespace Bjd.Logs
             }
         }
 
+        public void Exception(Exception ex)
+        {
+            FormatWriteLine(ex.Message + ex.StackTrace, (l, m) => l.TraceError(m));
+        }
 
         [Conditional("TRACE")]
         public void TraceInformation(string message)

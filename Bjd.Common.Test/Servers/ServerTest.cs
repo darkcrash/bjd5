@@ -7,7 +7,7 @@ using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using System;
 
 namespace Bjd.Test.Servers

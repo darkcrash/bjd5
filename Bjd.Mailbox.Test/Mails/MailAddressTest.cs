@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Xunit;
 
 namespace Bjd.Test.Mails

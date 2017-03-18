@@ -12,7 +12,7 @@ using Bjd.Utils;
 using Bjd.Test;
 using Bjd.DnsServer;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace DnsServerTest
 {

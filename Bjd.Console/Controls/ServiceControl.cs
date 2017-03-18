@@ -23,17 +23,17 @@ namespace Bjd.Console.Controls
                 switch (ActiveIndex)
                 {
                     case 0:
-                        Services.InteractiveConsoleService.instance.OnStop();
-                        Services.InteractiveConsoleService.instance.OnStart();
+                        Initialization.InteractiveConsole.instance.OnStop();
+                        Initialization.InteractiveConsole.instance.OnStart();
                         break;
                     case 1:
-                        Services.InteractiveConsoleService.instance.OnStart();
+                        Initialization.InteractiveConsole.instance.OnStart();
                         break;
                     case 2:
-                        Services.InteractiveConsoleService.instance.OnStop();
+                        Initialization.InteractiveConsole.instance.OnStop();
                         break;
                     case 3:
-                        Services.InteractiveConsoleService.Stop();
+                        Initialization.InteractiveConsole.Stop();
                         break;
                 }
                 return true;

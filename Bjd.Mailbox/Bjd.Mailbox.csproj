@@ -8,4 +8,8 @@
     <Copyright>Copyright(c) 1998/05.. by SIN/SapporoWorks</Copyright>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Bjd.Common\Bjd.Common.csproj" />
+  </ItemGroup>
+
 </Project>

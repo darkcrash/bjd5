@@ -3,6 +3,8 @@ using Bjd.Plugins;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using System.Collections.Generic;
+using Bjd.Components;
 
 namespace Bjd.SipServer
 {
@@ -10,11 +12,19 @@ namespace Bjd.SipServer
     {
         public SipPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.SipServer.CoreCLR";
+                return "Bjd.SipServer";
             }
         }
 
@@ -29,6 +39,11 @@ namespace Bjd.SipServer
         ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             return new SipServer.Configurations.SipOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Bjd.Mails;
+using Bjd.Mailbox;
 
 namespace Bjd.WebApiServer
 {

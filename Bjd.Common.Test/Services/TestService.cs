@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 using Bjd.Test.Logs;
 using Bjd.Logs;
 
-namespace Bjd.Services
+namespace Bjd.Initialization
 {
     public class TestService : IDisposable
     {

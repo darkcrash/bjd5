@@ -4,7 +4,7 @@ using Bjd;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace Bjd.Test.Sockets
 {

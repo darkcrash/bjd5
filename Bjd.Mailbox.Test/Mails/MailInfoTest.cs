@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Xunit;
 using System.IO;
 using System.Reflection;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails

@@ -3,13 +3,13 @@ using System.Diagnostics;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 
-namespace Bjd.Services
+namespace Bjd.Initialization
 {
-    public class DefaultService
+    public class Default
     {
         Kernel _kernel;
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
-        static DefaultService instance = new DefaultService();
+        static Default instance = new Default();
 
         public static void Start()
         {
@@ -17,7 +17,7 @@ namespace Bjd.Services
             Trace.TraceInformation("DefaultService.ServiceMain Start");
 
             // service start
-            DefaultService.instance.OnStart();
+            Default.instance.OnStart();
             Console.CancelKeyPress += Console_CancelKeyPress;
             signal.WaitOne();
             Trace.TraceInformation("DefaultService.ServiceMain End");
@@ -27,7 +27,7 @@ namespace Bjd.Services
         {
             Trace.TraceInformation("DefaultService.ConsoleCancel Start");
             e.Cancel = true;
-            DefaultService.instance.OnStop();
+            Default.instance.OnStop();
             signal.Set();
             Trace.TraceInformation("DefaultService.ConsoleCancel End");
         }

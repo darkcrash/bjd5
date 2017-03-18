@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net.Sockets;
 using Bjd.Threading;
 

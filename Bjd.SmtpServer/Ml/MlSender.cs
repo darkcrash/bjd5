@@ -1,5 +1,5 @@
 ﻿using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 
 namespace Bjd.SmtpServer
 {

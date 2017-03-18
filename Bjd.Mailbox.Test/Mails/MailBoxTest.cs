@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using Bjd.Controls;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Configurations;
 using Xunit;
 using Bjd;
 using System.Security.Cryptography;
 using System.Threading;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.Test.Mails
@@ -36,13 +36,19 @@ namespace Bjd.Test.Mails
             _service.CreateMailbox("user2");
             _service.CreateMailbox("user3");
             _kernel = _service.Kernel;
+            _kernel.ListInitialize();
 
             _datUser = new Dat(new CtrlType[2] { CtrlType.TextBox, CtrlType.TextBox });
             _datUser.Add(true, "user1\t3OuFXZzV8+iY6TC747UpCA==");
             _datUser.Add(true, "user2\tNKfF4/Tw/WMhHZvTilAuJQ==");
             _datUser.Add(true, "user3\tXXX");
 
-            sut = new MailBox(new Logger(_kernel), _datUser, _service.MailboxPath);
+            var op = _kernel.ListOption.Get("MailBox");
+            var conf = new Conf(op);
+            conf.Add("user", _datUser);
+
+            //sut = new MailBox(new Logger(_kernel), _datUser, _service.MailboxPath);
+            sut = new MailBox(_kernel, conf);
         }
 
         public void Dispose()

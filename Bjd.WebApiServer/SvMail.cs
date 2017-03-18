@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Dynamic;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Newtonsoft.Json;
 
 namespace Bjd.WebApiServer
@@ -20,7 +20,7 @@ namespace Bjd.WebApiServer
         {
             _kernel = kernel;
             _webApi = kernel.WebApi;
-            _mailBox = kernel.MailBox;
+            _mailBox = kernel.GetMailBox();
             //_mailQueue = Define.ExecutableDirectory + "\\MailQueue";
             _mailQueue = kernel.Enviroment.ExecutableDirectory + $"{Path.DirectorySeparatorChar}MailQueue";
         }

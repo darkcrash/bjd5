@@ -2,7 +2,7 @@
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Plugins;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +32,7 @@ namespace Bjd.Common.Test.plugin
 
                 //var sut = new ListPlugin(currentDir);
                 var sut = new ListPlugin(service.Kernel);
-                const int expected = 16;
+                const int expected = 17;
                 //exercise
                 var actual = sut.Count;
                 //verify
@@ -63,11 +63,23 @@ namespace Bjd.Common.Test.plugin
                     var oneOption = onePlugin.CreateOption(kernel, "Option", onePlugin.Name);
                     Assert.NotNull(oneOption);
 
-                    //Serverインスタンス生成
                     var conf = new Conf(oneOption);
+
+                    
+                    //Componentインスタンス生成
+                    var oneComponent = onePlugin.CreateComponent(kernel, conf);
+                    //Assert.NotNull(oneComponent);
+
+                    //Serverインスタンス生成
                     var oneBind = new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp);
                     var oneServer = onePlugin.CreateServer(kernel, conf, oneBind);
-                    Assert.NotNull(oneServer);
+                    //Assert.NotNull(oneServer);
+
+                    if (oneComponent == null && oneServer == null)
+                    {
+                        Assert.False(true);
+                    }
+
                 }
             }
 

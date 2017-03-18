@@ -6,7 +6,7 @@ using Bjd.Configurations;
 using Bjd.Test;
 using Xunit;
 using Bjd.WebServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.WebServer.Handlers;
 
 namespace WebServerTest

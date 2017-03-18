@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Bjd.Utils;
 

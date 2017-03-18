@@ -8,7 +8,7 @@ using Bjd.Test;
 using Xunit;
 using Bjd.SmtpServer;
 using Bjd;
-using Bjd.Services;
+using Bjd.Initialization;
 using System.IO;
 using Xunit.Abstractions;
 

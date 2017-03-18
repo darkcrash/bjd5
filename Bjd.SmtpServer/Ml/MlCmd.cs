@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Utils;
 
 namespace Bjd.SmtpServer

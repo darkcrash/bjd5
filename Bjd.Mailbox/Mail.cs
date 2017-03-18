@@ -8,7 +8,7 @@ using Bjd.Utils;
 
 //using System.Linq;
 
-namespace Bjd.Mails
+namespace Bjd.Mailbox
 {
     //**********************************************************************************
     //1通のメールを表現（保持）するクラス

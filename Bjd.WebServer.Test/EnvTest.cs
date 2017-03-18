@@ -8,7 +8,7 @@ using Xunit;
 using Bjd.WebServer;
 using Bjd;
 using System.Net;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.WebServer.Outside;
 using Xunit.Abstractions;
 

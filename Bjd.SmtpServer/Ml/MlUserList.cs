@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using Bjd.Controls;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Configurations;
 using Bjd.Utils;
 

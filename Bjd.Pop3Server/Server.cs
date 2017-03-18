@@ -6,13 +6,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
-
-
-
 using Bjd;
 using Bjd.Acls;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
@@ -24,14 +21,16 @@ namespace Bjd.Pop3Server
     partial class Server : OneServer
     {
         private readonly AttackDb _attackDb; //自動拒否
+        protected readonly MailBox mailbox;
 
         //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
+            mailbox = kernel.GetMailBox();
 
             //メールボックスの初期化状態確認
-            if (kernel.MailBox == null || !kernel.MailBox.Status)
+            if (mailbox == null || !mailbox.Status)
             {
                 Logger.Set(LogKind.Error, null, 4, "");
             }
@@ -183,7 +182,7 @@ namespace Bjd.Pop3Server
                         user = paramList[0];
 
                         //認証(APOP対応)
-                        var success = APop.Auth(user, _kernel.MailBox.GetPass(user), authStr, paramList[1]);
+                        var success = APop.Auth(user, mailbox.GetPass(user), authStr, paramList[1]);
                         //var success = APopAuth(user, authStr, paramList[1]);
                         AutoDeny(success, remoteIp); //ブルートフォース対策
                         if (success)
@@ -217,7 +216,7 @@ namespace Bjd.Pop3Server
                     }
                     string pass = paramList[0];
 
-                    var success = _kernel.MailBox.Auth(user, pass); //認証
+                    var success = mailbox.Auth(user, pass); //認証
                     AutoDeny(success, remoteIp); //ブルートフォース対策
                     if (success)
                     {
@@ -406,7 +405,7 @@ namespace Bjd.Pop3Server
                             continue;
                         }
                         var conf = new Conf(_kernel.ListOption.Get("MailBox"));
-                        if (!Chps.Change(user, password, _kernel.MailBox, conf))
+                        if (!Chps.Change(user, password, mailbox, conf))
                         {
                             //if (!Kernel.MailBox.Chps(user, password, conf)){
                             sockTcp.AsciiSend("-ERR A problem occurred to a mailbox.");
@@ -429,7 +428,7 @@ namespace Bjd.Pop3Server
                 sockTcp.AsciiSend($"+OK Pop Server at {_kernel.ServerName} signing off.");
                 break;
             }
-            _kernel.MailBox.Logout(user);
+            mailbox.Logout(user);
             if (sockTcp != null)
                 sockTcp.Close();
 
@@ -440,14 +439,14 @@ namespace Bjd.Pop3Server
             _kernel.Logger.TraceInformation($"Pop3Server.Login user:{user} ");
 
             //var folder = Kernel.MailBox.Login(user, addr);
-            if (!_kernel.MailBox.Login(user, addr))
+            if (!mailbox.Login(user, addr))
             {
                 Logger.Set(LogKind.Secure, sockTcp, 1, $"user={user}");
                 sockTcp.AsciiSend("-ERR Double login");
                 return false;
             }
             //var folder = string.Format("{0}\\{1}", Kernel.MailBox.Dir, user);
-            var folder = Path.Combine(_kernel.MailBox.Dir, user);
+            var folder = Path.Combine(mailbox.Dir, user);
             messageList = new MessageList(folder);//初期化
 
             //if (kernel.MailBox.Login(user, addr)) {//POP before SMTPのために、最後のログインアドレスを保存する

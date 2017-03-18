@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Bjd.Logs;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 using Xunit.Abstractions;
 
 namespace Bjd.Test.Logs

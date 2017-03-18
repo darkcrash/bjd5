@@ -3,19 +3,19 @@ using System.Diagnostics;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 
-namespace Bjd.Services
+namespace Bjd.Initialization
 {
-    public class DefaultConsoleService
+    public class DefaultConsole
     {
         Kernel _kernel;
         static System.Threading.ManualResetEvent signal = new System.Threading.ManualResetEvent(false);
-        static DefaultConsoleService instance = new DefaultConsoleService();
+        static DefaultConsole instance = new DefaultConsole();
 
         public static void Start()
         {
             // Add console trace
             //Kernel.Trace.Listeners.Add(new Traces.ConsoleTraceListner());
-            Trace.TraceInformation("DefaultConsoleService.ServiceMain Start");
+            Trace.TraceInformation("DefaultConsole Start");
 
             //#if DEBUG
             //            var f = new EventTypeFilter(SourceLevels.All);
@@ -37,10 +37,10 @@ namespace Bjd.Services
             Define_ChangeOperationSystem(instance, EventArgs.Empty);
 
             // service start
-            DefaultConsoleService.instance.OnStart();
+            DefaultConsole.instance.OnStart();
             System.Console.CancelKeyPress += Console_CancelKeyPress;
             signal.WaitOne();
-            Trace.TraceInformation("DefaultConsoleService.ServiceMain End");
+            Trace.TraceInformation("DefaultConsole. End");
         }
 
         private static void Define_ChangeOperationSystem(object sender, EventArgs e)
@@ -62,21 +62,21 @@ namespace Bjd.Services
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Trace.TraceInformation("DefaultService.ConsoleCancel Start");
+            Trace.TraceInformation("DefaultConsole.ConsoleCancel Start");
             e.Cancel = true;
-            DefaultConsoleService.instance.OnStop();
+            DefaultConsole.instance.OnStop();
             signal.Set();
-            Trace.TraceInformation("DefaultService.ConsoleCancel End");
+            Trace.TraceInformation("DefaultConsole.ConsoleCancel End");
         }
 
         protected void OnStart()
         {
-            Trace.TraceInformation("DefaultConsoleService.OnStart Start");
+            Trace.TraceInformation("DefaultConsole.OnStart Start");
             _kernel = new Kernel();
             _kernel.Events.RequestLogService += KernelEvents_RequestLogService;
             _kernel.ListInitialize();
             _kernel.Start();
-            Trace.TraceInformation("DefaultConsoleService.OnStart End");
+            Trace.TraceInformation("DefaultConsole.OnStart End");
         }
 
         private void KernelEvents_RequestLogService(object sender, EventArgs e)
@@ -86,12 +86,12 @@ namespace Bjd.Services
 
         protected void OnStop()
         {
-            Trace.TraceInformation("DefaultConsoleService.OnStop Start");
+            Trace.TraceInformation("DefaultConsole.OnStop Start");
             _kernel.Stop();
             _kernel.Events.RequestLogService -= KernelEvents_RequestLogService;
             _kernel.Dispose();
             _kernel = null;
-            Trace.TraceInformation("DefaultConsoleService.OnStop End");
+            Trace.TraceInformation("DefaultConsole.OnStop End");
         }
 
     }

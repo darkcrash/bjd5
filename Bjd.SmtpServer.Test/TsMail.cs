@@ -1,9 +1,9 @@
 using System.Text;
 using Bjd;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.SmtpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using System;
 
 namespace Bjd.SmtpServer.Test

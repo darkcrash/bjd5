@@ -5,7 +5,7 @@ using Bjd.Configurations;
 using Bjd.Test;
 using Xunit;
 using Bjd.SipServer;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace SipServerTest
 {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Bjd.Logs;
 using Xunit;
-using Bjd.Services;
+using Bjd.Initialization;
 
 namespace Bjd.Test.Logs
 {

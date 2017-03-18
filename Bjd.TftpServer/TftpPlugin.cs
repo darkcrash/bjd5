@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using Bjd.Components;
 
 namespace Bjd.TftpServer
 {
@@ -13,11 +14,19 @@ namespace Bjd.TftpServer
     {
         public TftpPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.TftpServer.CoreCLR";
+                return "Bjd.TftpServer";
             }
         }
 
@@ -32,6 +41,11 @@ namespace Bjd.TftpServer
         ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
             return new TftpServer.Configurations.TftpOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

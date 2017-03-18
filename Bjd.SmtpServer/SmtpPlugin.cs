@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
+using Bjd.Components;
 
 namespace Bjd.SmtpServer
 {
@@ -13,11 +14,20 @@ namespace Bjd.SmtpServer
     {
         public SmtpPlugin() { }
 
+        public IEnumerator<Type> Dependencies
+        {
+            get
+            {
+                yield return typeof(Mailbox.MailboxPlugin);
+                yield break;
+            }
+        }
+
         string IPlugin.PluginName
         {
             get
             {
-                return "Bjd.SmtpServer.CoreCLR";
+                return "Bjd.SmtpServer";
             }
         }
 
@@ -39,6 +49,11 @@ namespace Bjd.SmtpServer
                     return new SmtpServer.Configurations.OneMlOption(kernel, path, nameTag);
             }
             return new SmtpServer.Configurations.SmtpOption(kernel, path, nameTag);
+        }
+
+        public ComponentBase CreateComponent(Kernel kernel, Conf conf)
+        {
+            return null;
         }
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)

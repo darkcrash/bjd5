@@ -9,7 +9,7 @@ using Xunit.Extensions;
 using Bjd.DhcpServer;
 using Bjd;
 using Bjd.Test;
-using Bjd.Services;
+using Bjd.Initialization;
 using System.Net;
 using Microsoft.Extensions.PlatformAbstractions;
 

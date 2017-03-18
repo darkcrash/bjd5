@@ -74,7 +74,7 @@ namespace Bjd.Plugins
 
         //名前によるプラグイン情報オブジェクト（OnePlugin）の検索
         //<font color=red>一覧に存在しない名前で検索を行った場合、設計上の問題として処理される</font>
-        public IPlugin Get(String name)
+        public IPlugin Get(string name)
         {
             int index = name.IndexOf("-");
             if (index != -1)

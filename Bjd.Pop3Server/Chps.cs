@@ -1,4 +1,4 @@
-﻿using Bjd.Mails;
+﻿using Bjd.Mailbox;
 using Bjd.Configurations;
 using Bjd.Utils;
 

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using Bjd.ProxyHttpServer;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Threading;
 
 namespace ProxyHttpServerTest

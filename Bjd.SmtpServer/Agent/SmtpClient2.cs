@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-
 using Bjd;
 using Bjd.Logs;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;

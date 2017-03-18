@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 using Bjd.SmtpServer;
 using Bjd.Test;
 using Bjd.Threading;
-using Bjd.Mails;
+using Bjd.Mailbox;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
-using Bjd.Services;
+using Bjd.Initialization;
 using Bjd.Test.Logs;
 using System.Threading.Tasks;
 
