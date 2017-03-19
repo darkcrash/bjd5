@@ -6,6 +6,7 @@ namespace Bjd.Common.Memory
 {
     public class BufferData : IDisposable
     {
+        public static readonly BufferData Empty = new BufferData(0, null);
         public byte[] Data;
         //public int StartPos;
         //public int EndPos;

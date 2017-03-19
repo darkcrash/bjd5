@@ -9,11 +9,15 @@ namespace Bjd.Common.Memory
 {
     public class BufferPool : IDisposable
     {
+        const int bufferSizeX = 16777216;
+        const int bufferSizeXXL = 4194304;
         const int bufferSizeXL = 1048576;
         const int bufferSizeL = 262144;
         const int bufferSizeM = 65536;
         const int bufferSizeS = 4096;
 
+        private readonly static BufferPool Extra = new BufferPool(0, bufferSizeX);
+        private readonly static BufferPool ExtraExtraLarge = new BufferPool(5, bufferSizeXXL);
         private readonly static BufferPool ExtraLarge = new BufferPool(20, bufferSizeXL);
         private readonly static BufferPool Large = new BufferPool(80, bufferSizeL);
         private readonly static BufferPool Medium = new BufferPool(320, bufferSizeM);
@@ -42,6 +46,15 @@ namespace Bjd.Common.Memory
             if (length <= bufferSizeM) return Medium.Get();
             if (length <= bufferSizeL) return Large.Get();
             return ExtraLarge.Get();
+        }
+        public static BufferData GetMaximum(long length)
+        {
+            if (length <= bufferSizeS) return Small.Get();
+            if (length <= bufferSizeM) return Medium.Get();
+            if (length <= bufferSizeL) return Large.Get();
+            if (length <= bufferSizeXL) return ExtraLarge.Get();
+            if (length <= bufferSizeXXL) return ExtraExtraLarge.Get();
+            return Extra.Get();
         }
 
         private int _bufferSize;
