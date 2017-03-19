@@ -2,6 +2,7 @@
 using Bjd.Utils;
 using Xunit;
 using Bjd;
+using Bjd.ProxyHttpServer;
 
 namespace Bjd.Test
 {

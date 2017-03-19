@@ -8,11 +8,15 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Threading;
+using Bjd.Common.Memory;
 
 namespace Bjd.Utils
 {
     public class Inet
     {
+        const byte Cr = 0x0d;
+        const byte Lf = 0x0A;
+
         private Inet() { }//デフォルトコンストラクタの隠蔽
 
 
@@ -186,6 +190,25 @@ namespace Bjd.Utils
                 return str.Substring(0, str.Length - count);
             }
             return str;
+        }
+
+        //\r\nの削除
+        static public void TrimCrlf(BufferData buf)
+        {
+            var b = buf.Data;
+            var l = buf.DataSize;
+            if (l >= 1 && b[l - 1] == Lf)
+            {
+                buf.DataSize--;
+                if (l >= 2 && b[l - 2] == Cr)
+                {
+                    buf.DataSize--;
+                }
+            }
+            else if (l >= 1 && b[l - 1] == Cr)
+            {
+                buf.DataSize--;
+            }
         }
 
         //サニタイズ処理(１行対応)

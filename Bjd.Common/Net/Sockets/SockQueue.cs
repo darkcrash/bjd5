@@ -324,7 +324,6 @@ namespace Bjd.Net.Sockets
             }
         }
 
-
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
@@ -399,6 +398,104 @@ namespace Bjd.Net.Sockets
 
             return empty;
         }
+
+
+        public BufferData DequeueLineBufferWait(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                if (cancellationToken.IsCancellationRequested) return BufferData.Empty;
+                var result = DequeueLineBuffer();
+                if (result == BufferData.Empty)
+                {
+                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty; }
+                    catch (OperationCanceledException) { return BufferData.Empty; }
+                    continue;
+                }
+                return result;
+            }
+        }
+
+
+        //キューからの１行取り出し(\r\nを削除しない)
+        public BufferData DequeueLineBuffer()
+        {
+            if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
+            {
+                return BufferData.Empty;
+            }
+            //次に何か受信するまで処理の必要はない
+            SetModify(false);
+            dequeueCounter = enqueueCounter;
+            recvLength = _length;
+            recvUseBlocks = _useBlocks;
+
+            var alloc = new List<int>(MaxBlockSize);
+            var size = 0;
+            var maxBlocks = recvUseBlocks + _readBlocks;
+            for (var i = _readBlocks; i < maxBlocks; i++)
+            {
+                var offset = i % MaxBlockSize;
+
+                var item = _blocks[offset];
+                var d = item.Data;
+                var s = item.DataSize;
+
+                for (var c = 0; c < s; c++)
+                {
+                    if (d[c] != Lf) continue;
+
+                    // 出力サイズとバッファ
+                    var len = size + c + 1;
+                    //\r\nを削除しない
+                    //var retBuf = new byte[len];
+                    var retBuf = BufferPool.GetMaximum(len);
+
+                    var writeSize = 0;
+                    foreach (var idx in alloc)
+                    {
+                        var buf = _blocks[idx];
+                        _blocks[idx] = null;
+                        var wSize = buf.DataSize;
+                        Buffer.BlockCopy(buf.Data, 0, retBuf.Data, writeSize, wSize);
+                        writeSize += wSize;
+                        buf.Dispose();
+                        System.Threading.Interlocked.Decrement(ref _useBlocks);
+                    }
+
+                    Buffer.BlockCopy(d, 0, retBuf.Data, writeSize, c + 1);
+                    writeSize += c + 1;
+                    retBuf.DataSize = writeSize;
+                    _readBlocks = offset;
+
+                    var blockLeftOvers = s - (c + 1);
+                    if (blockLeftOvers == 0)
+                    {
+                        _blocks[offset] = null;
+                        item.Dispose();
+                        System.Threading.Interlocked.Decrement(ref _useBlocks);
+                        if (_readBlocks++ >= MaxBlockSize) _readBlocks = 0;
+                    }
+                    else
+                    {
+                        Buffer.BlockCopy(d, c + 1, d, 0, blockLeftOvers);
+                        item.DataSize = blockLeftOvers;
+                    }
+
+
+                    System.Threading.Interlocked.Add(ref _length, -len);
+
+                    return retBuf;
+
+                }
+                size += s;
+                alloc.Add(offset);
+            }
+
+
+            return BufferData.Empty;
+        }
+
 
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには

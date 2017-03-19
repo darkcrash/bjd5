@@ -2,6 +2,7 @@
 using Bjd.Utils;
 using Xunit;
 using Bjd;
+using Bjd.SipServer;
 
 namespace Bjd.Test
 {

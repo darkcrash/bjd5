@@ -1,4 +1,7 @@
-﻿namespace Bjd
+﻿using System;
+using System.Text;
+
+namespace Bjd.ProxyHttpServer
 {
     public class OneHeader
     {
@@ -9,5 +12,6 @@
             Key = key;
             Val = val;
         }
+
     }
 }

@@ -8,6 +8,7 @@ using Bjd.Net;
 using Bjd.Traces;
 using Bjd.Utils;
 using Bjd.Threading;
+using Bjd.Common.Memory;
 
 namespace Bjd.Net.Sockets
 {
@@ -283,19 +284,38 @@ namespace Bjd.Net.Sockets
             return result;
         }
 
+        public BufferData LineBufferRecv(int sec, ILife iLife)
+        {
+            var toutms = sec * 1000;
+            var result = _sockQueue.DequeueLineBufferWait(toutms, this.CancelToken);
+            if (result.DataSize == 0) return null;
+            var length = (result != null ? result.DataSize.ToString() : "null");
+            Kernel.Logger.TraceInformation($"{hash} SockTcp.LineRecv {length}");
+            return result;
+        }
+
         //１行のString受信
         public string StringRecv(Encoding enc, int sec, ILife iLife)
         {
             try
             {
-                byte[] bytes = LineRecv(sec, iLife);
+                //byte[] bytes = LineRecv(sec, iLife);
 
-                //[C#]
-                if (bytes == null)
+                ////[C#]
+                //if (bytes == null)
+                //{
+                //    return null;
+                //}
+                //return enc.GetString(bytes);
+
+                using (var buffer = LineBufferRecv(sec, iLife))
                 {
-                    return null;
+                    if (buffer == null)
+                    {
+                        return null;
+                    }
+                    return enc.GetString(buffer.Data, 0, buffer.DataSize);
                 }
-                return enc.GetString(bytes);
             }
             catch (Exception e)
             {
@@ -542,8 +562,10 @@ namespace Bjd.Net.Sockets
         //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
         public string AsciiRecv(int timeout, ILife iLife)
         {
-            var buf = LineRecv(timeout, iLife);
-            return buf == null ? null : Encoding.ASCII.GetString(buf);
+            using (var buf = LineBufferRecv(timeout, iLife))
+            {
+                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
+            }
         }
 
         //【送信】バイナリ

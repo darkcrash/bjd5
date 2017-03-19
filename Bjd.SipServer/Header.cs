@@ -7,7 +7,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
 
-namespace Bjd
+namespace Bjd.SipServer
 {
     public class Header : IEnumerable<OneHeader>
     {

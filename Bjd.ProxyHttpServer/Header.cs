@@ -7,7 +7,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
 
-namespace Bjd
+namespace Bjd.ProxyHttpServer
 {
     public class Header : IEnumerable<OneHeader>
     {
