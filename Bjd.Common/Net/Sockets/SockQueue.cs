@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
+using Bjd.Common.Memory;
 
 namespace Bjd.Net.Sockets
 {
@@ -8,46 +11,65 @@ namespace Bjd.Net.Sockets
     {
         static byte[] empty = new byte[0];
 
-        byte[] _db = new byte[max]; //現在のバッファの内容
-        int _dbNext = 0;
-        int _dbStart = 0;
-        int _length = 0;
-
-        int sendCounter = 0;
-        int recvCounter = 0;
-        int recvLength = 0;
-
+        const int MaxBlockSize = 1024;
         const byte Cr = 0x0d;
         const byte Lf = 0x0A;
 
+
+        // 現在のバッファの内容
+        BufferData[] _blocks = new BufferData[MaxBlockSize];
+        int _nextBlocks = 0;
+        int _readBlocks = 0;
+        int _useBlocks = 0;
+
+        BufferData _current = null;
+
+        int _length = 0;
+        long _totallength = 0;
+
+        int enqueueCounter = 0;
+        int dequeueCounter = 0;
+        int recvLength = 0;
+        int recvUseBlocks = 0;
+
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
+        //private const int max = 4000000;
 
         ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
-        object _lock = new object();
 
         public int Max { get { return max; } }
 
+        public int UseBlocks { get { return _useBlocks; } }
+
         //空いているスペース
-        //public int Space { get { return max - _db.Length; } }
         public int Space { get { return max - _length; } }
 
         //現在のキューに溜まっているデータ量
-        //public int Length { get { return _db.Length; } }
         public int Length { get { return _length; } }
-
-        internal int AfterSpace { get { return max - _dbNext; } }
-        internal int AfterLength { get { return max - _dbStart; } }
 
         internal void Initialize()
         {
             SetModify(false);
-            _dbNext = 0;
-            _dbStart = 0;
             _length = 0;
-            sendCounter = 0;
-            recvCounter = 0;
+            _totallength = 0;
+
+            _current = null;
+            _nextBlocks = 0;
+            _readBlocks = 0;
+            _useBlocks = 0;
+
+            enqueueCounter = 0;
+            dequeueCounter = 0;
             recvLength = 0;
+            recvUseBlocks = 0;
+
+            for (var i = 0; i < MaxBlockSize; i++)
+            {
+                if (_blocks[i] == null) continue;
+                _blocks[i].Dispose();
+                _blocks[i] = null;
+            }
         }
 
         private void SetModify(bool modify)
@@ -64,40 +86,77 @@ namespace Bjd.Net.Sockets
 
         public ArraySegment<byte> GetWriteSegment()
         {
-            var sp = this.AfterSpace;
-            var space = Space;
-            if (space < sp) sp = space;
-            return new ArraySegment<byte>(_db, _dbNext, sp);
+            if (Space == 0)
+            {
+                throw new OverflowException("space overflow");
+            }
+
+            if (_current != null)
+            {
+                _current.Dispose();
+                //_current = null;
+                //throw new InvalidOperationException("conflict GetWriteSegment");
+            }
+            var sp = _totallength;
+            if (sp > Space) sp = Space;
+            _current = BufferPool.Get(sp);
+            return _current.GetSegment(Space);
         }
 
         public void NotifyWrite(int len)
         {
-            //空きスペースを越える場合は失敗する 0が返される
-            if (AfterSpace < len)
+            //空きスペースを越える場合は失敗する
+            if (Space < len)
             {
-                throw new ArgumentOutOfRangeException("queue overflow");
+                throw new OverflowException("queue overflow");
             }
 
-            int workdbNext = _dbNext;
-            workdbNext += len;
+            if (_current == null)
+            {
+                throw new InvalidOperationException("not call GetWriteSegment");
+            }
 
-            if (workdbNext >= max) workdbNext = 0;
-            _dbNext = workdbNext;
+            if (MaxBlockSize <= _useBlocks)
+            {
+                throw new OverflowException("queue block overflow");
+            }
 
-            //_length += len;
+            var buf = _current;
+            _current = null;
+
+            // empty
+            if (len == 0)
+            {
+                buf.Dispose();
+                return;
+            }
+
+            if (buf.Length < len)
+            {
+                throw new OverflowException("queue block data overflow");
+            }
+
+            buf.DataSize = len;
+            _blocks[_nextBlocks] = buf;
+            if (_nextBlocks++ >= MaxBlockSize)
+            {
+                _nextBlocks = 0;
+            }
             System.Threading.Interlocked.Add(ref _length, len);
+            System.Threading.Interlocked.Increment(ref _useBlocks);
+            _totallength += len;
 
-            if (sendCounter == int.MaxValue) sendCounter = 0;
-            sendCounter++;
+            if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
+            enqueueCounter++;
 
-            //_modify = true; //データベースの内容が変化した
+            //データベースの内容が変化した
             SetModify(true);
+
         }
 
         //キューへの追加
         public int Enqueue(byte[] buf, int len)
         {
-
             if (Space == 0)
             {
                 return 0;
@@ -109,49 +168,57 @@ namespace Bjd.Net.Sockets
             }
 
             // 追加データをコピー
-            var afterSpace = this.AfterSpace;
-            int workdbNext = _dbNext;
-            if (afterSpace < len)
+            int leftOversSize = len;
+
+            while (leftOversSize > 0)
             {
-                // 分割コピー
-                Buffer.BlockCopy(buf, 0, _db, workdbNext, afterSpace);
-                workdbNext = 0;
+                var size = leftOversSize;
+                var b = BufferPool.Get(len);
+                if (size > b.Length) size = b.Length;
+                Buffer.BlockCopy(buf, 0, b.Data, 0, size);
+                b.DataSize = size;
 
-                // 分割点取得
-                var splitLen = len - afterSpace;
-                Buffer.BlockCopy(buf, 0, _db, 0, splitLen);
-                workdbNext += splitLen;
+                //while (!_db.TryAdd(b)) { }
+                _blocks[_nextBlocks++] = b;
+                if (_nextBlocks >= MaxBlockSize)
+                {
+                    _nextBlocks = 0;
+                }
+                System.Threading.Interlocked.Increment(ref _useBlocks);
+
+                leftOversSize -= size;
             }
-            else
-            {
-                // そのままコピー
-                Buffer.BlockCopy(buf, 0, _db, workdbNext, len);
-                workdbNext += len;
-            }
 
 
-            if (workdbNext >= max) workdbNext = 0;
-            _dbNext = workdbNext;
-
-            //_length += len;
             System.Threading.Interlocked.Add(ref _length, len);
+            _totallength += len;
 
-            if (sendCounter == int.MaxValue) sendCounter = 0;
-            sendCounter++;
+            if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
+            enqueueCounter++;
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
 
             return len;
 
+
         }
 
         public byte[] DequeueWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
+            ////要求サイズが現有数を超える場合は待機する
+            //var result = Dequeue(len, true);
+            //if (result != empty) return result;
+            //bool wait;
+            //try { wait = _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
+            //catch (OperationCanceledException) { return empty; }
+            //return Dequeue(len, false);
+
             while (true)
             {
+                if (len == 0) return empty;
                 if (cancellationToken.IsCancellationRequested) return empty;
-                var result = Dequeue(len);
+                var result = Dequeue(len, true);
                 if (result == empty)
                 {
                     try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
@@ -165,18 +232,24 @@ namespace Bjd.Net.Sockets
         //キューからのデータ取得
         public byte[] Dequeue(int len)
         {
-            //if (_db.Length == 0 || len == 0 || !_modify)
-            //if (_length == 0 || len == 0 || !_modify)
-            if ((recvLength == _length && recvCounter == sendCounter))
+            return Dequeue(len, false);
+        }
+
+        //キューからのデータ取得
+        private byte[] Dequeue(int len, bool must)
+        {
+            if (len == 0) return empty;
+            if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
             {
                 return empty;
             }
             // 次に何か受信するまで処理の必要はない
             SetModify(false);
-            recvCounter = sendCounter;
             recvLength = _length;
+            dequeueCounter = enqueueCounter;
+            recvUseBlocks = _useBlocks;
 
-            if (recvLength == 0 || len == 0)
+            if (recvLength == 0)
             {
                 return empty;
             }
@@ -184,36 +257,49 @@ namespace Bjd.Net.Sockets
             //要求サイズが現有数を超える場合はカットする
             if (recvLength < len)
             {
+                // 要求サイズまで待機ならEmptyを返す
+                if (must) return empty;
                 len = recvLength;
             }
 
             // 出力用バッファ
             var retBuf = new byte[len];
+            var writeSize = 0;
+            var leftOversSize = len;
 
-
-            var afterLength = this.AfterLength;
-            if (afterLength < len)
+            while (leftOversSize > 0)
             {
-                // 分割あり
-                Buffer.BlockCopy(_db, _dbStart, retBuf, 0, afterLength);
-                _dbStart = 0;
+                var size = leftOversSize;
+                var b = _blocks[_readBlocks];
 
-                // 分割点取得
-                var splitLen = len - afterLength;
-                Buffer.BlockCopy(_db, _dbStart, retBuf, afterLength, splitLen);
-                _dbStart += splitLen;
+
+                if (size >= b.DataSize)
+                {
+                    size = b.DataSize;
+                    _blocks[_readBlocks] = null;
+                    _readBlocks++;
+                    if (_readBlocks >= MaxBlockSize)
+                    {
+                        _readBlocks = 0;
+                    }
+                    Buffer.BlockCopy(b.Data, 0, retBuf, writeSize, size);
+                    b.Dispose();
+                    System.Threading.Interlocked.Decrement(ref _useBlocks);
+                }
+                else
+                {
+                    Buffer.BlockCopy(b.Data, 0, retBuf, writeSize, size);
+                    var tempSize = b.DataSize - size;
+                    Buffer.BlockCopy(b.Data, size, b.Data, 0, tempSize);
+                    b.DataSize = tempSize;
+                }
+                writeSize += size;
+                leftOversSize -= size;
+
 
             }
-            else
-            {
-                // 分割なし
-                Buffer.BlockCopy(_db, _dbStart, retBuf, 0, len);
-                _dbStart += len;
-            }
 
-            //_length -= len;
             System.Threading.Interlocked.Add(ref _length, -len);
-            if (_dbStart >= max) _dbStart = 0;
 
             return retBuf;
 
@@ -239,67 +325,72 @@ namespace Bjd.Net.Sockets
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
-            if (recvLength == _length && recvCounter == sendCounter)
+            if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
             {
                 return empty;
             }
-            //_modify = false; //次に何か受信するまで処理の必要はない
+            //次に何か受信するまで処理の必要はない
             SetModify(false);
-            recvCounter = sendCounter;
+            dequeueCounter = enqueueCounter;
             recvLength = _length;
+            recvUseBlocks = _useBlocks;
 
-            int dbNext = _dbNext;
-            int dbStart = _dbStart;
-            int length = recvLength;
-
-            var splited = dbStart > dbNext || (length == max && dbStart == dbNext);
-            var end = (splited ? max : dbNext);
-
-            // 分割なしの範囲
-            for (var i = dbStart; i < end; i++)
+            var alloc = new List<int>(MaxBlockSize);
+            var size = 0;
+            var maxBlocks = recvUseBlocks + _readBlocks;
+            for (var i = _readBlocks; i < maxBlocks; i++)
             {
-                //if (_db[i] != '\n') continue;
-                if (_db[i] != Lf) continue;
+                var offset = i % MaxBlockSize;
 
-                // 出力サイズとバッファ
-                var len = i + 1 - dbStart;
-                var retBuf = new byte[len]; //\r\nを削除しない
+                var item = _blocks[offset];
+                var d = item.Data;
+                var s = item.DataSize;
 
-                Buffer.BlockCopy(_db, dbStart, retBuf, 0, len);
-
-                _dbStart += len;
-                //_length -= len;
-                System.Threading.Interlocked.Add(ref _length, -len);
-                if (_dbStart >= max) _dbStart = 0;
-
-                return retBuf;
-            }
-
-            // 分割ありの場合
-            if (splited)
-            {
-                for (var i = 0; i < dbNext; i++)
+                for (var c = 0; c < s; c++)
                 {
-                    //if (_db[i] != '\n') continue;
-                    if (_db[i] != Lf) continue;
+                    if (d[c] != Lf) continue;
 
                     // 出力サイズとバッファ
-                    var splitCount = (max - dbStart);
-                    var splitEnd = i + 1;
-                    var len = splitEnd + splitCount;
-                    var retBuf = new byte[len]; //\r\nを削除しない
+                    var len = size + c + 1;
+                    //\r\nを削除しない
+                    var retBuf = new byte[len];
+                    var writeSize = 0;
+                    foreach (var idx in alloc)
+                    {
+                        var buf = _blocks[idx];
+                        _blocks[idx] = null;
+                        var wSize = buf.DataSize;
+                        Buffer.BlockCopy(buf.Data, 0, retBuf, writeSize, wSize);
+                        writeSize += wSize;
+                        buf.Dispose();
+                        System.Threading.Interlocked.Decrement(ref _useBlocks);
+                    }
 
-                    Buffer.BlockCopy(_db, dbStart, retBuf, 0, splitCount);
-                    Buffer.BlockCopy(_db, 0, retBuf, splitCount, splitEnd);
+                    Buffer.BlockCopy(d, 0, retBuf, writeSize, c + 1);
+                    _readBlocks = offset;
+
+                    var blockLeftOvers = s - (c + 1);
+                    if (blockLeftOvers == 0)
+                    {
+                        _blocks[offset] = null;
+                        item.Dispose();
+                        System.Threading.Interlocked.Decrement(ref _useBlocks);
+                        if (_readBlocks++ >= MaxBlockSize) _readBlocks = 0;
+                    }
+                    else
+                    {
+                        Buffer.BlockCopy(d, c + 1, d, 0, blockLeftOvers);
+                        item.DataSize = blockLeftOvers;
+                    }
 
 
-                    _dbStart = splitEnd;
-                    //_length -= len;
                     System.Threading.Interlocked.Add(ref _length, -len);
 
                     return retBuf;
-                }
 
+                }
+                size += s;
+                alloc.Add(offset);
             }
 
 
@@ -320,7 +411,8 @@ namespace Bjd.Net.Sockets
 
                 _modifyEvent.Dispose();
                 _modifyEvent = null;
-                _db = null;
+                //_db = null;
+                _blocks = null;
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。

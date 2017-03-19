@@ -9,13 +9,20 @@ namespace Bjd.Common.Memory
 {
     public class BufferPool : IDisposable
     {
+        const int bufferSizeXL = 1048576;
         const int bufferSizeL = 262144;
         const int bufferSizeM = 65536;
         const int bufferSizeS = 4096;
 
-        private readonly static BufferPool Large = new BufferPool(20, bufferSizeL);
-        private readonly static BufferPool Medium = new BufferPool(80, bufferSizeM);
-        private readonly static BufferPool Small = new BufferPool(320, bufferSizeS);
+        private readonly static BufferPool ExtraLarge = new BufferPool(20, bufferSizeXL);
+        private readonly static BufferPool Large = new BufferPool(80, bufferSizeL);
+        private readonly static BufferPool Medium = new BufferPool(320, bufferSizeM);
+        private readonly static BufferPool Small = new BufferPool(1280, bufferSizeS);
+
+        public static BufferData GetExtraLarge()
+        {
+            return ExtraLarge.Get();
+        }
 
         public static BufferData GetLarge()
         {
@@ -31,9 +38,10 @@ namespace Bjd.Common.Memory
         }
         public static BufferData Get(long length)
         {
-            if (length > bufferSizeM) return Large.Get();
-            if (length > bufferSizeS) return Medium.Get();
-            return Small.Get();
+            if (length <= bufferSizeS) return Small.Get();
+            if (length <= bufferSizeM) return Medium.Get();
+            if (length <= bufferSizeL) return Large.Get();
+            return ExtraLarge.Get();
         }
 
         private int _bufferSize;
@@ -79,7 +87,7 @@ namespace Bjd.Common.Memory
             return new BufferData(_bufferSize, this);
         }
 
-        public void PoolInternal(ref BufferData buf)
+        public void PoolInternal(BufferData buf)
         {
             Interlocked.Decrement(ref _leaseCount);
             if (_poolSize < (_Count - _leaseCount))

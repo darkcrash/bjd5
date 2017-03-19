@@ -722,16 +722,16 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(2, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(2, this));
 
             cl.StringSend("RNFR $$$.1.txt");
-            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(2, this));
 
             cl.StringSend("RNTO 1.txt");
-            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(2, this));
         }
         [Fact]
         public void RNFR_RNTOコマンド_ファイル名変更_V6()

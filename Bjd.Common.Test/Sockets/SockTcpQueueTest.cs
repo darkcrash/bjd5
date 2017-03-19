@@ -9,6 +9,7 @@ using Bjd.Initialization;
 using Bjd.Threading;
 using Xunit.Abstractions;
 using Bjd.Test.Logs;
+using System.Linq;
 
 namespace Bjd.Test.Sockets
 {
@@ -16,9 +17,11 @@ namespace Bjd.Test.Sockets
     public class SockTcpQueueTest : ILife, IDisposable
     {
         const int timeout = 20;
+        private ITestOutputHelper output;
         TestService _service;
         public SockTcpQueueTest(ITestOutputHelper output)
         {
+            this.output = output;
             _service = TestService.CreateTestService();
             _service.Kernel.ListInitialize();
 
@@ -148,6 +151,7 @@ namespace Bjd.Test.Sockets
                         //exercise
                         var actual = sut.LineRecv(timeout, this);
                         //verify
+                        Assert.Equal(expected.Length, actual.Length);
                         Assert.Equal(expected, actual);
                     }
                 }
@@ -167,7 +171,7 @@ namespace Bjd.Test.Sockets
             var ip = new Ip("127.0.0.1");
             //const int port = 9996;
             int port = _service.GetAvailablePort(ip, 9996);
-            int size = 4000000;
+            int size = 1000000;
 
             using (var sv = new SockTcpTestEchoServer(_service.Kernel, ip, port))
             {
@@ -182,20 +186,92 @@ namespace Bjd.Test.Sockets
                 var expected = Encoding.UTF8.GetBytes(expectedText.ToString());
                 var dataLength = expected.Length;
 
+                var sendCount = 0;
+                var recvCount = 0;
+                output.WriteLine($"dataLength:{dataLength}");
+
                 for (var p = 0; p < 2; p++)
                 {
                     for (var i = 0; i < size; i += dataLength)
                     {
                         sut.Send(expected);
+                        sendCount++;
+                        output.WriteLine($"sendCount:{sendCount}");
                     }
 
                     for (var i = 0; i < size; i += dataLength)
                     {
+                        //output.WriteLine($"{sut.GetHashCode()} _sockQueue.DataSize:{sut._sockQueue._blocks.Sum(_ => (_ != null ? _.DataSize : 0))}");
+                        //output.WriteLine($"{sut.GetHashCode()} _sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueue.Length}");
                         //exercise
                         var actual = sut.LineRecv(timeout, this);
+                        //output.WriteLine($"{sut.GetHashCode()} _sockQueue.DataSize:{sut._sockQueue._blocks.Sum( _ => (_ != null ? _.DataSize : 0))}");
+                        //output.WriteLine($"{sut.GetHashCode()} _sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueue.Length}");
+                        recvCount++;
+                        output.WriteLine($"recvCount:{recvCount}");
                         //verify
+                        Assert.Equal(expected.Length, actual.Length);
                         Assert.Equal(expected, actual);
                     }
+                }
+
+                //tearDown
+                sut.Close();
+                sut.Dispose();
+                sv.Stop();
+            }
+
+        }
+
+
+        [Fact]
+        public void EchoServerToSendOverQueueLarge2()
+        {
+            //setUp
+            var ip = new Ip("127.0.0.1");
+            //const int port = 9996;
+            int port = _service.GetAvailablePort(ip, 9996);
+
+            using (var sv = new SockTcpTestEchoServer(_service.Kernel, ip, port))
+            {
+                sv.Start();
+                var sut = new SockTcp(_service.Kernel, ip, port, timeout, null);
+                var expectedText = new StringBuilder();
+                for (var s = 0; s < 80000; s++)
+                {
+                    expectedText.Append("本日は晴天なり");
+                }
+                expectedText.Append("\r\n");
+                var expected = Encoding.UTF8.GetBytes(expectedText.ToString());
+                var dataLength = expected.Length;
+
+                var sendCount = 0;
+                var recvCount = 0;
+                output.WriteLine($"dataLength:{dataLength}");
+
+                for (var p = 0; p < 2; p++)
+                {
+                    sut.Send(expected);
+                    sendCount++;
+                    output.WriteLine($"sendCount:{sendCount}");
+                    //output.WriteLine($"_sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
+                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
+                    output.WriteLine($"_sockQueue.Length:{sut._sockQueue.Length}");
+                  
+                    //exercise
+                    var actual = sut.LineRecv(timeout, this);
+                    //output.WriteLine($"_sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
+                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
+                    output.WriteLine($"_sockQueue.Length:{sut._sockQueue.Length}");
+                    recvCount++;
+                    output.WriteLine($"recvCount:{recvCount}");
+                    //verify
+                    Assert.Equal(expected.Length, actual.Length);
+                    Assert.Equal(expected, actual);
                 }
 
                 //tearDown

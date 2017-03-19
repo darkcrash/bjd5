@@ -17,7 +17,7 @@ namespace Bjd.Net.Sockets
         private Socket _socket;
         private Ssl _ssl;
         private OneSsl _oneSsl;
-        private SockQueue _sockQueue;
+        internal SockQueue _sockQueue;
         private bool isSsl = false;
         private int hash;
 

@@ -146,7 +146,7 @@ namespace Bjd.Test.Servers
                     var len = sockTcp.Length();
                     if (0 < len)
                     {
-                        var b = sockTcp.Recv(len, timeout, this);
+                        var b = sockTcp.Recv(max, timeout, this);
                         Assert.Equal(b[8], buf[8]);//CheckData
                     }
                     Assert.Equal(max, len);

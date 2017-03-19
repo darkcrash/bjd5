@@ -62,7 +62,7 @@ namespace Bjd.SmtpServer.Test
 
             //バナー
             const string bannerStr = "220 localhost SMTP BlackJumboDog ";
-            Assert.Equal(cl.StringRecv(3, this).Substring(0, 33), bannerStr);
+            Assert.Equal(cl.StringRecv(5, this).Substring(0, 33), bannerStr);
 
             //HELO
             cl.StringSend("HELO 1");
