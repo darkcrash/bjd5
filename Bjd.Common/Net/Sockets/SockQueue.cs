@@ -31,6 +31,7 @@ namespace Bjd.Net.Sockets
         int dequeueCounter = 0;
         int recvLength = 0;
         int recvUseBlocks = 0;
+        bool recvMust = false;
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
@@ -63,6 +64,7 @@ namespace Bjd.Net.Sockets
             dequeueCounter = 0;
             recvLength = 0;
             recvUseBlocks = 0;
+            recvMust = false;
 
             for (var i = 0; i < MaxBlockSize; i++)
             {
@@ -221,7 +223,7 @@ namespace Bjd.Net.Sockets
                 var result = Dequeue(len, true);
                 if (result == empty)
                 {
-                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
+                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return Dequeue(len, false); }
                     catch (OperationCanceledException) { return empty; }
                     continue;
                 }
@@ -239,7 +241,7 @@ namespace Bjd.Net.Sockets
         private byte[] Dequeue(int len, bool must)
         {
             if (len == 0) return empty;
-            if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
+            if (recvMust == must && recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
             {
                 return empty;
             }
@@ -248,6 +250,7 @@ namespace Bjd.Net.Sockets
             recvLength = _length;
             dequeueCounter = enqueueCounter;
             recvUseBlocks = _useBlocks;
+            recvMust = must;
 
             if (recvLength == 0)
             {
