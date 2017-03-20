@@ -303,6 +303,7 @@ namespace Bjd.Net.Sockets
 
             }
 
+            alloc.Clear();
             System.Threading.Interlocked.Add(ref _length, -len);
 
             return retBuf;
@@ -344,7 +345,11 @@ namespace Bjd.Net.Sockets
             {
                 var offset = i % MaxBlockSize;
 
-                if (alloc.Contains(offset)) continue;
+                if (alloc.Contains(offset))
+                {
+                    size += _blocks[offset].DataSize;
+                    continue;
+                }
 
                 var item = _blocks[offset];
                 var d = item.Data;
@@ -439,7 +444,11 @@ namespace Bjd.Net.Sockets
             {
                 var offset = i % MaxBlockSize;
 
-                if (alloc.Contains(offset)) continue;
+                if (alloc.Contains(offset))
+                {
+                    size += _blocks[offset].DataSize;
+                    continue;
+                }
 
                 var item = _blocks[offset];
                 var d = item.Data;
