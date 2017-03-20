@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Configurations;
@@ -28,6 +29,18 @@ namespace Bjd.WebServer.Handlers
         private NotFoundHandler _HandlerNotFound;
         private SsiHandler _HandlerSsi;
 
+
+        private bool useWebDav = false;
+        private DatRecord[] webDavPathData;
+        private bool useCgi = false;
+        private DatRecord[] cgiPathData;
+        private DatRecord[] aliaseListData;
+        private string[] welcomeFileNames;
+        private DatRecord[] cgiCmdData;
+        private bool useSsi = false;
+        private List<string> ssiExtList;
+        private bool useHidden = false;
+
         public HandlerSelector(Kernel kernel, Conf conf, Logger logger)
         {
             //kernel.Trace.TraceInformation($"Target..ctor ");
@@ -53,6 +66,27 @@ namespace Bjd.WebServer.Handlers
             _HandlerMove = new MoveHandler();
             _HandlerNotFound = new NotFoundHandler();
             _HandlerSsi = new SsiHandler(kernel, conf);
+
+            useWebDav = (bool)_conf.Get("useWebDav");
+            var webDavPath = (Dat)_conf.Get("webDavPath");
+            webDavPathData = webDavPath.Where(_ => _.Enable).ToArray();
+
+            useCgi = (bool)_conf.Get("useCgi");
+            var cgiPath = (Dat)_conf.Get("cgiPath");
+            cgiPathData = webDavPath.Where(_ => _.Enable).ToArray();
+
+            var aliaseList = (Dat)_conf.Get("aliaseList");
+            aliaseListData = aliaseList.Where(_ => _.Enable).ToArray();
+
+            welcomeFileNames = ((string)_conf.Get("welcomeFileName")).Split(',');
+
+            var cgiCmd = (Dat)_conf.Get("cgiCmd");
+            cgiCmdData = cgiCmd.Where(_ => _.Enable).ToArray();
+
+            useSsi = (bool)_conf.Get("useSsi");
+            ssiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
+
+            useHidden = (bool)_conf.Get("useHidden");
 
         }
 
@@ -151,12 +185,14 @@ namespace Bjd.WebServer.Handlers
             //****************************************************************
             //WebDavパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
-            if ((bool)_conf.Get("useWebDav"))
+            //if ((bool)_conf.Get("useWebDav"))
+            if (useWebDav)
             {
-                var db = (Dat)_conf.Get("webDavPath");
-                foreach (var o in db)
+                //var db = (Dat)_conf.Get("webDavPath");
+                //foreach (var o in db)
+                foreach (var o in webDavPathData)
                 {
-                    if (!o.Enable) continue;
+                    //if (!o.Enable) continue;
 
                     var name = o.ColumnValueList[0];
                     var write = Convert.ToBoolean(o.ColumnValueList[1]);//書き込み許可
@@ -183,9 +219,10 @@ namespace Bjd.WebServer.Handlers
                 if (uri[uri.Length - 1] != '/')
                 {
                     var exUri = uri + "/";
-                    foreach (var o in db)
+                    //foreach (var o in db)
+                    foreach (var o in webDavPathData)
                     {
-                        if (!o.Enable) continue;
+                        //if (!o.Enable) continue;
                         var name = o.ColumnValueList[0];
                         var write = Convert.ToBoolean(o.ColumnValueList[1]);//書き込み許可
                         var dir = o.ColumnValueList[2];
@@ -216,11 +253,13 @@ namespace Bjd.WebServer.Handlers
             //CGIパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
             bool useCgiPath = false;//CGIパス定義が存在するかどうかのフラグ
-            if (result.WebDavKind == WebDavKind.Non && (bool)_conf.Get("useCgi"))
+            //if (result.WebDavKind == WebDavKind.Non && (bool)_conf.Get("useCgi"))
+            if (result.WebDavKind == WebDavKind.Non && useCgi)
             {
-                foreach (var o in (Dat)_conf.Get("cgiPath"))
+                //foreach (var o in (Dat)_conf.Get("cgiPath"))
+                foreach (var o in cgiPathData)
                 {
-                    if (!o.Enable) continue;
+                    //if (!o.Enable) continue;
 
                     useCgiPath = true;//有効なCGIパスの定義が存在する
                     var name = o.ColumnValueList[0];
@@ -256,9 +295,10 @@ namespace Bjd.WebServer.Handlers
             //****************************************************************
             if (result.WebDavKind == WebDavKind.Non && !useCgiPath && uri.Length >= 1)
             {
-                foreach (var o in (Dat)_conf.Get("aliaseList"))
+                //foreach (var o in (Dat)_conf.Get("aliaseList"))
+                foreach (var o in aliaseListData)
                 {
-                    if (!o.Enable) continue;
+                    //if (!o.Enable) continue;
 
                     var name = o.ColumnValueList[0];
                     var dir = o.ColumnValueList[1];
@@ -327,8 +367,9 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (Path.GetFileName(result.FullPath) == "")
                     {
-                        var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
-                        foreach (string welcomeFileName in tmp)
+                        //var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
+                        //foreach (string welcomeFileName in tmp)
+                        foreach (string welcomeFileName in welcomeFileNames)
                         {
                             //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
                             var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
@@ -378,7 +419,8 @@ namespace Bjd.WebServer.Handlers
                 if (ext != null && ext.Length > 1)
                 {
                     ext = ext.Substring(1);
-                    foreach (var o in (Dat)_conf.Get("cgiCmd"))
+                    //foreach (var o in (Dat)_conf.Get("cgiCmd"))
+                    foreach (var o in cgiCmdData)
                     {
                         if (!o.Enable) continue;
 
@@ -399,15 +441,16 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             if (result.WebDavKind == WebDavKind.Non)
             {
-                if (result.TargetKind == HandlerKind.File && (bool)_conf.Get("useSsi"))
+                //if (result.TargetKind == HandlerKind.File && (bool)_conf.Get("useSsi"))
+                if (result.TargetKind == HandlerKind.File && useSsi)
                 {
                     //「SSIを使用する」場合
                     // SSI指定拡張子かどうかの判断
                     var ext = Path.GetExtension(result.FullPath);
                     if (ext != null && 1 <= ext.Length)
                     {
-                        var cgiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
-                        if (0 <= cgiExtList.IndexOf(ext.Substring(1)))
+                        //var ssiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
+                        if (0 <= ssiExtList.IndexOf(ext.Substring(1)))
                         {
                             //ターゲットファイルにキーワードが含まれているかどうかの確認
                             var physicalFullPath = Path.Combine(this.PhysicalRootPath, result.FullPath);
@@ -432,7 +475,8 @@ namespace Bjd.WebServer.Handlers
                 //***************************************************************
                 //  隠し属性のファイルへのアクセス制御
                 //***************************************************************
-                if (!(bool)_conf.Get("useHidden"))
+                //if (!(bool)_conf.Get("useHidden"))
+                if (!useHidden)
                 {
                     if ((result.Attr & FileAttributes.Hidden) == FileAttributes.Hidden)
                     {
