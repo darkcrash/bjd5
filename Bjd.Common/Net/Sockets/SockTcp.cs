@@ -162,6 +162,7 @@ namespace Bjd.Net.Sockets
                 }
                 else
                 {
+                    if (this.CancelToken.IsCancellationRequested) return;
                     tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
                 tReceive.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
