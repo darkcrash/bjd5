@@ -5,16 +5,48 @@ namespace Bjd
 {
     public class OneHeader
     {
-        public string Key { get; set; }
-        public string KeyUpper { get; set; }
-        public byte[] Val { get; set; }
-        public string ValString { get; set; }
+
+        private string _Key;
+        private string _KeyUpper;
+        private byte[] _Val;
+        private string _ValString;
+        public string Key
+        {
+            get { return _Key; }
+            set
+            {
+                _Key = value;
+                _KeyUpper = _Key.ToUpper();
+            }
+        }
+
+        public string KeyUpper
+        {
+            get { return _KeyUpper; }
+        }
+
+        public byte[] Val
+        {
+            get { return _Val; }
+            set
+            {
+                _Val = value;
+                ValString = Encoding.ASCII.GetString(_Val);
+            }
+        }
+        public string ValString
+        {
+            get { return _ValString; }
+            set
+            {
+                _ValString = value;
+                _Val = Encoding.ASCII.GetBytes(_ValString);
+            }
+        }
         public OneHeader(string key, byte[] val)
         {
             Key = key;
-            KeyUpper = key.ToUpper();
             Val = val;
-            ValString = Encoding.ASCII.GetString(val);
         }
 
     }
