@@ -32,6 +32,7 @@ namespace Bjd.Net.Sockets
         int recvLength = 0;
         int recvUseBlocks = 0;
         bool recvMust = false;
+        List<int> alloc = new List<int>(MaxBlockSize);
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         private const int max = 2000000; //保持可能な最大数
@@ -337,12 +338,13 @@ namespace Bjd.Net.Sockets
             recvLength = _length;
             recvUseBlocks = _useBlocks;
 
-            var alloc = new List<int>(MaxBlockSize);
             var size = 0;
             var maxBlocks = recvUseBlocks + _readBlocks;
             for (var i = _readBlocks; i < maxBlocks; i++)
             {
                 var offset = i % MaxBlockSize;
+
+                if (alloc.Contains(offset)) continue;
 
                 var item = _blocks[offset];
                 var d = item.Data;
@@ -385,6 +387,7 @@ namespace Bjd.Net.Sockets
                         item.DataSize = blockLeftOvers;
                     }
 
+                    alloc.Clear();
 
                     System.Threading.Interlocked.Add(ref _length, -len);
 
@@ -430,12 +433,13 @@ namespace Bjd.Net.Sockets
             recvLength = _length;
             recvUseBlocks = _useBlocks;
 
-            var alloc = new List<int>(MaxBlockSize);
             var size = 0;
             var maxBlocks = recvUseBlocks + _readBlocks;
             for (var i = _readBlocks; i < maxBlocks; i++)
             {
                 var offset = i % MaxBlockSize;
+
+                if (alloc.Contains(offset)) continue;
 
                 var item = _blocks[offset];
                 var d = item.Data;
@@ -482,6 +486,7 @@ namespace Bjd.Net.Sockets
                         item.DataSize = blockLeftOvers;
                     }
 
+                    alloc.Clear();
 
                     System.Threading.Interlocked.Add(ref _length, -len);
 
