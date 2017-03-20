@@ -642,7 +642,7 @@
     "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
     "useResolve": false,
     "useDetailsLog": true,
-    "multiple": 50,
+    "multiple": 100,
     "timeOut": 3,
     "documentRoot": "wwwroot",
     "welcomeFileName": "index.html",
