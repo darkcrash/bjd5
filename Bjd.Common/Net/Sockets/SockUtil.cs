@@ -29,6 +29,8 @@ namespace Bjd.Net.Sockets
                 {
                     var child = sockServer.Select(iLife);
                     if (child == null) break;
+                    // 受信開始
+                    child.BeginReceive();
                     return child;
                 }
 

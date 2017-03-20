@@ -323,6 +323,8 @@ namespace Bjd.Servers
                                 {
                                     return;
                                 }
+                                // 受信開始
+                                child.BeginReceive();
                                 // 各実装へ
                                 this.SubThread(child);
                             }

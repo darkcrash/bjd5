@@ -19,6 +19,8 @@ namespace Bjd.Net.Sockets
         private Ssl _ssl;
         private OneSsl _oneSsl;
         internal SockQueue _sockQueue;
+        private Task<int> receiveTask;
+        private Task receiveCompleteTask;
         private bool isSsl = false;
         private int hash;
 
@@ -114,7 +116,7 @@ namespace Bjd.Net.Sockets
             ////接続完了処理（受信待機開始）
             //var t = new Task(BeginReceive, this.CancelToken, TaskCreationOptions.LongRunning);
             //t.Start();
-            BeginReceive(); //接続完了処理（受信待機開始）
+            //BeginReceive(); //接続完了処理（受信待機開始）
 
         }
 
@@ -144,8 +146,10 @@ namespace Bjd.Net.Sockets
         }
 
         //接続完了処理（受信待機開始）
-        private void BeginReceive()
+        internal void BeginReceive()
         {
+            if (this.CancelToken.IsCancellationRequested) return;
+
             Kernel.Logger.TraceInformation($"{hash} SockTcp.BeginReceive");
 
             // Using the LocalEndPoint property.
@@ -155,17 +159,15 @@ namespace Bjd.Net.Sockets
             try
             {
                 var recvBufSeg = _sockQueue.GetWriteSegment();
-                Task<int> tReceive;
                 if (isSsl)
                 {
-                    tReceive = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
+                    receiveTask = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
                 }
                 else
                 {
-                    if (this.CancelToken.IsCancellationRequested) return;
-                    tReceive = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
+                    receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
-                tReceive.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
+                receiveCompleteTask =  receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
             }
             catch (Exception ex)
             {
@@ -595,9 +597,11 @@ namespace Bjd.Net.Sockets
             {
                 try { this.Cancel(); }
                 catch { }
+
                 //TCPのソケットをシャットダウンするとエラーになる（無視する）
                 try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
                 catch { }
+
                 if (_socket != null)
                 {
                     //_socket.Close();
@@ -610,6 +614,19 @@ namespace Bjd.Net.Sockets
                 {
                     _oneSsl.Close();
                     _oneSsl = null;
+                }
+
+                if (receiveTask != null)
+                {
+                    try { receiveTask.Wait(); receiveTask = null; }
+                    catch { }
+                    finally { receiveTask = null; }
+                }
+                if (receiveCompleteTask != null)
+                {
+                    try { receiveCompleteTask.Wait(); }
+                    catch { }
+                    finally { receiveCompleteTask = null; }
                 }
 
                 this._lastLineSend = null;

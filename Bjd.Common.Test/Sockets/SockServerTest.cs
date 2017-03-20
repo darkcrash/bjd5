@@ -95,6 +95,8 @@ namespace Bjd.Test.Sockets
                             {
                                 var c = sockServer.Select(life);
                                 if (c == null) break;
+                                // 受信開始
+                                c.BeginReceive();
                             }
                         }
                         catch { }
@@ -179,6 +181,8 @@ namespace Bjd.Test.Sockets
                             {
                                 var c = sockServer.Select(life);
                                 if (c == null) break;
+                                // 受信開始
+                                c.BeginReceive();
                             }
                         }
                         catch { }
