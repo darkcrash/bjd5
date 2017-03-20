@@ -167,7 +167,7 @@ namespace Bjd.Net.Sockets
                 {
                     receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
-                receiveCompleteTask =  receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
+                receiveCompleteTask = receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
             }
             catch (Exception ex)
             {
@@ -372,10 +372,7 @@ namespace Bjd.Net.Sockets
                 }
                 else
                 {
-                    //return _socket.Send(buf, 0, length, SocketFlags.None);
-                    var t = _socket.SendAsync(new ArraySegment<byte>(buf, 0, length), SocketFlags.None);
-                    t.Wait(this.CancelToken);
-                    return t.Result;
+                    return _socket.Send(buf, length, SocketFlags.None);
                 }
             }
             catch (Exception e)
@@ -462,11 +459,7 @@ namespace Bjd.Net.Sockets
 
                 if (_socket.Connected)
                 {
-                    var arry = new ArraySegment<byte>(buffer, 0, buffer.Length);
-                    var result = _socket.SendAsync(arry, SocketFlags.None);
-                    result.Wait(this.CancelToken);
-                    return result.Result;
-                    //return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                    return _socket.Send(buffer,SocketFlags.None);
                 }
             }
             catch (Exception ex)
@@ -488,11 +481,7 @@ namespace Bjd.Net.Sockets
 
                 if (_socket.Connected)
                 {
-                    var result = _socket.SendAsync(buffer, SocketFlags.None);
-                    result.Wait(this.CancelToken);
-                    if (result.IsCompleted)
-                        return result.Result;
-                    //return _socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                    return _socket.Send(buffer.Array, buffer.Offset, buffer.Count, SocketFlags.None);
                 }
             }
             catch (Exception ex)
