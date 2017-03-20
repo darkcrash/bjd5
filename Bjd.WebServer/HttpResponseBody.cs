@@ -93,11 +93,11 @@ namespace Bjd.WebServer
             }
             else
             {
-                using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan))
                 {
                     using (var buf = Bjd.Common.Memory.BufferPool.Get(fs.Length))
                     //var bufSize = (fs.Length > bufferSize ? bufferSizeL : bufferSize);
-                    using (var br = new BinaryReader(fs))
+                    //using (var br = new BinaryReader(fs))
                     {
                         var bufSize = buf.Length;
                         //_doc = new byte[bufSize];
@@ -112,7 +112,8 @@ namespace Bjd.WebServer
                                 break;
 
                             //int len = br.Read(_doc, 0, (int)size);
-                            int len = br.Read(buf.Data, 0, (int)size);
+                            //int len = br.Read(buf.Data, 0, (int)size);
+                            int len = fs.Read(buf.Data, 0, (int)size);
                             if (len <= 0)
                                 break;
 
