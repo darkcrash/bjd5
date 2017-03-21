@@ -123,7 +123,7 @@ namespace Bjd.WebServer.Handlers
         //uriによる初期化
         public HandlerSelectorResult InitFromUri(string uri)
         {
-            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromUri {uri}");
+            _kernel.Logger.DebugInformation($"HandlerSelector.InitFromUri {uri}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -131,13 +131,13 @@ namespace Bjd.WebServer.Handlers
             Init(result, uri);
 
             SetHandler(result);
-            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
+            _kernel.Logger.DebugInformation($"HandlerSelector.InitFromUri TargetKind {result.TargetKind} WebDavKind {result.WebDavKind}");
             return result;
         }
         //filenameによる初期化
         public HandlerSelectorResult InitFromFile(string file)
         {
-            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromFile {file}");
+            _kernel.Logger.DebugInformation($"HandlerSelector.InitFromFile {file}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -161,7 +161,7 @@ namespace Bjd.WebServer.Handlers
         //コマンドによる初期化
         public HandlerSelectorResult InitFromCmd(string fullPath)
         {
-            _kernel.Logger.TraceInformation($"HandlerSelector.InitFromCmd {fullPath}");
+            _kernel.Logger.DebugInformation($"HandlerSelector.InitFromCmd {fullPath}");
             var result = new HandlerSelectorResult();
             result.DocumentRoot = DocumentRoot;
             result.PhysicalRootPath = PhysicalRootPath;
@@ -332,7 +332,7 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
             result.FullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
-            _kernel.Logger.TraceInformation($"Target.Init {result.FullPath}");
+            _kernel.Logger.DebugInformation($"Target.Init {result.FullPath}");
 
             /*************************************************/
             //ファイル指定されたターゲットがファイルではなくディレクトリの場合
@@ -376,7 +376,7 @@ namespace Bjd.WebServer.Handlers
                             if (!File.Exists(newPath)) continue;
 
                             result.FullPath = newPath;
-                            _kernel.Logger.TraceInformation($"Target.Init welcomeFileName {result.FullPath}");
+                            _kernel.Logger.DebugInformation($"Target.Init welcomeFileName {result.FullPath}");
                             break;
                         }
                     }

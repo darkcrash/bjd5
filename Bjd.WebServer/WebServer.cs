@@ -141,7 +141,7 @@ namespace Bjd.WebServer
         //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
-            _kernel.Logger.TraceInformation($"WebServer.OnSubThread ");
+            _kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
 
@@ -200,7 +200,7 @@ namespace Bjd.WebServer
                 //Ver5.1.x
                 var hostStr = request.Header.GetVal("host");
                 request.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
-                _kernel.Logger.TraceInformation($"WebServer.OnSubThread {request.Url}");
+                _kernel.Logger.DebugInformation($"WebServer.OnSubThread {request.Url}");
             }
 
             //***************************************************************
@@ -443,7 +443,7 @@ namespace Bjd.WebServer
         //********************************************************
         void ReplaceVirtualHost(string host, IPAddress ip, int port)
         {
-            _kernel.Logger.TraceInformation($"WebServer.ReplaceVirtualHost ");
+            _kernel.Logger.DebugInformation($"WebServer.ReplaceVirtualHost ");
 
             //Ver5.0.0-b12
             if (host == null)
@@ -502,7 +502,7 @@ namespace Bjd.WebServer
         //********************************************************
         int CheckUri(SockTcp sockTcp, HttpRequest request, HttpHeader recvHeader)
         {
-            _kernel.Logger.TraceInformation($"WebServer.CheckUri ");
+            _kernel.Logger.DebugInformation($"WebServer.CheckUri ");
             var responseCode = 200;
 
             // v2.3.1 Uri の１文字目が/で無い場合
@@ -544,7 +544,7 @@ namespace Bjd.WebServer
             var contextConnection = contextRequest.Connection;
             var response = contextRequest.Response;
 
-            _kernel.Logger.TraceInformation($"WebServer.OnSubThread SEND");
+            _kernel.Logger.DebugInformation($"WebServer.OnSubThread SEND");
             //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
             if (contextRequest.ResponseCode != 200 && contextRequest.ResponseCode != 302 && contextRequest.ResponseCode != 206 && contextRequest.ResponseCode != 207 && contextRequest.ResponseCode != 204 && contextRequest.ResponseCode != 201)
             {

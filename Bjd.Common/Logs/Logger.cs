@@ -404,6 +404,13 @@ namespace Bjd.Logs
             FormatWriteLine(ex.Message + ex.StackTrace, (l, m) => l.TraceError(m));
         }
 
+        [Conditional("DEBUG")]
+        public void DebugInformation(string message)
+        {
+            FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+        }
+
+
         [Conditional("TRACE")]
         public void TraceInformation(string message)
         {

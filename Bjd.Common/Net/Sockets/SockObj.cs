@@ -104,7 +104,7 @@ namespace Bjd.Net.Sockets
         protected internal virtual void Cancel()
         {
             if (this.disposedValue) return;
-            Kernel.Logger.TraceInformation("SockObj.Cancel");
+            Kernel.Logger.DebugInformation("SockObj.Cancel");
             this.cancelTokenSource.Cancel();
         }
 

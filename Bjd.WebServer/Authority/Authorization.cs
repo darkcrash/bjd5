@@ -23,7 +23,7 @@ namespace Bjd.WebServer.Authority
             _kernel = kernel;
             _conf = conf;
             _logger = logger;
-            _kernel.Logger.TraceInformation($"Authorization..ctor");
+            _kernel.Logger.DebugInformation($"Authorization..ctor");
             //_oneOption = oneOption;
             //認証リスト
             _authList = new AuthList((Dat)_conf.Get("authList"));
@@ -63,7 +63,7 @@ namespace Bjd.WebServer.Authority
 
         public bool Check(string uri, string authorization, ref string authName)
         {
-            _kernel.Logger.TraceInformation($"Authorization.Check {uri}");
+            _kernel.Logger.DebugInformation($"Authorization.Check {uri}");
             //認証リスト
             //var authList = new AuthList((Dat)_conf.Get("authList"));
             var authList = _authList;

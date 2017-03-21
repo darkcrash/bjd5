@@ -150,7 +150,7 @@ namespace Bjd.Net.Sockets
         {
             if (this.CancelToken.IsCancellationRequested) return;
 
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.BeginReceive");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.BeginReceive");
 
             // Using the LocalEndPoint property.
             //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
@@ -182,7 +182,7 @@ namespace Bjd.Net.Sockets
 
             if (result.IsCanceled)
             {
-                Kernel.Logger.TraceInformation($"{hash} SockTcp.EndReceive IsCanceled=true");
+                Kernel.Logger.TraceWarning($"{hash} SockTcp.EndReceive IsCanceled=true");
                 return;
             }
 
@@ -216,7 +216,7 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 int bytesRead = result.Result;
-                Kernel.Logger.TraceInformation($"{hash} SockTcp.EndReceive Length={bytesRead}");
+                Kernel.Logger.DebugInformation($"{hash} SockTcp.EndReceive Length={bytesRead}");
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
@@ -243,7 +243,7 @@ namespace Bjd.Net.Sockets
                 if (CancelToken.IsCancellationRequested) return;
                 if (SockState != SockState.Connect)
                 {
-                    Kernel.Logger.TraceInformation($"{hash} SockTcp.EndReceive Not Connected");
+                    Kernel.Logger.TraceWarning($"{hash} SockTcp.EndReceive Not Connected");
                     this.SetErrorReceive();
                     return;
                 }
@@ -271,7 +271,7 @@ namespace Bjd.Net.Sockets
             var result = _sockQueue.DequeueWait(len, toutms, this.CancelToken);
             if (result.Length == 0 && SockState != SockState.Connect) return null;
             var length = (result != null ? result.Length.ToString() : "null");
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.Recv {length}");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.Recv {length}");
             return result;
         }
 
@@ -283,7 +283,7 @@ namespace Bjd.Net.Sockets
             var result = _sockQueue.DequeueLineWait(toutms, this.CancelToken);
             if (result.Length == 0) return null;
             var length = (result != null ? result.Length.ToString() : "null");
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.LineRecv {length}");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.LineRecv {length}");
             return result;
         }
 
@@ -293,7 +293,7 @@ namespace Bjd.Net.Sockets
             var result = _sockQueue.DequeueLineBufferWait(toutms, this.CancelToken);
             if (result.DataSize == 0) return null;
             var length = (result != null ? result.DataSize.ToString() : "null");
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.LineRecv {length}");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.LineRecv {length}");
             return result;
         }
 
@@ -352,7 +352,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(byte[] buf, int length)
         {
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.Send {length}");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.Send {length}");
             try
             {
                 if (buf.Length != length)
@@ -449,7 +449,7 @@ namespace Bjd.Net.Sockets
         //RemoteObj.Send()では、こちらを使用する
         public int SendNoTrace(byte[] buffer)
         {
-            Kernel.Logger.TraceInformation($"{hash} SockTcp.SendNoTrace {buffer.Length}");
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.SendNoTrace {buffer.Length}");
             try
             {
                 if (isSsl)
