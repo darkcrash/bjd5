@@ -187,7 +187,7 @@ namespace Bjd.WebServer.Handlers
             //通常ファイルのドキュメント
             if (context.Request.Method != HttpMethod.Head)
             {
-                if (!context.Response.CreateFromFile(result.FullPath, rangeFrom, rangeTo))
+                if (!context.Response.CreateFromFile(result, rangeFrom, rangeTo))
                     return false;
             }
 

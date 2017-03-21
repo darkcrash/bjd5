@@ -360,6 +360,7 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //Uriでファイル名が指定されていない場合で、当該ディレクトリにwelcomeFileNameが存在する場合
             //ファイル名として使用する
+            bool filePathReplaced = false;
             if (result.WebDavKind == WebDavKind.Non)
             {
                 //Ver5.1.3
@@ -376,6 +377,8 @@ namespace Bjd.WebServer.Handlers
                             if (!File.Exists(newPath)) continue;
 
                             result.FullPath = newPath;
+                            result.FileExists = true;
+                            filePathReplaced = true;
                             _kernel.Logger.DebugInformation($"Target.Init welcomeFileName {result.FullPath}");
                             break;
                         }
@@ -392,7 +395,11 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //ターゲットはファイルとして存在するか
             /*************************************************/
-            if (!File.Exists(result.FullPath))
+            if (!filePathReplaced)
+            {
+                result.FileExists = File.Exists(result.FullPath);
+            }
+            if (!result.FileExists)
             {
                 //ディレクトリとして存在しない場合
                 if (!Directory.Exists(result.FullPath))

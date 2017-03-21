@@ -36,7 +36,7 @@ namespace Bjd.WebServer.Handlers
         public string CgiCmd { get; internal set; }//CGI実行プログラム
         public string Uri { get; internal set; }
         public IHandler Handler { get; internal set; }
-
+        public bool FileExists { get; internal set; }
     }
 }
 

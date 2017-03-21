@@ -10,6 +10,7 @@ using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using Bjd.WebServer.Handlers;
 
 namespace Bjd.WebServer
 {
@@ -110,24 +111,38 @@ namespace Bjd.WebServer
         //*********************************************************************
         // ドキュメント生成
         //*********************************************************************
-        public bool CreateFromFile(string fileName, long rangeFrom, long rangeTo)
+        public bool CreateFromFile(HandlerSelectorResult result, long rangeFrom, long rangeTo)
         {
-            //_kernel.Trace.TraceInformation($"Document.CreateFromFile");
-            if (File.Exists(fileName))
-            {
+            ////_kernel.Trace.TraceInformation($"Document.CreateFromFile");
+            //if (File.Exists(fileName))
+            //{
 
-                _body.Set(fileName, rangeFrom, rangeTo);
+            //    _body.Set(fileName, rangeFrom, rangeTo);
 
-                //Ver5.4.0
-                var l = _body.Length;
-                if (SetRangeTo && rangeFrom == 0)
-                    l++;
-                _sendHeader.Replace("Content-Length", l.ToString());
-                _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
+            //    //Ver5.4.0
+            //    var l = _body.Length;
+            //    if (SetRangeTo && rangeFrom == 0)
+            //        l++;
+            //    _sendHeader.Replace("Content-Length", l.ToString());
+            //    _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
 
-                return true;
-            }
-            return false;
+            //    return true;
+            //}
+            //return false;
+
+            if (!result.FileExists) return false;
+
+            _body.Set(result.FullPath, rangeFrom, rangeTo);
+
+            //Ver5.4.0
+            var l = _body.Length;
+            if (SetRangeTo && rangeFrom == 0)
+                l++;
+            _sendHeader.Replace("Content-Length", l.ToString());
+            _sendHeader.Replace("Content-Type", _contentType.Get(result.FullPath));
+
+            return true;
+
         }
         //public void SetDoc(byte [] buf){
         //    doc = new byte[buf.Length];
