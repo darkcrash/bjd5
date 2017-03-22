@@ -47,22 +47,25 @@ namespace Bjd.Utils
         {
             if (before == after)
                 return str;
-            while (true)
-            {
-                int index = str.IndexOf(before);
-                if (index < 0)
-                    break;
-                //\bが指定された場合、ブランクにする
-                if (after == '\b')
-                {
-                    str = str.Substring(0, index) + str.Substring(index + 1);
-                }
-                else
-                {
-                    str = str.Substring(0, index) + after + str.Substring(index + 1);
-                }
-            }
-            return str;
+            //while (true)
+            //{
+            //    int index = str.IndexOf(before);
+            //    if (index < 0)
+            //        break;
+            //    //\bが指定された場合、ブランクにする
+            //    if (after == '\b')
+            //    {
+            //        str = str.Substring(0, index) + str.Substring(index + 1);
+            //    }
+            //    else
+            //    {
+            //        str = str.Substring(0, index) + after + str.Substring(index + 1);
+            //    }
+            //}
+            //return str;
+
+            var result = str.Select(_ => { if (_ == before) return after; return _; }).ToArray();
+            return new string(result);
         }
 
         //string strの中の文字 beforeStr を afterStrに置き換える
@@ -126,7 +129,7 @@ namespace Bjd.Utils
             if (File.Exists(fileName))
             {
                 var enc = System.Text.CodePagesEncodingProvider.Instance.GetEncoding(932);
-                using (var bs = new FileStream(fileName, FileMode.Open,  FileAccess.Read, FileShare.Read))
+                using (var bs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var sr = new StreamReader(bs, enc))
                 {
                     while (true)
@@ -214,7 +217,7 @@ namespace Bjd.Utils
                     goto next;
                 }
                 return new DateTime(0);
-            next:
+                next:
                 var day = Convert.ToInt32(tmp[1]);
                 var hour = Convert.ToInt32(time[0]);
                 var minute = Convert.ToInt32(time[1]);
