@@ -137,13 +137,24 @@ namespace Bjd
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
+            AppendKnowHeader(header);
+            return header;
+        }
+        public OneHeader Append(string key, string val)
+        {
+            var header = new OneHeader(key, val);
+            _ar.Add(header);
+            AppendKnowHeader(header);
+            return header;
+        }
+        private void AppendKnowHeader(OneHeader header)
+        {
             switch (header.KeyUpper)
             {
                 case "CONTENT-LENGTH":
                     ContentLength = header;
                     break;
             }
-            return header;
         }
         public bool Recv(SockTcp sockTcp, int timeout, ILife iLife)
         {

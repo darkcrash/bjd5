@@ -459,7 +459,7 @@ namespace Bjd.Net.Sockets
 
                 if (_socket.Connected)
                 {
-                    return _socket.Send(buffer,SocketFlags.None);
+                    return _socket.Send(buffer, SocketFlags.None);
                 }
             }
             catch (Exception ex)

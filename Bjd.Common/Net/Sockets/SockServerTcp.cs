@@ -67,6 +67,7 @@ namespace Bjd.Net.Sockets
                     _socket = new Socket(this.Family, SocketType.Stream, ProtocolType.Tcp);
                     _socket.Bind(new IPEndPoint(bindIp.IPAddress, port));
                     _socket.Listen(listenMax);
+                    _socket.NoDelay = true;
                 }
                 catch (Exception e)
                 {
@@ -87,7 +88,7 @@ namespace Bjd.Net.Sockets
 
         public SockTcp Select(ILife iLife)
         {
-            Kernel.Logger.TraceInformation($"SockServerTcp.Select");
+            Kernel.Logger.DebugInformation($"SockServerTcp.Select");
             try
             {
                 this.SockState = SockState.Bind;

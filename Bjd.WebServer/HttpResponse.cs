@@ -100,7 +100,7 @@ namespace Bjd.WebServer
 
         public void AddHeader(string key, string val)
         {
-            _sendHeader.Append(key, Encoding.ASCII.GetBytes(val));
+            _sendHeader.Append(key, val);
         }
         //Encoding.ASCII以外でエンコードしたい場合、こちらを使用する
         public void AddHeader(string key, byte[] val)
@@ -114,21 +114,6 @@ namespace Bjd.WebServer
         public bool CreateFromFile(HandlerSelectorResult result, long rangeFrom, long rangeTo)
         {
             ////_kernel.Trace.TraceInformation($"Document.CreateFromFile");
-            //if (File.Exists(fileName))
-            //{
-
-            //    _body.Set(fileName, rangeFrom, rangeTo);
-
-            //    //Ver5.4.0
-            //    var l = _body.Length;
-            //    if (SetRangeTo && rangeFrom == 0)
-            //        l++;
-            //    _sendHeader.Replace("Content-Length", l.ToString());
-            //    _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
-
-            //    return true;
-            //}
-            //return false;
 
             if (!result.FileExists) return false;
 

@@ -49,5 +49,11 @@ namespace Bjd
             Val = val;
         }
 
+        public OneHeader(string key, string val)
+        {
+            Key = key;
+            ValString = val;
+        }
+
     }
 }

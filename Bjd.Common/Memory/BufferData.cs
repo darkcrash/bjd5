@@ -32,7 +32,7 @@ namespace Bjd.Common.Memory
 
         public ArraySegment<byte> GetSegment()
         {
-            return new ArraySegment<byte>(Data, 0, Length);
+            return new ArraySegment<byte>(Data, 0, DataSize);
         }
 
         public ArraySegment<byte> GetSegment(int capacity)
