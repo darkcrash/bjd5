@@ -17,6 +17,8 @@ namespace Bjd.WebServer.Handlers
         private Conf _conf;
         private AclList AclList;
 
+        private bool useEtag;
+
         public DefaultHandler(Kernel kernel, Conf conf, Logger logger)
         {
             _kernel = kernel;
@@ -33,6 +35,8 @@ namespace Bjd.WebServer.Handlers
                 const int sec = 120; // 対象期間(秒)
                 _attackDb = new AttackDb(sec, max);
             }
+
+            useEtag = (bool)_conf.Get("useEtag");
 
         }
 
@@ -73,7 +77,8 @@ namespace Bjd.WebServer.Handlers
             //********************************************************************
             // (1) useEtagがtrueの場合は、送信時にETagを付加する
             // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
-            if ((bool)_conf.Get("useEtag") || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
+            //if ((bool)_conf.Get("useEtag") || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
+            if (useEtag || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
             {
                 //Ver5.1.5
                 //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
@@ -98,7 +103,7 @@ namespace Bjd.WebServer.Handlers
                         return true;
                     }
                 }
-                if ((bool)_conf.Get("useEtag"))
+                if (useEtag)
                     context.Response.AddHeader("ETag", etagStr);
             }
             //********************************************************************

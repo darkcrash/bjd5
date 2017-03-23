@@ -26,7 +26,7 @@ namespace Bjd.WebServer
             context.Request = new HttpRequest(Kernel, Logger, Connection);
             context.Header = new HttpHeader();
             context.InputStream = null;
-            context.OutputStream = new WebStream(-1);
+            context.OutputStream = null;
             return context;
         }
 

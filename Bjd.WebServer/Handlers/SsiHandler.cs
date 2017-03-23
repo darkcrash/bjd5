@@ -36,7 +36,7 @@ namespace Bjd.WebServer.Handlers
 
             //SSI
             var ssi = new Ssi(_kernel, Logger, _conf, connection.Connection, context.Request, context.Header);
-            if (!ssi.Exec(result, env, context.OutputStream))
+            if (!ssi.Exec(result, env, out context.OutputStream))
             {
                 // エラー出力
                 Logger.Set(LogKind.Error, connection.Connection, 22, MLang.GetString(context.OutputStream.GetBytes()));

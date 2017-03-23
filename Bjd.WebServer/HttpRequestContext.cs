@@ -31,8 +31,10 @@ namespace Bjd.WebServer
 
             if (InputStream != null)
                 InputStream.Dispose();
+            InputStream = null;
             if (OutputStream != null)
                 OutputStream.Dispose();
+            OutputStream = null;
         }
     }
 }

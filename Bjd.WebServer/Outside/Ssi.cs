@@ -41,7 +41,7 @@ namespace Bjd.WebServer.Outside
             _recvHeader = recvHeader;
         }
 
-        public bool Exec(HandlerSelectorResult result, Env env, WebStream output)
+        public bool Exec(HandlerSelectorResult result, Env env, out WebStream output)
         {
             _target = result;
 
@@ -67,6 +67,7 @@ namespace Bjd.WebServer.Outside
                 }
                 //sr.Close();
             }
+            output = new WebStream(-1);
             output.Add(encoding.GetBytes(sb.ToString()));
             return true;
         }

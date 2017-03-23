@@ -11,10 +11,10 @@ namespace Bjd.WebServer.Outside
 
         public bool Exec(HandlerSelectorResult result, string param, Env env, WebStream inputStream, out WebStream outputStream, int cgiTimeout)
         {
+            outputStream = new WebStream(-1);
             var cmd = result.CgiCmd;
             if (cmd == null)
             {
-                outputStream = new WebStream(-1);
                 outputStream.Add(Encoding.ASCII.GetBytes("cmd==null"));
                 return false;
             }

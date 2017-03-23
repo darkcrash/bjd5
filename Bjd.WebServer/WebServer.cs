@@ -40,6 +40,11 @@ namespace Bjd.WebServer
 
         private CultureInfo _culture = new CultureInfo("en-US");
 
+        private int timeOut;
+        private bool useDot;
+        private bool useDetailsLog;
+        private bool useExpansion;
+
         //通常のServerThreadの子クラスと違い、オプションはリストで受け取る
         //親クラスは、そのリストの0番目のオブジェクトで初期化する
 
@@ -116,8 +121,9 @@ namespace Bjd.WebServer
             _Selector = new HandlerSelector(_kernel, _conf, Logger);
             _contentType = new HttpContentType(_conf);
             _authorization = new Authorization(_kernel, _conf, Logger);
-
+            LoadConfig();
         }
+
         //終了処理
         new public void Dispose()
         {
@@ -127,6 +133,15 @@ namespace Bjd.WebServer
             }
             base.Dispose();
         }
+
+        private void LoadConfig()
+        {
+            timeOut = (int)_conf.Get("timeOut");
+            useDot = (bool)_conf.Get("useDot");
+            useDetailsLog = (bool)_conf.Get("useDetailsLog");
+            useExpansion = (bool)_conf.Get("useExpansion");
+        }
+
         //スレッド開始処理
         override protected bool OnStartServer()
         {
@@ -193,7 +208,7 @@ namespace Bjd.WebServer
             }
 
             //ヘッダ取得（内部データは初期化される）
-            if (!request.Header.Recv(connection.Connection, (int)_conf.Get("timeOut"), this))
+            if (!request.Header.Recv(connection.Connection, timeOut, this))
                 return false;
 
             {
@@ -236,7 +251,7 @@ namespace Bjd.WebServer
                             {
                                 len = 51200000;
                             }
-                            var b = connection.Connection.Recv((int)len, (int)_conf.Get("timeOut"), this);
+                            var b = connection.Connection.Recv((int)len, timeOut, this);
                             if (!request.InputStream.Add(b))
                             {
                                 errorCount++;//エラー蓄積
@@ -339,7 +354,7 @@ namespace Bjd.WebServer
             // 送信ヘッダの追加
             //***************************************************************
             // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
-            if ((bool)_conf.Get("useExpansion"))
+            if (useExpansion)
             {
                 if (request.Header.GetVal("Host") != null)
                 {
@@ -488,7 +503,8 @@ namespace Bjd.WebServer
                             //オプション及びロガーを再初期化する
                             //OneOption = op;
                             _conf = new Conf(op);
-                            Logger = _kernel.CreateLogger(op.NameTag, (bool)_conf.Get("useDetailsLog"), this);
+                            LoadConfig();
+                            Logger = _kernel.CreateLogger(op.NameTag, useDetailsLog, this);
                         }
                         return;
                     }
@@ -531,7 +547,7 @@ namespace Bjd.WebServer
 
                 // ..を参照するパスの排除
             }
-            else if (!(bool)_conf.Get("useDot") && 0 <= request.Uri.IndexOf(".."))
+            else if (!useDot && 0 <= request.Uri.IndexOf(".."))
             {
                 Logger.Set(LogKind.Secure, sockTcp, 13, "URI=" + request.Uri);//.. が含まれるリクエストは許可されていません。
                 responseCode = 403;
