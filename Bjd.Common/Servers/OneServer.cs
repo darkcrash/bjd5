@@ -26,6 +26,7 @@ namespace Bjd.Servers
         protected Conf _conf;
         protected bool IsJp;
         protected int TimeoutSec;//sec
+        protected bool useResolve;
 
         //Ver5.9.2 Java fix
         protected Ssl ssl = null;
@@ -135,6 +136,7 @@ namespace Bjd.Servers
             }
 
             TimeoutSec = (int)_conf.Get("timeOut");
+            useResolve = (bool)_conf.Get("useResolve");
 
         }
 
@@ -482,7 +484,7 @@ namespace Bjd.Servers
             //System.Threading.Thread.CurrentThread.Name = this.GetType().FullName;
 
             //クライアントのホスト名を逆引きする
-            sockObj.Resolve((bool)_conf.Get("useResolve"), Logger);
+            sockObj.Resolve(useResolve, Logger);
 
             //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
