@@ -37,7 +37,6 @@ namespace Bjd.Servers
 
         // 子スレッド管理 - 排他制御オブジェクト
         private readonly object SyncObj1 = new object();
-        private readonly object SyncObj2 = new object();
         private List<SockObj> _childs = new List<SockObj>();
 
         // 子スレッドコレクション
@@ -425,12 +424,7 @@ namespace Bjd.Servers
         private bool Increment()
         {
             if (_count >= _multiple) return true;
-
-            lock (SyncObj2)
-            {
-                //Interlocked.Increment(ref _count);
-                _count++;
-            }
+            System.Threading.Interlocked.Increment(ref _count);
             if (_count > 0) _childNone.Reset();
             return false;
         }
@@ -438,11 +432,7 @@ namespace Bjd.Servers
 
         private void Decrement()
         {
-            lock (SyncObj2)
-            {
-                _count--;
-                //Interlocked.Decrement(ref _count);
-            }
+            System.Threading.Interlocked.Decrement(ref _count);
             if (_count == 0) _childNone.Set();
         }
 
