@@ -86,6 +86,39 @@ namespace Bjd.Net.Sockets
             }
         }
 
+        public Task<SockTcp> SelectAsync(ILife iLife)
+        {
+            Kernel.Logger.DebugInformation($"SockServerTcp.Select");
+            try
+            {
+                this.SockState = SockState.Bind;
+                while (true)
+                {
+                    if (_socket == null) return null;
+                    if (this.IsCancel) return null;
+                    if (!iLife.IsLife()) return null;
+
+                    if (_socket.Poll(1000000, SelectMode.SelectRead))
+                    {
+                        if (_socket == null) return null;
+                        if (this.IsCancel) return null;
+                        var tTcp = _socket.AcceptAsync();
+                        return tTcp.ContinueWith<SockTcp>((t) => new SockTcp(Kernel, _ssl, t.Result), this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Kernel.Logger.TraceInformation("SockServerTcp.Select OperationCanceledException");
+            }
+            catch (Exception ex)
+            {
+                Kernel.Logger.TraceError(ex.Message);
+                Kernel.Logger.TraceError(ex.StackTrace);
+            }
+            return null;
+        }
+
         public SockTcp Select(ILife iLife)
         {
             Kernel.Logger.DebugInformation($"SockServerTcp.Select");
@@ -119,7 +152,6 @@ namespace Bjd.Net.Sockets
             }
             return null;
         }
-
 
     }
 

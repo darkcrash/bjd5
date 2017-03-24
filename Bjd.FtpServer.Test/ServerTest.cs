@@ -77,8 +77,8 @@ namespace FtpServerTest
             var port = _fixture.port;
 
             //クライアント起動
-            _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 1, null);
-            _v6Cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 1, null);
+            _v4Cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 5, null);
+            _v6Cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 5, null);
             //クライアントの接続が完了するまで、少し時間がかかる
             //Thread.Sleep(10);
 

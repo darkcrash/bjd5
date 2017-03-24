@@ -37,7 +37,11 @@ namespace Bjd.Servers
 
         // 子スレッド管理 - 排他制御オブジェクト
         private readonly object SyncObj1 = new object();
-        private List<SockObj> _childs = new List<SockObj>();
+        //private List<SockObj> _childs = new List<SockObj>();
+
+        private const int _cArrayMax = 1024;
+        private int _cArrayIndex = 0;
+        private SockObj[] _cArray = new SockObj[_cArrayMax];
 
         // 子スレッドコレクション
         private int _count = 0;
@@ -171,11 +175,18 @@ namespace Bjd.Servers
             if (_sockServerUdp != null) _sockServerUdp.Close();
 
             // 子スレッドの停止
-            foreach (var o in _childs.ToArray())
+            //foreach (var o in _childs.ToArray())
+            //{
+            //    try { o.Cancel(); }
+            //    catch { }
+            //}
+            foreach (var o in _cArray)
             {
+                if (o == null) continue;
                 try { o.Cancel(); }
                 catch { }
             }
+
 
             // クライアント接続終了まで待機する
             // 全部の子スレッドが終了するのを待つ
@@ -263,14 +274,14 @@ namespace Bjd.Servers
 
         private void _sockServerUdp_SocketStateChanged(object sender, EventArgs e)
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}._sockServerUdp_SocketStateChanged  ");
+            _kernel.Logger.DebugInformation($"{this.GetType().FullName}._sockServerUdp_SocketStateChanged  ");
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerUdp.SocketStateChanged -= _sockServerUdp_SocketStateChanged;
         }
 
         private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}._sockServerTcp_SocketStateChanged  ");
+            _kernel.Logger.DebugInformation($"{this.GetType().FullName}._sockServerTcp_SocketStateChanged  ");
             if (_sockServerTcp.SockState == SockState.Idle) return;
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
@@ -291,28 +302,84 @@ namespace Bjd.Servers
                 return;
             }
 
+            var continueOptions = TaskContinuationOptions.ExecuteSynchronously |
+                                    TaskContinuationOptions.NotOnFaulted |
+                                    TaskContinuationOptions.NotOnCanceled;
+
             // 生存してる限り実行し続ける
             while (IsLife())
             {
-                var child = _sockServerTcp.Select(this);
+                //var child = _sockServerTcp.Select(this);
+
+                //// Nullが返されたときは終了する
+                //if (child == null)
+                //    break;
+
+                //// 子タスクで処理させる
+                //var t = new Task(
+                //    () =>
+                //    {
+                //        int? idx = null;
+                //        try
+                //        {
+                //            idx = this.StartTask(child);
+
+                //            // 同時接続数チェック
+                //            if (Increment())
+                //            {
+                //                // 同時接続数を超えたのでリクエストをキャンセルします
+                //                _kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                //                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                //                return;
+                //            }
+
+                //            try
+                //            {
+                //                // ACL制限のチェック
+                //                if (AclCheck(child) == AclKind.Deny)
+                //                {
+                //                    return;
+                //                }
+                //                // 受信開始
+                //                child.BeginReceive();
+                //                // 各実装へ
+                //                this.SubThread(child);
+                //            }
+                //            finally
+                //            {
+                //                Decrement();
+                //            }
+
+                //        }
+                //        finally
+                //        {
+                //            RemoveTask(idx, child);
+                //        }
+                //    }, _cancelToken, TaskCreationOptions.LongRunning);
+
+                //t.Start();
+
+                var childTask = _sockServerTcp.SelectAsync(this);
 
                 // Nullが返されたときは終了する
-                if (child == null)
+                if (childTask == null)
                     break;
 
                 // 子タスクで処理させる
-                var t = new Task(
-                    () =>
+                var t = childTask.ContinueWith(
+                    (Task<SockTcp> b) =>
                     {
+                        var child = b.Result;
+                        int? idx = null;
                         try
                         {
-                            this.StartTask(child);
+                            idx = this.StartTask(child);
 
                             // 同時接続数チェック
                             if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
-                                _kernel.Logger.TraceInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                                _kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
                                 Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                                 return;
                             }
@@ -337,11 +404,9 @@ namespace Bjd.Servers
                         }
                         finally
                         {
-                            RemoveTask(child);
+                            RemoveTask(idx, child);
                         }
-                    }, _cancelToken, TaskCreationOptions.LongRunning);
-
-                t.Start();
+                    }, _cancelToken, continueOptions, TaskScheduler.Default);
 
             }
 
@@ -373,15 +438,16 @@ namespace Bjd.Servers
                 var t = new Task(
                     () =>
                     {
+                        int? idx = null;
                         try
                         {
-                            this.StartTask(child);
+                            idx = this.StartTask(child);
 
                             // 同時接続数チェック
                             if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
-                                _kernel.Logger.TraceInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
+                                _kernel.Logger.DebugInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
                                 Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                                 return;
                             }
@@ -404,7 +470,7 @@ namespace Bjd.Servers
                         }
                         finally
                         {
-                            RemoveTask(child);
+                            RemoveTask(idx, child);
                         }
 
                     }, _cancelToken, TaskCreationOptions.LongRunning);
@@ -413,12 +479,19 @@ namespace Bjd.Servers
             }
 
         }
-        private void StartTask(SockObj o)
+        private int StartTask(SockObj o)
         {
-            lock (SyncObj1)
+            //lock (SyncObj1)
+            //{
+            //    _childs.Add(o);
+            //}
+            if (_cArrayIndex >= int.MaxValue)
             {
-                _childs.Add(o);
+                _cArrayIndex = _cArrayIndex % _cArrayMax;
             }
+            var idx = Interlocked.Increment(ref _cArrayIndex) % _cArrayMax;
+            _cArray[idx] = o;
+            return idx;
         }
 
         private bool Increment()
@@ -437,18 +510,22 @@ namespace Bjd.Servers
         }
 
 
-        private void RemoveTask(SockObj child)
+        private void RemoveTask(int? idx, SockObj child)
         {
+            if (idx.HasValue)
+            {
+                _cArray[idx.Value] = null;
+            }
+
             try { child.Close(); }
             catch { }
             try { child.Dispose(); }
             catch { }
 
-            lock (SyncObj1)
-            {
-                _childs.Remove(child);
-            }
-
+            //lock (SyncObj1)
+            //{
+            //    _childs.Remove(child);
+            //}
         }
 
         //ACL制限のチェック
