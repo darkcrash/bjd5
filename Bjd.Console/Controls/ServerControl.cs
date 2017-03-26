@@ -18,7 +18,7 @@ namespace Bjd.Console.Controls
         private int RefreshInterval = 1000;
         private bool isRefreshInterval = false;
         private Task RefreshIntervalTask = Task.CompletedTask;
-        private ManualResetEventSlim RefreshIntervalSignal = new ManualResetEventSlim(false);
+        private ManualResetEventSlim RefreshIntervalSignal = new ManualResetEventSlim(false, 0);
         private CancellationTokenSource RefreshIntervalCancel;
 
         private List<OneServer> Servers;

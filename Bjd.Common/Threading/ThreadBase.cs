@@ -21,8 +21,8 @@ namespace Bjd.Threading
 
         private Thread _t;
         private ThreadBaseKind _threadBaseKind = ThreadBaseKind.Before;
-        private ManualResetEventSlim RunningWait = new ManualResetEventSlim(false);
-        private ManualResetEventSlim AfterWait = new ManualResetEventSlim(false);
+        private ManualResetEventSlim RunningWait = new ManualResetEventSlim(false, 0);
+        private ManualResetEventSlim AfterWait = new ManualResetEventSlim(false, 0);
 
         public ThreadBaseKind ThreadBaseKind
         {

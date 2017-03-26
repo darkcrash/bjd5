@@ -171,7 +171,7 @@ namespace Bjd.Net.Sockets
                 {
                     receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                 }
-                receiveCompleteTask = receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
+                receiveCompleteTask = receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
             catch (Exception ex)
             {

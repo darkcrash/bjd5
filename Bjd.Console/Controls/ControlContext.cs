@@ -12,7 +12,7 @@ namespace Bjd.Console.Controls
     {
         System.Threading.Tasks.Task KeyinputTask;
         System.Threading.Tasks.Task OutputTask;
-        System.Threading.ManualResetEventSlim refresh = new System.Threading.ManualResetEventSlim(false);
+        System.Threading.ManualResetEventSlim refresh = new System.Threading.ManualResetEventSlim(false, 0);
 
         private Kernel _Kernel;
         private LogInteractiveConsoleService _LogService;

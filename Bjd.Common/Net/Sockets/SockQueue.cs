@@ -38,7 +38,8 @@ namespace Bjd.Net.Sockets
         private const int max = 2000000; //保持可能な最大数
         //private const int max = 4000000;
 
-        ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
+        //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
+        ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
 
         public int Max { get { return max; } }
 
@@ -102,6 +103,7 @@ namespace Bjd.Net.Sockets
             }
             var sp = _totallength;
             if (sp > Space) sp = Space;
+            if (sp > 65536) sp = 65536;
             _current = BufferPool.Get(sp);
             return _current.GetSegment(Space);
         }

@@ -45,7 +45,7 @@ namespace Bjd.Servers
 
         // 子スレッドコレクション
         private int _count = 0;
-        private ManualResetEventSlim _childNone = new ManualResetEventSlim(true);
+        private ManualResetEventSlim _childNone = new ManualResetEventSlim(true, 0);
 
         // 同時接続数
         private readonly int _port;

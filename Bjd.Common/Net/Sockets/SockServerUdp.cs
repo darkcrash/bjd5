@@ -123,7 +123,7 @@ namespace Bjd.Net.Sockets
         }
 
         Queue<SockUdp> sockQueue = new Queue<SockUdp>();
-        ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false);
+        ManualResetEventSlim WaitSelect = new ManualResetEventSlim(false, 0);
 
         public SockUdp Select(ILife iLife)
         {

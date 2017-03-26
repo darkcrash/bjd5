@@ -8,8 +8,6 @@ namespace Bjd.Common.Memory
     {
         public static readonly BufferData Empty = new BufferData(0, null);
         public byte[] Data;
-        //public int StartPos;
-        //public int EndPos;
         public int DataSize;
         public readonly int Length;
         private BufferPool _pool;
