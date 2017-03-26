@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
@@ -93,14 +94,15 @@ namespace Bjd.WebServer
             }
             else
             {
-                using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan))
+                var bufferSize = 32768;
+                var opt = FileOptions.SequentialScan;
+                //using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan))
+                //using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, opt))
+                using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
                 {
-                    using (var buf = Bjd.Common.Memory.BufferPool.Get(fs.Length))
-                    //var bufSize = (fs.Length > bufferSize ? bufferSizeL : bufferSize);
-                    //using (var br = new BinaryReader(fs))
+                    using (var buf = Bjd.Common.Memory.BufferPool.Get(bufferSize))
                     {
                         var bufSize = buf.Length;
-                        //_doc = new byte[bufSize];
                         fs.Seek(_rangeFrom, SeekOrigin.Begin);
                         var start = _rangeFrom;
                         while (iLife.IsLife())
@@ -111,13 +113,10 @@ namespace Bjd.WebServer
                             if (size <= 0)
                                 break;
 
-                            //int len = br.Read(_doc, 0, (int)size);
-                            //int len = br.Read(buf.Data, 0, (int)size);
                             int len = fs.Read(buf.Data, 0, (int)size);
                             if (len <= 0)
                                 break;
 
-                            //var segment = new ArraySegment<byte>(_doc, 0, len);
                             var segment = new ArraySegment<byte>(buf.Data, 0, len);
 
                             if (encode)
@@ -134,15 +133,12 @@ namespace Bjd.WebServer
                                     return false;
                                 }
                             }
-                            //start += _doc.Length;
-                            start += bufSize;
+                            start += len;
                             if (_rangeTo - start <= 0)
                                 break;
-                            //Thread.Sleep(1);
+
                         }
-                        //br.Close();
                     }
-                    //fs.Close();
                 }
             }
             return true;

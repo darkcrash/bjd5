@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Bjd.Net
 {
@@ -59,6 +60,18 @@ namespace Bjd.Net
             _stream.Write(buf.Array, buf.Offset, buf.Count);
             return buf.Count;
         }
+
+        public int Write(IList<ArraySegment<byte>> buf)
+        {
+            var s = 0;
+            foreach(var b in buf)
+            {
+                _stream.Write(b.Array, b.Offset, b.Count);
+                s += b.Count;
+            }
+            return s;
+        }
+
 
         public Task<int> ReadAsync(ArraySegment<byte> buf, CancellationToken token)
         {

@@ -16,6 +16,14 @@ namespace Bjd.WebServer
             return "";
         }
 
+        public static string Etag(Handlers.HandlerSelectorResult result)
+        {
+            if (result != null)
+                return string.Format("\"{0:x}-{1:x}\"", result.FileSize, (result.LastWriteTimeUtc.Ticks / 10000000));
+            return "";
+        }
+
+
         public static string StatusMessage(int code)
         {
             var statusMessage = "";

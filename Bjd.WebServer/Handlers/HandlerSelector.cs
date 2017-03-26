@@ -7,6 +7,8 @@ using Bjd.Logs;
 using Bjd.Configurations;
 using Bjd.Utils;
 using Bjd.WebServer.WebDav;
+using System.Collections.Concurrent;
+using Bjd.Common.IO;
 
 namespace Bjd.WebServer.Handlers
 {
@@ -24,7 +26,7 @@ namespace Bjd.WebServer.Handlers
 
         private CgiHandler _HandlerCgi;
         private DirectoryListHandler _HandlerDirectoryList;
-        private DefaultHandler _HandlerDefault;
+        private StaticFileHandler _HandlerDefault;
         private MoveHandler _HandlerMove;
         private NotFoundHandler _HandlerNotFound;
         private SsiHandler _HandlerSsi;
@@ -65,7 +67,7 @@ namespace Bjd.WebServer.Handlers
             }
 
             _HandlerCgi = new CgiHandler(kernel, conf);
-            _HandlerDefault = new DefaultHandler(kernel, conf, logger);
+            _HandlerDefault = new StaticFileHandler(kernel, conf, logger);
             _HandlerDirectoryList = new DirectoryListHandler();
             _HandlerMove = new MoveHandler();
             _HandlerNotFound = new NotFoundHandler();
@@ -439,7 +441,6 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //Uriでファイル名が指定されていない場合で、当該ディレクトリにwelcomeFileNameが存在する場合
             //ファイル名として使用する
-            bool filePathReplaced = false;
             if (result.WebDavKind == WebDavKind.Non)
             {
                 //Ver5.1.3
@@ -447,20 +448,33 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (Path.GetFileName(result.FullPath) == "")
                     {
+                        ////var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
+                        ////foreach (string welcomeFileName in tmp)
+                        //foreach (string welcomeFileName in welcomeFileNames)
+                        //{
+                        //    //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
+                        //    var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
+                        //    if (!File.Exists(newPath)) continue;
+
+                        //    result.ResetFullPath(newPath);
+                        //    result.FileExists = true;
+                        //    filePathReplaced = true;
+                        //    _kernel.Logger.DebugInformation($"Target.Init welcomeFileName {result.FullPath}");
+                        //    break;
+                        //}
                         //var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
                         //foreach (string welcomeFileName in tmp)
                         foreach (string welcomeFileName in welcomeFileNames)
                         {
                             //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
                             var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
-                            if (!File.Exists(newPath)) continue;
+                            if (!CachedFileExists.ExistsFile(newPath)) continue;
 
-                            result.ResetFullPath(newPath);
-                            result.FileExists = true;
-                            filePathReplaced = true;
+                            result.ResetFullPath(newPath, true);
                             _kernel.Logger.DebugInformation($"Target.Init welcomeFileName {result.FullPath}");
                             break;
                         }
+
                     }
                 }
                 catch (Exception ex)
@@ -474,10 +488,6 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             //ターゲットはファイルとして存在するか
             /*************************************************/
-            if (!filePathReplaced)
-            {
-                result.FileExists = File.Exists(result.FullPath);
-            }
             if (!result.FileExists)
             {
                 //ディレクトリとして存在しない場合
@@ -568,7 +578,7 @@ namespace Bjd.WebServer.Handlers
                 //ファイルアトリビュートの取得
                 //result.Attr = File.GetAttributes(result.FullPath);
                 //ファイルインフォメーションの取得
-                result.FileInfo = new FileInfo(result.FullPath);
+                //result.FileInfo = new FileInfo(result.FullPath);
 
                 //***************************************************************
                 //  隠し属性のファイルへのアクセス制御
@@ -587,29 +597,7 @@ namespace Bjd.WebServer.Handlers
 
         }
 
-        //リストにヒットした場合、uri及びドキュメントルートを書き換える
-        //Ver5.0.0-a13修正
-        /*
-         * bool Aliase(Dat2 db) {
-            int index = uri.Substring(1).IndexOf('/');//先頭の'/'以降で最初に現れる'/'を検索する
-            if (0 < index) {
-                string topDir = uri.Substring(1, index);
-                foreach (OneLine oneLine in db.Lines) {
-                    if (oneLine.Enabled) {
-                        string name = (string)oneLine.ValList[0].Obj;
-                        string dir = (string)oneLine.ValList[1].Obj;
-                        if (name.ToLower() == topDir.ToLower()) {
-                            DocumentRoot = dir;
-                            uri = uri.Substring(index);
-                            return true;//変換（ヒット）した
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-         * */
-
     }
+
 }
 

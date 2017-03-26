@@ -21,7 +21,6 @@ namespace Bjd.WebServer.Handlers
             PhysicalRootPath = "";
             TargetKind = HandlerKind.Non;
             _Attr = null;
-            FileInfo = null;
             CgiCmd = "";
             Uri = null;
         }
@@ -30,9 +29,21 @@ namespace Bjd.WebServer.Handlers
         {
             _FullPath = path;
             _Attr = null;
-            FileInfo = null;
+            _LastWriteTimeUtc = null;
+            _FileInfo = null;
+            _FileSize = null;
+            _FileExists = null;
             _Ext = Path.GetExtension(_FullPath);
-
+        }
+        internal void ResetFullPath(string path, bool exists)
+        {
+            _FullPath = path;
+            _Attr = null;
+            _LastWriteTimeUtc = null;
+            _FileInfo = null;
+            _FileSize = null;
+            _FileExists = exists;
+            _Ext = Path.GetExtension(_FullPath);
         }
 
         private string _FullPath;
@@ -50,18 +61,88 @@ namespace Bjd.WebServer.Handlers
             {
                 if (!_Attr.HasValue)
                 {
-                    _Attr = File.GetAttributes(FullPath);
+                    //_Attr = Bjd.Common.IO.CachedFileAttributes.GetAttributes(FullPath);
+                    _Attr = FileInfo.Attributes;
                 }
                 return _Attr.Value;
             }
         }
         public string Ext { get => _Ext; }
         //ファイルのアトリビュート
-        public FileInfo FileInfo { get; internal set; }//ファイルインフォメーション
         public string CgiCmd { get; internal set; }//CGI実行プログラム
         public string Uri { get; internal set; }
         public IHandler Handler { get; internal set; }
-        public bool FileExists { get; internal set; }
+
+        private bool? _FileExists;
+        public bool FileExists
+        {
+            get
+            {
+                if (!_FileExists.HasValue)
+                {
+                    _FileExists = Bjd.Common.IO.CachedFileExists.ExistsFile(_FullPath);
+                }
+                return _FileExists.Value;
+            }
+        }
+
+
+        private DateTime? _LastWriteTimeUtc;
+        public DateTime LastWriteTimeUtc
+        {
+            get
+            {
+                if (!_LastWriteTimeUtc.HasValue)
+                {
+                    //_LastWriteTimeUtc = System.IO.File.GetLastWriteTimeUtc(_FullPath);
+                    _LastWriteTimeUtc = FileInfo.LastWriteTimeUtc;
+                }
+                return _LastWriteTimeUtc.Value;
+            }
+        }
+
+        private DateTime? _LastWriteTime;
+        public DateTime LastWriteTime
+        {
+            get
+            {
+                if (!_LastWriteTime.HasValue)
+                {
+                    //_LastWriteTime = System.IO.File.GetLastWriteTime(_FullPath);
+                    _LastWriteTime = FileInfo.LastWriteTime;
+                }
+                return _LastWriteTime.Value;
+            }
+        }
+
+        private FileInfo _FileInfo;
+        private FileInfo FileInfo
+        {
+            get
+            {
+                if (_FileInfo == null)
+                {
+                    _FileInfo = Bjd.Common.IO.CachedFileInfo.GetFileInfo(_FullPath);
+                }
+                return _FileInfo;
+            }
+        }
+
+        private long? _FileSize;
+        public long FileSize
+        {
+            get
+            {
+                if (!_FileSize.HasValue)
+                {
+                    _FileSize = FileInfo.Length;
+                }
+                return _FileSize.Value;
+            }
+        }
+
+
+
     }
 }
 

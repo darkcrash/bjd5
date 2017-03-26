@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bjd.WebServer.Handlers
 {
-    internal class DefaultHandler : IHandler
+    internal class StaticFileHandler : IHandler
     {
         readonly AttackDb _attackDb;//自動拒否
         private Kernel _kernel;
@@ -19,7 +19,7 @@ namespace Bjd.WebServer.Handlers
 
         private bool useEtag;
 
-        public DefaultHandler(Kernel kernel, Conf conf, Logger logger)
+        public StaticFileHandler(Kernel kernel, Conf conf, Logger logger)
         {
             _kernel = kernel;
             _conf = conf;
@@ -54,7 +54,7 @@ namespace Bjd.WebServer.Handlers
             if (context.Header.GetVal("If_Modified_Since") != null)
             {
                 var dt = Util.Str2Time(context.Header.GetVal("If-Modified-Since"));
-                if (result.FileInfo.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
+                if (result.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 304;
                     //goto SEND;
@@ -64,14 +64,14 @@ namespace Bjd.WebServer.Handlers
             if (context.Header.GetVal("If_Unmodified_Since") != null)
             {
                 var dt = Util.Str2Time(context.Header.GetVal("If_Unmodified_Since"));
-                if (result.FileInfo.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
+                if (result.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 412;
                     //goto SEND;
                     return true;
                 }
             }
-            context.Response.AddHeader("Last-Modified", Util.UtcTime2Str(result.FileInfo.LastWriteTimeUtc));
+            context.Response.AddHeader("Last-Modified", Util.UtcTime2Str(result.LastWriteTimeUtc));
             //********************************************************************
             //ETag処理
             //********************************************************************
@@ -82,7 +82,7 @@ namespace Bjd.WebServer.Handlers
             {
                 //Ver5.1.5
                 //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
-                var etagStr = WebServerUtil.Etag(result.FileInfo);
+                var etagStr = WebServerUtil.Etag(result);
                 string str;
                 if (null != (str = context.Header.GetVal("If-Match")))
                 {
@@ -111,7 +111,7 @@ namespace Bjd.WebServer.Handlers
             //********************************************************************
             context.Response.AddHeader("Accept-Range", "bytes");
             var rangeFrom = 0L;//デフォルトは最初から
-            var rangeTo = result.FileInfo.Length;//デフォルトは最後まで（ファイルサイズ）
+            var rangeTo = result.FileSize;//デフォルトは最後まで（ファイルサイズ）
             if (context.Header.GetVal("Range") != null)
             {//レンジ指定のあるリクエストの場合
                 var range = context.Header.GetVal("Range");
@@ -151,9 +151,9 @@ namespace Bjd.WebServer.Handlers
                                 {
                                     //Ver5.5.9
                                     rangeTo = Convert.ToInt64(tmp[1]);
-                                    if (result.FileInfo.Length <= rangeTo)
+                                    if (result.FileSize <= rangeTo)
                                     {
-                                        rangeTo = result.FileInfo.Length - 1;
+                                        rangeTo = result.FileSize - 1;
                                     }
                                     else
                                     {
@@ -163,7 +163,7 @@ namespace Bjd.WebServer.Handlers
                             }
                             else
                             {// bytes=3- 3～最後まで
-                                rangeTo = result.FileInfo.Length - 1;
+                                rangeTo = result.FileSize - 1;
                                 rangeFrom = Convert.ToInt64(tmp[0]);
                             }
                         }
@@ -172,7 +172,7 @@ namespace Bjd.WebServer.Handlers
                             if (tmp[1] != "")
                             {// bytes=-3 最後から3バイト
                                 var len = Convert.ToInt64(tmp[1]);
-                                rangeTo = result.FileInfo.Length - 1;
+                                rangeTo = result.FileSize - 1;
                                 rangeFrom = rangeTo - len + 1;
                                 if (rangeFrom < 0)
                                     rangeFrom = 0;
@@ -183,7 +183,7 @@ namespace Bjd.WebServer.Handlers
                         if (rangeFrom <= rangeTo)
                         {
                             //正常に範囲を取得できた場合、事後Rangeモードで動作する
-                            context.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileInfo.Length));
+                            context.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
                             context.ResponseCode = 206;
                         }
                     }

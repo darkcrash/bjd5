@@ -9,11 +9,15 @@ using Bjd.Traces;
 using Bjd.Utils;
 using Bjd.Threading;
 using Bjd.Common.Memory;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Bjd.Net.Sockets
 {
     public class SockTcp : SockObj
     {
+
+        private static readonly byte[] CrLf = new byte[] { 0x0d, 0x0a };
 
         private Socket _socket;
         private Ssl _ssl;
@@ -355,16 +359,6 @@ namespace Bjd.Net.Sockets
             Kernel.Logger.DebugInformation($"{hash} SockTcp.Send {length}");
             try
             {
-                if (buf.Length != length)
-                {
-                    var b = new byte[length];
-                    Buffer.BlockCopy(buf, 0, b, 0, length);
-                    Trace(TraceKind.Send, b, false);
-                }
-                else
-                {
-                    Trace(TraceKind.Send, buf, false);
-                }
                 //Ver5.9.2 Java fix
                 if (isSsl)
                 {
@@ -381,6 +375,53 @@ namespace Bjd.Net.Sockets
                 return -1;
             }
         }
+        public int Send(IList<ArraySegment<byte>> buffers)
+        {
+#if DEBUG
+            var length = buffers.Sum(_ => _.Count);
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.Send IList<ArraySegment<byte>> {length}");
+#endif
+            try
+            {
+                //Ver5.9.2 Java fix
+                if (isSsl)
+                {
+                    return _oneSsl.Write(buffers);
+                }
+                else
+                {
+                    return _socket.Send(buffers, SocketFlags.None);
+                }
+            }
+            catch (Exception e)
+            {
+                SetException(e);
+                return -1;
+            }
+        }
+
+        public int Send(BufferData buf)
+        {
+            Kernel.Logger.DebugInformation($"{hash} SockTcp.Send {buf.DataSize}");
+            try
+            {
+                //Ver5.9.2 Java fix
+                if (isSsl)
+                {
+                    return _oneSsl.Write(buf.Data, buf.DataSize);
+                }
+                else
+                {
+                    return _socket.Send(buf.Data, buf.DataSize, SocketFlags.None);
+                }
+            }
+            catch (Exception e)
+            {
+                SetException(e);
+                return -1;
+            }
+        }
+
 
         public int Send(byte[] buf)
         {
@@ -391,11 +432,13 @@ namespace Bjd.Net.Sockets
         //内部でCRLFの２バイトが付かされる
         public int LineSend(byte[] buf)
         {
-            var b = new byte[buf.Length + 2];
-            Buffer.BlockCopy(buf, 0, b, 0, buf.Length);
-            b[buf.Length] = 0x0d;
-            b[buf.Length + 1] = 0x0a;
-            return Send(b);
+            //var b = new byte[buf.Length + 2];
+            //Buffer.BlockCopy(buf, 0, b, 0, buf.Length);
+            //b[buf.Length] = 0x0d;
+            //b[buf.Length + 1] = 0x0a;
+            //return Send(b);
+            var d = new[] { new ArraySegment<byte>(buf), new ArraySegment<byte>(CrLf) };
+            return Send(d);
         }
 
         //１行のString送信 (\r\nが付加される)
@@ -496,8 +539,6 @@ namespace Bjd.Net.Sockets
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
         public int SendUseEncode(byte[] buf)
         {
-            //テキストである可能性があるのでエンコード処理は省略できない
-            Trace(TraceKind.Send, buf, false); //noEncode = false テキストである可能性があるのでエンコード処理は省略できない
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
@@ -505,8 +546,6 @@ namespace Bjd.Net.Sockets
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
         public int SendUseEncode(ArraySegment<byte> buf)
         {
-            //テキストである可能性があるのでエンコード処理は省略できない
-            Trace(TraceKind.Send, buf, false); //noEncode = false テキストである可能性があるのでエンコード処理は省略できない
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
@@ -563,16 +602,12 @@ namespace Bjd.Net.Sockets
         //【送信】バイナリ
         public int SendNoEncode(byte[] buf)
         {
-            //バイナリであるのでエンコード処理は省略される
-            Trace(TraceKind.Send, buf, true); //noEncode = true バイナリであるのでエンコード処理は省略される
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
 
         public int SendNoEncode(ArraySegment<byte> buf)
         {
-            //バイナリであるのでエンコード処理は省略される
-            Trace(TraceKind.Send, buf, true); //noEncode = true バイナリであるのでエンコード処理は省略される
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }

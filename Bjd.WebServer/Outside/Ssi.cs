@@ -285,9 +285,9 @@ namespace Bjd.WebServer.Outside
             var newTarget = CreateTarget(tag, val);
             if (newTarget == null)
                 return false;
-            if (newTarget.FileInfo == null)
+            if (!newTarget.FileExists)
                 return false;
-            str = newTarget.FileInfo.LastWriteTime.ToString(_timeFmt);
+            str = newTarget.LastWriteTime.ToString(_timeFmt);
             return true;
         }
 
@@ -382,9 +382,9 @@ namespace Bjd.WebServer.Outside
             if (newTarget == null)
                 return false;
             long size = 0;
-            if (newTarget.FileInfo != null)
+            if (newTarget.FileExists)
             {
-                size = newTarget.FileInfo.Length;
+                size = newTarget.FileSize;
             }
             if (_sizeFmt == "bytes")
             { //バイト単位固定
@@ -417,7 +417,7 @@ namespace Bjd.WebServer.Outside
             switch (val)
             {
                 case "LAST_MODIFIED":
-                    str = _target.FileInfo.LastWriteTime.ToString(_timeFmt);
+                    str = _target.LastWriteTime.ToString(_timeFmt);
                     break;
                 case "DATE_GMT":
                     str = DateTime.UtcNow.ToString(_timeFmt);
