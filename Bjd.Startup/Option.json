@@ -606,5 +606,8 @@
         "password": "GQZSfCBxWFZgdEafqhovCg=="
       }
     ]
+  },
+  "IO": {
+    "cacheInterval": 3000
   }
 }

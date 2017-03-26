@@ -85,9 +85,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.ProxyFtpServer", "Bjd.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Mailbox", "Bjd.Mailbox\Bjd.Mailbox.csproj", "{0183C0B5-E528-46FA-BF58-77CD83DA4CE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bjd.Mailbox.Test", "Bjd.Mailbox.Test\Bjd.Mailbox.Test.csproj", "{E947AAE8-A454-44FF-A4BA-A3721A4D809B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Mailbox.Test", "Bjd.Mailbox.Test\Bjd.Mailbox.Test.csproj", "{E947AAE8-A454-44FF-A4BA-A3721A4D809B}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -228,6 +231,27 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = BJD1.vsmdi

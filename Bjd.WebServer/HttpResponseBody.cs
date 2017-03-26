@@ -94,13 +94,9 @@ namespace Bjd.WebServer
             }
             else
             {
-                var bufferSize = 32768;
-                var opt = FileOptions.SequentialScan;
-                //using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan))
-                //using (var fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, opt))
                 using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
                 {
-                    using (var buf = Bjd.Common.Memory.BufferPool.Get(bufferSize))
+                    using (var buf = Bjd.Common.Memory.BufferPool.Get(fs.Length))
                     {
                         var bufSize = buf.Length;
                         fs.Seek(_rangeFrom, SeekOrigin.Begin);

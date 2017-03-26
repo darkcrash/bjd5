@@ -68,6 +68,17 @@ CtrlDat_button3	インポート	Import
 CtrlDat_button4	エクスポート	Export
 CtrlDat_button5	クリア	Clear
 
+###############################################################
+# IO Component
+###############################################################
+
+OptionIO_MenuStr	IO Controls	IO Controls
+
+###############################################################
+# MailBox Component
+###############################################################
+
+OptionMailBox_MenuStr	MailBox	MailBox
 
 ###############################################################
 # DHCP Server

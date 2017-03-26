@@ -34,3 +34,8 @@ _ReSharper*/
 /.vs/restore.dg
 /Bjd.DhcpServer.CoreCLR.Test/lease.db
 /.vs/slnx.sqlite
+*.diagsession
+*.vspx
+*.psess
+*.vsp
+*.vsps
