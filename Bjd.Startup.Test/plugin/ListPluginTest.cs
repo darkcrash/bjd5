@@ -32,7 +32,7 @@ namespace Bjd.Common.Test.plugin
 
                 //var sut = new ListPlugin(currentDir);
                 var sut = new ListPlugin(service.Kernel);
-                const int expected = 17;
+                const int expected = 18;
                 //exercise
                 var actual = sut.Count;
                 //verify
