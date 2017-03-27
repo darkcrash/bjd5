@@ -102,8 +102,9 @@ namespace Bjd.Net.Sockets
                     {
                         if (_socket == null) return null;
                         if (this.IsCancel) return null;
-                        var tTcp = _socket.AcceptAsync();
-                        return tTcp.ContinueWith<SockTcp>((t) => new SockTcp(Kernel, _ssl, t.Result), this.CancelToken, TaskContinuationOptions.LongRunning, TaskScheduler.Default);
+                        //var tTcp = _socket.AcceptAsync();
+                        //return tTcp.ContinueWith<SockTcp>((t) => new SockTcp(Kernel, _ssl, t.Result), this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                        return new Task<SockTcp>((t) => new SockTcp(Kernel, _ssl, _socket.Accept()), this.CancelToken, TaskCreationOptions.LongRunning);
                     }
                 }
             }

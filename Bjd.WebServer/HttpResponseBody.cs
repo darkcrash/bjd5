@@ -113,22 +113,27 @@ namespace Bjd.WebServer
                             if (len <= 0)
                                 break;
 
-                            var segment = new ArraySegment<byte>(buf.Data, 0, len);
+                            if (-1 == tcpObj.Send(buf.Data, len))
+                            {
+                                return false;
+                            }
 
-                            if (encode)
-                            {
-                                if (-1 == tcpObj.SendUseEncode(segment))
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                if (-1 == tcpObj.SendNoEncode(segment))
-                                {
-                                    return false;
-                                }
-                            }
+                            //var segment = new ArraySegment<byte>(buf.Data, 0, len);
+
+                            //if (encode)
+                            //{
+                            //    if (-1 == tcpObj.SendUseEncode(segment))
+                            //    {
+                            //        return false;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    if (-1 == tcpObj.SendNoEncode(segment))
+                            //    {
+                            //        return false;
+                            //    }
+                            //}
                             start += len;
                             if (_rangeTo - start <= 0)
                                 break;

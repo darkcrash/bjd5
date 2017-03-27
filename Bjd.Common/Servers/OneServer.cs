@@ -20,6 +20,8 @@ namespace Bjd.Servers
     //各サーバオブジェクトの基底クラス<br>
     public abstract class OneServer : ThreadBase
     {
+        const int listenMax = 50;
+
         public Logger Logger;
         public String NameTag { get; private set; }
 
@@ -294,7 +296,6 @@ namespace Bjd.Servers
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
 
-            const int listenMax = 5;
 
             if (!_sockServerTcp.Bind(_oneBind.Addr, port, listenMax))
             {
@@ -303,8 +304,8 @@ namespace Bjd.Servers
             }
 
             var continueOptions = TaskContinuationOptions.ExecuteSynchronously |
-                                    TaskContinuationOptions.NotOnFaulted |
-                                    TaskContinuationOptions.NotOnCanceled;
+                                  TaskContinuationOptions.NotOnFaulted |
+                                  TaskContinuationOptions.NotOnCanceled;
 
             // 生存してる限り実行し続ける
             while (IsLife())
@@ -407,6 +408,7 @@ namespace Bjd.Servers
                             RemoveTask(idx, child);
                         }
                     }, _cancelToken, continueOptions, TaskScheduler.Default);
+                childTask.Start();
 
             }
 
