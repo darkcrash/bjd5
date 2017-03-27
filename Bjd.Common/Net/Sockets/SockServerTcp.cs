@@ -92,21 +92,34 @@ namespace Bjd.Net.Sockets
             try
             {
                 this.SockState = SockState.Bind;
-                while (true)
-                {
-                    if (_socket == null) return null;
-                    if (this.IsCancel) return null;
-                    if (!iLife.IsLife()) return null;
+                //while (true)
+                //{
+                //    if (_socket == null) return null;
+                //    if (this.IsCancel) return null;
+                //    if (!iLife.IsLife()) return null;
 
-                    if (_socket.Poll(1000000, SelectMode.SelectRead))
+                //    if (_socket.Poll(1000000, SelectMode.SelectRead))
+                //    {
+                //        if (_socket == null) return null;
+                //        if (this.IsCancel) return null;
+                //        //var tTcp = _socket.AcceptAsync();
+                //        //return tTcp.ContinueWith<SockTcp>((t) => new SockTcp(Kernel, _ssl, t.Result), this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                //        return new Task<SockTcp>((t) => new SockTcp(Kernel, _ssl, _socket.Accept()), this.CancelToken, TaskCreationOptions.LongRunning);
+                //    }
+                //}
+                return new Task<SockTcp>(() =>
+                {
+                    try
                     {
-                        if (_socket == null) return null;
-                        if (this.IsCancel) return null;
-                        //var tTcp = _socket.AcceptAsync();
-                        //return tTcp.ContinueWith<SockTcp>((t) => new SockTcp(Kernel, _ssl, t.Result), this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-                        return new Task<SockTcp>((t) => new SockTcp(Kernel, _ssl, _socket.Accept()), this.CancelToken, TaskCreationOptions.LongRunning);
+                        return new SockTcp(Kernel, _ssl, _socket.Accept());
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        Kernel.Logger.TraceError(ex.Message);
+                        Kernel.Logger.TraceError(ex.StackTrace);
+                    }
+                    return null;
+                }, this.CancelToken, TaskCreationOptions.LongRunning);
             }
             catch (OperationCanceledException)
             {

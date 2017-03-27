@@ -310,56 +310,6 @@ namespace Bjd.Servers
             // 生存してる限り実行し続ける
             while (IsLife())
             {
-                //var child = _sockServerTcp.Select(this);
-
-                //// Nullが返されたときは終了する
-                //if (child == null)
-                //    break;
-
-                //// 子タスクで処理させる
-                //var t = new Task(
-                //    () =>
-                //    {
-                //        int? idx = null;
-                //        try
-                //        {
-                //            idx = this.StartTask(child);
-
-                //            // 同時接続数チェック
-                //            if (Increment())
-                //            {
-                //                // 同時接続数を超えたのでリクエストをキャンセルします
-                //                _kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
-                //                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                //                return;
-                //            }
-
-                //            try
-                //            {
-                //                // ACL制限のチェック
-                //                if (AclCheck(child) == AclKind.Deny)
-                //                {
-                //                    return;
-                //                }
-                //                // 受信開始
-                //                child.BeginReceive();
-                //                // 各実装へ
-                //                this.SubThread(child);
-                //            }
-                //            finally
-                //            {
-                //                Decrement();
-                //            }
-
-                //        }
-                //        finally
-                //        {
-                //            RemoveTask(idx, child);
-                //        }
-                //    }, _cancelToken, TaskCreationOptions.LongRunning);
-
-                //t.Start();
-
                 var childTask = _sockServerTcp.SelectAsync(this);
 
                 // Nullが返されたときは終了する
@@ -408,7 +358,16 @@ namespace Bjd.Servers
                             RemoveTask(idx, child);
                         }
                     }, _cancelToken, continueOptions, TaskScheduler.Default);
-                childTask.Start();
+                try
+                {
+                    childTask.Start();
+                    childTask.Wait(this._cancelToken);
+                }
+                catch (Exception ex)
+                {
+                    _kernel.Logger.TraceError(ex.Message);
+                    _kernel.Logger.TraceError(ex.StackTrace);
+                }
 
             }
 
