@@ -14,32 +14,21 @@ namespace Bjd.Logs
         private int disposeCount = 0;
         private object Lock = new object();
         private int bufferSize = 16384;
-        private bool isAsync = false;
 
         public LogFileWriter(string fileName)
         {
             _fileName = fileName;
-            _fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite, bufferSize, true);
+            _fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite, bufferSize);
             _sw = new StreamWriter(_fs, Encoding.UTF8, bufferSize, true);
             _fs.Seek(0, SeekOrigin.End);
-            isAsync = _fs.IsAsync;
             FlushTask();
         }
 
         private void FlushTask()
         {
-            if (_sw == null) return;
-            if (isAsync)
-            {
-                _sw.FlushAsync()
-                    .ContinueWith(_ => Task.Delay(500).Wait())
-                    .ContinueWith(_ => FlushTask());
-            }
-            else
-            {
-                _sw.Flush();
-                Task.Delay(500).ContinueWith(_ => FlushTask());
-            }
+            if (_sw == null || disposeCount > 0) return;
+            _sw.Flush();
+            Task.Delay(500).ContinueWith(_ => FlushTask());
         }
 
         public void Dispose()
@@ -64,15 +53,7 @@ namespace Bjd.Logs
 
         public void WriteLine(string message)
         {
-            if (isAsync)
-            {
-                _sw.WriteLineAsync(message);
-            }
-            else
-            {
-                _sw.WriteLine(message);
-            }
-            //_sw.Flush();
+            _sw.WriteLine(message);
         }
     }
 }
