@@ -64,7 +64,7 @@ namespace Bjd.Logs
 
         public void WriteLine(string message)
         {
-            if (_isAsync)
+            if (isAsync)
             {
                 _sw.WriteLineAsync(message);
             }
