@@ -9,8 +9,7 @@ namespace Bjd.Threading
     public class SequentialTaskScheduler : System.Threading.Tasks.TaskScheduler
     {
         ConcurrentQueue<Task> _q = new ConcurrentQueue<Task>();
-        bool isRunning = false;
-        object Lock = new object();
+        int count = 0;
 
         public SequentialTaskScheduler() : base()
         {
@@ -21,22 +20,21 @@ namespace Bjd.Threading
             Task t = null;
             while (true)
             {
-                if (_q.IsEmpty)
+                try
                 {
-                    lock (Lock)
+                    while (_q.TryDequeue(out t))
                     {
-                        if (_q.IsEmpty)
+                        try
                         {
-                            isRunning = false;
-                            return;
+                            this.TryExecuteTask(t);
                         }
+                        catch { }
+                        if (Interlocked.Decrement(ref count) == 0) return;
                     }
                 }
-                while (_q.TryDequeue(out t))
-                {
-                    this.TryExecuteTask(t);
-                }
+                catch { }
             }
+
         }
 
         protected override IEnumerable<Task> GetScheduledTasks()
@@ -47,13 +45,10 @@ namespace Bjd.Threading
         protected override void QueueTask(Task task)
         {
             _q.Enqueue(task);
-            lock (Lock)
+            if (Interlocked.Increment(ref count) == 1)
             {
-                if (isRunning)
-                    return;
-                isRunning = true;
+                System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
             }
-            System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
