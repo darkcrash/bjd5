@@ -5,7 +5,6 @@ COPY . /dotnetapp
 RUN cd / \
  && cd /dotnetapp \
  && rm -fr *.Test \
- && rm -fr *.sln \
  && rm -fr *.sh \
  && dotnet restore
 

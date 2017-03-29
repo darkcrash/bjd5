@@ -5,7 +5,6 @@ RUN cd / \
  && cd /bjd5 \
  && rm -fr .git \
  && rm -fr *.Test \
- && rm -fr *.sln \
  && rm -fr *.sh \
  && rm -fr Dockerfile-portable \
  && dotnet restore --no-cache \
