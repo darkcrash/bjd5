@@ -13,7 +13,7 @@ namespace Bjd.Logs
         private readonly string _fileName;
         private int disposeCount = 0;
         private object Lock = new object();
-        private int bufferSize = 16384;
+        private int bufferSize = 32768;
 
         public LogFileWriter(string fileName)
         {
@@ -53,6 +53,7 @@ namespace Bjd.Logs
 
         public void WriteLine(string message)
         {
+            if (_sw == null || disposeCount > 0) return;
             _sw.WriteLine(message);
         }
     }

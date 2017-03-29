@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Text;
 
 namespace Bjd.Logs
 {
@@ -8,7 +8,8 @@ namespace Bjd.Logs
     // ログ１行を表現するクラス
     public class LogMessage : ValidObj
     {
-
+        [ThreadStatic]
+        private static StringBuilder sb;
         private DateTime _dt;
         private LogKind _logKind;
         private String _nameTag;
@@ -106,6 +107,18 @@ namespace Bjd.Logs
             return _detailInfomation;
         }
 
+        private static StringBuilder GetSB()
+        {
+            if (sb == null)
+            {
+                sb = new StringBuilder();
+            }
+            else
+            {
+                sb.Clear();
+            }
+            return sb;
+        }
 
 
         //文字列化
@@ -113,14 +126,55 @@ namespace Bjd.Logs
         public override String ToString()
         {
             CheckInitialise();
-            return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", Dt(), Kind(), ThreadId(),
-                                 NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
+            //return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", Dt(), Kind(), ThreadId(),
+            //                     NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
+
+            var sb = GetSB();
+
+            sb.Append(Dt());
+            sb.Append('\t');
+            sb.Append(Kind());
+            sb.Append('\t');
+            sb.Append(ThreadId());
+            sb.Append('\t');
+            sb.Append(NameTag());
+            sb.Append('\t');
+            sb.Append(RemoteHostname());
+            sb.Append('\t');
+            sb.Append(MessageNo());
+            sb.Append('\t');
+            sb.Append(Message());
+            sb.Append('\t');
+            sb.Append(DetailInfomation());
+
+            return sb.ToString();
         }
 
         public string ToTraceString()
         {
             CheckInitialise();
-            return $"[{_dt.ToString("HH\\:mm\\:ss\\.fff")}][{_pid}][{_threadId.ToString().PadLeft(3)}] {Kind()}\t{NameTag()}\t{RemoteHostname()}\t{MessageNo()}\t{Message()}\t{DetailInfomation()}";
+            var sb = GetSB();
+            //return $"[{_dt.ToString("HH\\:mm\\:ss\\.fff")}][{_pid}][{_threadId.ToString().PadLeft(3)}] {Kind()}\t{NameTag()}\t{RemoteHostname()}\t{MessageNo()}\t{Message()}\t{DetailInfomation()}";
+            sb.Append('[');
+            sb.Append(_dt.ToString("HH\\:mm\\:ss\\.fff"));
+            sb.Append("][");
+            sb.Append(_pid);
+            sb.Append("][");
+            sb.Append(_threadId.ToString().PadLeft(3));
+            sb.Append("][");
+            sb.Append(Kind());
+            sb.Append("] ");
+            sb.Append(NameTag());
+            sb.Append(" ");
+            sb.Append(RemoteHostname());
+            sb.Append(" ");
+            sb.Append(MessageNo());
+            sb.Append(" ");
+            sb.Append(Message());
+            sb.Append(" ");
+            sb.Append(DetailInfomation());
+            sb.Append(']');
+            return sb.ToString();
         }
 
         //セキュリティログかどうかの確認

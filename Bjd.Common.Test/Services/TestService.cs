@@ -142,6 +142,12 @@ namespace Bjd.Initialization
             {
                 Kernel.LogServices.Add(lts);
             }
+
+            // ログ出力ディレクトリ
+      
+            //OptionLog
+            var confOption = new Conf(Kernel.ListOption.Get("Log"));
+            confOption.Set("saveDirectory", Kernel.Enviroment.ExecutableDirectory);
         }
 
         public static TestService CreateTestService()

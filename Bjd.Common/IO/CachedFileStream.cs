@@ -30,7 +30,7 @@ namespace Bjd.Common.IO
 
         private static FileStream Create(string fullPath)
         {
-            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.SequentialScan);
+            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 16384, FileOptions.SequentialScan);
             return stream;
         }
 

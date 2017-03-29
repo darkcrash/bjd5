@@ -6,6 +6,7 @@ using System.IO;
 using Bjd.Utils;
 using Bjd.Threading;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Bjd.Logs
 {
@@ -20,9 +21,10 @@ namespace Bjd.Logs
         //Ver6.0.7
         private readonly bool _useLogFile;
         private bool isDisposed = false;
+
         private object _lock = new object();
-        private object _lockCount = new object();
-        private System.Threading.CountdownEvent count = new System.Threading.CountdownEvent(0);
+        private System.Threading.ManualResetEventSlim emptySignal = new System.Threading.ManualResetEventSlim(true, 0);
+        private int AppendCount = 0;
 
 
         private LogFileWriter _normalLog; // 通常ログ
@@ -38,7 +40,7 @@ namespace Bjd.Logs
         //normalFileKind　通常ログのファイルル名の種類
         //secureFileKind　セキュリティログのファイルル名の種類
         //saveDays ログの自動削除で残す日数　0を指定した場合、自動削除は行わない
-        public LogFileService(String saveDirectory, int normalLogKind, int secureLogKind, int saveDays, bool useLogFile)
+        public LogFileService(string saveDirectory, int normalLogKind, int secureLogKind, int saveDays, bool useLogFile)
         {
             _saveDirectory = saveDirectory;
             _normalLogKind = normalLogKind;
@@ -69,18 +71,11 @@ namespace Bjd.Logs
 
             try
             {
-                lock (_lock)
+                if (Interlocked.Increment(ref AppendCount) == 1)
                 {
-                    lock (_lockCount)
+                    lock (_lock)
                     {
-                        if (count.IsSet)
-                        {
-                            count.Reset(1);
-                        }
-                        else
-                        {
-                            count.AddCount();
-                        }
+                        emptySignal.Reset();
                     }
                 }
 
@@ -101,7 +96,10 @@ namespace Bjd.Logs
             catch (IOException) { }
             finally
             {
-                lock (_lockCount) count.Signal();
+                if (Interlocked.Decrement(ref AppendCount) == 0)
+                {
+                    emptySignal.Set();
+                }
             }
         }
 
@@ -267,63 +265,66 @@ namespace Bjd.Logs
 
         private void Tail(String fileName, int saveDays, DateTime now)
         {
-            count.Wait();
-
-            var lines = new List<string>();
-            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            lock (_lock)
             {
-                //using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
-                using (var sr = new StreamReader(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
-                {
-                    var isNeed = false;
-                    while (true)
-                    {
-                        string str = sr.ReadLine();
-                        if (str == null)
-                            break;
-                        if (isNeed)
-                        {
-                            lines.Add(str);
-                        }
-                        else
-                        {
-                            var tmp = str.Split('\t');
-                            if (tmp.Length > 1)
-                            {
-                                //Ver5.9.8 日付Parseの例外排除
-                                try
-                                {
-                                    var targetDt = Convert.ToDateTime(tmp[0]);
-                                    if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
-                                    {
-                                        isNeed = true;
-                                        lines.Add(str);
-                                    }
-                                }
-                                catch (Exception)
-                                {
+                emptySignal.Wait();
 
+                var lines = new List<string>();
+                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    //using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
+                    using (var sr = new StreamReader(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
+                    {
+                        var isNeed = false;
+                        while (true)
+                        {
+                            string str = sr.ReadLine();
+                            if (str == null)
+                                break;
+                            if (isNeed)
+                            {
+                                lines.Add(str);
+                            }
+                            else
+                            {
+                                var tmp = str.Split('\t');
+                                if (tmp.Length > 1)
+                                {
+                                    //Ver5.9.8 日付Parseの例外排除
+                                    try
+                                    {
+                                        var targetDt = Convert.ToDateTime(tmp[0]);
+                                        if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
+                                        {
+                                            isNeed = true;
+                                            lines.Add(str);
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+
+                                    }
                                 }
                             }
                         }
+                        //sr.Close();
                     }
-                    //sr.Close();
+                    //fs.Close();
                 }
-                //fs.Close();
-            }
-            using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-            {
-                //using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
-                using (var sw = new StreamWriter(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
+                using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
                 {
-                    foreach (string str in lines)
+                    //using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
+                    using (var sw = new StreamWriter(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
                     {
-                        sw.WriteLine(str);
+                        foreach (string str in lines)
+                        {
+                            sw.WriteLine(str);
+                        }
+                        sw.Flush();
+                        //sw.Close();
                     }
-                    sw.Flush();
-                    //sw.Close();
+                    //fs.Close();
                 }
-                //fs.Close();
             }
         }
 
@@ -346,10 +347,10 @@ namespace Bjd.Logs
             if (_lastDelete.Ticks != 0 && _lastDelete.Day == now.Day)
                 return;
 
+            if (isDisposed) return;
             lock (_lock)
             {
-                if (isDisposed) return;
-                count.Wait();
+                emptySignal.Wait();
                 LogClose(); //クローズ
                 LogDelete(); //過去ログの自動削除
                 LogOpen(); //オープン
@@ -367,7 +368,7 @@ namespace Bjd.Logs
 
             lock (_lock)
             {
-                count.Wait();
+                emptySignal.Wait();
                 isDisposed = true;
 
                 if (_timer != null)
@@ -380,7 +381,7 @@ namespace Bjd.Logs
                 }
                 LogClose();
                 LogDelete(); // 過去ログの自動削除
-                count.Dispose();
+                emptySignal.Dispose();
             }
         }
 

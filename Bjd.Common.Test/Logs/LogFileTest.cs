@@ -222,7 +222,7 @@ namespace Bjd.Test.Logs
                 logFile.Append(
                     new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
 
-                Task.Delay(501).Wait();
+                Task.Delay(750).Wait();
 
                 //exercise
                 //リフレクションを使用してprivateメソッドにアクセスする
@@ -241,7 +241,6 @@ namespace Bjd.Test.Logs
 
             //verify
             Assert.Equal(expected, actual);
-
 
         }
     }

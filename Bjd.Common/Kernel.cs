@@ -56,7 +56,7 @@ namespace Bjd
                 var oneOption = ListOption.Get("Basic");
                 if (oneOption != null)
                 {
-                    return (String)oneOption.GetValue("serverName");
+                    return (string)oneOption.GetValue("serverName");
                 }
                 return "";
             }

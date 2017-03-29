@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bjd.Net.Sockets;
 
 namespace Bjd.Logs
@@ -38,7 +39,8 @@ namespace Bjd.Logs
 
         protected override void FormatWriteLine(string message)
         {
-            var info = CreateTraceInfo(message);
+            var info = new TraceStruct();
+            CreateTraceInfo(message, ref info);
             _ts.Add(info);
         }
 
@@ -54,9 +56,11 @@ namespace Bjd.Logs
                 logger.Set(a.LogKind, a.SockObj, a.MessageNo, a.DetailInfomation);
             }
             _ar.Clear();
-            foreach (var t in _ts)
+
+            foreach(var t in _ts)
             {
-                logger.WriteLineAll(t);
+                var v = t;
+                logger.WriteLineAll(ref v);
             }
             _ts.Clear();
 
