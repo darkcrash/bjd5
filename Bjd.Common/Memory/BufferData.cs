@@ -15,8 +15,6 @@ namespace Bjd.Common.Memory
         {
             Length = length;
             Data = new byte[length];
-            //StartPos = 0;
-            //EndPos = 0;
             DataSize = 0;
             _pool = pool;
         }
@@ -27,6 +25,7 @@ namespace Bjd.Common.Memory
             //EndPos = 0;
             DataSize = 0;
         }
+
 
         public ArraySegment<byte> GetSegment()
         {
