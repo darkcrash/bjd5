@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Bjd.Common.Memory
@@ -11,6 +12,7 @@ namespace Bjd.Common.Memory
         public int DataSize;
         public readonly int Length;
         private CharsPool _pool;
+        private GCHandle handle;
 
         public ref char this[int i] => ref Data[i];
 
@@ -25,11 +27,13 @@ namespace Bjd.Common.Memory
         void IPoolBuffer.Initialize()
         {
             DataSize = 0;
+            handle = GCHandle.Alloc(Data, GCHandleType.Pinned);
         }
 
 
         public void Dispose()
         {
+            handle.Free();
             _pool.PoolInternal(this);
         }
         void IPoolBuffer.DisposeInternal()

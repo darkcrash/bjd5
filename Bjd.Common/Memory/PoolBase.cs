@@ -59,6 +59,7 @@ namespace Bjd.Common.Memory
             {
                 var idx = Increment(ref _cursorDequeue);
                 var b = _buffers[idx];
+                b.Initialize();
                 _buffers[idx] = null;
                 return b;
             }
@@ -78,7 +79,6 @@ namespace Bjd.Common.Memory
                 buf.DisposeInternal();
                 return;
             }
-            buf.Initialize();
             var idx = Increment(ref _cursorEnqueue);
             _buffers[idx] = buf;
             Interlocked.Increment(ref _poolCount);
