@@ -64,7 +64,7 @@ namespace Bjd.Utils
             //}
             //return str;
 
-            var result = str.Select(_ => { if (_ == before) return after; return _; }).ToArray();
+            var result = str.Select(_ => (_ == before ? after : _)).ToArray();
             return new string(result);
         }
 

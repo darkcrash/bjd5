@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bjd.Common.Memory
 {
-    public class BufferPool : IDisposable
+    public class BufferPool : PoolBase<BufferData>
     {
         const int bufferSizeXXXXL = 67108864;
         const int bufferSizeXXXL = 16777216;
@@ -69,100 +69,21 @@ namespace Bjd.Common.Memory
         }
 
         private int _bufferSize;
-        //private ConcurrentBag<BufferData> _queue = new ConcurrentBag<BufferData>();
-        private BufferData[] _buffers = new BufferData[10240];
-        private object Lock = new object();
-        private int _poolSize = 0;
-        private int _Count = 0;
-        private int _leaseCount = 0;
-        private int _poolCount = 0;
-        private int _cursorEnqueue = -1;
-        private int _cursorDequeue = -1;
 
-        private BufferPool(int pSize, int bSize)
+        private BufferPool(int pSize, int bSize) : base()
         {
-            _poolSize = pSize;
             _bufferSize = bSize;
-            for (int i = 0; i < _poolSize; i++)
-            {
-                _Count++;
-                _poolCount++;
-                _cursorEnqueue++;
-                //_queue.Add(b);
-                _buffers[i] = new BufferData(_bufferSize, this);
-            }
-            //Cleanup();
+            InitializePool(pSize);
         }
         ~BufferPool()
         {
             Dispose();
         }
 
-        public void Dispose()
+        protected override BufferData CreateBuffer()
         {
-            //while (!_queue.IsEmpty)
-            //{
-            //    BufferData outQ;
-            //    if (_queue.TryTake(out outQ)) outQ.DisposeInternal();
-            //}
-            for (var i = 0; i < _buffers.Length; i++)
-            {
-                var b = _buffers[i];
-                _buffers[i] = null;
-                if (b != null) b.DisposeInternal();
-            }
-        }
-
-        public BufferData Get()
-        {
-            Interlocked.Increment(ref _leaseCount);
-            var p = Interlocked.Decrement(ref _poolCount);
-            if (p >= 0)
-            {
-                var idx = Increment(ref _cursorDequeue);
-                var b = _buffers[idx];
-                _buffers[idx] = null;
-                return b;
-            }
-            Interlocked.Increment(ref _poolCount);
-            //BufferData outQ;
-            //if (_queue.TryTake(out outQ))
-            //{
-            //    return outQ;
-            //}
-
-            Interlocked.Increment(ref _Count);
             return new BufferData(_bufferSize, this);
         }
-
-        public void PoolInternal(BufferData buf)
-        {
-            Interlocked.Decrement(ref _leaseCount);
-            if (_poolSize < _poolCount)
-            {
-                Interlocked.Decrement(ref _Count);
-                buf.DisposeInternal();
-                return;
-            }
-            buf.Initialize();
-            //_queue.Add(buf);
-            var idx = Increment(ref _cursorEnqueue);
-            _buffers[idx] = buf;
-            Interlocked.Increment(ref _poolCount);
-        }
-
-        private int Increment(ref int _cursor)
-        {
-            var idx = Interlocked.Increment(ref _cursor);
-            if(idx >= _buffers.Length)
-            {
-                //idx = idx | ~_buffers.Length-1;
-                idx = idx % _buffers.Length;
-                Interlocked.CompareExchange(ref _cursor, idx, _buffers.Length + idx);
-            }
-            return idx;
-        }
-
 
     }
 }

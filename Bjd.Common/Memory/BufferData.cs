@@ -4,13 +4,16 @@ using System.Text;
 
 namespace Bjd.Common.Memory
 {
-    public class BufferData : IDisposable
+    public class BufferData : IPoolBuffer
     {
         public static readonly BufferData Empty = new BufferData(0, null);
         public byte[] Data;
         public int DataSize;
         public readonly int Length;
         private BufferPool _pool;
+
+        public ref byte this[int i] => ref Data[i];
+
         internal BufferData(int length, BufferPool pool)
         {
             Length = length;
@@ -19,10 +22,8 @@ namespace Bjd.Common.Memory
             _pool = pool;
         }
 
-        internal void Initialize()
+        void IPoolBuffer.Initialize()
         {
-            //StartPos = 0;
-            //EndPos = 0;
             DataSize = 0;
         }
 
@@ -43,7 +44,7 @@ namespace Bjd.Common.Memory
         {
             _pool.PoolInternal(this);
         }
-        public void DisposeInternal()
+        void IPoolBuffer.DisposeInternal()
         {
             Data = null;
             _pool = null;

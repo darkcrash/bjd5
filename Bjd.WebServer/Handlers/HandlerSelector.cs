@@ -215,11 +215,8 @@ namespace Bjd.WebServer.Handlers
             //****************************************************************
             //WebDavパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
-            //if ((bool)_conf.Get("useWebDav"))
             if (useWebDav)
             {
-                //var db = (Dat)_conf.Get("webDavPath");
-                //foreach (var o in db)
                 foreach (var o in webDavPathData)
                 {
                     //if (!o.Enable) continue;
@@ -249,7 +246,6 @@ namespace Bjd.WebServer.Handlers
                 if (uri[uri.Length - 1] != '/')
                 {
                     var exUri = uri + "/";
-                    //foreach (var o in db)
                     foreach (var o in webDavPathData)
                     {
                         //if (!o.Enable) continue;
@@ -283,34 +279,8 @@ namespace Bjd.WebServer.Handlers
             //CGIパスにヒットした場合、uri及びドキュメントルートを修正する
             //****************************************************************
             bool useCgiPath = false;//CGIパス定義が存在するかどうかのフラグ
-            //if (result.WebDavKind == WebDavKind.Non && (bool)_conf.Get("useCgi"))
             if (result.WebDavKind == WebDavKind.Non && useCgi)
             {
-                //foreach (var o in (Dat)_conf.Get("cgiPath"))
-                //foreach (var o in cgiPathData)
-                //{
-                //    //if (!o.Enable) continue;
-
-                //    useCgiPath = true;//有効なCGIパスの定義が存在する
-                //    var name = o.ColumnValueList[0];
-                //    var dir = o.ColumnValueList[1];
-
-                //    if (uri.ToUpper().IndexOf(name.ToUpper()) != 0) continue;
-
-                //    if (name.Length >= 1)
-                //    {
-                //        uri = uri.Substring(name.Length - 1);
-                //    }
-                //    else
-                //    {
-                //        uri = "/";
-                //    }
-                //    result.DocumentRoot = dir;
-                //    //CGIパス定義にヒットした場合
-                //    enableCgiPath = true;//CGI実行が可能なフォルダである
-                //    break;
-
-                //}
 
                 foreach (var o in cgiPathDataConfig)
                 {
@@ -347,49 +317,20 @@ namespace Bjd.WebServer.Handlers
             //****************************************************************
             if (result.WebDavKind == WebDavKind.Non && !useCgiPath && uri.Length >= 1)
             {
-                //foreach (var o in (Dat)_conf.Get("aliaseList"))
-                //foreach (var o in aliaseListData)
-                //{
-                //    //if (!o.Enable) continue;
-
-                //    var name = o.ColumnValueList[0];
-                //    var dir = o.ColumnValueList[1];
-
-                //    if (uri.ToUpper() + "/" == name.ToUpper())
-                //    {
-                //        //ファイル指定されたターゲットがファイルではなくディレクトリの場合
-                //        result.TargetKind = HandlerKind.Move;
-                //        return;
-                //    }
-
-                //    if (uri.ToUpper().IndexOf(name.ToUpper()) != 0) continue;
-
-                //    if (name.Length >= 1)
-                //    {
-                //        uri = uri.Substring(name.Length - 1);
-                //    }
-                //    else
-                //    {
-                //        uri = "/";
-                //    }
-
-                //    result.DocumentRoot = dir;
-                //    break;
-
-                //}
                 foreach (var o in aliaseListDataConfig)
                 {
                     var name = o.aliasName;
                     var dir = o.aliasDirectory;
+                    var uriUpper = uri.ToUpper();
 
-                    if (uri.ToUpper() + "/" == name)
+                    if (uriUpper + "/" == name)
                     {
                         //ファイル指定されたターゲットがファイルではなくディレクトリの場合
                         result.TargetKind = HandlerKind.Move;
                         return;
                     }
 
-                    if (uri.ToUpper().IndexOf(name) != 0) continue;
+                    if (uriUpper.IndexOf(name) != 0) continue;
 
                     if (name.Length >= 1)
                     {
@@ -410,7 +351,6 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             // uriから物理的なパス名を生成する
             /*************************************************/
-            //FullPath = Util.SwapChar('/', '\\', DocumentRoot + uri);
             var newFullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
             result.ResetFullPath(newFullPath);
             _kernel.Logger.DebugInformation($"Target.Init {result.FullPath}");
@@ -420,7 +360,6 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             if (result.WebDavKind == WebDavKind.Non)
             {
-                //if (FullPath[FullPath.Length - 1] != '\\')
                 if (result.FullPath[result.FullPath.Length - 1] != Path.DirectorySeparatorChar && Directory.Exists(result.FullPath))
                 {
                     result.TargetKind = HandlerKind.Move;
@@ -448,25 +387,8 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (Path.GetFileName(result.FullPath) == "")
                     {
-                        ////var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
-                        ////foreach (string welcomeFileName in tmp)
-                        //foreach (string welcomeFileName in welcomeFileNames)
-                        //{
-                        //    //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
-                        //    var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
-                        //    if (!File.Exists(newPath)) continue;
-
-                        //    result.ResetFullPath(newPath);
-                        //    result.FileExists = true;
-                        //    filePathReplaced = true;
-                        //    _kernel.Logger.DebugInformation($"Target.Init welcomeFileName {result.FullPath}");
-                        //    break;
-                        //}
-                        //var tmp = ((string)_conf.Get("welcomeFileName")).Split(',');
-                        //foreach (string welcomeFileName in tmp)
                         foreach (string welcomeFileName in welcomeFileNames)
                         {
-                            //var newPath = Path.GetDirectoryName(FullPath) + "\\" + welcomeFileName;
                             var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
                             if (!CachedFileExists.ExistsFile(newPath)) continue;
 
@@ -516,23 +438,10 @@ namespace Bjd.WebServer.Handlers
                 if (ext != null && ext.Length > 1)
                 {
                     ext = ext.Substring(1);
-                    //foreach (var o in (Dat)_conf.Get("cgiCmd"))
-                    //foreach (var o in cgiCmdData)
-                    //{
-                    //    if (!o.Enable) continue;
-
-                    //    var cgiExt = o.ColumnValueList[0];
-                    //    var cgiCmd = o.ColumnValueList[1];
-                    //    if (cgiExt.ToUpper() == ext.ToUpper())
-                    //    {
-                    //        result.TargetKind = HandlerKind.Cgi;//CGIである
-                    //        result.CgiCmd = cgiCmd;
-                    //    }
-
-                    //}
+                    var extUpper = ext.ToUpper();
                     foreach (var o in cgiCmdDataConfig)
                     {
-                        if (o.cgiExtension == ext.ToUpper())
+                        if (o.cgiExtension == extUpper)
                         {
                             result.TargetKind = HandlerKind.Cgi;//CGIである
                             result.CgiCmd = o.Program;
@@ -548,16 +457,13 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             if (result.WebDavKind == WebDavKind.Non)
             {
-                //if (result.TargetKind == HandlerKind.File && (bool)_conf.Get("useSsi"))
                 if (result.TargetKind == HandlerKind.File && useSsi)
                 {
                     //「SSIを使用する」場合
                     // SSI指定拡張子かどうかの判断
-                    //var ext = Path.GetExtension(result.FullPath);
                     var ext = result.Ext;
                     if (ext != null && 1 <= ext.Length)
                     {
-                        //var ssiExtList = new List<string>(((string)_conf.Get("ssiExt")).Split(','));
                         if (0 <= ssiExtList.IndexOf(ext.Substring(1)))
                         {
                             //ターゲットファイルにキーワードが含まれているかどうかの確認
@@ -575,15 +481,9 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             if (result.TargetKind == HandlerKind.File || result.TargetKind == HandlerKind.Ssi)
             {
-                //ファイルアトリビュートの取得
-                //result.Attr = File.GetAttributes(result.FullPath);
-                //ファイルインフォメーションの取得
-                //result.FileInfo = new FileInfo(result.FullPath);
-
                 //***************************************************************
                 //  隠し属性のファイルへのアクセス制御
                 //***************************************************************
-                //if (!(bool)_conf.Get("useHidden"))
                 if (!useHidden)
                 {
                     if ((result.Attr & FileAttributes.Hidden) == FileAttributes.Hidden)
@@ -593,7 +493,6 @@ namespace Bjd.WebServer.Handlers
                 }
 
             }
-
 
         }
 
