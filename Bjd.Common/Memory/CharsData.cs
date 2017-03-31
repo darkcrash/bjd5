@@ -22,22 +22,22 @@ namespace Bjd.Common.Memory
             Data = new char[length];
             DataSize = 0;
             _pool = pool;
+            handle = GCHandle.Alloc(Data, GCHandleType.Pinned);
         }
 
         void IPoolBuffer.Initialize()
         {
             DataSize = 0;
-            handle = GCHandle.Alloc(Data, GCHandleType.Pinned);
         }
 
 
         public void Dispose()
         {
-            handle.Free();
             _pool.PoolInternal(this);
         }
         void IPoolBuffer.DisposeInternal()
         {
+            handle.Free();
             Data = null;
             _pool = null;
         }

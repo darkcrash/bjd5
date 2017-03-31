@@ -13,6 +13,17 @@ namespace Bjd.WebServer
     //********************************************************
     internal class HttpRequest
     {
+        static HttpMethod[] Methods = (HttpMethod[])Enum.GetValues(typeof(HttpMethod));
+        static Dictionary<string, HttpMethod> MethodsDic = new Dictionary<string, HttpMethod>();
+
+        static HttpRequest()
+        {
+            foreach(var method in Methods)
+            {
+                MethodsDic.Add(method.ToString().ToUpper(), method);
+                MethodsDic.Add(method.ToString(), method);
+            }
+        }
 
         public HttpRequest(Kernel kernel, Logger logger, SockTcp sockTcp)
         {
@@ -89,14 +100,21 @@ namespace Bjd.WebServer
             }
 
             // メソッドの取得
-            foreach (HttpMethod m in Enum.GetValues(typeof(HttpMethod)))
+            //foreach (HttpMethod m in Enum.GetValues(typeof(HttpMethod)))
+            //foreach (HttpMethod m in Methods)
+            //{
+            //    if (tmp[0].ToUpper() == m.ToString().ToUpper())
+            //    {
+            //        Method = m;
+            //        break;
+            //    }
+            //}
+            var reqMethod = tmp[0];
+            if (MethodsDic.ContainsKey(reqMethod))
             {
-                if (tmp[0].ToUpper() == m.ToString().ToUpper())
-                {
-                    Method = m;
-                    break;
-                }
+                Method = MethodsDic[reqMethod];
             }
+
             if (Method == HttpMethod.Unknown)
             {
                 Log(LogKind.Secure, 1, string.Format("{0}", requestStr));//�T�|�[�g�O�̃��\�b�h�ł��i������p���ł��܂���j

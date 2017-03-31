@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ namespace Bjd.Common.Memory
             Dispose();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected abstract T CreateBuffer();
 
         public void Dispose()
@@ -64,10 +66,11 @@ namespace Bjd.Common.Memory
                 return b;
             }
             Interlocked.Increment(ref _poolCount);
-
-
+            
             Interlocked.Increment(ref _Count);
-            return CreateBuffer();
+            var newB = CreateBuffer();
+            newB.Initialize();
+            return newB;
         }
 
         public void PoolInternal(T buf)
@@ -84,6 +87,9 @@ namespace Bjd.Common.Memory
             Interlocked.Increment(ref _poolCount);
         }
 
+#if RELEASE
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private int Increment(ref int _cursor)
         {
             var idx = Interlocked.Increment(ref _cursor);
