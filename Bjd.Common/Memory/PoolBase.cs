@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bjd.Common.Memory
+namespace Bjd.Memory
 {
     public abstract class PoolBase<T> : IDisposable where T : class, IPoolBuffer
     {

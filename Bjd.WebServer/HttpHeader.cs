@@ -6,7 +6,7 @@ using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
-using Bjd.Common.Memory;
+using Bjd.Memory;
 
 namespace Bjd
 {

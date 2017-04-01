@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Bjd.Common.Memory
+namespace Bjd.Memory
 {
     public class BufferData : IPoolBuffer
     {

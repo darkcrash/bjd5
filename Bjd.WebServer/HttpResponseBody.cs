@@ -96,7 +96,7 @@ namespace Bjd.WebServer
             {
                 using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
                 {
-                    using (var buf = Bjd.Common.Memory.BufferPool.Get(fs.Length))
+                    using (var buf = Bjd.Memory.BufferPool.Get(fs.Length))
                     {
                         var bufSize = buf.Length;
                         fs.Seek(_rangeFrom, SeekOrigin.Begin);

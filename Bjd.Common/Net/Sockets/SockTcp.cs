@@ -8,7 +8,7 @@ using Bjd.Net;
 using Bjd.Traces;
 using Bjd.Utils;
 using Bjd.Threading;
-using Bjd.Common.Memory;
+using Bjd.Memory;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -596,6 +596,16 @@ namespace Bjd.Net.Sockets
             using (var buf = LineBufferRecv(timeout, iLife))
             {
                 return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
+            }
+        }
+
+        // 【１行受信】
+        //切断されている場合、nullが返される
+        public CharsData AsciiRecvChars(int timeout, ILife iLife)
+        {
+            using (var buf = LineBufferRecv(timeout, iLife))
+            {
+                return buf == null ? null : buf.ToAsciiCharsData();
             }
         }
 

@@ -19,7 +19,7 @@ namespace Bjd.Logs
     {
         [ThreadStatic]
         private static StringBuilder sb;
-        private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
+        private static readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
         private readonly List<ILogService> _logServices;
@@ -497,16 +497,18 @@ namespace Bjd.Logs
         internal void WriteLineAll(ref TraceStruct info, Action<ILogService, string> action)
         {
             var sb = GetSB();
-            var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
-            var tidtext = info.tid.ToString().PadLeft(3);
+            //var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
+            //var tidtext = info.tid.ToString().PadLeft(3);
             //var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
 
             sb.Append('[');
-            sb.Append(dateText);
+            //sb.Append(dateText);
+            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
             sb.Append("][");
             sb.Append(_pid);
             sb.Append("][");
-            sb.Append(tidtext);
+            //sb.Append(tidtext);
+            sb.AppendFormat("{0,3:###}", info.tid);
             sb.Append("] ");
             sb.Append(info.ind);
             sb.Append(info.message);
@@ -522,16 +524,18 @@ namespace Bjd.Logs
         internal void WriteLineAll(ref TraceStruct info)
         {
             var sb = GetSB();
-            var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
+            //var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
             var tidtext = info.tid.ToString().PadLeft(3);
             //var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
 
             sb.Append('[');
-            sb.Append(dateText);
+            //sb.Append(dateText);
+            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
             sb.Append("][");
             sb.Append(_pid);
             sb.Append("][");
-            sb.Append(tidtext);
+            //sb.Append(tidtext);
+            sb.AppendFormat("{0,3:###}", info.tid);
             sb.Append("] ");
             sb.Append(info.ind);
             sb.Append(info.message);

@@ -8,7 +8,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Threading;
-using Bjd.Common.Memory;
+using Bjd.Memory;
 
 namespace Bjd.Utils
 {

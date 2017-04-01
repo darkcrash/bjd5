@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bjd.Memory;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -46,6 +47,12 @@ namespace Bjd.Common.IO
         {
             return _fs.Read(buffer, offset, count);
         }
+
+        public int Read(BufferData buffer)
+        {
+            return _fs.Read(buffer.Data, 0, buffer.Length);
+        }
+
 
         public override long Seek(long offset, SeekOrigin origin)
         {

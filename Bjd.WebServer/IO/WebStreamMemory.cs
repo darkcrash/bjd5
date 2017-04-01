@@ -1,4 +1,4 @@
-﻿using Bjd.Common.Memory;
+﻿using Bjd.Memory;
 using System;
 using System.IO;
 

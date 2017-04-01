@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
-using Bjd.Common.Memory;
+using Bjd.Memory;
 
 namespace Bjd.Net.Sockets
 {
