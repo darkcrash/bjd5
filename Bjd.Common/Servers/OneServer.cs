@@ -156,7 +156,8 @@ namespace Bjd.Servers
 
         protected override void OnStopThread()
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnStopThread  ");
+            //_kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnStopThread  ");
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".OnStopThread  ");
             OnStopServer(); //子クラスのスレッド停止処理
             if (ssl != null)
             {
@@ -209,7 +210,8 @@ namespace Bjd.Servers
 
         protected override bool OnStartThread()
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnStartThread  ");
+            //_kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnStartThread  ");
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".OnStartThread  ");
 
             var result = OnStartServer(); //子クラスのスレッド開始処理
             if (!result) return false;
@@ -241,7 +243,8 @@ namespace Bjd.Servers
 
         protected override void OnRunThread()
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnRunThread  ");
+            //_kernel.Logger.TraceInformation($"{this.GetType().FullName}.OnRunThread  ");
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".OnRunThread  ");
 
             var port = (int)_conf.Get("port");
             var bindStr = string.Format("{0}:{1} {2}", _oneBind.Addr, port, _oneBind.Protocol);
@@ -276,14 +279,14 @@ namespace Bjd.Servers
 
         private void _sockServerUdp_SocketStateChanged(object sender, EventArgs e)
         {
-            _kernel.Logger.DebugInformation($"{this.GetType().FullName}._sockServerUdp_SocketStateChanged  ");
+            _kernel.Logger.DebugInformation(this.GetType().FullName, "._sockServerUdp_SocketStateChanged  ");
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerUdp.SocketStateChanged -= _sockServerUdp_SocketStateChanged;
         }
 
         private void _sockServerTcp_SocketStateChanged(object sender, EventArgs e)
         {
-            _kernel.Logger.DebugInformation($"{this.GetType().FullName}._sockServerTcp_SocketStateChanged  ");
+            _kernel.Logger.DebugInformation(this.GetType().FullName, "._sockServerTcp_SocketStateChanged  ");
             if (_sockServerTcp.SockState == SockState.Idle) return;
             ThreadBaseKind = ThreadBaseKind.Running;
             _sockServerTcp.SocketStateChanged -= _sockServerTcp_SocketStateChanged;
@@ -291,7 +294,7 @@ namespace Bjd.Servers
 
         private void RunTcpServer(int port)
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}.RunTcpServer  ");
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".RunTcpServer  ");
 
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
@@ -330,7 +333,8 @@ namespace Bjd.Servers
                             if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
-                                _kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                                //_kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                                _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
                                 Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                                 return;
                             }
@@ -375,7 +379,8 @@ namespace Bjd.Servers
 
         private void RunUdpServer(int port)
         {
-            _kernel.Logger.TraceInformation($"{this.GetType().FullName}.RunUdpServer  ");
+            //_kernel.Logger.TraceInformation($"{this.GetType().FullName}.RunUdpServer  ");
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".RunUdpServer  ");
 
             //[C#]
             //ThreadBaseKind = ThreadBaseKind.Running;
@@ -408,7 +413,8 @@ namespace Bjd.Servers
                             if (Increment())
                             {
                                 // 同時接続数を超えたのでリクエストをキャンセルします
-                                _kernel.Logger.DebugInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
+                                //_kernel.Logger.DebugInformation($"OneServer.RunUdpServer over count:{Count}/multiple:{_multiple}");
+                                _kernel.Logger.DebugInformation($"OneServer.RunUdpServer over count:", Count.ToString(), "/multiple:", _multiple.ToString());
                                 Logger.Set(LogKind.Secure, _sockServerUdp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                                 return;
                             }

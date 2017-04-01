@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Bjd.Memory;
+using Bjd.Threading;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace Bjd.Logs
         private readonly string _fileName;
         private int disposeCount = 0;
         private object Lock = new object();
-        private int bufferSize = 32768;
+        private int bufferSize = 65536;
 
         public LogFileWriter(string fileName)
         {
@@ -28,7 +30,7 @@ namespace Bjd.Logs
         {
             if (_sw == null || disposeCount > 0) return;
             _sw.Flush();
-            Task.Delay(500).ContinueWith(_ => FlushTask());
+            Task.Delay(1000).ContinueWith(_ => FlushTask());
         }
 
         public void Dispose()
@@ -55,6 +57,21 @@ namespace Bjd.Logs
         {
             if (_sw == null || disposeCount > 0) return;
             _sw.WriteLine(message);
+        }
+
+        public void WriteLine(CharsData message)
+        {
+            if (_sw == null || disposeCount > 0) return;
+            _sw.WriteLine(message.Data, 0, message.DataSize);
+        }
+
+        public void WriteLine(StringBuilder message)
+        {
+            if (_sw == null || disposeCount > 0) return;
+            using (var chars = message.ToCharsData())
+            {
+                _sw.WriteLine(chars.Data, 0, chars.DataSize);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using System.IO;
 using Bjd.Utils;
 using Bjd.Threading;
 using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.Logs
 {
@@ -56,10 +57,19 @@ namespace Bjd.Logs
             Console.WriteLine(message);
         }
 
+        public void WriteLine(CharsData message)
+        {
+            Console.WriteLine(message.Data, 0, message.DataSize);
+        }
 
         public void TraceInformation(string message)
         {
             Console.WriteLine(message);
+        }
+
+        public void TraceInformation(CharsData message)
+        {
+            Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
         public void TraceWarning(string message)

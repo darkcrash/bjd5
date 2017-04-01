@@ -26,7 +26,7 @@ namespace Bjd.Threading
                 try
                 {
                     var t = queue[idx];
-                    if(t != null)
+                    if (t != null)
                     {
                         queue[idx] = null;
                         this.TryExecuteTask(t);
@@ -42,7 +42,7 @@ namespace Bjd.Threading
         {
             var idx = _cursorDequeue;
             var length = queue.Length;
-            for (var i =idx; i < (idx + count); i ++)
+            for (var i = idx; i < (idx + count); i++)
             {
                 var v = queue[i % length];
                 if (v == null) continue;

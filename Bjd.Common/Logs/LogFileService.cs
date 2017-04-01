@@ -7,13 +7,14 @@ using Bjd.Utils;
 using Bjd.Threading;
 using System.Threading.Tasks;
 using System.Threading;
+using Bjd.Memory;
 
 namespace Bjd.Logs
 {
     public class LogFileService : IDisposable, ILogService
     {
 
-        private readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
+        private readonly SequentialTaskScheduler sts = LogStaticMembers.TaskScheduler;
         private readonly String _saveDirectory;
         private readonly int _normalLogKind;
         private readonly int _secureLogKind;
@@ -81,17 +82,28 @@ namespace Bjd.Logs
 
                 if (isDisposed) return;
 
-                // セキュリティログは、表示制限に関係なく書き込む
-                if (_secureLog != null && oneLog.IsSecure())
+                var isSecureLog = _secureLog != null;
+                var isNormalLog = _normalLog != null;
+                if (isSecureLog || isNormalLog)
                 {
-                    _secureLog.WriteLine(oneLog.ToString());
+                    using (var logChars = oneLog.GetChars())
+                    {
+                        // セキュリティログは、表示制限に関係なく書き込む
+                        if (isSecureLog && oneLog.IsSecure())
+                        {
+                            //_secureLog.WriteLine(oneLog.ToString());
+                            _secureLog.WriteLine(logChars);
+                        }
+                        // 通常ログの場合
+                        if (isNormalLog)
+                        {
+                            // ルール適用除外　もしくは　表示対象になっている場合
+                            //_normalLog.WriteLine(oneLog.ToString());
+                            _normalLog.WriteLine(logChars);
+                        }
+                    }
                 }
-                // 通常ログの場合
-                if (_normalLog != null)
-                {
-                    // ルール適用除外　もしくは　表示対象になっている場合
-                    _normalLog.WriteLine(oneLog.ToString());
-                }
+
             }
             catch (IOException) { }
             finally
@@ -388,9 +400,15 @@ namespace Bjd.Logs
         public void WriteLine(string message)
         {
         }
+        public void WriteLine(CharsData message)
+        {
+        }
 
 
         public void TraceInformation(string message)
+        {
+        }
+        public void TraceInformation(CharsData message)
         {
         }
 

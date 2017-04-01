@@ -9,23 +9,23 @@ namespace Bjd.Memory
 {
     public class CharsPool : PoolBase<CharsData>
     {
-        const int bufferSizeXXXXL = 67108864;
-        const int bufferSizeXXXL = 16777216;
-        const int bufferSizeXXL = 4194304;
-        const int bufferSizeXL = 1048576;
-        const int bufferSizeL = 262144;
-        const int bufferSizeM = 65536;
-        const int bufferSizeS = 4096;
-        const int bufferSizeXS = 1024;
+        const int bufferSizeXXXXL = 16777216;
+        const int bufferSizeXXXL = 4194304;
+        const int bufferSizeXXL = 1048576;
+        const int bufferSizeXL = 4096;
+        const int bufferSizeL = 256;
+        const int bufferSizeM = 128;
+        const int bufferSizeS = 64;
+        const int bufferSizeXS = 32;
 
-        private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, bufferSizeXXXXL);
-        private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, bufferSizeXXXL);
-        private readonly static CharsPool ExtraExtraLarge = new CharsPool(5, bufferSizeXXL);
-        private readonly static CharsPool ExtraLarge = new CharsPool(20, bufferSizeXL);
-        private readonly static CharsPool Large = new CharsPool(80, bufferSizeL);
-        private readonly static CharsPool Medium = new CharsPool(320, bufferSizeM);
-        private readonly static CharsPool Small = new CharsPool(1280, bufferSizeS);
-        private readonly static CharsPool ExtraSmall = new CharsPool(5120, bufferSizeXS);
+        private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, 1, bufferSizeXXXXL);
+        private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, 2, bufferSizeXXXL);
+        private readonly static CharsPool ExtraExtraLarge = new CharsPool(2, 4, bufferSizeXXL);
+        private readonly static CharsPool ExtraLarge = new CharsPool(4, 8, bufferSizeXL);
+        private readonly static CharsPool Large = new CharsPool(16, 16384, bufferSizeL);
+        private readonly static CharsPool Medium = new CharsPool(128, 16384, bufferSizeM);
+        private readonly static CharsPool Small = new CharsPool(2048, 65536, bufferSizeS);
+        private readonly static CharsPool ExtraSmall = new CharsPool(131072, 262144, bufferSizeXS);
 
         public static CharsData Get(long length)
         {
@@ -49,10 +49,10 @@ namespace Bjd.Memory
 
         private int _bufferSize;
 
-        private CharsPool(int pSize, int bSize) : base()
+        private CharsPool(int pSize, int pMaxSize, int bSize) : base()
         {
             _bufferSize = bSize;
-            InitializePool(pSize);
+            InitializePool(pSize, pMaxSize);
         }
 
         ~CharsPool()

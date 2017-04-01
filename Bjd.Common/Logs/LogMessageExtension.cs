@@ -52,17 +52,17 @@ namespace Bjd.Logs
                                  _dt.Minute, _dt.Second);
         }
 
-        public static  string Kind(this LogMessageStruct msg)
+        public static string Kind(this LogMessageStruct msg)
         {
             return msg._logKind.ToString();
         }
 
-        public static  String NameTag(this LogMessageStruct msg)
+        public static String NameTag(this LogMessageStruct msg)
         {
             return msg._nameTag;
         }
 
-        public static  string ThreadId(this LogMessageStruct msg)
+        public static string ThreadId(this LogMessageStruct msg)
         {
             return msg._threadId.ToString();
         }

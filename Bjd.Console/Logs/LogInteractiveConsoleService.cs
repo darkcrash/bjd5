@@ -7,6 +7,7 @@ using Bjd.Utils;
 using Bjd.Threading;
 using System.Threading;
 using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.Logs
 {
@@ -59,6 +60,7 @@ namespace Bjd.Logs
             OnAppended();
         }
 
+
         public void Append(LogMessage oneLog)
         {
             if (!DetailEnabled && oneLog.LogKind == LogKind.Detail) return;
@@ -70,12 +72,22 @@ namespace Bjd.Logs
         {
             Write(message);
         }
+        public void WriteLine(CharsData message)
+        {
+            Write(message.ToString());
+        }
 
 
         public void TraceInformation(string message)
         {
             if (!InformationEnabled) return;
             Write(message);
+        }
+
+        public void TraceInformation(CharsData message)
+        {
+            if (!InformationEnabled) return;
+            Write(message.ToString());
         }
 
         public void TraceWarning(string message)

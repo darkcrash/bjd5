@@ -1,4 +1,5 @@
 ﻿using Bjd.Logs;
+using Bjd.Memory;
 using Bjd.Threading;
 using System;
 using System.IO;
@@ -33,10 +34,19 @@ namespace Bjd.Test.Logs
         {
             _helper.WriteLine(message);
         }
+        public void WriteLine(CharsData message)
+        {
+            _helper.WriteLine(message.ToString());
+        }
+
 
         public void TraceInformation(string message)
         {
             _helper.WriteLine(message);
+        }
+        public void TraceInformation(CharsData message)
+        {
+            _helper.WriteLine(message.ToString());
         }
 
         public void TraceWarning(string message)

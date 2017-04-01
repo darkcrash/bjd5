@@ -18,14 +18,14 @@ namespace Bjd.Memory
         const int bufferSizeS = 4096;
         const int bufferSizeXS = 1024;
 
-        private readonly static BufferPool ExtraExtraExtraExtraLarge = new BufferPool(0, bufferSizeXXXXL);
-        private readonly static BufferPool ExtraExtraExtraLarge = new BufferPool(0, bufferSizeXXXL);
-        private readonly static BufferPool ExtraExtraLarge = new BufferPool(5, bufferSizeXXL);
-        private readonly static BufferPool ExtraLarge = new BufferPool(20, bufferSizeXL);
-        private readonly static BufferPool Large = new BufferPool(80, bufferSizeL);
-        private readonly static BufferPool Medium = new BufferPool(320, bufferSizeM);
-        private readonly static BufferPool Small = new BufferPool(1280, bufferSizeS);
-        private readonly static BufferPool ExtraSmall = new BufferPool(5120, bufferSizeXS);
+        private readonly static BufferPool ExtraExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXXL);
+        private readonly static BufferPool ExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXL);
+        private readonly static BufferPool ExtraExtraLarge = new BufferPool(4, 32, bufferSizeXXL);
+        private readonly static BufferPool ExtraLarge = new BufferPool(8, 64, bufferSizeXL);
+        private readonly static BufferPool Large = new BufferPool(128, 512, bufferSizeL);
+        private readonly static BufferPool Medium = new BufferPool(256, 1024, bufferSizeM);
+        private readonly static BufferPool Small = new BufferPool(512, 1024, bufferSizeS);
+        private readonly static BufferPool ExtraSmall = new BufferPool(512, 1024, bufferSizeXS);
 
         public static BufferData GetExtraLarge()
         {
@@ -70,10 +70,10 @@ namespace Bjd.Memory
 
         private int _bufferSize;
 
-        private BufferPool(int pSize, int bSize) : base()
+        private BufferPool(int pSize, int pMaxSize, int bSize) : base()
         {
             _bufferSize = bSize;
-            InitializePool(pSize);
+            InitializePool(pSize, pMaxSize);
         }
         ~BufferPool()
         {

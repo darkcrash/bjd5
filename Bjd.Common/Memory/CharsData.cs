@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Bjd.Memory
 {
@@ -13,6 +14,7 @@ namespace Bjd.Memory
         public readonly int Length;
         private CharsPool _pool;
         private GCHandle handle;
+        public Action<Task> DisposeAction { get; private set; }
 
         public ref char this[int i] => ref Data[i];
 
@@ -23,6 +25,7 @@ namespace Bjd.Memory
             DataSize = 0;
             _pool = pool;
             handle = GCHandle.Alloc(Data, GCHandleType.Pinned);
+            DisposeAction = (a) => Dispose();
         }
 
         void IPoolBuffer.Initialize()
@@ -40,6 +43,14 @@ namespace Bjd.Memory
             handle.Free();
             Data = null;
             _pool = null;
+            DisposeAction = null;
+        }
+
+
+
+        public override string ToString()
+        {
+            return new string(Data, 0, DataSize);
         }
     }
 }

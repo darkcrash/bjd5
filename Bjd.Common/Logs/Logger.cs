@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Bjd.Threading;
 using System.Diagnostics;
 using System.Text;
+using Bjd.Memory;
+using System.Linq;
 
 namespace Bjd.Logs
 {
@@ -17,8 +19,6 @@ namespace Bjd.Logs
     //テスト用に、Logger.create()でログ出力を処理を一切行わないインスタンスが作成される
     public class Logger
     {
-        [ThreadStatic]
-        private static StringBuilder sb;
         private static readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
@@ -410,15 +410,32 @@ namespace Bjd.Logs
         [Conditional("DEBUG")]
         public void DebugInformation(string message)
         {
-            FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+            FormatTraceInformation(message);
+        }
+
+        [Conditional("DEBUG")]
+        public void DebugInformation(params string[] messages)
+        {
+            //FormatWriteLine(messages.ToCharsData(), (l, m) => l.TraceInformation(m));
+            FormatTraceInformation(messages);
         }
 
 
         [Conditional("TRACE")]
         public void TraceInformation(string message)
         {
-            FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+            FormatTraceInformation(message);
         }
+
+        [Conditional("TRACE")]
+        public void TraceInformation(params string[] messages)
+        {
+            //FormatWriteLine(messages.ToCharsData(), (l, m) => l.TraceInformation(m));
+            FormatTraceInformation(messages);
+        }
+
 
         [Conditional("TRACE")]
         public void TraceWarning(string message)
@@ -476,42 +493,48 @@ namespace Bjd.Logs
             t.Start(sts);
         }
 
-        internal TraceStruct CreateTraceInfo(string message)
+        protected virtual void FormatTraceInformation(string message)
         {
+            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
             TraceStruct info = new TraceStruct();
-            info.date = DateTime.Now;
-            info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            info.ind = indent;
-            info.message = message;
-            return info;
+            CreateTraceInfo(message, ref info);
+
+            Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
+            t.Start(sts);
         }
+        protected virtual void FormatTraceInformation(string[] messages)
+        {
+            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
+            TraceStruct info = new TraceStruct();
+            CreateTraceInfo(messages, ref info);
+
+            Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
+            t.Start(sts);
+        }
+
+
 
         internal void CreateTraceInfo(string message, ref TraceStruct info)
         {
+            info.log = this;
             info.date = DateTime.Now;
             info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
             info.ind = indent;
             info.message = message;
+        }
+
+        internal void CreateTraceInfo(string[] messages, ref TraceStruct info)
+        {
+            info.log = this;
+            info.date = DateTime.Now;
+            info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            info.ind = indent;
+            info.messages = messages;
         }
 
         internal void WriteLineAll(ref TraceStruct info, Action<ILogService, string> action)
         {
-            var sb = GetSB();
-            //var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
-            //var tidtext = info.tid.ToString().PadLeft(3);
-            //var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
-
-            sb.Append('[');
-            //sb.Append(dateText);
-            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
-            sb.Append("][");
-            sb.Append(_pid);
-            sb.Append("][");
-            //sb.Append(tidtext);
-            sb.AppendFormat("{0,3:###}", info.tid);
-            sb.Append("] ");
-            sb.Append(info.ind);
-            sb.Append(info.message);
+            var sb = GetStringBuilder(ref info);
 
             var msg = sb.ToString();
 
@@ -521,53 +544,56 @@ namespace Bjd.Logs
             }
 
         }
+
         internal void WriteLineAll(ref TraceStruct info)
         {
-            var sb = GetSB();
-            //var dateText = info.date.ToString("HH\\:mm\\:ss\\.fff");
-            var tidtext = info.tid.ToString().PadLeft(3);
-            //var msg = $"[{dateText}][{_pid}][{tidtext}] {info.ind}{info.message}";
-
-            sb.Append('[');
-            //sb.Append(dateText);
-            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
-            sb.Append("][");
-            sb.Append(_pid);
-            sb.Append("][");
-            //sb.Append(tidtext);
-            sb.AppendFormat("{0,3:###}", info.tid);
-            sb.Append("] ");
-            sb.Append(info.ind);
-            sb.Append(info.message);
-
-            var msg = sb.ToString();
-
+            var msg = GetStringBuilder(ref info).ToString();
             foreach (var writer in _logServices)
             {
                 writer.WriteLine(msg);
             }
         }
-
-        private static StringBuilder GetSB()
+        internal void TraceInformationAll(ref TraceStruct info)
         {
-            if (sb == null)
+            var msg = GetStringBuilder(ref info).ToString();
+            foreach (var writer in _logServices)
             {
-                sb = new StringBuilder();
+                writer.TraceInformation(msg);
             }
-            else
-            {
-                sb.Clear();
-            }
+        }
+
+
+        private StringBuilder GetStringBuilder(ref TraceStruct info)
+        {
+            var sb = LogStaticMembers.GetStringBuilder();
+
+            sb.Append('[');
+            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
+            sb.Append("][");
+            sb.Append(_pid);
+            sb.Append("][");
+            sb.AppendFormat("{0,3:###}", info.tid);
+            sb.Append("] ");
+            sb.Append(info.ind);
+            if (info.message != null) sb.Append(info.message);
+            if (info.messages != null) foreach (var msg in info.messages) sb.Append(msg);
+
             return sb;
         }
+
+
 
         internal struct TraceStruct
         {
             public static TraceStruct Empty;
+            public Logger log;
             public DateTime date;
             public int tid;
             public string ind;
             public string message;
+            public string[] messages;
+            public void TraceInformationAll() => log.TraceInformationAll(ref this);
+            public void WriteLineAll() => log.WriteLineAll(ref this);
         }
     }
 }
