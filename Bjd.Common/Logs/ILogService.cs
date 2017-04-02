@@ -8,8 +8,10 @@ namespace Bjd.Logs
     {
         void Append(LogMessage oneLog);
 
+        void WriteLine(CharsData message);
         void WriteLine(string message);
-        
+
+        void TraceInformation(CharsData message);
         void TraceInformation(string message);
 
 

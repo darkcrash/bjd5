@@ -552,19 +552,23 @@ namespace Bjd.Logs
 
         internal void WriteLineAll(TraceStruct info)
         {
-            var msg = GetStringBuilder(ref info).ToString();
-            foreach (var writer in _logServices)
+            using (var msg = GetCharsData(ref info))
             {
-                writer.WriteLine(msg);
+                foreach (var writer in _logServices)
+                {
+                    writer.WriteLine(msg);
+                }
             }
         }
         internal void TraceInformationAll(Task<TraceStruct> task, object state)
         {
             var info = task.Result;
-            var msg = GetStringBuilder(ref info).ToString();
-            foreach (var writer in _logServices)
+            using (var msg = GetCharsData(ref info))
             {
-                writer.TraceInformation(msg);
+                foreach (var writer in _logServices)
+                {
+                    writer.TraceInformation(msg);
+                }
             }
         }
 
@@ -572,6 +576,25 @@ namespace Bjd.Logs
         private StringBuilder GetStringBuilder(ref TraceStruct info)
         {
             var sb = LogStaticMembers.GetStringBuilder();
+
+            sb.Append('[');
+            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
+            sb.Append("][");
+            sb.Append(_pid);
+            sb.Append("][");
+            sb.AppendFormat("{0,3:###}", info.tid);
+            sb.Append("] ");
+            sb.Append(info.ind);
+            if (info.message != null) sb.Append(info.message);
+            if (info.messages != null) foreach (var msg in info.messages) sb.Append(msg);
+
+            return sb;
+        }
+
+        private CharsData GetCharsData(ref TraceStruct info)
+        {
+            var len = 30 + info.ind.Length + (info.message?.Length ?? 0) + (info.messages?.Sum(_ => _.Length) ?? 0);
+            var sb = CharsPool.Get(len);
 
             sb.Append('[');
             sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);

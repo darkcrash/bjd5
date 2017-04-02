@@ -662,6 +662,12 @@ namespace Bjd.Net.Sockets
                 try { this.Cancel(); }
                 catch { }
 
+                if (eventArgs != null)
+                {
+                    eventArgs.Dispose();
+                    eventArgs = null;
+                }
+
                 if (receiveTask != null)
                 {
                     //try { receiveTask.Wait(); }

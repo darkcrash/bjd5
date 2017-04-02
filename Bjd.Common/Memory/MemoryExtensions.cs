@@ -40,7 +40,7 @@ namespace Bjd.Memory
         {
             var len = array.Sum(_ => _?.Length ?? 0);
             var chars = CharsPool.GetMaximum(len);
-            foreach(var msg in array)
+            foreach (var msg in array)
             {
                 if (msg == null) continue;
                 var l = msg.Length;
@@ -48,6 +48,27 @@ namespace Bjd.Memory
                 chars.DataSize += l;
             }
             return chars;
+        }
+
+        public static void Append(this CharsData chars, string appendText)
+        {
+            var len = appendText.Length;
+            appendText.CopyTo(0, chars.Data, chars.DataSize, len);
+            chars.DataSize += len;
+        }
+
+        public static void Append(this CharsData chars, char appendChar)
+        {
+            chars.Data[chars.DataSize] = appendChar;
+            chars.DataSize++;
+        }
+
+        public static void AppendFormat(this CharsData chars, string appendFormatText, object param)
+        {
+            var appendText = string.Format(appendFormatText, param);
+            var len = appendText.Length;
+            appendText.CopyTo(0, chars.Data, chars.DataSize, len);
+            chars.DataSize += len;
         }
 
     }

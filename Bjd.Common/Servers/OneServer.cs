@@ -178,11 +178,6 @@ namespace Bjd.Servers
             if (_sockServerUdp != null) _sockServerUdp.Close();
 
             // 子スレッドの停止
-            //foreach (var o in _childs.ToArray())
-            //{
-            //    try { o.Cancel(); }
-            //    catch { }
-            //}
             foreach (var o in _cArray)
             {
                 if (o == null) continue;
@@ -193,10 +188,6 @@ namespace Bjd.Servers
 
             // クライアント接続終了まで待機する
             // 全部の子スレッドが終了するのを待つ
-            //while (Count() > 0)
-            //{
-            //    Thread.Sleep(200);
-            //}
             _childNone.Wait();
 
             _sockServerTcp = null;
@@ -255,7 +246,6 @@ namespace Bjd.Servers
             Logger.Set(LogKind.Normal, null, 9000000, bindStr);
 
             //Ver5.9,2 Java fix
-            //_sockServer = new SockServer(this.Kernel,_oneBind.Protocol);
             switch (_oneBind.Protocol)
             {
                 case ProtocolKind.Tcp:
@@ -295,10 +285,6 @@ namespace Bjd.Servers
         private void RunTcpServer(int port)
         {
             _kernel.Logger.TraceInformation(this.GetType().FullName, ".RunTcpServer  ");
-
-            //[C#]
-            //ThreadBaseKind = ThreadBaseKind.Running;
-
 
             if (!_sockServerTcp.Bind(_oneBind.Addr, port, listenMax))
             {
@@ -448,15 +434,13 @@ namespace Bjd.Servers
         }
         private int StartTask(SockObj o)
         {
-            //lock (SyncObj1)
-            //{
-            //    _childs.Add(o);
-            //}
-            if (_cArrayIndex >= int.MaxValue)
+            var idx = Interlocked.Increment(ref _cArrayIndex);
+            if (idx >= _cArrayMax)
             {
+                idx = idx % _cArrayMax;
+                Interlocked.CompareExchange(ref _cArrayIndex, idx, _cArrayMax + idx);
                 _cArrayIndex = _cArrayIndex % _cArrayMax;
             }
-            var idx = Interlocked.Increment(ref _cArrayIndex) % _cArrayMax;
             _cArray[idx] = o;
             return idx;
         }
@@ -464,16 +448,16 @@ namespace Bjd.Servers
         private bool Increment()
         {
             if (_count >= _multiple) return true;
-            System.Threading.Interlocked.Increment(ref _count);
-            if (_count > 0) _childNone.Reset();
+            var cnt = System.Threading.Interlocked.Increment(ref _count);
+            if (cnt == 1) _childNone.Reset();
             return false;
         }
 
 
         private void Decrement()
         {
-            System.Threading.Interlocked.Decrement(ref _count);
-            if (_count == 0) _childNone.Set();
+            var cnt = System.Threading.Interlocked.Decrement(ref _count);
+            if (cnt == 0) _childNone.Set();
         }
 
 
@@ -488,11 +472,6 @@ namespace Bjd.Servers
             catch { }
             try { child.Dispose(); }
             catch { }
-
-            //lock (SyncObj1)
-            //{
-            //    _childs.Remove(child);
-            //}
         }
 
         //ACL制限のチェック
@@ -515,8 +494,6 @@ namespace Bjd.Servers
         {
             var sockObj = (SockObj)o;
 
-            //System.Threading.Thread.CurrentThread.Name = this.GetType().FullName;
-
             //クライアントのホスト名を逆引きする
             sockObj.Resolve(useResolve, Logger);
 
@@ -524,7 +501,6 @@ namespace Bjd.Servers
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
 
             //Ver5.8.9 Java fix 接続単位のすべての例外をキャッチしてプログラムの停止を避ける
-            //OnSubThread(sockObj); //接続単位の処理
             try
             {
                 OnSubThread(sockObj); //接続単位の処理
