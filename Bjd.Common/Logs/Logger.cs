@@ -491,6 +491,7 @@ namespace Bjd.Logs
 
             Task t = new System.Threading.Tasks.Task(() => WriteLineAll(ref info, action));
             t.Start(sts);
+            info = TraceStruct.Empty;
         }
 
         protected virtual void FormatTraceInformation(string message)
@@ -499,8 +500,11 @@ namespace Bjd.Logs
             TraceStruct info = new TraceStruct();
             CreateTraceInfo(message, ref info);
 
-            Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
-            t.Start(sts);
+            //Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
+            //t.Start(sts);
+
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(TraceInformationAll, sts);
         }
         protected virtual void FormatTraceInformation(string[] messages)
         {
@@ -508,15 +512,17 @@ namespace Bjd.Logs
             TraceStruct info = new TraceStruct();
             CreateTraceInfo(messages, ref info);
 
-            Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
-            t.Start(sts);
+            //Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
+            //t.Start(sts);
+
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(TraceInformationAll, sts);
         }
 
 
 
         internal void CreateTraceInfo(string message, ref TraceStruct info)
         {
-            info.log = this;
             info.date = DateTime.Now;
             info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
             info.ind = indent;
@@ -525,7 +531,6 @@ namespace Bjd.Logs
 
         internal void CreateTraceInfo(string[] messages, ref TraceStruct info)
         {
-            info.log = this;
             info.date = DateTime.Now;
             info.tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
             info.ind = indent;
@@ -545,23 +550,22 @@ namespace Bjd.Logs
 
         }
 
-        internal void WriteLineAll(ref TraceStruct info)
+        internal void WriteLineAll(TraceStruct info)
         {
             var msg = GetStringBuilder(ref info).ToString();
             foreach (var writer in _logServices)
             {
                 writer.WriteLine(msg);
             }
-            info = TraceStruct.Empty;
         }
-        internal void TraceInformationAll(ref TraceStruct info)
+        internal void TraceInformationAll(Task<TraceStruct> task, object state)
         {
+            var info = task.Result;
             var msg = GetStringBuilder(ref info).ToString();
             foreach (var writer in _logServices)
             {
                 writer.TraceInformation(msg);
             }
-            info = TraceStruct.Empty;
         }
 
 
@@ -584,18 +588,14 @@ namespace Bjd.Logs
         }
 
 
-
         internal struct TraceStruct
         {
             public static TraceStruct Empty;
-            public Logger log;
             public DateTime date;
             public int tid;
             public string ind;
             public string message;
             public string[] messages;
-            public void TraceInformationAll() => log.TraceInformationAll(ref this);
-            public void WriteLineAll() => log.WriteLineAll(ref this);
         }
     }
 }

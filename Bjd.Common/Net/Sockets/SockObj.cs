@@ -218,9 +218,14 @@ namespace Bjd.Net.Sockets
                 // TODO: 大きなフィールドを null に設定します。
                 Kernel.Events.Cancel -= this.KernelCancel;
 
+                _RemoteAddress = null;
+                _RemoteIp = null;
+                _LocalAddress = null;
+                _LocalIp = null;
+
                 //if (!this.IsCancel) this.Cancel();
-                this.cancelTokenSource.Dispose();
-                this.cancelTokenSource = null;
+                if (cancelTokenSource != null) cancelTokenSource.Dispose();
+                cancelTokenSource = null;
                 this.SocketStateChanged = null;
                 this._lastError = null;
                 this.Kernel = null;

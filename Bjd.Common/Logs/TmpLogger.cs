@@ -59,8 +59,7 @@ namespace Bjd.Logs
 
             foreach(var t in _ts)
             {
-                var v = t;
-                logger.WriteLineAll(ref v);
+                logger.WriteLineAll(t);
             }
             _ts.Clear();
 

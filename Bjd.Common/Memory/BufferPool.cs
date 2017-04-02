@@ -23,7 +23,7 @@ namespace Bjd.Memory
         private readonly static BufferPool ExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXL);
         private readonly static BufferPool ExtraExtraLarge = new BufferPool(4, 32, bufferSizeXXL);
         private readonly static BufferPool ExtraLarge = new BufferPool(8, 64, bufferSizeXL);
-        private readonly static BufferPool Large = new BufferPool(128, 512, bufferSizeL);
+        private readonly static BufferPool Large = new BufferPool(64, 512, bufferSizeL);
         private readonly static BufferPool Medium = new BufferPool(256, 1024, bufferSizeM);
         private readonly static BufferPool Small = new BufferPool(256, 1024, bufferSizeS);
         private readonly static BufferPool ExtraSmall = new BufferPool(256, 1024, bufferSizeXS);

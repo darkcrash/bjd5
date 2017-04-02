@@ -11,7 +11,7 @@ namespace Bjd.Net.Sockets
     {
         static byte[] empty = new byte[0];
 
-        const int MaxBlockSize = 1024;
+        const int MaxBlockSize = 2048;
         const byte Cr = 0x0d;
         const byte Lf = 0x0A;
 
@@ -26,6 +26,7 @@ namespace Bjd.Net.Sockets
 
         int _length = 0;
         long _totallength = 0;
+        int beforeSize = int.MaxValue;
 
         int enqueueCounter = 0;
         int dequeueCounter = 0;
@@ -99,12 +100,12 @@ namespace Bjd.Net.Sockets
             if (_current != null)
             {
                 _current.Dispose();
-                //_current = null;
                 //throw new InvalidOperationException("conflict GetWriteSegment");
             }
             var sp = _totallength;
             if (sp > Space) sp = Space;
             if (sp > 65536) sp = 65536;
+            if (sp > beforeSize * 4) sp = beforeSize * 4;
             _current = BufferPool.Get(sp);
             return _current.GetSegment(Space);
         }
@@ -155,6 +156,8 @@ namespace Bjd.Net.Sockets
 
             if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
             enqueueCounter++;
+
+            beforeSize = len;
 
             //データベースの内容が変化した
             SetModify(true);

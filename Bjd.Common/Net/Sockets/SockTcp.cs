@@ -28,6 +28,8 @@ namespace Bjd.Net.Sockets
         private bool isSsl = false;
         private int hash;
         private string hashText;
+        private SocketAsyncEventArgs eventArgs;
+
 
         //***************************************************************************
         //パラメータのKernelはSockObjにおけるTrace()のためだけに使用されているので、
@@ -165,16 +167,26 @@ namespace Bjd.Net.Sockets
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
             {
-                var recvBufSeg = _sockQueue.GetWriteSegment();
                 if (isSsl)
                 {
+                    var recvBufSeg = _sockQueue.GetWriteSegment();
                     receiveTask = _oneSsl.ReadAsync(recvBufSeg, this.CancelToken);
+                    receiveCompleteTask = receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                 }
                 else
                 {
-                    receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
+                    //receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
+                    if (eventArgs == null)
+                    {
+                        receiveCompleteTask = Task.CompletedTask;
+                        eventArgs = new SocketAsyncEventArgs();
+                        eventArgs.SocketFlags = SocketFlags.None;
+                        eventArgs.Completed += E_Completed;
+                    }
+                    var recvBufSeg = _sockQueue.GetWriteSegment();
+                    eventArgs.SetBuffer(recvBufSeg.Array, recvBufSeg.Offset, recvBufSeg.Count);
+                    _socket.ReceiveAsync(eventArgs);
                 }
-                receiveCompleteTask = receiveTask.ContinueWith(this.EndReceive, this.CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
             catch (Exception ex)
             {
@@ -182,6 +194,20 @@ namespace Bjd.Net.Sockets
                 Kernel.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
                 this.SetErrorReceive();
             }
+        }
+
+        private void E_Completed(object sender, SocketAsyncEventArgs e)
+        {
+            if (this.CancelToken.IsCancellationRequested) return;
+
+            if (e.SocketError == SocketError.Success)
+            {
+                this.EndReceive(Task<int>.FromResult(e.BytesTransferred));
+                return;
+            }
+
+            Kernel.Logger.TraceWarning($"{hashText} SockTcp.E_Completed {e.SocketError}");
+
         }
 
         public void EndReceive(Task<int> result)
@@ -638,9 +664,10 @@ namespace Bjd.Net.Sockets
 
                 if (receiveTask != null)
                 {
-                    try { receiveTask.Wait(); receiveTask = null; }
-                    catch { }
-                    finally { receiveTask = null; }
+                    //try { receiveTask.Wait(); }
+                    //catch { }
+                    //finally { receiveTask = null; }
+                    receiveTask = null;
                 }
                 if (receiveCompleteTask != null)
                 {
