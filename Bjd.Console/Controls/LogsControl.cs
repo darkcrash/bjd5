@@ -40,12 +40,12 @@ namespace Bjd.Console.Controls
             if (row == 0)
             {
                 internalBuffer = cContext.LogService.GetBuffer(VisibleRow - 1);
-                
+
                 context.Write($"[I] Infomation:{cContext.LogService.InformationEnabled} [D] Detail:{cContext.LogService.DetailEnabled} [W] Warnning:{cContext.LogService.WarningEnabled}");
                 base.Output(row, context);
                 return;
             }
-            var idx = VisibleRow - 1 - row;
+            var idx = (internalBuffer.Length - 1) - (row);
             if (internalBuffer.Length > idx)
             {
                 context.Write(internalBuffer[idx]);
