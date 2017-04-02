@@ -57,6 +57,7 @@ namespace Bjd.Net.Sockets
             _length = 0;
             _totallength = 0;
 
+            if (_current != null) _current.Dispose();
             _current = null;
             _nextBlocks = 0;
             _readBlocks = 0;
@@ -138,6 +139,7 @@ namespace Bjd.Net.Sockets
 
             if (buf.Length < len)
             {
+                buf.Dispose();
                 throw new OverflowException("queue block data overflow");
             }
 
@@ -523,6 +525,15 @@ namespace Bjd.Net.Sockets
                 if (disposing)
                 {
                     // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                }
+
+                if (_current != null) _current.Dispose();
+
+                for (var i = 0; i < MaxBlockSize; i++)
+                {
+                    if (_blocks[i] == null) continue;
+                    _blocks[i].Dispose();
+                    _blocks[i] = null;
                 }
 
                 _modifyEvent.Dispose();

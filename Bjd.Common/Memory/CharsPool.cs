@@ -66,5 +66,7 @@ namespace Bjd.Memory
             return new CharsData(_bufferSize, this);
         }
 
+        protected override int BufferSize => _bufferSize;
+
     }
 }

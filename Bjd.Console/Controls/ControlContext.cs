@@ -24,6 +24,7 @@ namespace Bjd.Console.Controls
 
         public MenuControl Menu { get; }
         public ServerControl Server { get; }
+        public BufferControl Buffer { get; }
         public LogsControl Logs { get; }
         public OptionControl Option { get; }
         public InfoControl Info { get; }
@@ -42,6 +43,9 @@ namespace Bjd.Console.Controls
 
             Server = new ServerControl(this);
             ctrls.Add(Server);
+
+            Buffer = new BufferControl(this);
+            ctrls.Add(Buffer);
 
             Logs = new LogsControl(this);
             ctrls.Add(Logs);
@@ -65,6 +69,10 @@ namespace Bjd.Console.Controls
             Server.Visible = true;
             Server.Focused = true;
             Server.Top = 3;
+
+            Buffer.Visible = false;
+            Buffer.Focused = true;
+            Buffer.Top = 3;
 
             Logs.Visible = false;
             Logs.Focused = true;

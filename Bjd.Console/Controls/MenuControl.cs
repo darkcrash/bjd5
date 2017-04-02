@@ -7,7 +7,7 @@ namespace Bjd.Console.Controls
 {
     public class MenuControl : Control
     {
-        private int maxMenu = 5;
+        private int maxMenu = 6;
         public MenuControl(ControlContext cc) : base(cc)
         {
             Row = 3;
@@ -29,10 +29,11 @@ namespace Bjd.Console.Controls
                 result = true;
             }
             cContext.Server.Visible = (ActiveMenu == 1);
-            cContext.Logs.Visible = (ActiveMenu == 2);
-            cContext.Option.Visible = (ActiveMenu == 3);
-            cContext.Info.Visible = (ActiveMenu == 4);
-            cContext.Service.Visible = (ActiveMenu == 5);
+            cContext.Buffer.Visible = (ActiveMenu == 2);
+            cContext.Logs.Visible = (ActiveMenu == 3);
+            cContext.Option.Visible = (ActiveMenu == 4);
+            cContext.Info.Visible = (ActiveMenu == 5);
+            cContext.Service.Visible = (ActiveMenu == 6);
 
             return result;
 
@@ -49,13 +50,15 @@ namespace Bjd.Console.Controls
                     context.Write("|");
                     context.Write(" Servers ", (ActiveMenu == 1 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 1 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Logs    ", (ActiveMenu == 2 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 2 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Buffers ", (ActiveMenu == 2 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 2 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Option  ", (ActiveMenu == 3 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 3 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Logs    ", (ActiveMenu == 3 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 3 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Info    ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Option  ", (ActiveMenu == 4 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 4 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
-                    context.Write(" Service ", (ActiveMenu == 5 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 5 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write(" Info    ", (ActiveMenu == 5 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 5 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
+                    context.Write("|");
+                    context.Write(" Service ", (ActiveMenu == 6 ? ConsoleColor.White : ConsoleColor.Gray), (ActiveMenu == 6 ? ConsoleColor.DarkBlue : ConsoleColor.Black));
                     context.Write("|");
                     context.WriteBlank();
                     break;

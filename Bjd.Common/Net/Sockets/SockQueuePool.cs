@@ -82,8 +82,8 @@ namespace Bjd.Net.Sockets
 
         public void Pool(ref SockQueue q)
         {
-            Interlocked.Decrement(ref _leaseCount);
-            if (poolSize < (_Count - _leaseCount))
+            var l =Interlocked.Decrement(ref _leaseCount);
+            if (poolSize < (_Count - l))
             {
                 Interlocked.Decrement(ref _Count);
                 q.Dispose();

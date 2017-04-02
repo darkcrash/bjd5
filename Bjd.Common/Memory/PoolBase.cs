@@ -13,6 +13,7 @@ namespace Bjd.Memory
     public abstract class PoolBase<T> : IDisposable where T : class, IPoolBuffer
     {
         internal static Logger _log;
+        internal static List<PoolBase<T>> PoolList = new List<PoolBase<T>>();
 
         private T[] _buffers;
         private int _poolSize = 0;
@@ -24,13 +25,14 @@ namespace Bjd.Memory
 
         protected PoolBase()
         {
+            PoolList.Add(this);
         }
 
         protected void InitializePool(int pSize, int pMaxSize)
         {
             _poolSize = pMaxSize;
             _buffers = new T[_poolSize];
-            for (int i = 0; i < pSize; i++) 
+            for (int i = 0; i < pSize; i++)
             {
                 _Count++;
                 _poolCount++;
@@ -46,6 +48,8 @@ namespace Bjd.Memory
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected abstract T CreateBuffer();
+
+        protected abstract int BufferSize { get; }
 
         public void Dispose()
         {
@@ -93,6 +97,7 @@ namespace Bjd.Memory
             Interlocked.Increment(ref _poolCount);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Increment(ref int _cursor)
         {
             var idx = Interlocked.Increment(ref _cursor);
@@ -105,6 +110,10 @@ namespace Bjd.Memory
             return idx;
         }
 
+        public string ToConsoleString()
+        {
+            return $"Size {BufferSize.ToString().PadLeft(10)} Pool(Now/Max) {_poolCount.ToString().PadLeft(5)} / {_poolSize.ToString().PadLeft(5)} Use:{_leaseCount.ToString().PadLeft(5)} Total:{_Count.ToString().PadLeft(5)}";
+        }
 
     }
 }
