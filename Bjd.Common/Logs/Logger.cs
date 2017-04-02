@@ -552,6 +552,7 @@ namespace Bjd.Logs
             {
                 writer.WriteLine(msg);
             }
+            info = TraceStruct.Empty;
         }
         internal void TraceInformationAll(ref TraceStruct info)
         {
@@ -560,6 +561,7 @@ namespace Bjd.Logs
             {
                 writer.TraceInformation(msg);
             }
+            info = TraceStruct.Empty;
         }
 
 

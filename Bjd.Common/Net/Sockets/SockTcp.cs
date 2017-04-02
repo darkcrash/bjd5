@@ -636,6 +636,19 @@ namespace Bjd.Net.Sockets
                 try { this.Cancel(); }
                 catch { }
 
+                if (receiveTask != null)
+                {
+                    try { receiveTask.Wait(); receiveTask = null; }
+                    catch { }
+                    finally { receiveTask = null; }
+                }
+                if (receiveCompleteTask != null)
+                {
+                    try { receiveCompleteTask.Wait(); }
+                    catch { }
+                    finally { receiveCompleteTask = null; }
+                }
+
                 //TCPのソケットをシャットダウンするとエラーになる（無視する）
                 try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
                 catch { }
@@ -652,19 +665,6 @@ namespace Bjd.Net.Sockets
                 {
                     _oneSsl.Close();
                     _oneSsl = null;
-                }
-
-                if (receiveTask != null)
-                {
-                    try { receiveTask.Wait(); receiveTask = null; }
-                    catch { }
-                    finally { receiveTask = null; }
-                }
-                if (receiveCompleteTask != null)
-                {
-                    try { receiveCompleteTask.Wait(); }
-                    catch { }
-                    finally { receiveCompleteTask = null; }
                 }
 
                 this._lastLineSend = null;

@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Bjd.Logs;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +12,7 @@ namespace Bjd.Memory
 {
     public abstract class PoolBase<T> : IDisposable where T : class, IPoolBuffer
     {
+        internal static Logger _log;
 
         private T[] _buffers;
         private int _poolSize = 0;
@@ -18,9 +21,11 @@ namespace Bjd.Memory
         private int _poolCount = 0;
         private int _cursorEnqueue = -1;
         private int _cursorDequeue = -1;
+        private GCHandle handle;
 
         protected PoolBase()
         {
+            handle = GCHandle.Alloc(this);
         }
 
         protected void InitializePool(int pSize, int pMaxSize)
@@ -52,6 +57,7 @@ namespace Bjd.Memory
                 _buffers[i] = null;
                 if (b != null) b.DisposeInternal();
             }
+            handle.Free();
         }
 
         public T Get()
@@ -67,7 +73,8 @@ namespace Bjd.Memory
                 return b;
             }
             Interlocked.Increment(ref _poolCount);
-            
+
+            if (_log != null) _log.DebugInformation("CreateBuffer");
             Interlocked.Increment(ref _Count);
             var newB = CreateBuffer();
             newB.Initialize();
@@ -79,6 +86,7 @@ namespace Bjd.Memory
             Interlocked.Decrement(ref _leaseCount);
             if (_poolSize <= _poolCount)
             {
+                if (_log != null) _log.DebugInformation("DisposeBuffer");
                 Interlocked.Decrement(ref _Count);
                 buf.DisposeInternal();
                 return;

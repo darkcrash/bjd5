@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bjd.Logs;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +27,7 @@ namespace Bjd.Memory
         private readonly static BufferPool Medium = new BufferPool(256, 1024, bufferSizeM);
         private readonly static BufferPool Small = new BufferPool(512, 1024, bufferSizeS);
         private readonly static BufferPool ExtraSmall = new BufferPool(512, 1024, bufferSizeXS);
+
 
         public static BufferData GetExtraLarge()
         {
