@@ -206,7 +206,8 @@ namespace Bjd.Net.Sockets
                 return;
             }
 
-            Kernel.Logger.TraceWarning($"{hashText} SockTcp.E_Completed {e.SocketError}");
+            this.SetErrorReceive();
+            Kernel.Logger.TraceError($"{hashText} SockTcp.E_Completed {e.SocketError}");
 
         }
 

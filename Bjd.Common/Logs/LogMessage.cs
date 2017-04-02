@@ -149,7 +149,7 @@ namespace Bjd.Logs
             sb.Append(_remoteHostname);
             sb.Append('\t');
             //sb.Append(MessageNo());
-            sb.Append(_messageNo);
+            sb.AppendFormat("{0:D7}", _messageNo);
             sb.Append('\t');
             //sb.Append(Message());
             sb.Append(_message);

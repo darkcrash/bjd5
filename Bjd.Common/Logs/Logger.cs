@@ -489,9 +489,8 @@ namespace Bjd.Logs
             TraceStruct info = new TraceStruct();
             CreateTraceInfo(message, ref info);
 
-            Task t = new System.Threading.Tasks.Task(() => WriteLineAll(ref info, action));
+            Task t = new System.Threading.Tasks.Task(() => WriteLineAll(info, action));
             t.Start(sts);
-            info = TraceStruct.Empty;
         }
 
         protected virtual void FormatTraceInformation(string message)
@@ -537,7 +536,7 @@ namespace Bjd.Logs
             info.messages = messages;
         }
 
-        internal void WriteLineAll(ref TraceStruct info, Action<ILogService, string> action)
+        internal void WriteLineAll(TraceStruct info, Action<ILogService, string> action)
         {
             var sb = GetStringBuilder(ref info);
 
