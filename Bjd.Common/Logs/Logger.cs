@@ -19,7 +19,7 @@ namespace Bjd.Logs
     //テスト用に、Logger.create()でログ出力を処理を一切行わないインスタンスが作成される
     public class Logger
     {
-        private static readonly SequentialTaskScheduler sts = new SequentialTaskScheduler();
+        private static readonly SequentialTaskScheduler sts = LogStaticMembers.TaskScheduler;
         private readonly Kernel _kernel;
         private readonly LogLimit _logLimit;
         private readonly List<ILogService> _logServices;

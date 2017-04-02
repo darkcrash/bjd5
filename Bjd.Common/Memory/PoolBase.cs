@@ -21,18 +21,16 @@ namespace Bjd.Memory
         private int _poolCount = 0;
         private int _cursorEnqueue = -1;
         private int _cursorDequeue = -1;
-        private GCHandle handle;
 
         protected PoolBase()
         {
-            handle = GCHandle.Alloc(this);
         }
 
         protected void InitializePool(int pSize, int pMaxSize)
         {
             _poolSize = pMaxSize;
             _buffers = new T[_poolSize];
-            for (int i = 0; i < pSize; i++)
+            for (int i = 0; i < pSize; i++) 
             {
                 _Count++;
                 _poolCount++;
@@ -57,7 +55,6 @@ namespace Bjd.Memory
                 _buffers[i] = null;
                 if (b != null) b.DisposeInternal();
             }
-            handle.Free();
         }
 
         public T Get()

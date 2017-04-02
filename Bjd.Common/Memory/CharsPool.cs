@@ -24,8 +24,8 @@ namespace Bjd.Memory
         private readonly static CharsPool ExtraLarge = new CharsPool(32, 4096, bufferSizeXL);
         private readonly static CharsPool Large = new CharsPool(128, 16384, bufferSizeL);
         private readonly static CharsPool Medium = new CharsPool(128, 16384, bufferSizeM);
-        private readonly static CharsPool Small = new CharsPool(2048, 65536, bufferSizeS);
-        private readonly static CharsPool ExtraSmall = new CharsPool(2048, 65536, bufferSizeXS);
+        private readonly static CharsPool Small = new CharsPool(512, 65536, bufferSizeS);
+        private readonly static CharsPool ExtraSmall = new CharsPool(512, 65536, bufferSizeXS);
 
 
         public static CharsData Get(long length)

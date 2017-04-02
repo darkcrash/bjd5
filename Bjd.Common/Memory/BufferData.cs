@@ -13,6 +13,7 @@ namespace Bjd.Memory
         public readonly int Length;
         private BufferPool _pool;
         private GCHandle handle;
+        private int byteCount = 0;
 
         public ref byte this[int i] => ref Data[i];
 
@@ -22,6 +23,7 @@ namespace Bjd.Memory
             Data = new byte[length];
             _pool = pool;
             handle = GCHandle.Alloc(Data, GCHandleType.Pinned);
+            byteCount = Buffer.ByteLength(Data);
         }
 
         void IPoolBuffer.Initialize()
@@ -44,6 +46,7 @@ namespace Bjd.Memory
 
         public void Dispose()
         {
+            Data.Initialize();
             _pool.PoolInternal(this);
         }
         void IPoolBuffer.DisposeInternal()
@@ -51,6 +54,7 @@ namespace Bjd.Memory
             handle.Free();
             Data = null;
             _pool = null;
+            GC.SuppressFinalize(this);
         }
     }
 }
