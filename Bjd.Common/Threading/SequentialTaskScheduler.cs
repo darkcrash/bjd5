@@ -76,6 +76,7 @@ namespace Bjd.Threading
             }
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Increment(ref int _cursor)
         {
             var idx = Interlocked.Increment(ref _cursor);
