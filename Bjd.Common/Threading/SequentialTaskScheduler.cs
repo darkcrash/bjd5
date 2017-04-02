@@ -76,9 +76,6 @@ namespace Bjd.Threading
             }
         }
 
-#if RELEASE
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private int Increment(ref int _cursor)
         {
             var idx = Interlocked.Increment(ref _cursor);

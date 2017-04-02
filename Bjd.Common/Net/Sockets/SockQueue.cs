@@ -57,6 +57,7 @@ namespace Bjd.Net.Sockets
             SetModify(false);
             _length = 0;
             _totallength = 0;
+            alloc.Clear();
 
             if (_current != null) _current.Dispose();
             _current = null;
