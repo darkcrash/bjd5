@@ -65,14 +65,6 @@ namespace Bjd.Logs
             _sw.WriteLine(message.Data, 0, message.DataSize);
         }
 
-        public void WriteLine(StringBuilder message)
-        {
-            if (_sw == null || disposeCount > 0) return;
-            using (var chars = message.ToCharsData())
-            {
-                _sw.WriteLine(chars.Data, 0, chars.DataSize);
-            }
-        }
     }
 }
 
