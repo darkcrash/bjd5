@@ -9,7 +9,8 @@ namespace Bjd.Threading
 {
     public class SequentialTaskScheduler : System.Threading.Tasks.TaskScheduler
     {
-        Task[] queue = new Task[262144];
+        const int MaxLength = 262144;
+        Task[] queue = new Task[MaxLength];
         int count = 0;
         int _cursorEnqueue = -1;
         int _cursorDequeue = -1;
@@ -26,6 +27,11 @@ namespace Bjd.Threading
                 try
                 {
                     var t = queue[idx];
+                    if (t == null)
+                    {
+                        System.Threading.SpinWait.SpinUntil(() => queue[idx] != null, 100);
+                        t = queue[idx];
+                    }
                     if (t != null)
                     {
                         queue[idx] = null;
@@ -35,16 +41,15 @@ namespace Bjd.Threading
                 catch { }
                 if (Interlocked.Decrement(ref count) == 0) return;
             }
-
         }
 
         protected override IEnumerable<Task> GetScheduledTasks()
         {
             var idx = _cursorDequeue;
-            var length = queue.Length;
-            for (var i = idx; i < (idx + count); i++)
+            var cnt = count;
+            for (var i = idx; i < (idx + cnt); i++)
             {
-                var v = queue[i % length];
+                var v = queue[i % MaxLength];
                 if (v == null) continue;
                 yield return v;
             }
@@ -79,11 +84,15 @@ namespace Bjd.Threading
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int Increment(ref int _cursor)
         {
-            var idx = Interlocked.Increment(ref _cursor);
-            if (idx >= queue.Length)
+            var idx = -1;
+            while (idx == -1)
             {
-                idx = idx % queue.Length;
-                Interlocked.CompareExchange(ref _cursor, idx, queue.Length + idx);
+                idx = Interlocked.Increment(ref _cursor);
+            }
+            if (idx >= MaxLength)
+            {
+                idx = idx % MaxLength;
+                Interlocked.CompareExchange(ref _cursor, idx, MaxLength + idx);
             }
             return idx;
         }
