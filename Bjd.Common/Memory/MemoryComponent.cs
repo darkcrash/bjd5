@@ -16,6 +16,8 @@ namespace Bjd.Memory
     {
         private Logger _log;
         private CancellationTokenSource tokenSource = new CancellationTokenSource();
+        private BufferData emptyBuffer = BufferData.Empty;
+        private CharsData emptyChars = CharsData.Empty;
 
         public MemoryComponent(Kernel kernel, Conf conf)
             : base(kernel, conf)
@@ -34,6 +36,8 @@ namespace Bjd.Memory
 
             BufferPool.GetMaximum(0).Dispose();
             CharsPool.GetMaximum(0).Dispose();
+
+            
 
         }
 
