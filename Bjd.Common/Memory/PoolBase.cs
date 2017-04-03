@@ -70,17 +70,22 @@ namespace Bjd.Memory
             if (p >= 0)
             {
                 var idx = Increment(ref _cursorDequeue);
-                var b = _buffers[idx];
-                if (b == null) {
-                    b = CreateBuffer();
+                var b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
+                if (b == null)
+                {
+                    SpinWait.SpinUntil(() => _buffers[idx] != null, 5);
+                    b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
+                    if (b == null)
+                    {
+                        b = CreateBuffer();
+                    }
                 }
                 b.Initialize();
-                _buffers[idx] = null;
+                Interlocked.Exchange(ref _buffers[idx], null);
                 return b;
             }
             Interlocked.Increment(ref _poolCount);
 
-            if (_log != null) _log.DebugInformation("CreateBuffer");
             Interlocked.Increment(ref _Count);
             var newB = CreateBuffer();
             newB.Initialize();
@@ -89,17 +94,26 @@ namespace Bjd.Memory
 
         public void PoolInternal(T buf)
         {
+            if (buf == null)
+            {
+                return;
+            }
             Interlocked.Decrement(ref _leaseCount);
             if (_poolMaxSize <= _poolCount)
             {
-                if (_log != null) _log.DebugInformation("DisposeBuffer");
                 Interlocked.Decrement(ref _Count);
                 buf.DisposeInternal();
                 return;
             }
             var idx = Increment(ref _cursorEnqueue);
-            _buffers[idx] = buf;
+            Interlocked.Exchange(ref _buffers[idx], buf);
             Interlocked.Increment(ref _poolCount);
+        }
+
+        internal void Finalized(T buf)
+        {
+            Interlocked.Decrement(ref _leaseCount);
+            Interlocked.Decrement(ref _Count);
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
