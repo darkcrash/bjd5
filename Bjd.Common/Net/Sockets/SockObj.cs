@@ -168,7 +168,7 @@ namespace Bjd.Net.Sockets
 
         protected void SetError(String msg)
         {
-            Kernel.Logger.TraceError($"{this.GetType().Name}.SetError {msg}");
+            Kernel?.Logger.TraceError($"{this.GetType().Name}.SetError {msg}");
             _lastError = msg;
             SockState = SockState.Error;
         }
@@ -235,11 +235,11 @@ namespace Bjd.Net.Sockets
         }
 
         // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
-        //~SockObj()
-        //{
-        //    // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-        //    Dispose(false);
-        //}
+        ~SockObj()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(false);
+        }
 
         // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
         public void Dispose()
@@ -247,7 +247,7 @@ namespace Bjd.Net.Sockets
             // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
             Dispose(true);
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-            //GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
