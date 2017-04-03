@@ -190,8 +190,8 @@ namespace Bjd.Net.Sockets
             }
             catch (Exception ex)
             {
-                Kernel.Logger.TraceError($"{hashText} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
-                Kernel.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
                 this.SetErrorReceive();
             }
         }
@@ -263,7 +263,7 @@ namespace Bjd.Net.Sockets
             catch (Exception ex)
             {
                 //受信待機のままソケットがクローズされた場合は、ここにくる
-                Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
                 this.SetErrorReceive();
                 return;
             }
