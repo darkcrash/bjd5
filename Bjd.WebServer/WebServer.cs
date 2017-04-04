@@ -176,11 +176,9 @@ namespace Bjd.WebServer
                 while (connection.KeepAlive && IsLife())
                 {
                     // create Request Context
-                    using (var request = connection.CreateRequestContext())
-                    {
+                    var request = connection.GetRequestContext();
                         if (!RequestProcess(connection, request))
-                            break;
-                    }
+                        break;
                 }
             }
 

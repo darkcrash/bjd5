@@ -25,25 +25,32 @@ namespace Bjd.WebServer
             }
         }
 
-        public HttpRequest(Kernel kernel, Logger logger, SockTcp sockTcp)
+        public HttpRequest(Kernel kernel, Logger logger)
         {
-
             //Logger出力用(void Log()の中でのみ使用される)
             _kernel = kernel;
             _logger = logger;
-            _sockObj = sockTcp;
 
+        }
+
+        private void Clear()
+        {
             Method = HttpMethod.Unknown;
             Uri = "";
             Param = "";
             Ver = "";
             LogStr = "";
+        }
 
+        public void Initialize(SockTcp sockObj)
+        {
+            Clear();
+            _sockObj = sockObj;
         }
 
         readonly Kernel _kernel;
         readonly Logger _logger;
-        readonly SockTcp _sockObj;//Logger出力用
+        public SockTcp _sockObj { get; private set; }
 
         void Log(LogKind logKind, int messageNo, string msg)
         {

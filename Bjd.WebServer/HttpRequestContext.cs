@@ -11,7 +11,7 @@ namespace Bjd.WebServer
 {
     public class HttpRequestContext : IDisposable
     {
-        public HttpConnectionContext Connection;
+        public HttpConnectionContext Connection { get; private set; }
         //受信ヘッダ
         internal HttpHeader Header;
         //リクエストライン処理クラス
@@ -25,16 +25,25 @@ namespace Bjd.WebServer
         internal string AuthName;
         internal HttpResponse Response;
 
-        public void Dispose()
+        public HttpRequestContext(HttpConnectionContext connection)
         {
-            Connection = null;
+            Connection = connection;
+        }
 
+        public void Clear()
+        {
             if (InputStream != null)
                 InputStream.Dispose();
             InputStream = null;
             if (OutputStream != null)
                 OutputStream.Dispose();
             OutputStream = null;
+        }
+
+        public void Dispose()
+        {
+            Clear();
+            Connection = null;
         }
     }
 }

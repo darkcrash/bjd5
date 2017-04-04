@@ -18,7 +18,7 @@ namespace WebServerTest
             _service = TestService.CreateTestService();
             _service.AddOutput(output);
 
-            _request = new HttpRequest(_service.Kernel, null, null);
+            _request = new HttpRequest(_service.Kernel, null);
 
         }
 

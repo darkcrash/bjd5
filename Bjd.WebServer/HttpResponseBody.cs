@@ -40,13 +40,17 @@ namespace Bjd.WebServer
         public HttpResponseBody(Kernel kernel)
         {
             _kernel = kernel;
-            _kindBuf = KindBuf.Memory;
-            _doc = empty;
+            //_kindBuf = KindBuf.Memory;
+            //_doc = empty;
+            Clear();
         }
         public void Clear()
         {
             _kindBuf = KindBuf.Memory;
             _doc = empty;
+            _fileName = string.Empty;
+            _rangeFrom = 0;
+            _rangeTo = 0;
         }
 
         public void Set(string fileName, long rangeFrom, long rangeTo)

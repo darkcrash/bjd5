@@ -16,11 +16,13 @@ namespace Bjd
 
         public HttpHeader()
         {
+            //ContentLength = new OneHeader("Content-Length", "0");
         }
         public HttpHeader(HttpHeader header)
         {
             _ar = new List<OneHeader>(header);
         }
+
         public HttpHeader(byte[] buf)
         {
             _ar = new List<OneHeader>();
@@ -33,6 +35,7 @@ namespace Bjd
                 Append(key, val);
             }
         }
+
         public HttpHeader(List<byte[]> lines)
         {
             _ar = new List<OneHeader>();
@@ -49,6 +52,13 @@ namespace Bjd
                 Append(key, val);
             }
         }
+
+        public void Clear()
+        {
+            _ar.Clear();
+        }
+
+
         //IEnumerable<T>の実装
         public IEnumerator<OneHeader> GetEnumerator()
         {

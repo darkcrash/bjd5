@@ -1,4 +1,5 @@
-﻿using Bjd.Net;
+﻿using Bjd.Memory;
+using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.WebServer.IO;
 using System;
@@ -10,6 +11,7 @@ namespace Bjd.WebServer
 {
     public class HttpConnectionContext : IDisposable
     {
+
         public SockTcp Connection;
         public Ip RemoteIp;
         //レスポンスが終了したとき接続を切断しないで継続する 
@@ -19,16 +21,30 @@ namespace Bjd.WebServer
         public Kernel Kernel;
         public Logs.Logger Logger;
 
-        public HttpRequestContext CreateRequestContext()
+        private HttpRequestContext requestContext;
+
+        public HttpRequestContext GetRequestContext()
         {
-            var context = new HttpRequestContext();
-            context.Connection = this;
-            context.Request = new HttpRequest(Kernel, Logger, Connection);
-            context.Header = new HttpHeader();
-            context.InputStream = null;
-            context.OutputStream = null;
-            return context;
+            if (requestContext == null)
+            {
+                requestContext = new HttpRequestContext(this);
+                requestContext.Request = new HttpRequest(Kernel, Logger);
+                requestContext.Header = new HttpHeader();
+            }
+            requestContext.Clear();
+            requestContext.Request.Initialize(this.Connection);
+            requestContext.Header.Clear();
+            requestContext.Auth = null;
+            requestContext.AuthName = null;
+            requestContext.ContentType = null;
+            requestContext.InputStream = null;
+            requestContext.OutputStream = null;
+            requestContext.Response = null;
+            requestContext.ResponseCode = 0;
+            requestContext.Url = null;
+            return requestContext;
         }
+
 
         public void Dispose()
         {
@@ -36,5 +52,6 @@ namespace Bjd.WebServer
             RemoteIp = null;
             Logger = null;
         }
+
     }
 }
