@@ -596,11 +596,13 @@ namespace Bjd.Logs
             var sb = CharsPool.Get(len);
 
             sb.Append('[');
-            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
+            //sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
+            DateTimeTextGenerator.AppendFormatString(sb, ref info.date);
             sb.Append("][");
             sb.Append(_pid);
             sb.Append("][");
-            sb.AppendFormat("{0,3:###}", info.tid);
+            //sb.AppendFormat("{0,3:###}", info.tid);
+            CachedIntConverter.AppendFormatString(sb, 3, info.tid);
             sb.Append("] ");
             sb.Append(info.ind);
             if (info.message != null) sb.Append(info.message);
