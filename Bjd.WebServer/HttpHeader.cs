@@ -13,6 +13,10 @@ namespace Bjd
     public class HttpHeader : IEnumerable<OneHeader>
     {
         readonly List<OneHeader> _ar = new List<OneHeader>();
+        static byte Cr = 0x0D;
+        static byte Lf = 0x0A;
+        static byte Colon = (byte)':';
+        static byte Space = (byte)' ';
 
         public HttpHeader()
         {
@@ -240,6 +244,36 @@ namespace Bjd
             return buf;
 
         }
+
+        public BufferData GetBuffer()
+        {
+            //高速化のため、Buffer.BlockCopyに修正
+            int size = 2;//空白行 \r\n
+            _ar.ForEach(o =>
+            {
+                size += o.Key.Length + o.Val.Length + 4; //':'+' '+\r+\n
+            });
+            var buf = BufferPool.GetMaximum(size);
+            ref int p = ref buf.DataSize;
+            _ar.ForEach(o =>
+            {
+                var k = Encoding.ASCII.GetBytes(o.Key);
+                Buffer.BlockCopy(k, 0, buf.Data, buf.DataSize, k.Length);
+                buf.DataSize += k.Length;
+                buf[buf.DataSize++] = Colon;
+                buf[buf.DataSize++] = Space;
+                Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
+                buf.DataSize += o.Val.Length;
+                buf[buf.DataSize++] = Cr;
+                buf[buf.DataSize++] = Lf;
+            });
+            buf[buf.DataSize++] = Cr;
+            buf[buf.DataSize++] = Lf;
+
+            return buf;
+
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

@@ -78,7 +78,11 @@ namespace Bjd.WebServer
             _sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
 
             //ヘッダ送信
-            _sockTcp.SendUseEncode(_sendHeader.GetBytes());//ヘッダ送信
+            //_sockTcp.SendUseEncode(_sendHeader.GetBytes());//ヘッダ送信
+            using (var b = _sendHeader.GetBuffer())
+            {
+                _sockTcp.Send(b);
+            }
             //本文送信
             if (_body.Length > 0)
             {

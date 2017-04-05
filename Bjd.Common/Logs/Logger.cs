@@ -493,6 +493,19 @@ namespace Bjd.Logs
             t.Start(sts);
         }
 
+        private Action<Task<TraceStruct>, object> _TraceInfomationAllAction;
+        private Action<Task<TraceStruct>, object> TraceInfomationAllAction
+        {
+            get
+            {
+                if (_TraceInfomationAllAction == null)
+                {
+                    _TraceInfomationAllAction = (a, b) => TraceInformationAll(a, b);
+                }
+                return _TraceInfomationAllAction;
+            }
+        }
+
         protected virtual void FormatTraceInformation(string message)
         {
             //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
@@ -503,7 +516,7 @@ namespace Bjd.Logs
             //t.Start(sts);
 
             var vt = new ValueTask<TraceStruct>(info);
-            var t = vt.AsTask().ContinueWith(TraceInformationAll, sts);
+            var t = vt.AsTask().ContinueWith(TraceInfomationAllAction, sts);
         }
         protected virtual void FormatTraceInformation(string[] messages)
         {
@@ -515,9 +528,8 @@ namespace Bjd.Logs
             //t.Start(sts);
 
             var vt = new ValueTask<TraceStruct>(info);
-            var t = vt.AsTask().ContinueWith(TraceInformationAll, sts);
+            var t = vt.AsTask().ContinueWith(TraceInfomationAllAction, sts);
         }
-
 
 
         internal void CreateTraceInfo(string message, ref TraceStruct info)

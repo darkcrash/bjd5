@@ -18,6 +18,15 @@ namespace Bjd.Memory
         const int bufferSizeS = 64;
         const int bufferSizeXS = 32;
 
+        const long L_bufferSizeXXXXL = 4096;
+        const long L_bufferSizeXXXL = 2048;
+        const long L_bufferSizeXXL = 1024;
+        const long L_bufferSizeXL = 512;
+        const long L_bufferSizeL = 256;
+        const long L_bufferSizeM = 128;
+        const long L_bufferSizeS = 64;
+        const long L_bufferSizeXS = 32;
+
         private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXXL);
         private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXL);
         private readonly static CharsPool ExtraExtraLarge = new CharsPool(16, 512, bufferSizeXXL);
@@ -30,21 +39,21 @@ namespace Bjd.Memory
 
         public static CharsData Get(long length)
         {
-            if (length <= bufferSizeXS) return ExtraSmall.Get();
-            if (length <= bufferSizeS) return Small.Get();
-            if (length <= bufferSizeM) return Medium.Get();
-            if (length <= bufferSizeL) return Large.Get();
+            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeM) return Medium.Get();
+            if (length <= L_bufferSizeL) return Large.Get();
             return ExtraLarge.Get();
         }
         public static CharsData GetMaximum(long length)
         {
-            if (length <= bufferSizeXS) return ExtraSmall.Get();
-            if (length <= bufferSizeS) return Small.Get();
-            if (length <= bufferSizeM) return Medium.Get();
-            if (length <= bufferSizeL) return Large.Get();
-            if (length <= bufferSizeXL) return ExtraLarge.Get();
-            if (length <= bufferSizeXXL) return ExtraExtraLarge.Get();
-            if (length <= bufferSizeXXXL) return ExtraExtraExtraLarge.Get();
+            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeM) return Medium.Get();
+            if (length <= L_bufferSizeL) return Large.Get();
+            if (length <= L_bufferSizeXL) return ExtraLarge.Get();
+            if (length <= L_bufferSizeXXL) return ExtraExtraLarge.Get();
+            if (length <= L_bufferSizeXXXL) return ExtraExtraExtraLarge.Get();
             return ExtraExtraExtraExtraLarge.Get();
         }
 

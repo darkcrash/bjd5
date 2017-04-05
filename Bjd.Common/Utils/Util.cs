@@ -152,11 +152,11 @@ namespace Bjd.Utils
         }
 
 
+        static string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+        static string[] weekList = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
         //Thu, 27 Nov 2008 20:45:50 GMT
         public static string UtcTime2Str(DateTime dt)
         {
-            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-            string[] weekList = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
             var str = string.Format("{0}, {1:D2} {2} {3:D4} {4:D2}:{5:D2}:{6:D2} GMT"
                                     , weekList[(int)dt.DayOfWeek]
@@ -173,9 +173,6 @@ namespace Bjd.Utils
         //Sun, 1 Feb 2009 09:28:20 +0900
         public static string LocalTime2Str(DateTime dt)
         {
-            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-            string[] weekList = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-
 
             //var span = TimeZone.CurrentTimeZone.GetUtcOffset(dt);
             var span = DateTimeOffset.Now.Offset;

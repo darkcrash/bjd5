@@ -73,7 +73,7 @@ namespace Bjd.Memory
                 var b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
                 if (b == null)
                 {
-                    SpinWait.SpinUntil(() => _buffers[idx] != null, 5);
+                    //SpinWait.SpinUntil(() => _buffers[idx] != null, 1);
                     b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
                     if (b == null)
                     {
