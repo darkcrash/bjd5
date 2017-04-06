@@ -39,9 +39,9 @@ namespace Bjd.Memory
 
         static BufferPool()
         {
-            var L = System.Environment.ProcessorCount * 32;
-            var M = System.Environment.ProcessorCount * 16;
-            var S = System.Environment.ProcessorCount * 8;
+            var L = System.Environment.ProcessorCount * 32 + 256;
+            var M = System.Environment.ProcessorCount * 16 + 128;
+            var S = System.Environment.ProcessorCount * 8 + 64;
 
             Large = new BufferPool(S, S * 4, bufferSizeL);
             Medium = new BufferPool(M, M * 4, bufferSizeM);

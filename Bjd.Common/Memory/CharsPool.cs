@@ -38,9 +38,9 @@ namespace Bjd.Memory
 
         static CharsPool()
         {
-            var L = System.Environment.ProcessorCount * 16;
-            var M = System.Environment.ProcessorCount * 8;
-            var S = System.Environment.ProcessorCount * 4;
+            var L = System.Environment.ProcessorCount * 16 + 128;
+            var M = System.Environment.ProcessorCount * 8 + 64;
+            var S = System.Environment.ProcessorCount * 4 + 32;
 
             ExtraExtraLarge = new CharsPool(S, S * 4, bufferSizeXXL);
             ExtraLarge = new CharsPool(S, S * 4, bufferSizeXL);
