@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -23,6 +24,9 @@ namespace Bjd.Memory
         private int _poolCount = 0;
         private int _cursorEnqueue = -1;
         private int _cursorDequeue = -1;
+        private object ChangeZeroLock = new object();
+
+        internal bool debugwrite = false;
 
         protected PoolBase()
         {
@@ -69,23 +73,18 @@ namespace Bjd.Memory
             var p = Interlocked.Decrement(ref _poolCount);
             if (p >= 0)
             {
-                var idx = Increment(ref _cursorDequeue);
-                var b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
+                var idx = Interlocked.Increment(ref _cursorDequeue);
+                var idxMod = idx % _poolMaxSize;
+                var b = Interlocked.Exchange(ref _buffers[idxMod], null);
                 if (b == null)
                 {
-                    //SpinWait.SpinUntil(() => _buffers[idx] != null, 1);
-                    b = Interlocked.Exchange(ref _buffers[idx], _buffers[idx]);
-                    if (b == null)
-                    {
-                        b = CreateBuffer();
-                    }
+                    b = CreateBuffer();
                 }
                 b.Initialize();
-                Interlocked.Exchange(ref _buffers[idx], null);
+                ExchangeZero(ref _cursorEnqueue, idx, idxMod);
                 return b;
             }
             Interlocked.Increment(ref _poolCount);
-
             Interlocked.Increment(ref _Count);
             var newB = CreateBuffer();
             newB.Initialize();
@@ -105,9 +104,11 @@ namespace Bjd.Memory
                 buf.DisposeInternal();
                 return;
             }
-            var idx = Increment(ref _cursorEnqueue);
-            Interlocked.Exchange(ref _buffers[idx], buf);
+            var idx = Interlocked.Increment(ref _cursorEnqueue);
+            var idxMod = idx % _poolMaxSize;
+            Interlocked.Exchange(ref _buffers[idxMod], buf);
             Interlocked.Increment(ref _poolCount);
+            ExchangeZero(ref _cursorEnqueue, idx, idxMod);
         }
 
         internal void Finalized(T buf)
@@ -116,16 +117,20 @@ namespace Bjd.Memory
             Interlocked.Decrement(ref _Count);
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int Increment(ref int _cursor)
+        private void ExchangeZero(ref int _cursor, int idx, int idxMod)
         {
-            var idx = Interlocked.Increment(ref _cursor);
-            if (idx >= _poolMaxSize)
+            if (idx == idxMod) return;
+            if (_poolMaxSize < _cursor)
             {
-                idx = idx % _poolMaxSize;
-                Interlocked.CompareExchange(ref _cursor, idx, _poolMaxSize + idx);
+                if (System.Threading.Monitor.TryEnter(ChangeZeroLock))
+                {
+                    if (_poolMaxSize < _cursor)
+                    {
+                        Interlocked.Add(ref _cursor, -_poolMaxSize);
+                    }
+                    System.Threading.Monitor.Exit(ChangeZeroLock);
+                }
             }
-            return idx;
         }
 
         public string ToConsoleString()

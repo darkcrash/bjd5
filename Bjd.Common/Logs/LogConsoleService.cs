@@ -52,34 +52,25 @@ namespace Bjd.Logs
         }
 
 
-        public void WriteLine(string message)
-        {
-            Console.WriteLine(message);
-        }
-
         public void WriteLine(CharsData message)
         {
             Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
-        public void TraceInformation(string message)
-        {
-            Console.WriteLine(message);
-        }
 
         public void TraceInformation(CharsData message)
         {
             Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
-        public void TraceWarning(string message)
+        public void TraceWarning(CharsData message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
-        public void TraceError(string message)
+        public void TraceError(CharsData message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
     }

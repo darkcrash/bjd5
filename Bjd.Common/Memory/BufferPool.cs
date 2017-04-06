@@ -19,14 +19,37 @@ namespace Bjd.Memory
         const int bufferSizeS = 4096;
         const int bufferSizeXS = 1024;
 
+        const long L_bufferSizeXXXXL = bufferSizeXXXXL;
+        const long L_bufferSizeXXXL = bufferSizeXXXL;
+        const long L_bufferSizeXXL = bufferSizeXXL;
+        const long L_bufferSizeXL = bufferSizeXL;
+        const long L_bufferSizeL = bufferSizeL;
+        const long L_bufferSizeM = bufferSizeM;
+        const long L_bufferSizeS = bufferSizeS;
+        const long L_bufferSizeXS = bufferSizeXS;
+
         private readonly static BufferPool ExtraExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXXL);
         private readonly static BufferPool ExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXL);
         private readonly static BufferPool ExtraExtraLarge = new BufferPool(0, 32, bufferSizeXXL);
         private readonly static BufferPool ExtraLarge = new BufferPool(0, 64, bufferSizeXL);
-        private readonly static BufferPool Large = new BufferPool(32, 512, bufferSizeL);
-        private readonly static BufferPool Medium = new BufferPool(128, 1024, bufferSizeM);
-        private readonly static BufferPool Small = new BufferPool(256, 1024, bufferSizeS);
-        private readonly static BufferPool ExtraSmall = new BufferPool(256, 1024, bufferSizeXS);
+        private readonly static BufferPool Large;
+        private readonly static BufferPool Medium;
+        private readonly static BufferPool Small;
+        private readonly static BufferPool ExtraSmall;
+
+        static BufferPool()
+        {
+            var L = System.Environment.ProcessorCount * 32;
+            var M = System.Environment.ProcessorCount * 16;
+            var S = System.Environment.ProcessorCount * 8;
+
+            Large = new BufferPool(S, S * 4, bufferSizeL);
+            Medium = new BufferPool(M, M * 4, bufferSizeM);
+            Small = new BufferPool(L, L * 4, bufferSizeS);
+            ExtraSmall = new BufferPool(L, L * 4, bufferSizeXS);
+            Small.debugwrite = true;
+
+        }
 
         public static BufferData GetExtraLarge()
         {
@@ -51,23 +74,24 @@ namespace Bjd.Memory
         }
         public static BufferData Get(long length)
         {
-            if (length <= bufferSizeXS) return ExtraSmall.Get();
-            if (length <= bufferSizeS) return Small.Get();
-            if (length <= bufferSizeM) return Medium.Get();
-            if (length <= bufferSizeL) return Large.Get();
+            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeM) return Medium.Get();
+            if (length <= L_bufferSizeL) return Large.Get();
             return ExtraLarge.Get();
         }
         public static BufferData GetMaximum(long length)
         {
-            if (length <= bufferSizeXS) return ExtraSmall.Get();
-            if (length <= bufferSizeS) return Small.Get();
-            if (length <= bufferSizeM) return Medium.Get();
-            if (length <= bufferSizeL) return Large.Get();
-            if (length <= bufferSizeXL) return ExtraLarge.Get();
-            if (length <= bufferSizeXXL) return ExtraExtraLarge.Get();
-            if (length <= bufferSizeXXXL) return ExtraExtraExtraLarge.Get();
+            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeM) return Medium.Get();
+            if (length <= L_bufferSizeL) return Large.Get();
+            if (length <= L_bufferSizeXL) return ExtraLarge.Get();
+            if (length <= L_bufferSizeXXL) return ExtraExtraLarge.Get();
+            if (length <= L_bufferSizeXXXL) return ExtraExtraExtraLarge.Get();
             return ExtraExtraExtraExtraLarge.Get();
         }
+
 
         private int _bufferSize;
 

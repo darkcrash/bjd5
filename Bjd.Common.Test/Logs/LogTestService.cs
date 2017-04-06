@@ -22,7 +22,7 @@ namespace Bjd.Test.Logs
 
         public void Append(LogMessage oneLog)
         {
-            WriteLine(oneLog.ToTraceString());
+            _helper.WriteLine(oneLog.ToTraceString());
         }
 
 
@@ -30,33 +30,24 @@ namespace Bjd.Test.Logs
         {
         }
 
-        public void WriteLine(string message)
-        {
-            _helper.WriteLine(message);
-        }
         public void WriteLine(CharsData message)
         {
             _helper.WriteLine(message.ToString());
         }
 
-
-        public void TraceInformation(string message)
-        {
-            _helper.WriteLine(message);
-        }
         public void TraceInformation(CharsData message)
         {
             _helper.WriteLine(message.ToString());
         }
 
-        public void TraceWarning(string message)
+        public void TraceWarning(CharsData message)
         {
-            _helper.WriteLine(message);
+            _helper.WriteLine(message.ToString());
         }
 
-        public void TraceError(string message)
+        public void TraceError(CharsData message)
         {
-            _helper.WriteLine(message);
+            _helper.WriteLine(message.ToString());
         }
     }
 }

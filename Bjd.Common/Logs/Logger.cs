@@ -404,35 +404,20 @@ namespace Bjd.Logs
 
         public void Exception(Exception ex)
         {
-            FormatWriteLine(ex.Message + ex.StackTrace, (l, m) => l.TraceError(m));
-        }
-
-        [Conditional("DEBUG")]
-        public void DebugInformation(string message)
-        {
-            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
-            FormatTraceInformation(message);
+            //FormatWriteLine(ex.Message + ex.StackTrace, (l, m) => l.TraceError(m));
+            TraceError(ex.Message + ex.StackTrace);
         }
 
         [Conditional("DEBUG")]
         public void DebugInformation(params string[] messages)
         {
-            //FormatWriteLine(messages.ToCharsData(), (l, m) => l.TraceInformation(m));
             FormatTraceInformation(messages);
         }
 
 
         [Conditional("TRACE")]
-        public void TraceInformation(string message)
-        {
-            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
-            FormatTraceInformation(message);
-        }
-
-        [Conditional("TRACE")]
         public void TraceInformation(params string[] messages)
         {
-            //FormatWriteLine(messages.ToCharsData(), (l, m) => l.TraceInformation(m));
             FormatTraceInformation(messages);
         }
 
@@ -440,19 +425,31 @@ namespace Bjd.Logs
         [Conditional("TRACE")]
         public void TraceWarning(string message)
         {
-            FormatWriteLine(message, (l, m) => l.TraceWarning(m));
+            TraceStruct info = new TraceStruct();
+            CreateTraceInfo(message, ref info);
+
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(TraceWarningAllAction, sts);
         }
 
         [Conditional("TRACE")]
         public void TraceError(string message)
         {
-            FormatWriteLine(message, (l, m) => l.TraceError(m));
+            TraceStruct info = new TraceStruct();
+            CreateTraceInfo(message, ref info);
+
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(TraceErrorAllAction, sts);
         }
 
         [Conditional("TRACE")]
         public void Fail(string message)
         {
-            FormatWriteLine(message, (l, m) => l.TraceError(m));
+            TraceStruct info = new TraceStruct();
+            CreateTraceInfo(message, ref info);
+
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(TraceErrorAllAction, sts);
         }
 
         private int indentCount = 0;
@@ -482,15 +479,26 @@ namespace Bjd.Logs
         }
         protected virtual void FormatWriteLine(string message)
         {
-            FormatWriteLine(message, (l, m) => l.WriteLine(m));
-        }
-        protected virtual void FormatWriteLine(string message, Action<ILogService, string> action)
-        {
+            //FormatWriteLine(message, (l, m) => l.WriteLine(m));
             TraceStruct info = new TraceStruct();
             CreateTraceInfo(message, ref info);
 
-            Task t = new System.Threading.Tasks.Task(() => WriteLineAll(info, action));
-            t.Start(sts);
+            var vt = new ValueTask<TraceStruct>(info);
+            var t = vt.AsTask().ContinueWith(WriteLineAllAction, sts);
+        }
+
+
+        private Action<Task<TraceStruct>, object> _WriteLineAll;
+        private Action<Task<TraceStruct>, object> WriteLineAllAction
+        {
+            get
+            {
+                if (_WriteLineAll == null)
+                {
+                    _WriteLineAll = (a, b) => WriteLineAll(a, b);
+                }
+                return _WriteLineAll;
+            }
         }
 
         private Action<Task<TraceStruct>, object> _TraceInfomationAllAction;
@@ -506,31 +514,41 @@ namespace Bjd.Logs
             }
         }
 
-        protected virtual void FormatTraceInformation(string message)
+        private Action<Task<TraceStruct>, object> _TraceWarningAllAction;
+        private Action<Task<TraceStruct>, object> TraceWarningAllAction
         {
-            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
-            TraceStruct info = new TraceStruct();
-            CreateTraceInfo(message, ref info);
-
-            //Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
-            //t.Start(sts);
-
-            var vt = new ValueTask<TraceStruct>(info);
-            var t = vt.AsTask().ContinueWith(TraceInfomationAllAction, sts);
+            get
+            {
+                if (_TraceWarningAllAction == null)
+                {
+                    _TraceWarningAllAction = (a, b) => TraceWarningAll(a, b);
+                }
+                return _TraceWarningAllAction;
+            }
         }
+
+        private Action<Task<TraceStruct>, object> _TraceErrorAllAction;
+        private Action<Task<TraceStruct>, object> TraceErrorAllAction
+        {
+            get
+            {
+                if (_TraceErrorAllAction == null)
+                {
+                    _TraceErrorAllAction = (a, b) => TraceErrorAll(a, b);
+                }
+                return _TraceErrorAllAction;
+            }
+        }
+
+
         protected virtual void FormatTraceInformation(string[] messages)
         {
-            //FormatWriteLine(message, (l, m) => l.TraceInformation(m));
             TraceStruct info = new TraceStruct();
             CreateTraceInfo(messages, ref info);
 
-            //Task t = new System.Threading.Tasks.Task(info.TraceInformationAll);
-            //t.Start(sts);
-
             var vt = new ValueTask<TraceStruct>(info);
             var t = vt.AsTask().ContinueWith(TraceInfomationAllAction, sts);
         }
-
 
         internal void CreateTraceInfo(string message, ref TraceStruct info)
         {
@@ -548,18 +566,6 @@ namespace Bjd.Logs
             info.messages = messages;
         }
 
-        internal void WriteLineAll(TraceStruct info, Action<ILogService, string> action)
-        {
-            var sb = GetStringBuilder(ref info);
-
-            var msg = sb.ToString();
-
-            foreach (var writer in _logServices)
-            {
-                action(writer, msg);
-            }
-
-        }
 
         internal void WriteLineAll(TraceStruct info)
         {
@@ -571,6 +577,19 @@ namespace Bjd.Logs
                 }
             }
         }
+
+        internal void WriteLineAll(Task<TraceStruct> task, object state)
+        {
+            var info = task.Result;
+            using (var msg = GetCharsData(ref info))
+            {
+                foreach (var writer in _logServices)
+                {
+                    writer.WriteLine(msg);
+                }
+            }
+        }
+
         internal void TraceInformationAll(Task<TraceStruct> task, object state)
         {
             var info = task.Result;
@@ -582,6 +601,31 @@ namespace Bjd.Logs
                 }
             }
         }
+
+        internal void TraceWarningAll(Task<TraceStruct> task, object state)
+        {
+            var info = task.Result;
+            using (var msg = GetCharsData(ref info))
+            {
+                foreach (var writer in _logServices)
+                {
+                    writer.TraceWarning(msg);
+                }
+            }
+        }
+
+        internal void TraceErrorAll(Task<TraceStruct> task, object state)
+        {
+            var info = task.Result;
+            using (var msg = GetCharsData(ref info))
+            {
+                foreach (var writer in _logServices)
+                {
+                    writer.TraceError(msg);
+                }
+            }
+        }
+
 
 
         private StringBuilder GetStringBuilder(ref TraceStruct info)
@@ -605,15 +649,13 @@ namespace Bjd.Logs
         private CharsData GetCharsData(ref TraceStruct info)
         {
             var len = 30 + info.ind.Length + (info.message?.Length ?? 0) + (info.messages?.Sum(_ => _.Length) ?? 0);
-            var sb = CharsPool.Get(len);
+            var sb = CharsPool.GetMaximum(len);
 
             sb.Append('[');
-            //sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
             DateTimeTextGenerator.AppendFormatString(sb, ref info.date);
             sb.Append("][");
             sb.Append(_pid);
             sb.Append("][");
-            //sb.AppendFormat("{0,3:###}", info.tid);
             CachedIntConverter.AppendFormatString(sb, 3, info.tid);
             sb.Append("] ");
             sb.Append(info.ind);

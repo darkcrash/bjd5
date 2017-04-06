@@ -162,7 +162,7 @@ namespace Bjd.Logs
 
         //文字列化
         //\t区切りで出力される
-        public void  SetString(StringBuilder sb)
+        public void SetString(StringBuilder sb)
         {
             CheckInitialise();
             sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);

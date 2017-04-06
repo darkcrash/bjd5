@@ -397,26 +397,19 @@ namespace Bjd.Logs
             }
         }
 
-        public void WriteLine(string message)
-        {
-        }
         public void WriteLine(CharsData message)
         {
         }
 
-
-        public void TraceInformation(string message)
-        {
-        }
         public void TraceInformation(CharsData message)
         {
         }
 
-        public void TraceWarning(string message)
+        public void TraceWarning(CharsData message)
         {
         }
 
-        public void TraceError(string message)
+        public void TraceError(CharsData message)
         {
         }
     }

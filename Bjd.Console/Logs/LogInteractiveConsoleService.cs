@@ -59,21 +59,11 @@ namespace Bjd.Logs
         }
 
 
-        public void WriteLine(string message)
-        {
-            Write(message);
-        }
         public void WriteLine(CharsData message)
         {
             Write(message.ToString());
         }
 
-
-        public void TraceInformation(string message)
-        {
-            if (!InformationEnabled) return;
-            Write(message);
-        }
 
         public void TraceInformation(CharsData message)
         {
@@ -81,15 +71,15 @@ namespace Bjd.Logs
             Write(message.ToString());
         }
 
-        public void TraceWarning(string message)
+        public void TraceWarning(CharsData message)
         {
             if (!WarningEnabled) return;
-            Write(message);
+            Write(message.ToString());
         }
 
-        public void TraceError(string message)
+        public void TraceError(CharsData message)
         {
-            Write(message);
+            Write(message.ToString());
         }
 
         public string[] GetBuffer(int row)

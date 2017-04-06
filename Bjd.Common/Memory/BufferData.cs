@@ -42,6 +42,7 @@ namespace Bjd.Memory
             }
             if (_pool != null)
             {
+                _pool.Finalized(this);
                 _pool = null;
             }
         }

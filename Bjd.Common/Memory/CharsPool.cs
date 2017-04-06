@@ -18,23 +18,39 @@ namespace Bjd.Memory
         const int bufferSizeS = 64;
         const int bufferSizeXS = 32;
 
-        const long L_bufferSizeXXXXL = 4096;
-        const long L_bufferSizeXXXL = 2048;
-        const long L_bufferSizeXXL = 1024;
-        const long L_bufferSizeXL = 512;
-        const long L_bufferSizeL = 256;
-        const long L_bufferSizeM = 128;
-        const long L_bufferSizeS = 64;
-        const long L_bufferSizeXS = 32;
+        const long L_bufferSizeXXXXL = bufferSizeXXXXL;
+        const long L_bufferSizeXXXL = bufferSizeXXXL;
+        const long L_bufferSizeXXL = bufferSizeXXL;
+        const long L_bufferSizeXL = bufferSizeXL;
+        const long L_bufferSizeL = bufferSizeL;
+        const long L_bufferSizeM = bufferSizeM;
+        const long L_bufferSizeS = bufferSizeS;
+        const long L_bufferSizeXS = bufferSizeXS;
 
         private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXXL);
         private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXL);
-        private readonly static CharsPool ExtraExtraLarge = new CharsPool(16, 512, bufferSizeXXL);
-        private readonly static CharsPool ExtraLarge = new CharsPool(32, 512, bufferSizeXL);
-        private readonly static CharsPool Large = new CharsPool(64, 1024, bufferSizeL);
-        private readonly static CharsPool Medium = new CharsPool(64, 1024, bufferSizeM);
-        private readonly static CharsPool Small = new CharsPool(64, 1024, bufferSizeS);
-        private readonly static CharsPool ExtraSmall = new CharsPool(64, 1024, bufferSizeXS);
+        private readonly static CharsPool ExtraExtraLarge;
+        private readonly static CharsPool ExtraLarge;
+        private readonly static CharsPool Large;
+        private readonly static CharsPool Medium;
+        private readonly static CharsPool Small;
+        private readonly static CharsPool ExtraSmall;
+
+        static CharsPool()
+        {
+            var L = System.Environment.ProcessorCount * 16;
+            var M = System.Environment.ProcessorCount * 8;
+            var S = System.Environment.ProcessorCount * 4;
+
+            ExtraExtraLarge = new CharsPool(S, S * 4, bufferSizeXXL);
+            ExtraLarge = new CharsPool(S, S * 4, bufferSizeXL);
+            Large = new CharsPool(S, S * 4, bufferSizeL);
+            Medium = new CharsPool(M, M * 4, bufferSizeM);
+            Small = new CharsPool(L, L * 4, bufferSizeS);
+            ExtraSmall = new CharsPool(L, L * 4, bufferSizeXS);
+            Small.debugwrite = true;
+
+        }
 
 
         public static CharsData Get(long length)
