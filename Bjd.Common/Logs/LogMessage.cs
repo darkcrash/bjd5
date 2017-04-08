@@ -14,7 +14,7 @@ namespace Bjd.Logs
         private DateTime _dt;
         private LogKind _logKind;
         private String _nameTag;
-        private long _threadId;
+        private int _threadId;
         private String _remoteHostname;
         private int _messageNo;
         private String _message;
@@ -23,7 +23,7 @@ namespace Bjd.Logs
 
         public LogKind LogKind { get { return _logKind; } }
 
-        public LogMessage(DateTime dt, LogKind logKind, String nameTag, long threadId, String remoteHostname, int messageNo, String message, String detailInfomation)
+        public LogMessage(DateTime dt, LogKind logKind, String nameTag, int threadId, String remoteHostname, int messageNo, String message, String detailInfomation)
         {
             _dt = dt;
             _logKind = logKind;
@@ -56,7 +56,7 @@ namespace Bjd.Logs
             try
             {
                 _dt = DateTime.Parse(tmp[0]);
-                _threadId = long.Parse(tmp[2]);
+                _threadId = int.Parse(tmp[2]);
                 _messageNo = int.Parse(tmp[5]);
             }
             catch (Exception)
@@ -185,23 +185,46 @@ namespace Bjd.Logs
         public CharsData GetChars()
         {
             CheckInitialise();
-            var sb = GetSB();
-            sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
+            //var sb = GetSB();
+            //sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
+            //sb.Append('\t');
+            //sb.Append(_logKind);
+            //sb.Append('\t');
+            //sb.Append(_threadId);
+            //sb.Append('\t');
+            //sb.Append(_nameTag);
+            //sb.Append('\t');
+            //sb.Append(_remoteHostname);
+            //sb.Append('\t');
+            //sb.Append(_messageNo);
+            //sb.Append('\t');
+            //sb.Append(_message);
+            //sb.Append('\t');
+            //sb.Append(_detailInfomation);
+            //return sb.ToCharsData();
+
+            var sb = CharsPool.GetMaximum(512);
+
+            //sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
+            DateTimeTextGenerator.AppendFormatStringYMD(sb, ref _dt);
             sb.Append('\t');
-            sb.Append(_logKind);
+            sb.Append(_logKind.ToString());
             sb.Append('\t');
-            sb.Append(_threadId);
+            //sb.Append(_threadId);
+            CachedIntConverter.AppendFormatString(sb, 1, _threadId);
             sb.Append('\t');
             sb.Append(_nameTag);
             sb.Append('\t');
             sb.Append(_remoteHostname);
             sb.Append('\t');
-            sb.Append(_messageNo);
+            //sb.Append(_messageNo);
+            CachedIntConverter.AppendFormatString(sb, 1, _messageNo);
             sb.Append('\t');
             sb.Append(_message);
             sb.Append('\t');
             sb.Append(_detailInfomation);
-            return sb.ToCharsData();
+            return sb;
+
         }
 
 

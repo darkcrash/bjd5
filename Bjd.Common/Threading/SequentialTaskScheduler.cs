@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace Bjd.Threading
 {
@@ -21,22 +22,43 @@ namespace Bjd.Threading
 
         private void WaitCallback(object state)
         {
+            bool isNotFound = false;
             while (true)
             {
                 var idx = Increment(ref _cursorDequeue);
                 try
                 {
-                    var t = queue[idx];
+                    //var t = queue[idx];
+                    var t= Interlocked.Exchange<Task>(ref queue[idx], null);
+
                     if (t == null)
                     {
-                        System.Threading.SpinWait.SpinUntil(() => queue[idx] != null, 100);
-                        t = queue[idx];
+                        //System.Threading.SpinWait.SpinUntil(() => queue[idx] != null, 100);
+                        //t = queue[idx];
+                        //var w = new SpinWait();
+                        for(int i = 0; i < 100; i++) 
+                        {
+                            //w.SpinOnce();
+                            System.Threading.Thread.Sleep(1);
+                            t = Interlocked.Exchange<Task>(ref queue[idx], null);
+                            if (t != null) break;
+                        }
                     }
                     if (t != null)
                     {
-                        queue[idx] = null;
+                        //queue[idx] = null;
                         this.TryExecuteTask(t);
                     }
+                    else
+                    {
+                        if (!isNotFound)
+                        {
+                            isNotFound = true;
+                            Debug.WriteLine($"SequentialTaskScheduler: NotFound {idx}");
+                        }
+                        continue;
+                    }
+                    isNotFound = false;
                 }
                 catch { }
                 if (Interlocked.Decrement(ref count) == 0) return;
@@ -58,7 +80,7 @@ namespace Bjd.Threading
         protected override void QueueTask(Task task)
         {
             var idx = Increment(ref _cursorEnqueue);
-            queue[idx] = task;
+            Interlocked.Exchange<Task>(ref queue[idx], task);
             if (Interlocked.Increment(ref count) == 1)
             {
                 System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);

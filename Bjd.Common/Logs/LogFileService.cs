@@ -65,7 +65,7 @@ namespace Bjd.Logs
             //_timer.Enabled = true;
         }
 
-        public void Append(LogMessage oneLog)
+        public void Append(CharsData logChars, LogMessage oneLog)
         {
             //コンストラクタで初期化に失敗している場合、falseを返す
             if (_timer == null) return;
@@ -86,21 +86,18 @@ namespace Bjd.Logs
                 var isNormalLog = _normalLog != null;
                 if (isSecureLog || isNormalLog)
                 {
-                    using (var logChars = oneLog.GetChars())
+                    // セキュリティログは、表示制限に関係なく書き込む
+                    if (isSecureLog && oneLog.IsSecure())
                     {
-                        // セキュリティログは、表示制限に関係なく書き込む
-                        if (isSecureLog && oneLog.IsSecure())
-                        {
-                            //_secureLog.WriteLine(oneLog.ToString());
-                            _secureLog.WriteLine(logChars);
-                        }
-                        // 通常ログの場合
-                        if (isNormalLog)
-                        {
-                            // ルール適用除外　もしくは　表示対象になっている場合
-                            //_normalLog.WriteLine(oneLog.ToString());
-                            _normalLog.WriteLine(logChars);
-                        }
+                        //_secureLog.WriteLine(oneLog.ToString());
+                        _secureLog.WriteLine(logChars);
+                    }
+                    // 通常ログの場合
+                    if (isNormalLog)
+                    {
+                        // ルール適用除外　もしくは　表示対象になっている場合
+                        //_normalLog.WriteLine(oneLog.ToString());
+                        _normalLog.WriteLine(logChars);
                     }
                 }
 
@@ -376,7 +373,10 @@ namespace Bjd.Logs
         public void Dispose()
         {
             var log = new LogMessage(DateTime.Now, LogKind.Secure, "Log", 0, "local", 0, "LogFile.Dispose()", "last mesasage");
-            Append(log);
+            using (var chars = log.GetChars())
+            {
+                Append(chars, log);
+            }
 
             lock (_lock)
             {

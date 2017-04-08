@@ -76,6 +76,9 @@ namespace Bjd
         //* 通常使用されるコンストラクタ
         internal Kernel(bool isTest)
         {
+            System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Interactive;
+            System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+
             Logger = new TmpLogger(this);
 
             Logger.TraceInformation("Kernel..ctor Start");

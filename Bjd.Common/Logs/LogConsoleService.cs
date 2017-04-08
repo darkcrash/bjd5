@@ -46,9 +46,9 @@ namespace Bjd.Logs
         }
 
 
-        public void Append(LogMessage oneLog)
+        public void Append(CharsData message, LogMessage log)
         {
-            Console.WriteLine(oneLog.ToTraceString());
+            Console.WriteLine(message.Data, 0, message.DataSize);
         }
 
 

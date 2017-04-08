@@ -270,7 +270,7 @@ namespace Bjd.Net.Sockets
 
             //バッファがいっぱい 空の受信待機をかける
             //受信待機
-            while ((_sockQueue.Space) == 0)
+            while (_sockQueue == null || _sockQueue.Space == 0)
             {
                 Thread.Sleep(10); //他のスレッドに制御を譲る  
                 if (disposedValue) return;

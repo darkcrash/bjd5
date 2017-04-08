@@ -27,8 +27,8 @@ namespace Bjd.Memory
         const long L_bufferSizeS = bufferSizeS;
         const long L_bufferSizeXS = bufferSizeXS;
 
-        private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXXL);
-        private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, 512, bufferSizeXXXL);
+        private readonly static CharsPool ExtraExtraExtraExtraLarge = new CharsPool(0, 256, bufferSizeXXXXL);
+        private readonly static CharsPool ExtraExtraExtraLarge = new CharsPool(0, 256, bufferSizeXXXL);
         private readonly static CharsPool ExtraExtraLarge;
         private readonly static CharsPool ExtraLarge;
         private readonly static CharsPool Large;
@@ -38,16 +38,17 @@ namespace Bjd.Memory
 
         static CharsPool()
         {
-            var L = System.Environment.ProcessorCount * 16 + 128;
-            var M = System.Environment.ProcessorCount * 8 + 64;
-            var S = System.Environment.ProcessorCount * 4 + 32;
+            var L = System.Environment.ProcessorCount * 8 + 128;
+            var M = System.Environment.ProcessorCount * 4 + 64;
+            var S = System.Environment.ProcessorCount * 2 + 32;
+            var c = 8;
 
-            ExtraExtraLarge = new CharsPool(S, S * 4, bufferSizeXXL);
-            ExtraLarge = new CharsPool(S, S * 4, bufferSizeXL);
-            Large = new CharsPool(S, S * 4, bufferSizeL);
-            Medium = new CharsPool(M, M * 4, bufferSizeM);
-            Small = new CharsPool(L, L * 4, bufferSizeS);
-            ExtraSmall = new CharsPool(L, L * 4, bufferSizeXS);
+            ExtraExtraLarge = new CharsPool(S, S * c, bufferSizeXXL);
+            ExtraLarge = new CharsPool(S, S * c, bufferSizeXL);
+            Large = new CharsPool(S, S * c, bufferSizeL);
+            Medium = new CharsPool(M, M * c, bufferSizeM);
+            Small = new CharsPool(L, L * c, bufferSizeS);
+            ExtraSmall = new CharsPool(L, L * c, bufferSizeXS);
             Small.debugwrite = true;
 
         }

@@ -363,9 +363,12 @@ namespace Bjd.Logs
 
         private void Append(LogMessage msg)
         {
-            foreach (var sv in _logServices)
+            using (var chars = msg.GetChars())
             {
-                sv.Append(msg);
+                foreach (var sv in _logServices)
+                {
+                    sv.Append(chars, msg);
+                }
             }
         }
 
@@ -626,25 +629,23 @@ namespace Bjd.Logs
             }
         }
 
+        //private StringBuilder GetStringBuilder(ref TraceStruct info)
+        //{
+        //    var sb = LogStaticMembers.GetStringBuilder();
 
+        //    sb.Append('[');
+        //    sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
+        //    sb.Append("][");
+        //    sb.Append(_pid);
+        //    sb.Append("][");
+        //    sb.AppendFormat("{0,3:###}", info.tid);
+        //    sb.Append("] ");
+        //    sb.Append(info.ind);
+        //    if (info.message != null) sb.Append(info.message);
+        //    if (info.messages != null) foreach (var msg in info.messages) sb.Append(msg);
 
-        private StringBuilder GetStringBuilder(ref TraceStruct info)
-        {
-            var sb = LogStaticMembers.GetStringBuilder();
-
-            sb.Append('[');
-            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", info.date);
-            sb.Append("][");
-            sb.Append(_pid);
-            sb.Append("][");
-            sb.AppendFormat("{0,3:###}", info.tid);
-            sb.Append("] ");
-            sb.Append(info.ind);
-            if (info.message != null) sb.Append(info.message);
-            if (info.messages != null) foreach (var msg in info.messages) sb.Append(msg);
-
-            return sb;
-        }
+        //    return sb;
+        //}
 
         private CharsData GetCharsData(ref TraceStruct info)
         {

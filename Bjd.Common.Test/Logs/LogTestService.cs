@@ -20,9 +20,9 @@ namespace Bjd.Test.Logs
             _helper = helper;
         }
 
-        public void Append(LogMessage oneLog)
+        public void Append(CharsData message, LogMessage log)
         {
-            _helper.WriteLine(oneLog.ToTraceString());
+            _helper.WriteLine(message.ToString());
         }
 
 

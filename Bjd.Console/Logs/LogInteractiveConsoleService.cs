@@ -52,10 +52,10 @@ namespace Bjd.Logs
         }
 
 
-        public void Append(LogMessage oneLog)
+        public void Append(CharsData message, LogMessage log)
         {
-            if (!DetailEnabled && oneLog.LogKind == LogKind.Detail) return;
-            Write(oneLog.ToTraceString());
+            if (!DetailEnabled && log.LogKind == LogKind.Detail) return;
+            Write(log.ToTraceString());
         }
 
 

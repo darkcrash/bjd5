@@ -6,7 +6,7 @@ namespace Bjd.Logs
 {
     public interface ILogService : IDisposable
     {
-        void Append(LogMessage oneLog);
+        void Append(CharsData message, LogMessage log);
 
         void WriteLine(CharsData message);
 
