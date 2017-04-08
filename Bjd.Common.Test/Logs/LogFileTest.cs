@@ -133,12 +133,15 @@ namespace Bjd.Test.Logs
             Directory.CreateDirectory(dir);
             using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
-                sut.Append(
-                    new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
-                    new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
-                    new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                var l1 = new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l2 = new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l3 = new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                using (var chars = l1.GetChars())
+                    sut.Append(chars, l1);
+                using (var chars = l2.GetChars())
+                    sut.Append(chars, l2);
+                using (var chars = l3.GetChars())
+                    sut.Append(chars, l3);
                 //sut.Dispose();
             }
 
@@ -166,12 +169,15 @@ namespace Bjd.Test.Logs
             Directory.CreateDirectory(dir);
             using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
-                sut.Append(
-                    new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
-                    new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                sut.Append(
-                     new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                var l1 = new LogMessage("2012/06/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l2 = new LogMessage("2012/06/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l3 = new LogMessage("2012/06/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                using (var chars = l1.GetChars())
+                    sut.Append(chars, l1);
+                using (var chars = l2.GetChars())
+                    sut.Append(chars, l2);
+                using (var chars = l3.GetChars())
+                    sut.Append(chars, l3);
                 //sut.Dispose();
             }
 
@@ -207,20 +213,28 @@ namespace Bjd.Test.Logs
             //最初は、保存期間指定なしで起動する
             using (var logFile = new LogFileService(dir, 2, 2, 0, true))
             {
-                logFile.Append(
-                    new LogMessage("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
-                logFile.Append(
-                    new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater"));
+                var l1 = new LogMessage("2012/09/01 00:00:00\tDetail\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l2 = new LogMessage("2012/09/02 00:00:00\tError\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l3 = new LogMessage("2012/09/03 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l4 = new LogMessage("2012/09/04 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l5 = new LogMessage("2012/09/05 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l6 = new LogMessage("2012/09/06 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+                var l7 = new LogMessage("2012/09/07 00:00:00\tSecure\t3208\tWeb-localhost:88\t127.0.0.1\t0000018\texecute\tramapater");
+
+                using (var chars = l1.GetChars())
+                    logFile.Append(chars, l1);
+                using (var chars = l2.GetChars())
+                    logFile.Append(chars, l2);
+                using (var chars = l3.GetChars())
+                    logFile.Append(chars, l3);
+                using (var chars = l4.GetChars())
+                    logFile.Append(chars, l4);
+                using (var chars = l5.GetChars())
+                    logFile.Append(chars, l5);
+                using (var chars = l6.GetChars())
+                    logFile.Append(chars, l6);
+                using (var chars = l7.GetChars())
+                    logFile.Append(chars, l7);
 
                 Task.Delay(1200).Wait();
 

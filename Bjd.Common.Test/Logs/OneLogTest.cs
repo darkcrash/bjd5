@@ -8,7 +8,7 @@ namespace Bjd.Test.Logs
     public class OneLogTest
     {
         private const String NameTag = "NAME";
-        private const long ThreadId = 100;
+        private const int ThreadId = 100;
         private const String RemoteHostname = "127.0.0.1";
         private const int MessageId = 200;
         private const String Message = "MSG";
