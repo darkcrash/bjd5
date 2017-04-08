@@ -61,7 +61,7 @@ namespace Bjd.Memory
         {
             var len = appendText.Length;
             //appendText.CopyTo(0, chars.Data, chars.DataSize, len);
-            Buffer.BlockCopy(appendText, 0, chars.Data, chars.DataSize, len);
+            Buffer.BlockCopy(appendText, 0, chars.Data, chars.DataSize * 2, len * 2);
             chars.DataSize += len;
         }
 
