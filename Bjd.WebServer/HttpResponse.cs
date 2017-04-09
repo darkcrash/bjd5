@@ -66,6 +66,7 @@ namespace Bjd.WebServer
             _body.Clear();
             _sendHeader.Replace("Content-Length", _body.Length.ToString());
             //_sendHeader.Replace("Content-Length",string.Format("{0}",_body.Length));
+            _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
         }
 
         //*********************************************************************
@@ -143,7 +144,6 @@ namespace Bjd.WebServer
 
             _body.Set(Encoding.UTF8.GetBytes(str));
             _sendHeader.Replace("Content-Length", _body.Length.ToString());
-
             _sendHeader.Replace("Content-Type", "text/xml; charset=\"utf-8\"");
         }
 

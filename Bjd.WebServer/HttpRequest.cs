@@ -214,6 +214,7 @@ namespace Bjd.WebServer
             CachedIntConverter.AppendFormatString(chars, 1, code);
             chars.Append(' ');
             chars.Append(WebServerUtil.StatusMessage(code));
+            chars.AppendLine();
             return chars;
         }
 

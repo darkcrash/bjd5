@@ -61,7 +61,15 @@ namespace Bjd.WebServer
         {
             _kindBuf = KindBuf.Memory;
             _doc = buf.ToBufferData();
+            _doc.DataSize = buf.Length;
             docLength = buf.Length;
+            _kernel.Logger.DebugInformation($"HttpResponseBody.Set Length={buf.Length}");
+        }
+        public void Set(BufferData buf)
+        {
+            _kindBuf = KindBuf.Memory;
+            _doc = buf;
+            docLength = buf.DataSize;
             _kernel.Logger.DebugInformation($"HttpResponseBody.Set Length={buf.Length}");
         }
 

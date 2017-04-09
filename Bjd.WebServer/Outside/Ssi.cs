@@ -333,29 +333,25 @@ namespace Bjd.WebServer.Outside
                     }
                     str = sb.ToString();
                 }
+                return true;
 
             }
             else if (newTarget.TargetKind == HandlerKind.File || newTarget.TargetKind == HandlerKind.Ssi)
             {
-                if (File.Exists(newTarget.FullPath))
+                if (!File.Exists(newTarget.FullPath)) return false;
+                using (var bs = new FileStream(newTarget.FullPath, FileMode.Open))
+                using (var sr = new StreamReader(bs, encoding))
                 {
-                    using (var bs = new FileStream(newTarget.FullPath, FileMode.Open))
-                    using (var sr = new StreamReader(bs, encoding))
-                    {
-                        str = sr.ReadToEnd();
-                        //sr.Close();
-                    }
+                    str = sr.ReadToEnd();
+                    //sr.Close();
                 }
-                else
-                {
-                    return false;
-                }
+
+                return true;
+
             }
-            else
-            {
-                return false;
-            }
-            return true;
+
+            return false;
+
         }
 
         bool SsiConfig(string tag, string val)
@@ -363,16 +359,16 @@ namespace Bjd.WebServer.Outside
             if (tag == "timefmt")
             {
                 SetTimeFmt(val);//日付書式文字列(timeFmt)の変更
+                return true;
             }
             else if (tag == "sizefmt")
             {
                 _sizeFmt = val == "abbrev" ? val : "bytes";
+                return true;
             }
-            else
-            {
-                return false;
-            }
-            return true;
+
+            return false;
+
         }
 
         //ファイルのサイズ
@@ -418,29 +414,27 @@ namespace Bjd.WebServer.Outside
             {
                 case "LAST_MODIFIED":
                     str = _target.LastWriteTime.ToString(_timeFmt);
-                    break;
+                    return true;
                 case "DATE_GMT":
                     str = DateTime.UtcNow.ToString(_timeFmt);
-                    break;
+                    return true;
                 case "DATE_LOCAL":
                     str = DateTime.Now.ToString(_timeFmt);
-                    break;
+                    return true;
                 case "DOCUMENT_NAME":
                     str = Path.GetFileName(_target.FullPath);
-                    break;
+                    return true;
                 //Ver5.6.0
                 //case "DOCUMENT_URL":
                 case "DOCUMENT_URI":
                     str = _target.FullPath;
-                    break;
+                    return true;
                 //Ver5.6.0 未実装
                 case "QUERY_STRING_UNESCAPED":
                     str = "???";
-                    break;
-                default:
-                    return false;
+                    return true;
             }
-            return true;
+            return false;
         }
 
         HandlerSelectorResult CreateTarget(string tag, string val)

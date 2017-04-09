@@ -8,6 +8,9 @@ namespace Bjd.Memory
 {
     public static class MemoryExtensions
     {
+        private static char Cr = (char)0x0A;
+        private static char Lf = (char)0x0D;
+
         public static BufferData ToBufferData(this byte[] data)
         {
             var buffer = BufferPool.GetMaximum(data.Length);
@@ -84,6 +87,19 @@ namespace Bjd.Memory
         {
             chars.Data[chars.DataSize] = appendChar;
             chars.DataSize++;
+        }
+
+        public static void AppendLine(this CharsData chars)
+        {
+            var newLine = System.Environment.NewLine;
+            newLine.CopyTo(0, chars.Data, chars.DataSize, newLine.Length);
+            chars.DataSize += newLine.Length;
+        }
+
+        public static void AppendCrLf(this CharsData chars)
+        {
+            chars.Data[chars.DataSize++] = Cr;
+            chars.Data[chars.DataSize++] = Lf;
         }
 
         public static void AppendFormat(this CharsData chars, string appendFormatText, object param)
