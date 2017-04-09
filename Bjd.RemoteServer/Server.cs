@@ -8,7 +8,7 @@ using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Configurations;
-using Bjd.Remote;
+using Bjd.RemoteServer.Remote;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
@@ -19,13 +19,18 @@ namespace Bjd.RemoteServer
     partial class Server : OneServer
     {
         readonly Queue<OneRemoteData> _queue = new Queue<OneRemoteData>();
+        //プロセス起動時に初期化される変数 
+        public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
 
         //コンストラクタ
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
         {
 
+
         }
+
+
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
         //接続単位の処理
@@ -118,7 +123,8 @@ namespace Bjd.RemoteServer
                 sr.Dispose();
             }
             RemoteData.Send(_sockTcp, RemoteDataKind.DatOption, optionStr);
-            _kernel.RemoteConnect = new Bjd.Remote.RemoteConnect(_sockTcp);//リモートクライアント接続開始
+            //_kernel.RemoteConnect = new RemoteConnect(_sockTcp);//リモートクライアント接続開始
+            RemoteConnect = new RemoteConnect(_sockTcp);//リモートクライアント接続開始
             //Kernel.View.SetColor();//ウインド色の初期化
 
             while (IsLife() && _sockTcp.SockState == SockState.Connect)
@@ -138,7 +144,8 @@ namespace Bjd.RemoteServer
                 }
             }
 
-            _kernel.RemoteConnect = null;//リモートクライアント接続終了
+            //_kernel.RemoteConnect = null;//リモートクライアント接続終了
+            RemoteConnect = null;//リモートクライアント接続終了
 
             Logger.Set(LogKind.Normal, _sockTcp, 2, string.Format("address={0}", _sockTcp.RemoteAddress.Address));
             //Kernel.View.SetColor();//ウインド色の初期化
@@ -214,7 +221,8 @@ namespace Bjd.RemoteServer
                     //DefaultService.Restart();
                     break;
                 case RemoteDataKind.CmdTrace:
-                    _kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");
+                    //_kernel.RemoteConnect.OpenTraceDlg = (o.Str == "1");
+                    RemoteConnect.OpenTraceDlg = (o.Str == "1");
                     break;
                     //    }
             }

@@ -1,10 +1,9 @@
 using System;
 using System.Text;
 using Bjd.Net;
-using Bjd.Remote;
 using Bjd.Net.Sockets;
 
-namespace Bjd
+namespace Bjd.RemoteServer.Remote
 {
     public class OneRemoteData
     {

@@ -10,7 +10,6 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Plugins;
-using Bjd.Remote;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Bjd.Traces;
@@ -24,8 +23,6 @@ namespace Bjd
         public Enviroments Enviroment { get; private set; }
 
 
-        //プロセス起動時に初期化される変数 
-        public RemoteConnect RemoteConnect { get; set; } //リモート制御で接続されている時だけ初期化される
         public DnsCache DnsCache { get; private set; }
         //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
@@ -115,8 +112,6 @@ namespace Bjd
         {
             Logger.TraceInformation("Kernel.ListInitialize Start");
             //Loggerが使用できない間のログは、こちらに保存して、後でLoggerに送る
-
-            RemoteConnect = null;//リモート制御で接続されている時だけ初期化される
 
             //プロセス起動時に初期化される
             DnsCache = new DnsCache();

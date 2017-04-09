@@ -6,7 +6,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
 
-namespace Bjd.Remote
+namespace Bjd.RemoteServer.Remote
 {
     public static class RemoteData
     {

@@ -330,19 +330,17 @@ namespace Bjd.Logs
                 }
             }
 
-            //Ver5.8.8
-            //LogViewの中で実行していたリモートクライアントへの送信をこちらに移動する
-            //サービス起動の際に、ListViewがnullで、処理されないから
-            //リモートクライアントへのログ送信
-            if (_kernel != null && _kernel.RemoteConnect != null && _kernel.ListServer != null)
-            {
-                //クライアントから接続されている場合
-                var sv = _kernel.ListServer.Get("Remote");
-                if (sv != null)
-                    sv.Append(oneLog);
-            }
-
-
+            ////Ver5.8.8
+            ////LogViewの中で実行していたリモートクライアントへの送信をこちらに移動する
+            ////サービス起動の際に、ListViewがnullで、処理されないから
+            ////リモートクライアントへのログ送信
+            //if (_kernel != null && _kernel.RemoteConnect != null && _kernel.ListServer != null)
+            //{
+            //    //クライアントから接続されている場合
+            //    var sv = _kernel.ListServer.Get("Remote");
+            //    if (sv != null)
+            //        sv.Append(oneLog);
+            //}
 
             if (_useLimitString)
             {

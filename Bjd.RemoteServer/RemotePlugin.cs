@@ -12,6 +12,7 @@ namespace Bjd.RemoteServer
     {
         public RemotePlugin() { }
 
+
         public IEnumerator<Type> Dependencies
         {
             get
@@ -38,8 +39,11 @@ namespace Bjd.RemoteServer
 
         ConfigurationSmart IPlugin.CreateOption(Kernel kernel, string path, string nameTag)
         {
-            return new RemoteServer.Configurations.RemoteOption(kernel, path, nameTag);
+            return new Configurations.RemoteOption(kernel, path, nameTag);
         }
+
+        private Logs.RemoteLogService logService;
+
 
         public ComponentBase CreateComponent(Kernel kernel, Conf conf)
         {
@@ -48,7 +52,13 @@ namespace Bjd.RemoteServer
 
         OneServer IPlugin.CreateServer(Kernel kernel, Conf conf, OneBind oneBind)
         {
-            return new RemoteServer.Server(kernel, conf, oneBind);
+            if (logService != null) kernel.LogServices.Remove(logService);
+            logService = new Logs.RemoteLogService();
+            kernel.LogServices.Add(logService);
+
+            var sv = new RemoteServer.Server(kernel, conf, oneBind);
+            logService.remoteServer = sv;
+            return sv;
         }
 
         void IDisposable.Dispose()

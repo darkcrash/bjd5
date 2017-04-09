@@ -3,7 +3,7 @@ using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Traces;
 
-namespace Bjd.Remote
+namespace Bjd.RemoteServer.Remote
 {
     //リモートサーバ側で動作しているときにクライアントへのアクセスするためのオブジェクト
     public class RemoteConnect

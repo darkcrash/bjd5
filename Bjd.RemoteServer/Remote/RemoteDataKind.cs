@@ -1,4 +1,4 @@
-namespace Bjd.Remote
+namespace Bjd.RemoteServer.Remote
 {
     public enum RemoteDataKind : byte
     {

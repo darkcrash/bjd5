@@ -26,6 +26,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bjd.Mailbox\Bjd.Mailbox.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="BJD.Lang.txt;example.pfx;named.ca;Option.def;Option.ini;Option.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
