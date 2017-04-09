@@ -12,6 +12,7 @@ using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using System.Net.Sockets;
 
 namespace Bjd.Servers
 {
@@ -353,6 +354,7 @@ namespace Bjd.Servers
                     childTask.Start();
                     childTask.Wait(this._cancelToken);
                 }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
                     _kernel.Logger.TraceError(ex.Message);

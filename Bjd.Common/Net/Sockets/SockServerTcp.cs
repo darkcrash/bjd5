@@ -115,6 +115,7 @@ namespace Bjd.Net.Sockets
                     }
                     catch (Exception ex)
                     {
+                        if (IsCancel) return null; 
                         Kernel.Logger.TraceError(ex.Message);
                         Kernel.Logger.TraceError(ex.StackTrace);
                     }
