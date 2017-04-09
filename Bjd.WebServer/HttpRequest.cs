@@ -5,6 +5,7 @@ using Bjd.Logs;
 using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using Bjd.Memory;
 
 namespace Bjd.WebServer
 {
@@ -203,5 +204,18 @@ namespace Bjd.WebServer
         {
             return string.Format("{0} {1} {2}", Ver, code, WebServerUtil.StatusMessage(code));
         }
+
+        public CharsData CreateResponseChars(int code)
+        {
+            var len = 10 + 4 + 55;
+            var chars = CharsPool.GetMaximum(len);
+            chars.Append(Ver);
+            chars.Append(' ');
+            CachedIntConverter.AppendFormatString(chars, 1, code);
+            chars.Append(' ');
+            chars.Append(WebServerUtil.StatusMessage(code));
+            return chars;
+        }
+
     }
 }

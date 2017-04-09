@@ -9,7 +9,7 @@ namespace Bjd.Net.Sockets
     public class SockQueuePool : IDisposable
     {
         public readonly static SockQueuePool Instance = new SockQueuePool();
-        const int poolSize = 512;
+        const int poolSize = 1024;
 
         private ConcurrentBag<SockQueue> _queue = new ConcurrentBag<SockQueue>();
         //private CancellationTokenSource cancel = new CancellationTokenSource();

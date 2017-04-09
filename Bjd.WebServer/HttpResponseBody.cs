@@ -11,6 +11,7 @@ using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using Bjd.Memory;
 
 namespace Bjd.WebServer
 {
@@ -23,15 +24,12 @@ namespace Bjd.WebServer
             Disk = 1,
         }
 
-        //const int bufferSize = 1048560;
-        const int bufferSizeL = 1048560;
-        const int bufferSize = 16384;
-
-        static byte[] empty = new byte[0];
+        static BufferData empty = BufferData.Empty;
 
         Kernel _kernel;
         KindBuf _kindBuf;
-        byte[] _doc;
+        BufferData _doc;
+        long docLength;
 
         string _fileName;
         long _rangeFrom;
@@ -40,8 +38,6 @@ namespace Bjd.WebServer
         public HttpResponseBody(Kernel kernel)
         {
             _kernel = kernel;
-            //_kindBuf = KindBuf.Memory;
-            //_doc = empty;
             Clear();
         }
         public void Clear()
@@ -51,6 +47,7 @@ namespace Bjd.WebServer
             _fileName = string.Empty;
             _rangeFrom = 0;
             _rangeTo = 0;
+            docLength = 0;
         }
 
         public void Set(string fileName, long rangeFrom, long rangeTo)
@@ -63,8 +60,8 @@ namespace Bjd.WebServer
         public void Set(byte[] buf)
         {
             _kindBuf = KindBuf.Memory;
-            _doc = new byte[buf.Length];
-            Buffer.BlockCopy(buf, 0, _doc, 0, buf.Length);
+            _doc = buf.ToBufferData();
+            docLength = buf.Length;
             _kernel.Logger.DebugInformation($"HttpResponseBody.Set Length={buf.Length}");
         }
 
@@ -74,75 +71,48 @@ namespace Bjd.WebServer
             {
                 if (_kindBuf == KindBuf.Memory)
                 {
-                    return _doc.Length;
+                    return docLength;
                 }
                 return _rangeTo - _rangeFrom + ((_rangeFrom == 0) ? 0 : 1);
             }
         }
-        //public bool Send(SockTcp tcpObj,bool encode,ref bool life){
+
         public bool Send(SockTcp tcpObj, bool encode, ILife iLife)
         {
             _kernel.Logger.DebugInformation($"HttpResponseBody.Send encode={encode}");
             if (_kindBuf == KindBuf.Memory)
             {
-                if (encode)
-                {
-                    if (-1 == tcpObj.SendUseEncode(_doc))
-                        return false;
-                }
-                else
-                {
-                    if (-1 == tcpObj.SendNoEncode(_doc))
-                        return false;
-                }
+                tcpObj.SendAsync(_doc);
+                _doc = empty;
             }
             else
             {
                 using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
                 {
-                    using (var buf = Bjd.Memory.BufferPool.Get(fs.Length))
+                    var bufSize = 65536;
+                    fs.Seek(_rangeFrom, SeekOrigin.Begin);
+                    var start = _rangeFrom;
+                    while (iLife.IsLife())
                     {
-                        var bufSize = buf.Length;
-                        fs.Seek(_rangeFrom, SeekOrigin.Begin);
-                        var start = _rangeFrom;
-                        while (iLife.IsLife())
-                        {
-                            long size = _rangeTo - start + 1;
-                            if (size > bufSize)
-                                size = bufSize;
-                            if (size <= 0)
-                                break;
+                        long size = _rangeTo - start + 1;
+                        if (size > bufSize)
+                            size = bufSize;
+                        if (size <= 0)
+                            break;
 
-                            int len = fs.Read(buf.Data, 0, (int)size);
-                            if (len <= 0)
-                                break;
+                        var b = Bjd.Memory.BufferPool.Get(size);
 
-                            if (-1 == tcpObj.Send(buf.Data, len))
-                            {
-                                return false;
-                            }
+                        int len = fs.Read(b.Data, 0, (int)size);
+                        if (len <= 0)
+                            break;
 
-                            //var segment = new ArraySegment<byte>(buf.Data, 0, len);
+                        b.DataSize = len;
+                        tcpObj.SendAsync(b);
 
-                            //if (encode)
-                            //{
-                            //    if (-1 == tcpObj.SendUseEncode(segment))
-                            //    {
-                            //        return false;
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    if (-1 == tcpObj.SendNoEncode(segment))
-                            //    {
-                            //        return false;
-                            //    }
-                            //}
-                            start += len;
-                            if (_rangeTo - start <= 0)
-                                break;
+                        start += len;
+                        if (_rangeTo - start <= 0)
+                            break;
 
-                        }
                     }
                 }
             }

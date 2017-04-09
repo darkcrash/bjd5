@@ -79,10 +79,8 @@ namespace Bjd.WebServer
 
             //ヘッダ送信
             //_sockTcp.SendUseEncode(_sendHeader.GetBytes());//ヘッダ送信
-            using (var b = _sendHeader.GetBuffer())
-            {
-                _sockTcp.Send(b);
-            }
+            _sockTcp.SendAsync(_sendHeader.GetBuffer());
+
             //本文送信
             if (_body.Length > 0)
             {

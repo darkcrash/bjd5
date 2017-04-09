@@ -60,6 +60,11 @@ namespace Bjd.Logs
             _pid = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
         }
 
+        public void Set(LogKind logKind, SockObj sockBase, int messageNo, CharsData detailInfomation)
+        {
+            Set(logKind, sockBase, messageNo, detailInfomation.ToString());
+        }
+
         public void Set(LogKind logKind, SockObj sockBase, int messageNo, string detailInfomation)
         {
             //デバッグ等でkernelが初期化されていない場合、処理なし

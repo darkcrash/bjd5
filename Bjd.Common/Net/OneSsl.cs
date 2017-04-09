@@ -55,6 +55,11 @@ namespace Bjd.Net
             return buf.Length;
         }
 
+        public Task WriteAsync(byte[] buf, int len, CancellationToken token)
+        {
+            return _stream.WriteAsync(buf, 0, len, token);
+        }
+
         public int Write(ArraySegment<byte> buf)
         {
             _stream.Write(buf.Array, buf.Offset, buf.Count);

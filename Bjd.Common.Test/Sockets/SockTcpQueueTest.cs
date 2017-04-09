@@ -203,14 +203,14 @@ namespace Bjd.Test.Sockets
                     {
                         //output.WriteLine($"{sut.GetHashCode()} _sockQueue.DataSize:{sut._sockQueue._blocks.Sum(_ => (_ != null ? _.DataSize : 0))}");
                         //output.WriteLine($"{sut.GetHashCode()} _sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
-                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
-                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueue.Length}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueueRecv.UseBlocks}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueueRecv.Length}");
                         //exercise
                         var actual = sut.LineRecv(timeout, this);
                         //output.WriteLine($"{sut.GetHashCode()} _sockQueue.DataSize:{sut._sockQueue._blocks.Sum( _ => (_ != null ? _.DataSize : 0))}");
                         //output.WriteLine($"{sut.GetHashCode()} _sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
-                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
-                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueue.Length}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.UseBlocks:{sut._sockQueueRecv.UseBlocks}");
+                        output.WriteLine($"{sut.GetHashCode()} _sockQueue.Length:{sut._sockQueueRecv.Length}");
                         recvCount++;
                         output.WriteLine($"recvCount:{recvCount}");
                         //verify
@@ -259,14 +259,14 @@ namespace Bjd.Test.Sockets
                     sendCount++;
                     output.WriteLine($"sendCount:{sendCount}");
                     //output.WriteLine($"_sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
-                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
-                    output.WriteLine($"_sockQueue.Length:{sut._sockQueue.Length}");
+                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueueRecv.UseBlocks}");
+                    output.WriteLine($"_sockQueue.Length:{sut._sockQueueRecv.Length}");
                   
                     //exercise
                     var actual = sut.LineRecv(timeout, this);
                     //output.WriteLine($"_sockQueue.enqueueCounter:{sut._sockQueue.enqueueCounter}");
-                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueue.UseBlocks}");
-                    output.WriteLine($"_sockQueue.Length:{sut._sockQueue.Length}");
+                    output.WriteLine($"_sockQueue.UseBlocks:{sut._sockQueueRecv.UseBlocks}");
+                    output.WriteLine($"_sockQueue.Length:{sut._sockQueueRecv.Length}");
                     recvCount++;
                     output.WriteLine($"recvCount:{recvCount}");
                     //verify

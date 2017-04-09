@@ -215,6 +215,44 @@ namespace Bjd.Net.Sockets
 
         }
 
+        public int Enqueue(BufferData buf)
+        {
+            if (Space == 0)
+            {
+                return 0;
+            }
+            //空きスペースを越える場合は失敗する 0が返される
+            if (Space < buf.DataSize)
+            {
+                return 0;
+            }
+
+            var len = buf.DataSize;
+
+            _blocks[_nextBlocks] = buf;
+
+            _nextBlocks++;
+            if (_nextBlocks >= MaxBlockSize)
+            {
+                _nextBlocks = 0;
+            }
+
+            System.Threading.Interlocked.Increment(ref _useBlocks);
+            System.Threading.Interlocked.Add(ref _length, len);
+            _totallength += len;
+
+            if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
+            enqueueCounter++;
+
+            //_modify = true; //データベースの内容が変化した
+            SetModify(true);
+
+            return len;
+
+
+        }
+
+
         public byte[] DequeueWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             ////要求サイズが現有数を超える場合は待機する
@@ -317,6 +355,103 @@ namespace Bjd.Net.Sockets
             return retBuf;
 
         }
+
+
+        public BufferData DequeueBufferWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+
+            while (true)
+            {
+                if (len == 0) return BufferData.Empty;
+                if (cancellationToken.IsCancellationRequested) return BufferData.Empty;
+                var result = DequeueBuffer(len, false);
+                if (result == BufferData.Empty)
+                {
+                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return DequeueBuffer(len, false); }
+                    catch (OperationCanceledException) { return BufferData.Empty; }
+                    continue;
+                }
+                return result;
+            }
+        }
+
+        //キューからのデータ取得
+        private BufferData DequeueBuffer(int len, bool must)
+        {
+            if (len == 0) return BufferData.Empty;
+            if (recvMust == must && recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
+            {
+                return BufferData.Empty;
+            }
+            // 次に何か受信するまで処理の必要はない
+            SetModify(false);
+            recvLength = _length;
+            dequeueCounter = enqueueCounter;
+            recvUseBlocks = _useBlocks;
+            recvMust = must;
+
+            if (recvLength == 0)
+            {
+                return BufferData.Empty;
+            }
+
+            //要求サイズが現有数を超える場合はカットする
+            if (recvLength < len)
+            {
+                if (must) return BufferData.Empty;
+                len = recvLength;
+            }
+
+            // 出力用バッファ
+            //var retBuf = new byte[len];
+            var retBuf = BufferPool.GetMaximum(len);
+            var writeSize = 0;
+            var leftOversSize = len;
+
+            while (leftOversSize > 0)
+            {
+                var size = leftOversSize;
+                var b = _blocks[_readBlocks];
+
+
+                if (size >= b.DataSize)
+                {
+                    size = b.DataSize;
+                    _blocks[_readBlocks] = null;
+                    _readBlocks++;
+                    if (_readBlocks >= MaxBlockSize)
+                    {
+                        _readBlocks = 0;
+                    }
+                    Buffer.BlockCopy(b.Data, 0, retBuf.Data, writeSize, size);
+                    b.Dispose();
+                    System.Threading.Interlocked.Decrement(ref _useBlocks);
+                }
+                else
+                {
+                    Buffer.BlockCopy(b.Data, 0, retBuf.Data, writeSize, size);
+                    var tempSize = b.DataSize - size;
+                    Buffer.BlockCopy(b.Data, size, b.Data, 0, tempSize);
+                    b.DataSize = tempSize;
+                }
+                writeSize += size;
+                leftOversSize -= size;
+
+
+            }
+
+            retBuf.DataSize = len;
+
+            alloc.Clear();
+            System.Threading.Interlocked.Add(ref _length, -len);
+
+            return retBuf;
+
+        }
+
+
+
+
 
         public byte[] DequeueLineWait(int millisecondsTimeout, CancellationToken cancellationToken)
         {

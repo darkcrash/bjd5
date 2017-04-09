@@ -8,6 +8,21 @@ namespace Bjd.Memory
 {
     public static class MemoryExtensions
     {
+        public static BufferData ToBufferData(this byte[] data)
+        {
+            var buffer = BufferPool.GetMaximum(data.Length);
+            Buffer.BlockCopy(data, 0, buffer.Data, 0, data.Length);
+            return buffer;
+        }
+
+        public static BufferData ToAsciiBufferData(this CharsData data)
+        {
+            var ascii = System.Text.Encoding.ASCII;
+            var size = ascii.GetByteCount(data.Data, 0, data.DataSize);
+            var buffer = BufferPool.GetMaximum(size);
+            buffer.DataSize = ascii.GetBytes(data.Data, 0, data.DataSize, buffer.Data, 0);
+            return buffer;
+        }
 
         public static CharsData ToAsciiCharsData(this BufferData data)
         {
