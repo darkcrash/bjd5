@@ -701,20 +701,19 @@ namespace Bjd.Net.Sockets
                     _oneSsl = null;
                 }
 
-                this._lastLineSend = null;
-                if (this._sockQueue != null)
+                _lastLineSend = null;
+                if (_sockQueue != null)
                 {
                     //this._sockQueue.Dispose();
                     SockQueuePool.Instance.Pool(ref this._sockQueue);
-                    this._sockQueue = null;
+                    _sockQueue = null;
                 }
-                if (this._ssl != null)
+                if (_ssl != null)
                 {
-                    this._ssl.Dispose();
-                    this._ssl = null;
+                    _ssl.Dispose();
+                    _ssl = null;
                 }
                 disposedValue = true;
-                //SetError("Dispose");
             }
 
             base.Dispose(disposing);

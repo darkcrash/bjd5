@@ -216,7 +216,10 @@ namespace Bjd.Net.Sockets
 
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
-                Kernel.Events.Cancel -= this.KernelCancel;
+                if (Kernel != null)
+                {
+                    Kernel.Events.Cancel -= this.KernelCancel;
+                }
 
                 _RemoteAddress = null;
                 _RemoteIp = null;
@@ -226,9 +229,9 @@ namespace Bjd.Net.Sockets
                 //if (!this.IsCancel) this.Cancel();
                 if (cancelTokenSource != null) cancelTokenSource.Dispose();
                 cancelTokenSource = null;
-                this.SocketStateChanged = null;
-                this._lastError = null;
-                this.Kernel = null;
+                SocketStateChanged = null;
+                _lastError = null;
+                Kernel = null;
 
                 disposedValue = true;
             }
