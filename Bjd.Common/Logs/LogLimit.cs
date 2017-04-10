@@ -53,6 +53,27 @@ namespace Bjd.Logs
             }
             return (!_isDisplay);
         }
+
+        public bool IsDisplay(LogMessage log)
+        {
+            if (log == null)
+            {
+                return false;
+            }
+            foreach (var s in _limitStr)
+            {
+                if (log.Message().IndexOf(s) != -1)
+                {
+                    return (_isDisplay);
+                }
+                if (log.DetailInfomation().IndexOf(s) != -1)
+                {
+                    return (_isDisplay);
+                }
+            }
+            return (!_isDisplay);
+        }
+
     }
 
 }

@@ -324,16 +324,6 @@ namespace Bjd.Logs
             //}
 
 
-            // 表示制限にヒットするかどうかの確認
-            var isDisplay = true;
-            if (!oneLog.IsSecure())
-            {
-                //セキュリティログは表示制限の対象外
-                if (_logLimit != null)
-                {
-                    isDisplay = _logLimit.IsDisplay(oneLog.ToString());
-                }
-            }
 
             ////Ver5.8.8
             ////LogViewの中で実行していたリモートクライアントへの送信をこちらに移動する
@@ -349,6 +339,19 @@ namespace Bjd.Logs
 
             if (_useLimitString)
             {
+                // 表示制限にヒットするかどうかの確認
+                var isDisplay = true;
+
+                if (!oneLog.IsSecure())
+                {
+                    //セキュリティログは表示制限の対象外
+                    if (_logLimit != null)
+                    {
+                        //isDisplay = _logLimit.IsDisplay(oneLog.ToString());
+                        isDisplay = _logLimit.IsDisplay(oneLog);
+                    }
+                }
+
                 //表示制限が有効な場合
                 if (isDisplay)
                 {
