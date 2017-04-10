@@ -8,6 +8,8 @@ namespace Bjd.Memory
 {
     public static class MemoryExtensions
     {
+        private static byte CrByte = 0x0A;
+        private static byte LfByte = 0x0D;
         private static char Cr = (char)0x0A;
         private static char Lf = (char)0x0D;
 
@@ -26,6 +28,18 @@ namespace Bjd.Memory
             buffer.DataSize = ascii.GetBytes(data.Data, 0, data.DataSize, buffer.Data, 0);
             return buffer;
         }
+
+        public static BufferData ToAsciiLineBufferData(this CharsData data)
+        {
+            var ascii = System.Text.Encoding.ASCII;
+            var size = ascii.GetByteCount(data.Data, 0, data.DataSize) + 2;
+            var buffer = BufferPool.GetMaximum(size);
+            buffer.DataSize = ascii.GetBytes(data.Data, 0, data.DataSize, buffer.Data, 0);
+            buffer.Data[buffer.DataSize++] = CrByte;
+            buffer.Data[buffer.DataSize++] = LfByte;
+            return buffer;
+        }
+
 
         public static CharsData ToAsciiCharsData(this BufferData data)
         {

@@ -124,40 +124,62 @@ namespace Bjd.Logs
 
         //文字列化
         //\t区切りで出力される
-        public override String ToString()
+        public override string ToString()
         {
             CheckInitialise();
             //return String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}", Dt(), Kind(), ThreadId(),
             //                     NameTag(), RemoteHostname(), MessageNo(), Message(), DetailInfomation());
 
-            var sb = GetSB();
+            //var sb = GetSB();
 
-            //sb.Append(Dt());
-            //sb.AppendFormat("{0:D4}/{1:D2}/{2:D2} {3:D2}:{4:D2}:{5:D2}", _dt.Year, _dt.Month, _dt.Day, _dt.Hour, _dt.Minute, _dt.Second);
-            sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
-            sb.Append('\t');
-            //sb.Append(Kind());
-            sb.Append(_logKind);
-            sb.Append('\t');
-            //sb.Append(ThreadId());
-            sb.Append(_threadId);
-            sb.Append('\t');
-            //sb.Append(NameTag());
-            sb.Append(_nameTag);
-            sb.Append('\t');
-            //sb.Append(RemoteHostname());
-            sb.Append(_remoteHostname);
-            sb.Append('\t');
-            //sb.Append(MessageNo());
-            sb.AppendFormat("{0:D7}", _messageNo);
-            sb.Append('\t');
-            //sb.Append(Message());
-            sb.Append(_message);
-            sb.Append('\t');
-            //sb.Append(DetailInfomation());
-            sb.Append(_detailInfomation);
+            ////sb.Append(Dt());
+            ////sb.AppendFormat("{0:D4}/{1:D2}/{2:D2} {3:D2}:{4:D2}:{5:D2}", _dt.Year, _dt.Month, _dt.Day, _dt.Hour, _dt.Minute, _dt.Second);
+            //sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
+            //sb.Append('\t');
+            ////sb.Append(Kind());
+            //sb.Append(_logKind);
+            //sb.Append('\t');
+            ////sb.Append(ThreadId());
+            //sb.Append(_threadId);
+            //sb.Append('\t');
+            ////sb.Append(NameTag());
+            //sb.Append(_nameTag);
+            //sb.Append('\t');
+            ////sb.Append(RemoteHostname());
+            //sb.Append(_remoteHostname);
+            //sb.Append('\t');
+            ////sb.Append(MessageNo());
+            //sb.AppendFormat("{0:D7}", _messageNo);
+            //sb.Append('\t');
+            ////sb.Append(Message());
+            //sb.Append(_message);
+            //sb.Append('\t');
+            ////sb.Append(DetailInfomation());
+            //sb.Append(_detailInfomation);
 
-            return sb.ToString();
+            //return sb.ToString();
+
+
+            using (var sb = CharsPool.GetMaximum(256))
+            {
+                DateTimeTextGenerator.AppendFormatStringYMD(sb, ref _dt);
+                sb.Append('\t');
+                sb.Append(_logKind.ToString());
+                sb.Append('\t');
+                CachedIntConverter.AppendFormatString(sb, 1, _threadId);
+                sb.Append('\t');
+                sb.Append(_nameTag);
+                sb.Append('\t');
+                sb.Append(_remoteHostname);
+                sb.Append('\t');
+                CachedIntConverter.AppendFormatString(sb, 7, _messageNo);
+                sb.Append('\t');
+                sb.Append(_message);
+                sb.Append('\t');
+                sb.Append(_detailInfomation);
+                return sb.ToString();
+            }
+
         }
 
         //文字列化
@@ -203,58 +225,77 @@ namespace Bjd.Logs
             //sb.Append(_detailInfomation);
             //return sb.ToCharsData();
 
-            var sb = CharsPool.GetMaximum(512);
-
-            //sb.AppendFormat("{0:yyyy/MM/dd HH:mm:ss}", _dt);
+            var sb = CharsPool.GetMaximum(256);
             DateTimeTextGenerator.AppendFormatStringYMD(sb, ref _dt);
             sb.Append('\t');
             sb.Append(_logKind.ToString());
             sb.Append('\t');
-            //sb.Append(_threadId);
             CachedIntConverter.AppendFormatString(sb, 1, _threadId);
             sb.Append('\t');
             sb.Append(_nameTag);
             sb.Append('\t');
             sb.Append(_remoteHostname);
             sb.Append('\t');
-            //sb.Append(_messageNo);
             CachedIntConverter.AppendFormatString(sb, 1, _messageNo);
             sb.Append('\t');
             sb.Append(_message);
             sb.Append('\t');
             sb.Append(_detailInfomation);
             return sb;
-
         }
 
 
         public string ToTraceString()
         {
             CheckInitialise();
-            var sb = GetSB();
-            //return $"[{_dt.ToString("HH\\:mm\\:ss\\.fff")}][{_pid}][{_threadId.ToString().PadLeft(3)}] {Kind()}\t{NameTag()}\t{RemoteHostname()}\t{MessageNo()}\t{Message()}\t{DetailInfomation()}";
-            sb.Append('[');
-            //sb.Append(_dt.ToString("HH\\:mm\\:ss\\.fff"));
-            sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", _dt);
-            sb.Append("][");
-            sb.Append(_pid);
-            sb.Append("][");
-            //sb.Append(_threadId.ToString().PadLeft(3));
-            sb.AppendFormat("{0,3:###}", _threadId);
-            sb.Append("][");
-            sb.Append(Kind());
-            sb.Append("] ");
-            sb.Append(NameTag());
-            sb.Append(" ");
-            sb.Append(RemoteHostname());
-            sb.Append(" ");
-            sb.Append(MessageNo());
-            sb.Append(" ");
-            sb.Append(Message());
-            sb.Append(" ");
-            sb.Append(DetailInfomation());
-            sb.Append(']');
-            return sb.ToString();
+            //var sb = GetSB();
+            ////return $"[{_dt.ToString("HH\\:mm\\:ss\\.fff")}][{_pid}][{_threadId.ToString().PadLeft(3)}] {Kind()}\t{NameTag()}\t{RemoteHostname()}\t{MessageNo()}\t{Message()}\t{DetailInfomation()}";
+            //sb.Append('[');
+            ////sb.Append(_dt.ToString("HH\\:mm\\:ss\\.fff"));
+            //sb.AppendFormat("{0:HH\\:mm\\:ss\\.fff}", _dt);
+            //sb.Append("][");
+            //sb.Append(_pid);
+            //sb.Append("][");
+            ////sb.Append(_threadId.ToString().PadLeft(3));
+            //sb.AppendFormat("{0,3:###}", _threadId);
+            //sb.Append("][");
+            //sb.Append(Kind());
+            //sb.Append("] ");
+            //sb.Append(NameTag());
+            //sb.Append(" ");
+            //sb.Append(RemoteHostname());
+            //sb.Append(" ");
+            //sb.Append(MessageNo());
+            //sb.Append(" ");
+            //sb.Append(Message());
+            //sb.Append(" ");
+            //sb.Append(DetailInfomation());
+            //sb.Append(']');
+            //return sb.ToString();
+
+            using (var sb = CharsPool.GetMaximum(256))
+            {
+                sb.Append('[');
+                DateTimeTextGenerator.AppendFormatStringYMD(sb, ref _dt);
+                sb.Append("][");
+                CachedIntConverter.AppendFormatString(sb, 1, _pid);
+                sb.Append("][");
+                CachedIntConverter.AppendFormatString(sb, 3, _threadId);
+                sb.Append("][");
+                sb.Append(Kind());
+                sb.Append("] ");
+                sb.Append(_nameTag);
+                sb.Append(" ");
+                sb.Append(_remoteHostname);
+                sb.Append(" ");
+                CachedIntConverter.AppendFormatString(sb, 7, _messageNo);
+                sb.Append(" ");
+                sb.Append(_message);
+                sb.Append(" ");
+                sb.Append(_detailInfomation);
+                sb.Append(']');
+                return sb.ToString();
+            }
         }
 
         //セキュリティログかどうかの確認

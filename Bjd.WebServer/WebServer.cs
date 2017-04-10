@@ -597,7 +597,7 @@ namespace Bjd.WebServer
 
             var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
             Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
-            contextConnection.Connection.AsciiSendAsync(responseChars);//レスポンス送信
+            contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
 
 
             response.Send(contextConnection.KeepAlive, this);//ドキュメント本体送信

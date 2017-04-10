@@ -8,6 +8,11 @@
     <Copyright>Copyright(c) 1998/05.. by SIN/SapporoWorks</Copyright>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Bjd.Common\Bjd.Common.csproj" />
   </ItemGroup>

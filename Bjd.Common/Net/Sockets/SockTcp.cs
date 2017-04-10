@@ -705,6 +705,14 @@ namespace Bjd.Net.Sockets
             data.Dispose();
         }
 
+        public void AsciiLineSendAsync(CharsData data)
+        {
+            var buf = data.ToAsciiLineBufferData();
+            SendAsync(buf);
+            data.Dispose();
+        }
+
+
         //内部でASCIIコードとしてエンコードする１行送信  (\r\nが付加される)
         //LineSend()のオーバーライドバージョン
         //public int AsciiSend(string str, OperateCrlf operateCrlf) {
