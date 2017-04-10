@@ -199,28 +199,27 @@ namespace Bjd.Net.Sockets
             {
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
-                this.SetErrorReceive();
+                SetErrorReceive();
             }
         }
 
         private void E_Completed(object sender, SocketAsyncEventArgs e)
         {
-            if (this.CancelToken.IsCancellationRequested) return;
+            if (CancelToken.IsCancellationRequested) return;
 
             if (e.SocketError == SocketError.Success)
             {
-                this.EndReceive(Task<int>.FromResult(e.BytesTransferred));
+                EndReceive(e.BytesTransferred);
                 return;
             }
 
-            this.SetErrorReceive();
+            SetErrorReceive();
             Kernel.Logger.TraceError($"{hashText} SockTcp.E_Completed {e.SocketError}");
 
         }
 
         public void EndReceive(Task<int> result)
         {
-
             if (result.IsCanceled)
             {
                 Kernel.Logger.TraceWarning($"{hashText} SockTcp.EndReceive IsCanceled=true");
@@ -239,7 +238,7 @@ namespace Bjd.Net.Sockets
                 switch (ex.SocketErrorCode)
                 {
                     case SocketError.OperationAborted:
-                        this.BeginReceive();
+                        BeginReceive();
                         return;
                 }
 
@@ -247,21 +246,28 @@ namespace Bjd.Net.Sockets
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.InnerException.Message}");
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.Message}");
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.StackTrace:{result.Exception.StackTrace}");
-                this.SetErrorReceive();
+                SetErrorReceive();
                 return;
             }
+
+            EndReceive(result.Result);
+        }
+
+        public void EndReceive(int result)
+        {
+
 
             //受信完了
             //ポインタを移動する場合は、排他制御が必要
             try
             {
                 //Ver5.9.2 Java fix
-                int bytesRead = result.Result;
+                int bytesRead = result;
                 Kernel.Logger.DebugInformation(hashText, " SockTcp.EndReceive Length={bytesRead}");
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
-                    this.SetErrorReceive();
+                    SetErrorReceive();
                     return;
                 }
                 _sockQueueRecv.NotifyWrite(bytesRead);
@@ -271,7 +277,7 @@ namespace Bjd.Net.Sockets
             {
                 //受信待機のままソケットがクローズされた場合は、ここにくる
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
-                this.SetErrorReceive();
+                SetErrorReceive();
                 return;
             }
 
@@ -279,13 +285,13 @@ namespace Bjd.Net.Sockets
             //受信待機
             while (_sockQueueRecv == null || _sockQueueRecv.Space == 0)
             {
-                Thread.Sleep(10); //他のスレッドに制御を譲る  
+                Thread.Sleep(5); //他のスレッドに制御を譲る  
                 if (disposedValue) return;
                 if (CancelToken.IsCancellationRequested) return;
                 if (SockState != SockState.Connect)
                 {
                     Kernel.Logger.TraceWarning($"{hashText} SockTcp.EndReceive Not Connected");
-                    this.SetErrorReceive();
+                    SetErrorReceive();
                     return;
                 }
             }

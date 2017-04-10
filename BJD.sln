@@ -58,6 +58,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Startup.Test", "Bjd.Startup.Test\Bjd.Startup.Test.csproj", "{C6956DFF-DAB9-4ABF-8B16-1EE9D5356BCB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.Startup", "Bjd.Startup\Bjd.Startup.csproj", "{2AE59EE8-9202-4426-9EC3-73CDDE41BF7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0183C0B5-E528-46FA-BF58-77CD83DA4CE0} = {0183C0B5-E528-46FA-BF58-77CD83DA4CE0}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bjd.SmtpServer.Test", "Bjd.SmtpServer.Test\Bjd.SmtpServer.Test.csproj", "{F673FDF1-1BD9-45BB-8D47-F89425627EEE}"
 EndProject
@@ -231,6 +234,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
