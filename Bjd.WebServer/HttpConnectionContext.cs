@@ -1,6 +1,7 @@
 ﻿using Bjd.Memory;
 using Bjd.Net;
 using Bjd.Net.Sockets;
+using Bjd.WebServer.Memory;
 using Bjd.WebServer.IO;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bjd.WebServer
 {
-    public class HttpConnectionContext : IDisposable
+    public class HttpConnectionContext : IDisposable, IPoolBuffer
     {
 
         public SockTcp Connection;
@@ -22,6 +23,14 @@ namespace Bjd.WebServer
         public Logs.Logger Logger;
 
         private HttpRequestContext requestContext;
+
+        private HttpContextPool _pool;
+
+
+        public HttpConnectionContext(HttpContextPool pool)
+        {
+            _pool = pool;
+        }
 
         public HttpRequestContext GetRequestContext()
         {
@@ -48,10 +57,19 @@ namespace Bjd.WebServer
 
         public void Dispose()
         {
+            _pool.PoolInternal(this);
+        }
+
+        public void Initialize()
+        {
+            // null
+        }
+
+        public void DisposeInternal()
+        {
             Connection = null;
             RemoteIp = null;
             Logger = null;
         }
-
     }
 }

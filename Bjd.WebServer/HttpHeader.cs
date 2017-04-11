@@ -292,7 +292,8 @@ namespace Bjd
             {
                 if (key == "")
                 {
-                    if (line[i] == ':')
+                    //if (line[i] == ':')
+                    if (line[i] == Colon)
                     {
                         var tmp = new byte[i];
                         Buffer.BlockCopy(line, 0, tmp, 0, i);
@@ -319,7 +320,8 @@ namespace Bjd
             {
                 if (key == "")
                 {
-                    if (line.Data[i] == ':')
+                    //if (line.Data[i] == ':')
+                    if (line.Data[i] == Colon)
                     {
                         key = Encoding.ASCII.GetString(line.Data, 0, i);
                     }

@@ -19,6 +19,7 @@ using Bjd.WebServer.Handlers;
 using Bjd.WebServer.Outside;
 using Bjd.WebServer.WebDav;
 using Bjd.WebServer.Authority;
+using Bjd.WebServer.Memory;
 
 namespace Bjd.WebServer
 {
@@ -161,7 +162,7 @@ namespace Bjd.WebServer
             System.Globalization.CultureInfo.CurrentCulture = _culture;
 
             // create Connection Context
-            using (var connection = new HttpConnectionContext())
+            using (var connection = HttpContextPool.GetContext())
             {
                 connection.Kernel = _kernel;
                 connection.Logger = Logger;
