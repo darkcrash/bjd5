@@ -8,6 +8,7 @@ using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Components;
 using Bjd.Utils;
+using Bjd.Threading;
 
 namespace Bjd.Memory
 {
@@ -33,9 +34,11 @@ namespace Bjd.Memory
 
             BufferPool._log = _log;
             CharsPool._log = _log;
+            SimpleResetPool._log = _log;
 
             BufferPool.GetMaximum(0).Dispose();
             CharsPool.GetMaximum(0).Dispose();
+            SimpleResetPool.GetResetEvent().Dispose();
 
             
 
@@ -50,6 +53,7 @@ namespace Bjd.Memory
         {
             BufferPool._log = null;
             CharsPool._log = null;
+            SimpleResetPool._log = null;
 
             base.Dispose();
         }

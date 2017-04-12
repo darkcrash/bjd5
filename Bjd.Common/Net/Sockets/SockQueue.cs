@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
 using Bjd.Memory;
+using Bjd.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -36,11 +37,12 @@ namespace Bjd.Net.Sockets
         List<int> alloc = new List<int>(MaxBlockSize);
 
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
-        private const int max = 2000000; //保持可能な最大数
-        //private const int max = 4000000;
+        //private const int max = 2000000; //保持可能な最大数
+        private const int max = 4000000;
 
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
-        ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
+        //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
+        SimpleResetEvent _modifyEvent = SimpleResetPool.GetResetEvent(false);
 
         public int Max { get { return max; } }
 

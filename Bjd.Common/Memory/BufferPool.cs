@@ -48,7 +48,6 @@ namespace Bjd.Memory
             Medium = new BufferPool(M, M * c, bufferSizeM);
             Small = new BufferPool(L, L * c, bufferSizeS);
             ExtraSmall = new BufferPool(L, L * c, bufferSizeXS);
-            Small.debugwrite = true;
 
         }
 

@@ -28,8 +28,6 @@ namespace Bjd.Memory
         private object ChangeZeroLock = new object();
         private GCHandle bufferHandle;
 
-        internal bool debugwrite = false;
-
         protected PoolBase()
         {
             PoolList.Add(this);

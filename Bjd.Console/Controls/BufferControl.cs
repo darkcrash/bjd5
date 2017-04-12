@@ -7,6 +7,7 @@ using Bjd.Servers;
 using System.Threading;
 using System.Threading.Tasks;
 using Bjd.Memory;
+using Bjd.Threading;
 
 namespace Bjd.Console.Controls
 {
@@ -24,6 +25,7 @@ namespace Bjd.Console.Controls
 
         private List<BufferPool> BufferPoolList;
         private List<CharsPool> CharsPoolList;
+        private List<SimpleResetPool> SimpleResetPoolList;
 
         public BufferControl(ControlContext cc) : base(cc)
         {
@@ -99,7 +101,7 @@ namespace Bjd.Console.Controls
                 SetActiveServerViewIndex();
                 return true;
             }
-            if (key.Key == ConsoleKey.DownArrow && ActiveServerIndex < (BufferPoolList.Count + CharsPoolList.Count) - 1)
+            if (key.Key == ConsoleKey.DownArrow && ActiveServerIndex < (BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count) - 1)
             {
                 ActiveServerIndex++;
                 SetActiveServerViewIndex();
@@ -139,6 +141,16 @@ namespace Bjd.Console.Controls
                 var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
                 context.Write($"Chars :{sv.ToConsoleString()}", frColor, bgColor);
+                base.Output(row, context);
+                return;
+            }
+            cnt = cnt + SimpleResetPoolList.Count;
+            if (cnt > idx)
+            {
+                var sv = SimpleResetPoolList[idx - BufferPoolList.Count - CharsPoolList.Count];
+                var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
+                var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
+                context.Write($"Reset :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
             }
 
@@ -185,13 +197,19 @@ namespace Bjd.Console.Controls
                 {
                     CharsPoolList.Add((CharsPool)p);
                 }
+                SimpleResetPoolList = new List<SimpleResetPool>();
+                foreach (var p in SimpleResetPool.PoolList)
+                {
+                    SimpleResetPoolList.Add((SimpleResetPool)p);
+                }
             }
             else
             {
                 BufferPoolList = new List<BufferPool>();
                 CharsPoolList = new List<CharsPool>();
+                SimpleResetPoolList = new List<SimpleResetPool>();
             }
-            Row = BufferPoolList.Count + CharsPoolList.Count + headerRow;
+            Row = BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count + headerRow;
             Redraw = true;
         }
 

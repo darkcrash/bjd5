@@ -33,7 +33,8 @@ namespace Bjd.Net.Sockets
         private string hashText;
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
-        private ManualResetEventSlim sendComplete = new ManualResetEventSlim(true, 0);
+        //private ManualResetEventSlim sendComplete = new ManualResetEventSlim(true, 0);
+        private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent();
 
 
         //***************************************************************************
@@ -447,7 +448,7 @@ namespace Bjd.Net.Sockets
                 return;
             }
 
-            var b = _sockQueueSend.DequeueBufferWait(65536, 3000, CancelToken);
+            var b = _sockQueueSend.DequeueBufferWait(65536, 100, CancelToken);
             if (b == BufferData.Empty)
             {
                 sendComplete.Set();
@@ -850,6 +851,12 @@ namespace Bjd.Net.Sockets
                     //this._sockQueue.Dispose();
                     SockQueuePool.Instance.Pool(ref this._sockQueueSend);
                     _sockQueueSend = null;
+                }
+
+                if (sendComplete != null)
+                {
+                    sendComplete.Dispose();
+                    sendComplete = null;
                 }
 
                 if (_ssl != null)
