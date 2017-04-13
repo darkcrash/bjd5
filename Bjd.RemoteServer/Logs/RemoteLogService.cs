@@ -35,6 +35,9 @@ namespace Bjd.RemoteServer.Logs
             remoteServer?.Append(log);
         }
 
+        public void TraceAppend(CharsData message, LogMessage log)
+        {
+        }
 
         public void WriteLine(CharsData message)
         {

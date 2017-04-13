@@ -48,6 +48,11 @@ namespace Bjd.Logs
 
         public void Append(CharsData message, LogMessage log)
         {
+            //Console.WriteLine(message.Data, 0, message.DataSize);
+        }
+
+        public void TraceAppend(CharsData message, LogMessage log)
+        {
             Console.WriteLine(message.Data, 0, message.DataSize);
         }
 

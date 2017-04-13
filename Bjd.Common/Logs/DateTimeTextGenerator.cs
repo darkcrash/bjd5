@@ -58,10 +58,10 @@ namespace Bjd.Logs
 
             if (tick == now.Ticks)
             {
-                tick = now.Ticks;
                 buffer.Append(CachedText);
                 return;
             }
+            tick = now.Ticks;
 
             if (hour != now.Hour)
             {
@@ -95,11 +95,19 @@ namespace Bjd.Logs
         [ThreadStatic]
         private static Char[] CachedTextYmd;
         [ThreadStatic]
-        private static int year = -1;
+        private static int year2 = -1;
         [ThreadStatic]
-        private static int month = -1;
+        private static int month2 = -1;
         [ThreadStatic]
-        private static int day = -1;
+        private static int day2 = -1;
+        [ThreadStatic]
+        private static int hour2 = -1;
+        [ThreadStatic]
+        private static int min2 = -1;
+        [ThreadStatic]
+        private static int sec2 = -1;
+        [ThreadStatic]
+        private static long tick2 = -1;
 
 
         public static void AppendFormatStringYMD(CharsData buffer, ref DateTime now)
@@ -108,62 +116,63 @@ namespace Bjd.Logs
             {
                 CachedTextYmd = new char[19];
                 CachedTextYmd[4] = '/';
-                CachedTextYmd[6] = '/';
-                CachedTextYmd[9] = ' ';
-                CachedTextYmd[12] = ':';
-                CachedTextYmd[15] = ':';
-                year = -1;
-                month = -1;
-                day = -1;
-                hour = -1;
-                min = -1;
-                sec = -1;
+                CachedTextYmd[7] = '/';
+                CachedTextYmd[10] = ' ';
+                CachedTextYmd[13] = ':';
+                CachedTextYmd[16] = ':';
+                year2 = -1;
+                month2 = -1;
+                day2 = -1;
+                hour2 = -1;
+                min2 = -1;
+                sec2 = -1;
             }
 
-            if (tick == now.Ticks)
+            if (tick2 == now.Ticks)
             {
-                tick = now.Ticks;
                 buffer.Append(CachedTextYmd);
                 return;
             }
+            tick2 = now.Ticks;
 
-            if (year != now.Year)
+            if (year2 != now.Year)
             {
-                year = now.Year;
                 var yearTxt = int4ToString[now.Year];
                 yearTxt.CopyTo(0, CachedTextYmd, 0, 4);
             }
-            if (month != now.Month)
+
+            if (month2 != now.Month)
             {
-                month = now.Month;
+                month2 = now.Month;
                 var monthTxt = int2ToString[now.Month];
                 monthTxt.CopyTo(0, CachedTextYmd, 5, 2);
             }
-            if (day != now.Day)
+            if (day2 != now.Day)
             {
-                day = now.Day;
+                day2 = now.Day;
                 var dayTxt = int2ToString[now.Day];
                 dayTxt.CopyTo(0, CachedTextYmd, 8, 2);
             }
-            if (hour != now.Hour)
+            if (hour2 != now.Hour)
             {
-                hour = now.Hour;
+                hour2 = now.Hour;
                 var hourTxt = int2ToString[now.Hour];
                 hourTxt.CopyTo(0, CachedTextYmd, 11, 2);
             }
-            if (min != now.Minute)
+            if (min2 != now.Minute)
             {
-                min = now.Minute;
+                min2 = now.Minute;
                 var minTxt = int2ToString[now.Minute];
                 minTxt.CopyTo(0, CachedTextYmd, 14, 2);
             }
-            if (sec != now.Second)
+            if (sec2 != now.Second)
             {
-                sec = now.Second;
+                sec2 = now.Second;
                 var secTxt = int2ToString[now.Second];
                 secTxt.CopyTo(0, CachedTextYmd, 17, 2);
             }
 
+            buffer.Append(CachedTextYmd);
 
         }
 

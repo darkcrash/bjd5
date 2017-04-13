@@ -23,10 +23,8 @@ namespace Bjd.Logs
         private readonly bool _useLogFile;
         private bool isDisposed = false;
 
-        private object _lock = new object();
-        private System.Threading.ManualResetEventSlim emptySignal = new System.Threading.ManualResetEventSlim(true, 0);
-        private int AppendCount = 0;
-
+        private SimpleResetEvent emptySignal = SimpleResetPool.GetResetEvent(true);
+        private SimpleResetEvent tailSignal = SimpleResetPool.GetResetEvent(true);
 
         private LogFileWriter _normalLog; // 通常ログ
         private LogFileWriter _secureLog; // セキュアログ
@@ -47,7 +45,6 @@ namespace Bjd.Logs
             _normalLogKind = normalLogKind;
             _secureLogKind = secureLogKind;
             _saveDays = saveDays;
-            //Ver6.0.7
             _useLogFile = useLogFile;
 
             if (!Directory.Exists(saveDirectory))
@@ -59,28 +56,18 @@ namespace Bjd.Logs
             LogOpen();
 
             // 5分に１回のインターバルタイマ
-            //_timer = new System.Timers.Timer { Interval = 1000 * 60 * 5 };
             _timer = new System.Threading.Timer(this.TimerElapsed, null, 0, 1000 * 60 * 5);
-            //_timer.Elapsed += TimerElapsed;
-            //_timer.Enabled = true;
         }
 
         public void Append(CharsData logChars, LogMessage oneLog)
         {
-            //コンストラクタで初期化に失敗している場合、falseを返す
-            if (_timer == null) return;
-
+            if (isDisposed) return;
             try
             {
-                if (Interlocked.Increment(ref AppendCount) == 1)
-                {
-                    lock (_lock)
-                    {
-                        emptySignal.Reset();
-                    }
-                }
 
-                if (isDisposed) return;
+                tailSignal.Wait();
+                emptySignal.Reset();
+
 
                 var isSecureLog = _secureLog != null;
                 var isNormalLog = _normalLog != null;
@@ -105,13 +92,14 @@ namespace Bjd.Logs
             catch (IOException) { }
             finally
             {
-                if (Interlocked.Decrement(ref AppendCount) == 0)
-                {
-                    emptySignal.Set();
-                }
+                emptySignal.Set();
             }
         }
 
+
+        public void TraceAppend(CharsData logChars, LogMessage oneLog)
+        {
+        }
 
         private void LogOpen()
         {
@@ -241,10 +229,7 @@ namespace Bjd.Logs
 
                         DeleteLog(year, month, day, _saveDays, f.FullName);
                     }
-                    catch (Exception)
-                    {
-
-                    }
+                    catch (Exception) { }
                 }
             }
 
@@ -263,10 +248,7 @@ namespace Bjd.Logs
 
                         DeleteLog(year, month, day, _saveDays, f.FullName);
                     }
-                    catch (Exception)
-                    {
-
-                    }
+                    catch (Exception) { }
                 }
             }
         }
@@ -274,67 +256,57 @@ namespace Bjd.Logs
 
         private void Tail(String fileName, int saveDays, DateTime now)
         {
-            lock (_lock)
+
+            var lines = new List<string>();
+            using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 65536))
             {
-                emptySignal.Wait();
-
-                var lines = new List<string>();
-                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                //using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
+                using (var sr = new StreamReader(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
                 {
-                    //using (var sr = new StreamReader(fs, Encoding.GetEncoding(932)))
-                    using (var sr = new StreamReader(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
+                    var isNeed = false;
+                    while (true)
                     {
-                        var isNeed = false;
-                        while (true)
+                        string str = sr.ReadLine();
+                        if (str == null)
+                            break;
+                        if (isNeed)
                         {
-                            string str = sr.ReadLine();
-                            if (str == null)
-                                break;
-                            if (isNeed)
+                            lines.Add(str);
+                        }
+                        else
+                        {
+                            var tmp = str.Split('\t');
+                            if (tmp.Length > 1)
                             {
-                                lines.Add(str);
-                            }
-                            else
-                            {
-                                var tmp = str.Split('\t');
-                                if (tmp.Length > 1)
+                                //Ver5.9.8 日付Parseの例外排除
+                                try
                                 {
-                                    //Ver5.9.8 日付Parseの例外排除
-                                    try
+                                    var targetDt = Convert.ToDateTime(tmp[0]);
+                                    if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
                                     {
-                                        var targetDt = Convert.ToDateTime(tmp[0]);
-                                        if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
-                                        {
-                                            isNeed = true;
-                                            lines.Add(str);
-                                        }
-                                    }
-                                    catch (Exception)
-                                    {
-
+                                        isNeed = true;
+                                        lines.Add(str);
                                     }
                                 }
+                                catch (Exception) { }
                             }
                         }
-                        //sr.Close();
                     }
-                    //fs.Close();
-                }
-                using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-                {
-                    //using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
-                    using (var sw = new StreamWriter(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
-                    {
-                        foreach (string str in lines)
-                        {
-                            sw.WriteLine(str);
-                        }
-                        sw.Flush();
-                        //sw.Close();
-                    }
-                    //fs.Close();
                 }
             }
+            using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, 65536))
+            {
+                //using (var sw = new StreamWriter(fs, Encoding.GetEncoding(932)))
+                using (var sw = new StreamWriter(fs, CodePagesEncodingProvider.Instance.GetEncoding(932)))
+                {
+                    foreach (string str in lines)
+                    {
+                        sw.WriteLine(str);
+                    }
+                    sw.Flush();
+                }
+            }
+
         }
 
         // 指定日以前のログファイルを削除する
@@ -357,13 +329,19 @@ namespace Bjd.Logs
                 return;
 
             if (isDisposed) return;
-            lock (_lock)
+
+            tailSignal.Reset();
+            try
             {
                 emptySignal.Wait();
                 LogClose(); //クローズ
                 LogDelete(); //過去ログの自動削除
                 LogOpen(); //オープン
                 _lastDelete = now;
+            }
+            finally
+            {
+                tailSignal.Set();
             }
         }
 
@@ -378,23 +356,21 @@ namespace Bjd.Logs
                 Append(chars, log);
             }
 
-            lock (_lock)
-            {
-                emptySignal.Wait();
-                isDisposed = true;
+            emptySignal.Wait();
+            isDisposed = true;
 
-                if (_timer != null)
-                {
-                    _timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-                    _timer.Dispose();
-                    //_timer.Stop();
-                    //_timer.Close();
-                    _timer = null;
-                }
-                LogClose();
-                LogDelete(); // 過去ログの自動削除
-                emptySignal.Dispose();
+            if (_timer != null)
+            {
+                _timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                _timer.Dispose();
+                //_timer.Stop();
+                //_timer.Close();
+                _timer = null;
             }
+            LogClose();
+            LogDelete(); // 過去ログの自動削除
+            emptySignal.Dispose();
+            tailSignal.Dispose();
         }
 
         public void WriteLine(CharsData message)

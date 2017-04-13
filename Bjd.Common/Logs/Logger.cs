@@ -307,35 +307,10 @@ namespace Bjd.Logs
                         //	break;
                 }
             }
+
             var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
             var oneLog = new LogMessage(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
                                        detailInfomation);
-            //switch (logKind)
-            //{
-            //    case LogKind.Error:
-            //        Kernel.Trace.TraceError($"{oneLog.ToTraceString()}");
-            //        break;
-            //    case LogKind.Secure:
-            //        Kernel.Trace.TraceWarning($"{oneLog.ToTraceString()}");
-            //        break;
-            //    default:
-            //        Kernel.Trace.TraceInformation($"{oneLog.ToTraceString()}");
-            //        break;
-            //}
-
-
-
-            ////Ver5.8.8
-            ////LogViewの中で実行していたリモートクライアントへの送信をこちらに移動する
-            ////サービス起動の際に、ListViewがnullで、処理されないから
-            ////リモートクライアントへのログ送信
-            //if (_kernel != null && _kernel.RemoteConnect != null && _kernel.ListServer != null)
-            //{
-            //    //クライアントから接続されている場合
-            //    var sv = _kernel.ListServer.Get("Remote");
-            //    if (sv != null)
-            //        sv.Append(oneLog);
-            //}
 
             if (_useLimitString)
             {
@@ -374,6 +349,13 @@ namespace Bjd.Logs
                 foreach (var sv in _logServices)
                 {
                     sv.Append(chars, msg);
+                }
+            }
+            using (var chars = msg.ToTraceChars())
+            {
+                foreach (var sv in _logServices)
+                {
+                    sv.TraceAppend(chars, msg);
                 }
             }
         }

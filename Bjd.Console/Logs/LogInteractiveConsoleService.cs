@@ -54,8 +54,14 @@ namespace Bjd.Logs
 
         public void Append(CharsData message, LogMessage log)
         {
+            //if (!DetailEnabled && log.LogKind == LogKind.Detail) return;
+            //Write(message.ToString());
+        }
+
+        public void TraceAppend(CharsData message, LogMessage log)
+        {
             if (!DetailEnabled && log.LogKind == LogKind.Detail) return;
-            Write(log.ToTraceString());
+            Write(message.ToString());
         }
 
 

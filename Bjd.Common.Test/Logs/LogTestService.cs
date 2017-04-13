@@ -26,6 +26,11 @@ namespace Bjd.Test.Logs
         }
 
 
+        public void TraceAppend(CharsData message, LogMessage log)
+        {
+            _helper.WriteLine(message.ToString());
+        }
+
         public void Dispose()
         {
         }
