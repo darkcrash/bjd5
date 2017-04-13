@@ -42,12 +42,12 @@ namespace Bjd.Memory
             var L = System.Environment.ProcessorCount * 64 + 256;
             var M = System.Environment.ProcessorCount * 32 + 128;
             var S = System.Environment.ProcessorCount * 16 + 64;
-            var c = 8;
+            var poolSize = 8192;
 
-            Large = new BufferPool(S, S * c, bufferSizeL);
-            Medium = new BufferPool(M, M * c, bufferSizeM);
-            Small = new BufferPool(L, L * c, bufferSizeS);
-            ExtraSmall = new BufferPool(L, L * c, bufferSizeXS);
+            Large = new BufferPool(S, poolSize, bufferSizeL);
+            Medium = new BufferPool(M, poolSize, bufferSizeM);
+            Small = new BufferPool(L, poolSize, bufferSizeS);
+            ExtraSmall = new BufferPool(L, poolSize, bufferSizeXS);
 
         }
 

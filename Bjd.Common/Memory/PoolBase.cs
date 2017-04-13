@@ -14,6 +14,10 @@ namespace Bjd.Memory
 {
     public abstract class PoolBase<T> : IDisposable where T : class, IPoolBuffer
     {
+        const int LOCKED = 1;
+        const int UNLOCKED = 0;
+        private int ChangeZeroLock = UNLOCKED;
+
         internal static Logger _log;
         internal static List<PoolBase<T>> PoolList = new List<PoolBase<T>>();
 
@@ -25,7 +29,6 @@ namespace Bjd.Memory
         private int _poolCount = 0;
         private int _cursorEnqueue = -1;
         private int _cursorDequeue = -1;
-        private object ChangeZeroLock = new object();
         private GCHandle bufferHandle;
 
         protected PoolBase()
@@ -91,7 +94,7 @@ namespace Bjd.Memory
             var b = Interlocked.Exchange(ref _buffers[idxMod], null);
             if (b == null)
             {
-                Debug.WriteLine($"NotFound: {idxMod}, {this.ToConsoleString()}");
+                //Debug.WriteLine($"NotFound: {idxMod}, {this.ToConsoleString()}");
                 b = GetInternal();
             }
             ExchangeZero(ref _cursorDequeue, idx, idxMod);
@@ -102,29 +105,34 @@ namespace Bjd.Memory
         public void PoolInternal(T buf)
         {
             if (buf == null) return;
-            if (_poolMaxSize <= _poolCount)
+            if (!AddBuffer(buf))
             {
                 Interlocked.Decrement(ref _Count);
                 buf.DisposeInternal();
                 Interlocked.Decrement(ref _leaseCount);
                 return;
             }
-            AddBuffer(buf);
+            //AddBuffer(buf, ref cnt);
             Interlocked.Decrement(ref _leaseCount);
             Interlocked.Increment(ref _poolCount);
         }
 
-        private void AddBuffer(T buf)
+        private bool AddBuffer(T buf)
         {
+            if (_poolMaxSize <= _poolCount)
+            {
+                return false;
+            }
             var idx = Interlocked.Increment(ref _cursorEnqueue);
             var idxMod = idx % _poolMaxSize;
             var result = Interlocked.Exchange(ref _buffers[idxMod], buf);
             if (result != null)
             {
-                Debug.WriteLine($"Duplication: {idxMod}, {this.ToConsoleString()}");
-                AddBuffer(result);
+                //Debug.WriteLine($"Duplication: {idxMod}, {this.ToConsoleString()}");
+                return AddBuffer(result);
             }
             ExchangeZero(ref _cursorEnqueue, idx, idxMod);
+            return true;
         }
 
         internal void Finalized(T buf)
@@ -138,13 +146,13 @@ namespace Bjd.Memory
             if (idx == idxMod) return;
             if (_poolMaxSize < _cursor)
             {
-                if (System.Threading.Monitor.TryEnter(ChangeZeroLock))
+                if (Interlocked.CompareExchange(ref ChangeZeroLock, LOCKED, UNLOCKED) == UNLOCKED)
                 {
                     if (_poolMaxSize < _cursor)
                     {
                         Interlocked.Add(ref _cursor, -_poolMaxSize);
                     }
-                    System.Threading.Monitor.Exit(ChangeZeroLock);
+                    Interlocked.Exchange(ref ChangeZeroLock, UNLOCKED);
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace Bjd.Memory
 {
     public class BufferData : IPoolBuffer
     {
-        private static Dictionary<int, BufferData> _internal = new Dictionary<int, BufferData>(4096);
+        private static Dictionary<int, BufferData> _internal = new Dictionary<int, BufferData>(65536);
         private static int _internalCount = -1;
         public static readonly BufferData Empty = new BufferData(0, null);
         public byte[] Data;
