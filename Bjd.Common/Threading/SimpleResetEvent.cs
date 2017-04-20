@@ -13,14 +13,14 @@ namespace Bjd.Threading
         const int LOCKED = 1;
         const int UNLOCKED = 0;
         private int lockState = 0;
-        //private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
-        //private WaitHandle[] handles = new WaitHandle[2];
+        private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
+        private WaitHandle[] handles = new WaitHandle[2];
         private SimpleResetPool _pool;
 
         public SimpleResetEvent(SimpleResetPool pool)
         {
             _pool = pool;
-            //handles[0] = handle;
+            handles[0] = handle;
             Reset();
         }
 
@@ -28,7 +28,7 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, UNLOCKED) == LOCKED)
             {
-                //handle.Set();
+                handle.Set();
             }
         }
 
@@ -36,44 +36,45 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, LOCKED) == UNLOCKED)
             {
-                //handle.Reset();
+                handle.Reset();
             }
         }
 
         public void Wait()
         {
-            //if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            //{
-            //    handle.WaitOne();
-            //}
-
-            while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
             {
-                Thread.Sleep(0);
+                handle.WaitOne();
             }
+
+            //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            //{
+            //    Thread.Sleep(1);
+            //}
 
 
         }
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            //if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            //{
-            //    handles[1] = cancellationToken.WaitHandle;
-            //    var result = WaitHandle.WaitAny(handles, millisecondsTimeout);
-            //    handles[1] = null;
-            //    if (result == 1) cancellationToken.ThrowIfCancellationRequested();
-            //    return (System.Threading.WaitHandle.WaitTimeout != result);
-            //}
-            //return true;
-            var timeout = DateTime.Now.AddMilliseconds(millisecondsTimeout);
-            while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
             {
-                Thread.Sleep(1);
-                if (timeout < DateTime.Now) return false;
-                if (cancellationToken.IsCancellationRequested) cancellationToken.ThrowIfCancellationRequested();
+                handles[1] = cancellationToken.WaitHandle;
+                var result = WaitHandle.WaitAny(handles, millisecondsTimeout);
+                handles[1] = null;
+                if (result == 1) cancellationToken.ThrowIfCancellationRequested();
+                return (System.Threading.WaitHandle.WaitTimeout != result);
             }
             return true;
+
+            //var timeout = DateTime.Now.AddMilliseconds(millisecondsTimeout);
+            //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            //{
+            //    Thread.Sleep(1);
+            //    if (timeout < DateTime.Now) return false;
+            //    if (cancellationToken.IsCancellationRequested) cancellationToken.ThrowIfCancellationRequested();
+            //}
+            //return true;
 
         }
 
@@ -90,12 +91,12 @@ namespace Bjd.Threading
                 {
                 }
 
-                //if (handle != null)
-                //{
-                //    handle.Set();
-                //    handle.Dispose();
-                //    handle = null;
-                //}
+                if (handle != null)
+                {
+                    handle.Set();
+                    handle.Dispose();
+                    handle = null;
+                }
 
                 disposedValue = true;
             }
