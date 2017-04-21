@@ -13,7 +13,7 @@ namespace Bjd.Net.Sockets
         static byte[] empty = new byte[0];
 
         const int MaxBlockSize = 2048;
-        const byte Cr = 0x0d;
+        const byte Cr = 0x0D;
         const byte Lf = 0x0A;
 
 
@@ -232,6 +232,47 @@ namespace Bjd.Net.Sockets
             var len = buf.DataSize;
 
             _blocks[_nextBlocks] = buf;
+
+            _nextBlocks++;
+            if (_nextBlocks >= MaxBlockSize)
+            {
+                _nextBlocks = 0;
+            }
+
+            System.Threading.Interlocked.Increment(ref _useBlocks);
+            System.Threading.Interlocked.Add(ref _length, len);
+            _totallength += len;
+
+            if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
+            enqueueCounter++;
+
+            //_modify = true; //データベースの内容が変化した
+            SetModify(true);
+
+            return len;
+
+
+        }
+
+        public int EnqueueImport(BufferData buf)
+        {
+            if (Space == 0)
+            {
+                return 0;
+            }
+            //空きスペースを越える場合は失敗する 0が返される
+            if (Space < buf.DataSize)
+            {
+                return 0;
+            }
+
+            var len = buf.DataSize;
+
+            var newBuf = BufferPool.GetMaximum(len);
+            newBuf.DataSize = len;
+            Buffer.BlockCopy(buf.Data, 0, newBuf.Data, 0, len);
+
+            _blocks[_nextBlocks] = newBuf;
 
             _nextBlocks++;
             if (_nextBlocks >= MaxBlockSize)

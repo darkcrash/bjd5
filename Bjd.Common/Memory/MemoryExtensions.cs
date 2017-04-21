@@ -8,10 +8,10 @@ namespace Bjd.Memory
 {
     public static class MemoryExtensions
     {
-        private static byte CrByte = 0x0A;
-        private static byte LfByte = 0x0D;
-        private static char Cr = (char)0x0A;
-        private static char Lf = (char)0x0D;
+        private const byte CrByte = 0x0D;
+        private const byte LfByte = 0x0A;
+        private static char Cr = (char)0x0D;
+        private static char Lf = (char)0x0A;
 
         public static BufferData ToBufferData(this byte[] data)
         {

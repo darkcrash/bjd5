@@ -17,7 +17,7 @@ namespace Bjd.Net.Sockets
     public class SockTcp : SockObj
     {
 
-        private static readonly byte[] CrLf = new byte[] { 0x0d, 0x0a };
+        private static readonly byte[] CrLf = new byte[] { 0x0D, 0x0A };
 
         private Socket _socket;
         private Ssl _ssl;
@@ -35,6 +35,8 @@ namespace Bjd.Net.Sockets
         private SocketAsyncEventArgs sendEventArgs;
         //private ManualResetEventSlim sendComplete = new ManualResetEventSlim(true, 0);
         private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent();
+        private BufferData recvBuffer;
+        private BufferData sendBuffer;
 
 
         //***************************************************************************
@@ -186,13 +188,16 @@ namespace Bjd.Net.Sockets
                     //receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                     if (recvEventArgs == null)
                     {
+                        recvBuffer = BufferPool.GetMaximum(65536);
                         receiveCompleteTask = Task.CompletedTask;
                         recvEventArgs = new SocketAsyncEventArgs();
                         recvEventArgs.SocketFlags = SocketFlags.None;
                         recvEventArgs.Completed += E_Completed;
+                        recvEventArgs.SetBuffer(recvBuffer.Data, 0, recvBuffer.Length);
                     }
-                    var recvBufSeg = _sockQueueRecv.GetWriteSegment();
-                    recvEventArgs.SetBuffer(recvBufSeg.Array, recvBufSeg.Offset, recvBufSeg.Count);
+                    //var recvBufSeg = _sockQueueRecv.GetWriteSegment();
+                    //recvEventArgs.SetBuffer(recvBufSeg.Array, recvBufSeg.Offset, recvBufSeg.Count);
+                    recvEventArgs.SetBuffer(0, recvBuffer.Length);
                     _socket.ReceiveAsync(recvEventArgs);
                 }
             }
@@ -210,6 +215,7 @@ namespace Bjd.Net.Sockets
 
             if (e.SocketError == SocketError.Success)
             {
+                recvBuffer.DataSize = e.BytesTransferred;
                 EndReceive(e.BytesTransferred);
                 return;
             }
@@ -264,14 +270,21 @@ namespace Bjd.Net.Sockets
             {
                 //Ver5.9.2 Java fix
                 int bytesRead = result;
-                Kernel.Logger.DebugInformation(hashText, " SockTcp.EndReceive Length={bytesRead}");
+                Kernel.Logger.DebugInformation(hashText, " SockTcp.EndReceive Length=", bytesRead.ToString());
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
                     SetErrorReceive();
                     return;
                 }
-                _sockQueueRecv.NotifyWrite(bytesRead);
+                if (recvBuffer != null)
+                {
+                    _sockQueueRecv.EnqueueImport(recvBuffer);
+                }
+                else
+                {
+                    _sockQueueRecv.NotifyWrite(bytesRead);
+                }
 
             }
             catch (Exception ex)
@@ -393,7 +406,7 @@ namespace Bjd.Net.Sockets
 
             if (this.CancelToken.IsCancellationRequested) return;
 
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.BeginReceive");
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.BeginSend");
 
 
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
@@ -410,19 +423,23 @@ namespace Bjd.Net.Sockets
                 {
                     if (sendEventArgs == null)
                     {
+                        sendBuffer = BufferPool.GetMaximum(65536);
                         sendCompleteTask = Task.CompletedTask;
                         sendEventArgs = new SocketAsyncEventArgs();
                         sendEventArgs.Completed += SendEventArgs_Completed;
                         sendEventArgs.SocketFlags = SocketFlags.None;
+                        sendEventArgs.SetBuffer(sendBuffer.Data, 0, 0);
                     }
-                    sendEventArgs.SetBuffer(buf.Data, 0, buf.DataSize);
+                    var len = buf.DataSize;
+                    Buffer.BlockCopy(buf.Data, 0, sendBuffer.Data, 0, len);
+                    sendEventArgs.SetBuffer(0, len);
                     _socket.SendAsync(sendEventArgs);
                 }
             }
             catch (Exception ex)
             {
-                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
-                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginSend ExceptionMessage:{ex.Message}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginSend StackTrace:{ex.StackTrace}");
                 this.SetErrorReceive();
             }
 
@@ -467,12 +484,13 @@ namespace Bjd.Net.Sockets
                 len += currentSend.DataSize;
                 currentSend.Dispose();
                 currentSend = null;
-            }
 
-            if (Interlocked.Add(ref sendCounter, -len) == 0)
-            {
-                sendComplete.Set();
-                return;
+                if (Interlocked.Add(ref sendCounter, -len) == 0)
+                {
+                    sendComplete.Set();
+                    return;
+                }
+
             }
 
             var b = _sockQueueSend.DequeueBufferWait(65536, 3000, CancelToken);
@@ -488,8 +506,10 @@ namespace Bjd.Net.Sockets
 
         public void SendAsync(BufferData buf)
         {
+
             if (Interlocked.Add(ref sendCounter, buf.DataSize) == buf.DataSize)
             {
+                //SendEventArgs_Completed(_socket, null);
                 BeginSend(buf);
             }
             else
@@ -806,6 +826,17 @@ namespace Bjd.Net.Sockets
                     sendEventArgs = null;
                 }
 
+                if (recvBuffer != null)
+                {
+                    recvBuffer.Dispose();
+                    recvBuffer = null;
+                }
+
+                if (sendBuffer != null)
+                {
+                    sendBuffer.Dispose();
+                    sendBuffer = null;
+                }
 
                 if (receiveTask != null)
                 {

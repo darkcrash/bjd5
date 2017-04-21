@@ -592,13 +592,13 @@ namespace Bjd.WebServer
             }
 
             //Ver5.6.2 request.Send()廃止
-            var responseStr = contextRequest.Request.CreateResponse(contextRequest.ResponseCode);
-            contextConnection.Connection.AsciiSend(responseStr);//レスポンス送信
-            Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseStr);//ログ
+            //var responseStr = contextRequest.Request.CreateResponse(contextRequest.ResponseCode);
+            //contextConnection.Connection.AsciiSend(responseStr);//レスポンス送信
+            //Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseStr);//ログ
 
-            //var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
-            //Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
-            //contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
+            var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
+            Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
+            contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
 
 
             response.Send(contextConnection.KeepAlive, this);//ドキュメント本体送信

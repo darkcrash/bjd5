@@ -15,9 +15,11 @@ namespace Bjd.Threading
         int count = 0;
         int _cursorEnqueue = -1;
         int _cursorDequeue = -1;
+        WaitCallback callback;
 
         public SequentialTaskScheduler() : base()
         {
+            callback = WaitCallback;
         }
 
         private void WaitCallback(object state)
@@ -29,14 +31,14 @@ namespace Bjd.Threading
                 try
                 {
                     //var t = queue[idx];
-                    var t= Interlocked.Exchange<Task>(ref queue[idx], null);
+                    var t = Interlocked.Exchange<Task>(ref queue[idx], null);
 
                     if (t == null)
                     {
                         //System.Threading.SpinWait.SpinUntil(() => queue[idx] != null, 100);
                         //t = queue[idx];
                         //var w = new SpinWait();
-                        for(int i = 0; i < 100; i++) 
+                        for (int i = 0; i < 100; i++)
                         {
                             //w.SpinOnce();
                             System.Threading.Thread.Sleep(1);
@@ -83,7 +85,7 @@ namespace Bjd.Threading
             Interlocked.Exchange<Task>(ref queue[idx], task);
             if (Interlocked.Increment(ref count) == 1)
             {
-                System.Threading.ThreadPool.QueueUserWorkItem(this.WaitCallback);
+                System.Threading.ThreadPool.QueueUserWorkItem(callback);
             }
         }
 
