@@ -211,6 +211,25 @@ namespace Bjd.Utils
             }
         }
 
+        static public void TrimCrlf(CharsData buf)
+        {
+            var b = buf.Data;
+            var l = buf.DataSize;
+            if (l >= 1 && b[l - 1] == Lf)
+            {
+                buf.DataSize--;
+                if (l >= 2 && b[l - 2] == Cr)
+                {
+                    buf.DataSize--;
+                }
+            }
+            else if (l >= 1 && b[l - 1] == Cr)
+            {
+                buf.DataSize--;
+            }
+        }
+
+
         //サニタイズ処理(１行対応)
         public static string Sanitize(string str)
         {

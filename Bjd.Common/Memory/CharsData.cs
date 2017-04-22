@@ -23,6 +23,31 @@ namespace Bjd.Memory
 
         public ref char this[int i] => ref Data[i];
 
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+
+        public static bool operator ==(CharsData a, string b)
+        {
+            if (a is null && b == null) return true;
+            if (a is null) return false;
+            if (b is null) return false;
+
+            if (a.DataSize != b.Length) return false;
+
+            for (var i = 0; i < a.DataSize; i++)
+            {
+                if (a.Data[i] != b[i]) return false;
+            }
+            return true;
+        }
+        public static bool operator !=(CharsData a, string b)
+        {
+            return !(a == b);
+        }
+
         internal CharsData(int length, CharsPool pool)
         {
             Length = length;
@@ -82,5 +107,11 @@ namespace Bjd.Memory
         {
             return new string(Data, 0, DataSize);
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using Bjd.Logs;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.DependencyModel;
+using Bjd.Memory;
 
 //using System.Collections;
 
@@ -47,26 +48,26 @@ namespace Bjd.Utils
         {
             if (before == after)
                 return str;
-            //while (true)
-            //{
-            //    int index = str.IndexOf(before);
-            //    if (index < 0)
-            //        break;
-            //    //\bが指定された場合、ブランクにする
-            //    if (after == '\b')
-            //    {
-            //        str = str.Substring(0, index) + str.Substring(index + 1);
-            //    }
-            //    else
-            //    {
-            //        str = str.Substring(0, index) + after + str.Substring(index + 1);
-            //    }
-            //}
-            //return str;
 
             var result = str.Select(_ => (_ == before ? after : _)).ToArray();
             return new string(result);
         }
+
+        public static void SwapChar(char before, char after, CharsData str)
+        {
+            if (before == after)
+                return;
+
+            for (var i = 0; i < str.DataSize; i++)
+            {
+                if (str.Data[i] == before)
+                {
+                    str.Data[i] = after;
+                }
+            }
+
+        }
+
 
         //string strの中の文字 beforeStr を afterStrに置き換える
         public static string SwapStr(string beforeStr, string afterStr, string str)

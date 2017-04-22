@@ -40,6 +40,43 @@ namespace Bjd.Memory
             return buffer;
         }
 
+        public static CharsData Copy(this CharsData source)
+        {
+            var len = source.Length;
+            var chars = CharsPool.GetMaximum(len);
+            Buffer.BlockCopy(source.Data, 0, chars.Data, chars.DataSize * 2, len * 2);
+            chars.DataSize = len;
+            return chars;
+        }
+
+        public static IEnumerable<CharsData> Split(this CharsData source, char separator)
+        {
+            var pos = 0;
+            for (var i = 0; i < source.DataSize; i++)
+            {
+                if (source.Data[i] == separator)
+                {
+                    var len = i - pos;
+                    var chars = CharsPool.GetMaximum(len);
+                    if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize, len * 2);
+                    chars.DataSize = len;
+                    yield return chars;
+                    pos = i + 1;
+                }
+            }
+            if (pos < source.DataSize)
+            {
+                var len = source.DataSize - pos;
+                var chars = CharsPool.GetMaximum(len);
+                if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize, len * 2);
+                chars.DataSize = len;
+                yield return chars;
+            }
+        }
+
+
+
+
 
         public static CharsData ToAsciiCharsData(this BufferData data)
         {
@@ -80,6 +117,13 @@ namespace Bjd.Memory
                 chars.DataSize += l;
             }
             return chars;
+        }
+
+        public static void Append(this CharsData chars, CharsData appendText)
+        {
+            var len = appendText.DataSize;
+            Buffer.BlockCopy(appendText.Data, 0, chars.Data, chars.DataSize * 2, len * 2);
+            chars.DataSize += len;
         }
 
         public static void Append(this CharsData chars, string appendText)
