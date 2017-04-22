@@ -34,7 +34,7 @@ namespace Bjd.Net.Sockets
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
         //private ManualResetEventSlim sendComplete = new ManualResetEventSlim(true, 0);
-        private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent();
+        private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent(true);
         private BufferData recvBuffer;
         private BufferData sendBuffer;
 
@@ -522,6 +522,11 @@ namespace Bjd.Net.Sockets
         {
             sendComplete.Wait();
         }
+        public bool IsSending()
+        {
+            return sendComplete.IsLocked();
+        }
+
 
 
         public int Send(byte[] buf, int length)

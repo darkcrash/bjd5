@@ -40,6 +40,11 @@ namespace Bjd.Threading
             }
         }
 
+        public bool IsLocked()
+        {
+            return (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED);
+        }
+
         public void Wait()
         {
             if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
