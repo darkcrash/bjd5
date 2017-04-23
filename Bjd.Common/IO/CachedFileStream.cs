@@ -17,7 +17,18 @@ namespace Bjd.Common.IO
         private CachedFileStream() { }
 
 
-        static Func<string, Cache> CreateCache => _ => new Cache();
+        static Func<string, Cache> _CreateCache;
+        static Func<string, Cache> CreateCache
+        {
+            get
+            {
+                if (_CreateCache == null)
+                {
+                    _CreateCache = _ => new Cache();
+                }
+                return _CreateCache;
+            }
+        }
         public static CachedReadonlyStream GetFileStream(string fullPath)
         {
             //Cache value = streamDic.GetOrAdd(fullPath, _ => new Cache());

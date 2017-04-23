@@ -13,6 +13,7 @@ namespace Bjd.Threading
         const int LOCKED = 1;
         const int UNLOCKED = 0;
         private int lockState = 0;
+        private int signalState = 0;
         private int lockWaiter = 0;
         private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
         private WaitHandle[] handles = new WaitHandle[2];
@@ -32,6 +33,7 @@ namespace Bjd.Threading
             {
                 if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
                 {
+                    Interlocked.Exchange(ref signalState, UNLOCKED);
                     handle.Set();
                 }
             }
@@ -42,7 +44,10 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, LOCKED) == UNLOCKED)
             {
-                handle.Reset();
+                if (Interlocked.Exchange(ref signalState, LOCKED) == UNLOCKED)
+                {
+                    handle.Reset();
+                }
             }
         }
 
