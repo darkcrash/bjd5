@@ -75,7 +75,8 @@ namespace Bjd.WebServer.Handlers
                     return true;
                 }
             }
-            context.Response.AddHeader("Last-Modified", Util.UtcTime2Str(result.LastWriteTimeUtc));
+            //context.Response.AddHeader("Last-Modified", Util.UtcTime2Str(result.LastWriteTimeUtc));
+            context.Response.Headers.SetLastModified(Util.UtcTime2Str(result.LastWriteTimeUtc));
             //********************************************************************
             //ETag処理
             //********************************************************************
@@ -110,7 +111,8 @@ namespace Bjd.WebServer.Handlers
                     }
                 }
                 if (useEtag)
-                    context.Response.AddHeader("ETag", etagStr);
+                    //context.Response.AddHeader("ETag", etagStr);
+                    context.Response.Headers.SetETag(etagStr);
             }
             //********************************************************************
             //Range処理

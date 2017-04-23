@@ -32,6 +32,8 @@ namespace Bjd.WebServer
         //readonly HttpHeaders _sendHeader;
         readonly HttpResponseHeaders _sendHeader;
 
+        public HttpResponseHeaders Headers => _sendHeader;
+
         public bool SetRangeTo { get; set; }//Rangeヘッダで範囲（終わり）が指定された場合True
 
         public HttpResponse(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)

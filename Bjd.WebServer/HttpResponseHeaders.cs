@@ -34,6 +34,14 @@ namespace Bjd
             _ar.Add(ContentType);
             ContentType.Enabled = false;
 
+            LastModified = new KnowHeader("Last-Modified", "LAST-MODIFIED", "");
+            _ar.Add(LastModified);
+            LastModified.Enabled = false;
+
+            ETag = new KnowHeader("ETag", "ETAG", "");
+            _ar.Add(ETag);
+            ETag.Enabled = false;
+
         }
 
         public OneHeader Server;
@@ -42,6 +50,8 @@ namespace Bjd
         public OneHeader ContentType;
         public OneHeader MIMEVersion;
         public OneHeader Connection;
+        public OneHeader LastModified;
+        public OneHeader ETag;
 
         public override void Clear()
         {
@@ -51,9 +61,14 @@ namespace Bjd
             _ar.Add(ContentLength);
             _ar.Add(ContentType);
             _ar.Add(Connection);
+            _ar.Add(LastModified);
+            _ar.Add(ETag);
             _ar.Add(MIMEVersion);
 
             ContentLength.Enabled = false;
+            ContentType.Enabled = false;
+            LastModified.Enabled = false;
+            ETag.Enabled = false;
         }
 
         public void SetContentLength(int length)
@@ -73,6 +88,17 @@ namespace Bjd
             ContentType.ValString = contentType;
         }
 
+        public void SetLastModified(string lastModified)
+        {
+            LastModified.Enabled = true;
+            LastModified.ValString = lastModified;
+        }
+
+        public void SetETag(string etag)
+        {
+            ETag.Enabled = true;
+            ETag.ValString = etag;
+        }
 
     }
 }
