@@ -16,9 +16,12 @@ namespace Bjd.Common.IO
 
         private CachedFileStream() { }
 
+
+        static Func<string, Cache> CreateCache => _ => new Cache();
         public static CachedReadonlyStream GetFileStream(string fullPath)
         {
-            Cache value = streamDic.GetOrAdd(fullPath, _ => new Cache());
+            //Cache value = streamDic.GetOrAdd(fullPath, _ => new Cache());
+            Cache value = streamDic.GetOrAdd(fullPath, CreateCache);
             FileStream stream;
             if (value.Queue.TryDequeue(out stream))
             {
@@ -36,7 +39,8 @@ namespace Bjd.Common.IO
 
         internal static void Poll(string fullPath, FileStream stream)
         {
-            Cache value = streamDic.GetOrAdd(fullPath, _ => new Cache());
+            //Cache value = streamDic.GetOrAdd(fullPath, _ => new Cache());
+            Cache value = streamDic.GetOrAdd(fullPath, CreateCache);
             value.Ticks = DateTime.Now.AddMilliseconds(CacheInterval).Ticks;
             value.Queue.Enqueue(stream);
             return;

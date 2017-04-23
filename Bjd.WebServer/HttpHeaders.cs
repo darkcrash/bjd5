@@ -218,22 +218,36 @@ namespace Bjd
             });
             var buf = BufferPool.GetMaximum(size);
             ref int p = ref buf.DataSize;
-            _ar.ForEach(o =>
+            //_ar.ForEach(o =>
+            //{
+            //    if (!o.Enabled) return;
+
+            //    //var k = Encoding.ASCII.GetBytes(o.Key);
+            //    //Buffer.BlockCopy(k, 0, buf.Data, buf.DataSize, k.Length);
+            //    //buf.DataSize += k.Length;
+            //    buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
+
+            //    buf[buf.DataSize++] = Colon;
+            //    buf[buf.DataSize++] = Space;
+            //    Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
+            //    buf.DataSize += o.Val.Length;
+            //    buf[buf.DataSize++] = Cr;
+            //    buf[buf.DataSize++] = Lf;
+            //});
+
+            foreach (var o in _ar)
             {
-                if (!o.Enabled) return;
+                if (!o.Enabled) break;
 
-                //var k = Encoding.ASCII.GetBytes(o.Key);
-                //Buffer.BlockCopy(k, 0, buf.Data, buf.DataSize, k.Length);
-                //buf.DataSize += k.Length;
                 buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
-
                 buf[buf.DataSize++] = Colon;
                 buf[buf.DataSize++] = Space;
                 Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
                 buf.DataSize += o.Val.Length;
                 buf[buf.DataSize++] = Cr;
                 buf[buf.DataSize++] = Lf;
-            });
+            }
+
             buf[buf.DataSize++] = Cr;
             buf[buf.DataSize++] = Lf;
 
