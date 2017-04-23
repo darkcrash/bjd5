@@ -32,8 +32,8 @@ namespace Bjd.Threading
             {
                 if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
                 {
+                    handle.Set();
                 }
-                handle.Set();
             }
         }
 
@@ -55,7 +55,7 @@ namespace Bjd.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Wait()
         {
-            Interlocked.Increment(ref lockWaiter);
+            var waiterNo = Interlocked.Increment(ref lockWaiter);
             try
             {
 
@@ -81,7 +81,7 @@ namespace Bjd.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            Interlocked.Increment(ref lockWaiter);
+            var waiterNo = Interlocked.Increment(ref lockWaiter);
             try
             {
                 if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)

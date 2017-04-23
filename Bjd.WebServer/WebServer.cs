@@ -220,7 +220,8 @@ namespace Bjd.WebServer
 
             {
                 //Ver5.1.x
-                var hostStr = request.Header.GetVal("host");
+                //var hostStr = request.Header.GetVal("host");
+                var hostStr = request.Header.Host.ValString;
                 request.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
                 _kernel.Logger.DebugInformation($"WebServer.OnSubThread {request.Url}");
             }
@@ -235,7 +236,8 @@ namespace Bjd.WebServer
             request.AuthName = "";
 
             //入力取得（POST及びPUTの場合）
-            var contentLengthStr = request.Header.GetVal("Content-Length");
+            //var contentLengthStr = request.Header.GetVal("Content-Length");
+            var contentLengthStr = request.Header.ContentLength.ValString;
             if (contentLengthStr != null)
             {
                 try
@@ -287,7 +289,8 @@ namespace Bjd.WebServer
             //***************************************************************
             if (connection.CheckVirtual)
             {//初回のみ
-                ReplaceVirtualHost(request.Header.GetVal("host"), connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
+                //ReplaceVirtualHost(request.Header.GetVal("host"), connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
+                ReplaceVirtualHost(request.Header.Host.ValString, connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
                 connection.CheckVirtual = false;
             }
             //***************************************************************
@@ -305,7 +308,8 @@ namespace Bjd.WebServer
                 }
                 else
                 { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
-                    connection.KeepAlive = request.Header.GetVal("Connection") == "Keep-Alive";
+                    //connection.KeepAlive = request.Header.GetVal("Connection") == "Keep-Alive";
+                    connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
                 }
             }
 
@@ -359,7 +363,8 @@ namespace Bjd.WebServer
             // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
             if (useExpansion)
             {
-                if (request.Header.GetVal("Host") != null)
+                //if (request.Header.GetVal("Host") != null)
+                if (request.Header.Host.ValString != null)
                 {
                     request.Response.AddHeader("RemoteHost", connection.Connection.RemoteAddress.Address.ToString());
                 }
@@ -519,7 +524,7 @@ namespace Bjd.WebServer
         //URIを点検して不正な場合はエラーコードを返す
         //return 200 エラーなし
         //********************************************************
-        int CheckUri(SockTcp sockTcp, HttpRequest request, HttpHeaders recvHeader)
+        int CheckUri(SockTcp sockTcp, HttpRequest request, HttpRequestHeaders recvHeader)
         {
             _kernel.Logger.DebugInformation($"WebServer.CheckUri ");
             var responseCode = 200;
@@ -544,7 +549,8 @@ namespace Bjd.WebServer
 
                 // HTTP1.1でhostヘッダのないものはエラー
             }
-            else if (request.Ver == "HTTP/1.1" && recvHeader.GetVal("Host") == null)
+            //else if (request.Ver == "HTTP/1.1" && recvHeader.GetVal("Host") == null)
+            else if (request.Ver == "HTTP/1.1" && recvHeader.Host.ValString == null)
             {
                 responseCode = 400;
 

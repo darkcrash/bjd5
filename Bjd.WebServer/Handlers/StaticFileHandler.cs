@@ -112,7 +112,8 @@ namespace Bjd.WebServer.Handlers
             context.Response.AddHeader("Accept-Range", "bytes");
             var rangeFrom = 0L;//デフォルトは最初から
             var rangeTo = result.FileSize;//デフォルトは最後まで（ファイルサイズ）
-            if (context.Header.GetVal("Range") != null)
+            //if (context.Header.GetVal("Range") != null)
+            if (context.Header.Range.ValString != null)
             {//レンジ指定のあるリクエストの場合
                 var range = context.Header.GetVal("Range");
                 //指定範囲を取得する（マルチ指定には未対応）

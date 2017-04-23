@@ -8,8 +8,8 @@ namespace Bjd
         public bool Enabled = true;
         protected string _Key;
         protected string _KeyUpper;
-        private byte[] _Val;
-        private string _ValString;
+        protected byte[] _Val;
+        protected string _ValString;
         public string Key
         {
             get { return _Key; }

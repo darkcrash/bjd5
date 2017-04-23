@@ -46,7 +46,7 @@ namespace Bjd.WebServer
             {
                 requestContext = new HttpContext(this);
                 requestContext.Request = new HttpRequest(_Kernel, _Logger);
-                requestContext.Header = new HttpHeaders();
+                requestContext.Header = new HttpRequestHeaders();
                 requestContext.Response = new HttpResponse(_Kernel, _Logger, _Conf, _ContentType);
             }
             requestContext.Clear();

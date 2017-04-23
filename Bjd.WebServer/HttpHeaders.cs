@@ -40,22 +40,6 @@ namespace Bjd
             }
         }
 
-        public HttpHeaders(List<byte[]> lines)
-        {
-            _ar = new List<OneHeader>();
-
-            var key = "";
-            foreach (var l in lines)
-            {
-
-                //\r\nを排除
-                var line = Inet.TrimCrlf(l);
-
-                //１行分のデータからKeyとValを取得する
-                byte[] val = GetKeyVal(line, ref key);
-                Append(key, val);
-            }
-        }
 
         public virtual void Clear()
         {
@@ -83,21 +67,16 @@ namespace Bjd
                 return _ar.Count;
             }
         }
-        //IEnumerable<T>の実装(関連メソッド)
-        //public void ForEach(Action<OneHeader> action) {
-        //    foreach (var o in ar) {
-        //        action(o);
-        //    }
-        //}
+
         //GetValをstringに変換して返す
         public string GetVal(string key)
         {
             //Keyの存在確認
             var kUpper = key.ToUpper();
             var o = _ar.Find(h => h.KeyUpper == kUpper);
-            //return o == null ? null : Encoding.ASCII.GetString(o.Val);
             return o == null ? null : o.ValString;
         }
+
         //Ver5.4.4 ヘッダの削除
         public void Remove(string key)
         {
@@ -109,25 +88,7 @@ namespace Bjd
                 _ar.Remove(o);//存在する場合は、削除する
             }
         }
-        //5.4.4 指定したヘッダを置き換える
-        public void Replace(string beforeKey, string afterKey, string valStr)
-        {
-            var bkUpper = beforeKey.ToUpper();
 
-            //byte[] への変換
-            var val = Encoding.ASCII.GetBytes(valStr);
-            //Keyの存在確認
-            var o = _ar.Find(h => h.KeyUpper == bkUpper);
-            if (o == null)
-            {
-                Append(afterKey, val);//存在しない場合は追加
-            }
-            else
-            {//存在する場合は置き換え
-                o.Key = afterKey;
-                o.Val = val;
-            }
-        }
 
         //同一のヘッダがあった場合は置き換える
         public void Replace(string key, string valStr)
@@ -146,18 +107,26 @@ namespace Bjd
                 o.Val = val;//存在する場合は置き換え
             }
         }
+
         //同一のヘッダがあっても無条件に追加する
         public OneHeader Append(string key, byte[] val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
+            AppendHeader(header);
             return header;
         }
+
         public OneHeader Append(string key, string val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
+            AppendHeader(header);
             return header;
+        }
+
+        protected virtual void AppendHeader(OneHeader header)
+        {
         }
 
         public bool Recv(SockTcp sockTcp, int timeout, ILife iLife)

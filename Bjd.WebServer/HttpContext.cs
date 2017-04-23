@@ -13,7 +13,7 @@ namespace Bjd.WebServer
     {
         public HttpConnectionContext Connection { get; private set; }
         //受信ヘッダ
-        internal HttpHeaders Header;
+        internal HttpRequestHeaders Header;
         //リクエストライン処理クラス
         internal HttpRequest Request;
         internal WebStream InputStream;
