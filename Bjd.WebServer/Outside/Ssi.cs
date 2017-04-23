@@ -26,9 +26,9 @@ namespace Bjd.WebServer.Outside
         HandlerSelectorResult _target;
         readonly SockTcp _sockTcp;
         readonly HttpRequest _request;
-        readonly HttpHeader _recvHeader;
+        readonly HttpHeaders _recvHeader;
 
-        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpRequest request, HttpHeader recvHeader)
+        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpRequest request, HttpHeaders recvHeader)
         {
             _kernel = kernel;
             _logger = logger;

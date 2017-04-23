@@ -10,24 +10,24 @@ using Bjd.Memory;
 
 namespace Bjd
 {
-    public class HttpHeader : IEnumerable<OneHeader>
+    public class HttpHeaders : IEnumerable<OneHeader>
     {
-        readonly List<OneHeader> _ar = new List<OneHeader>();
+        protected readonly List<OneHeader> _ar = new List<OneHeader>(25);
         static byte Cr = 0x0D;
         static byte Lf = 0x0A;
         static byte Colon = (byte)':';
         static byte Space = (byte)' ';
 
-        public HttpHeader()
+        public HttpHeaders()
         {
             //ContentLength = new OneHeader("Content-Length", "0");
         }
-        public HttpHeader(HttpHeader header)
+        public HttpHeaders(HttpHeaders header)
         {
             _ar = new List<OneHeader>(header);
         }
 
-        public HttpHeader(byte[] buf)
+        public HttpHeaders(byte[] buf)
         {
             _ar = new List<OneHeader>();
 
@@ -40,7 +40,7 @@ namespace Bjd
             }
         }
 
-        public HttpHeader(List<byte[]> lines)
+        public HttpHeaders(List<byte[]> lines)
         {
             _ar = new List<OneHeader>();
 
@@ -57,7 +57,7 @@ namespace Bjd
             }
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             _ar.Clear();
         }
@@ -151,25 +151,15 @@ namespace Bjd
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
-            AppendKnowHeader(header);
             return header;
         }
         public OneHeader Append(string key, string val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
-            AppendKnowHeader(header);
             return header;
         }
-        private void AppendKnowHeader(OneHeader header)
-        {
-            switch (header.KeyUpper)
-            {
-                case "CONTENT-LENGTH":
-                    ContentLength = header;
-                    break;
-            }
-        }
+
         public bool Recv(SockTcp sockTcp, int timeout, ILife iLife)
         {
 
@@ -181,18 +171,22 @@ namespace Bjd
             {
                 using (var line = sockTcp.LineBufferRecv(timeout, iLife))
                 {
+                    // error
                     if (line == null)
                         return false;
+
+                    // remove cr lf
                     Inet.TrimCrlf(line);
+
+                    // end header
                     if (line.DataSize == 0)
-                        return true;//ヘッダの終了
+                        return true;
 
                     //１行分のデータからKeyとValを取得する
                     var val = GetKeyVal(line, ref key);
                     if (key != "")
                     {
                         Append(key, val);
-
                     }
                     else
                     {
@@ -257,9 +251,13 @@ namespace Bjd
             ref int p = ref buf.DataSize;
             _ar.ForEach(o =>
             {
-                var k = Encoding.ASCII.GetBytes(o.Key);
-                Buffer.BlockCopy(k, 0, buf.Data, buf.DataSize, k.Length);
-                buf.DataSize += k.Length;
+                if (!o.Enabled) return;
+
+                //var k = Encoding.ASCII.GetBytes(o.Key);
+                //Buffer.BlockCopy(k, 0, buf.Data, buf.DataSize, k.Length);
+                //buf.DataSize += k.Length;
+                buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
+
                 buf[buf.DataSize++] = Colon;
                 buf[buf.DataSize++] = Space;
                 Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
@@ -338,9 +336,6 @@ namespace Bjd
             }
             return empty;
         }
-
-        public OneHeader ContentLength;
-        //static readonly byte[] HeaderContentLength = System.Text.Encoding.ASCII.GetBytes("Content-Length");
 
         static byte[] empty = new byte[0];
         static ArraySegment<byte> emptySegment = new ArraySegment<byte>(empty);

@@ -123,6 +123,9 @@ namespace Bjd.WebServer
             _contentType = new HttpContentType(_conf);
             _authorization = new Authorization(_kernel, _conf, Logger);
             LoadConfig();
+
+            HttpContextPool.InitializePool(_kernel, Logger, _conf, _contentType);
+
         }
 
         //終了処理
@@ -164,8 +167,6 @@ namespace Bjd.WebServer
             // create Connection Context
             using (var connection = HttpContextPool.GetContext())
             {
-                connection.Kernel = _kernel;
-                connection.Logger = Logger;
                 connection.Connection = (SockTcp)sockObj;
                 connection.RemoteIp = connection.Connection.RemoteIp;
 
@@ -178,34 +179,37 @@ namespace Bjd.WebServer
                 {
                     // create Request Context
                     var request = connection.GetRequestContext();
-                        if (!RequestProcess(connection, request))
+                    if (!RequestProcess(connection, request))
+                    {
+                        if (connection.Connection.IsSending()) continue;
                         break;
-
-                    connection.Connection.SendAsyncWait();
+                    }
+                    //connection.Connection.SendAsyncWait();
                 }
             }
 
         }
 
-        private bool RequestProcess(HttpConnectionContext connection, HttpRequestContext request)
+        private bool RequestProcess(HttpConnectionContext connection, HttpContext request)
         {
-            //int responseCode;
-
             //***************************************************************
             //データ取得
             //***************************************************************
             //リクエスト取得
             //ここのタイムアウト値は、大きすぎるとブラウザの切断を取得できないでブロックしてしまう
-            var requestStr = connection.Connection.AsciiRecv(TimeoutSec, this);
-            if (requestStr == null)
-                return false;
-
-            //\r\nの削除
-            requestStr = Inet.TrimCrlf(requestStr);
-            //Ver5.8.8 リクエストの解釈に失敗した場合に、処理を中断する
-            if (!request.Request.Init(requestStr))
+            using (var requestStr = connection.Connection.AsciiRecvChars(TimeoutSec, this))
             {
-                return false;
+                if (requestStr == null || requestStr.DataSize == 0)
+                    return false;
+
+                //\r\nの削除
+                //requestStr = Inet.TrimCrlf(requestStr);
+                Inet.TrimCrlf(requestStr);
+                //Ver5.8.8 リクエストの解釈に失敗した場合に、処理を中断する
+                if (!request.Request.Init(requestStr))
+                {
+                    return false;
+                }
             }
 
             //ヘッダ取得（内部データは初期化される）
@@ -222,14 +226,10 @@ namespace Bjd.WebServer
             //***************************************************************
             // ドキュメント生成クラスの初期化
             //***************************************************************
-            //var contentType = new ContentType(_conf);
-            request.ContentType = _contentType;
-            //var res = new Response(_kernel, Logger, _conf, contextConnection.Connection, contextRequest.ContentType);
-            request.Response = new HttpResponse(_kernel, Logger, _conf, connection.Connection, request.ContentType);
+            //request.ContentType = _contentType;
+            //request.Response = new HttpResponse(_kernel, Logger, _conf, connection.Connection, request.ContentType);
 
-            //var authrization = new Authorization(_conf, Logger);
             request.Auth = _authorization;
-            //var authName = "";
             request.AuthName = "";
 
             //入力取得（POST及びPUTの場合）
@@ -375,7 +375,7 @@ namespace Bjd.WebServer
             //***************************************************************
             if (WebDav.WebDav.IsTarget(request.Request.Method))
             {
-                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, request.Response, request.Url, request.Header.GetVal("Depth"), request.ContentType, (bool)_conf.Get("useEtag"));
+                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, request.Response, request.Url, request.Header.GetVal("Depth"), _contentType, (bool)_conf.Get("useEtag"));
 
                 var inputBuf = new byte[0];
                 if (request.InputStream != null)
@@ -449,7 +449,7 @@ namespace Bjd.WebServer
 
             SEND:
             Send(request);
-            
+
             return true;
         }
 
@@ -517,7 +517,7 @@ namespace Bjd.WebServer
         //URIを点検して不正な場合はエラーコードを返す
         //return 200 エラーなし
         //********************************************************
-        int CheckUri(SockTcp sockTcp, HttpRequest request, HttpHeader recvHeader)
+        int CheckUri(SockTcp sockTcp, HttpRequest request, HttpHeaders recvHeader)
         {
             _kernel.Logger.DebugInformation($"WebServer.CheckUri ");
             var responseCode = 200;
@@ -556,7 +556,7 @@ namespace Bjd.WebServer
             return responseCode;
         }
 
-        private void Send(HttpRequestContext contextRequest)
+        private void Send(HttpContext contextRequest)
         {
             var contextConnection = contextRequest.Connection;
             var response = contextRequest.Response;

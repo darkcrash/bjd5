@@ -322,6 +322,8 @@ namespace Bjd.Net.Sockets
             SetError($"{hashText} SockTcp.disconnect");
             //state = SocketObjState.Disconnect;
             //Close();クローズは外部から明示的に行う
+
+            this.Cancel();
         }
 
         //受信<br>
@@ -412,7 +414,6 @@ namespace Bjd.Net.Sockets
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
             {
-                sendComplete.Reset();
                 currentSend = buf;
                 if (isSsl)
                 {
@@ -446,11 +447,12 @@ namespace Bjd.Net.Sockets
         }
 
         private BufferData currentSend;
-        private object sendLock = new object();
         private int sendCounter = 0;
 
         private void WriteAsync_Completed(Task before)
         {
+            if (CancelToken.IsCancellationRequested) return;
+
             var len = 0;
             if (currentSend != null)
             {
@@ -478,6 +480,8 @@ namespace Bjd.Net.Sockets
 
         private void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
+            if (CancelToken.IsCancellationRequested) return;
+
             var len = 0;
             if (currentSend != null)
             {
@@ -510,6 +514,7 @@ namespace Bjd.Net.Sockets
             if (Interlocked.Add(ref sendCounter, buf.DataSize) == buf.DataSize)
             {
                 //SendEventArgs_Completed(_socket, null);
+                sendComplete.Reset();
                 BeginSend(buf);
             }
             else
@@ -891,6 +896,7 @@ namespace Bjd.Net.Sockets
 
                 if (sendComplete != null)
                 {
+                    sendComplete.Set();
                     sendComplete.Dispose();
                     sendComplete = null;
                 }

@@ -8,7 +8,7 @@ namespace Bjd.WebServer.Handlers
     internal interface IHandler
     {
 
-        bool Request(HttpRequestContext context, HandlerSelectorResult result);
+        bool Request(HttpContext context, HandlerSelectorResult result);
 
     }
 }

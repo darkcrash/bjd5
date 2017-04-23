@@ -3,6 +3,7 @@ using Bjd.WebServer;
 using Xunit;
 using Bjd.Initialization;
 using Xunit.Abstractions;
+using Bjd.Memory;
 
 namespace WebServerTest
 {
@@ -37,11 +38,11 @@ namespace WebServerTest
         {
             if (verStr == null)
             {
-                bool b = _request.Init(requestStr);
+                bool b = _request.Init(requestStr.ToCharsData());
                 Assert.Equal(b, false);
                 return;
             }
-            if (_request.Init(requestStr))
+            if (_request.Init(requestStr.ToCharsData()))
             {
                 Assert.Equal(_request.Ver, verStr);
                 return;
@@ -60,7 +61,7 @@ namespace WebServerTest
         [InlineData("PROPPATCH / HTTP/1.1", HttpMethod.Proppatch)]
         public void MethodTest(string requestStr, HttpMethod method)
         {
-            if (!_request.Init(requestStr))
+            if (!_request.Init(requestStr.ToCharsData()))
             {
                 Assert.Equal(_request.Method.ToString(), "ERROR");
                 return;

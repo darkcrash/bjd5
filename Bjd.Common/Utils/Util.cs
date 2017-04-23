@@ -171,6 +171,11 @@ namespace Bjd.Utils
 
         }
 
+        public static string UtcTime2String()
+        {
+            return UtcTextGenerator.GetUtcTimeNow();
+        }
+
         //Sun, 1 Feb 2009 09:28:20 +0900
         public static string LocalTime2Str(DateTime dt)
         {

@@ -7,7 +7,7 @@ namespace Bjd.WebServer.Handlers
 {
     internal class MoveHandler : IHandler
     {
-        public bool Request(HttpRequestContext context, HandlerSelectorResult selector)
+        public bool Request(HttpContext context, HandlerSelectorResult selector)
         {
             context.ResponseCode = 301;
             return true;

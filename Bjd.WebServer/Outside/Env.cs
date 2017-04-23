@@ -16,7 +16,7 @@ namespace Bjd.WebServer.Outside
         readonly List<EnvKeyValue> _ar = new List<EnvKeyValue>();
 
         //public Env(Kernel kernel, Request request, Header recvHeader, System.Net.IPAddress remoteAddress, string remoteHostName, string fileName) {
-        public Env(Kernel kernel,Conf conf, HttpRequest request, HttpHeader recvHeader,SockTcp tcpObj,string fileName) {
+        public Env(Kernel kernel,Conf conf, HttpRequest request, HttpHeaders recvHeader,SockTcp tcpObj,string fileName) {
 
 
 
@@ -151,7 +151,7 @@ namespace Bjd.WebServer.Outside
         //***************************************************
         //環境変数の設定
         //***************************************************
-        void SetEnvValue(HttpHeader recvHeader, List<EnvKeyValue> env, string headerTag, string envTag) {
+        void SetEnvValue(HttpHeaders recvHeader, List<EnvKeyValue> env, string headerTag, string envTag) {
             string value = recvHeader.GetVal(headerTag);
             if (value != null)
                 env.Add(new EnvKeyValue(envTag, value));

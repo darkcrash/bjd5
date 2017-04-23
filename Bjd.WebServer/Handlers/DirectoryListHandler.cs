@@ -7,7 +7,7 @@ namespace Bjd.WebServer.Handlers
 {
     internal class DirectoryListHandler : IHandler
     {
-        public bool Request(HttpRequestContext context, HandlerSelectorResult selector)
+        public bool Request(HttpContext context, HandlerSelectorResult selector)
         {
             //インデックスドキュメントを生成する
             if (!context.Response.CreateFromIndex(context.Request, selector.FullPath))

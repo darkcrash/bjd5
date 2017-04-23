@@ -393,7 +393,7 @@
     "useResolve": false,
     "useDetailsLog": true,
     "multiple": 500,
-    "timeOut": 3,
+    "timeOut": 5,
     "documentRoot": "wwwroot",
     "welcomeFileName": "index.html",
     "useHidden": false,

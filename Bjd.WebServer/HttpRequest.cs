@@ -6,6 +6,7 @@ using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Memory;
+using System.Linq;
 
 namespace Bjd.WebServer
 {
@@ -69,9 +70,9 @@ namespace Bjd.WebServer
 
         //データ取得（内部データは、初期化される）
         //public bool Recv(int timeout,sockTcp sockTcp,ref bool life) {
-        public bool Init(string requestStr)
+        public bool Init(CharsData requestStr)
         {
-            _kernel.Logger.DebugInformation($"Request.Init");
+            _kernel.Logger.DebugInformation("Request.Init");
 
             //既存のデータが残っている場合は削除してから受信にはいる
             Uri = "";
@@ -86,24 +87,28 @@ namespace Bjd.WebServer
             // メソッド・URI・バージョンに分割
 
             //リクエスト行がURLエンコードされている場合は、その文字コードを取得する
-            try
-            {
-                LogStr = System.Uri.UnescapeDataString(requestStr);//リクエスト文字列をそのまま保存する（ログ表示用）
-            }
-            catch
-            {
-                LogStr = UrlDecode(requestStr);
-            }
+            //try
+            //{
+            //    LogStr = System.Uri.UnescapeDataString(requestStr);//リクエスト文字列をそのまま保存する（ログ表示用）
+            //}
+            //catch
+            //{
+            //    LogStr = UrlDecode(requestStr);
+            //}
+            LogStr = requestStr.ToString();
 
-            var tmp = requestStr.Split(' ');
+            //var tmp = requestStr.Split(' ');
+            var tmp = requestStr.Split(' ').ToArray();
             if (tmp.Length != 3)
             {
-                Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                //Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, LogStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
                 return false;
             }
             if (tmp[0] == "" || tmp[1] == "" || tmp[1] == "")
             {
-                Log(LogKind.Secure, 0, string.Format("{0}", requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                //Log(LogKind.Secure, 0, string.Format("{0}", requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                Log(LogKind.Secure, 0, LogStr);//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
                 return false;
             }
 
@@ -117,7 +122,10 @@ namespace Bjd.WebServer
             //        break;
             //    }
             //}
-            var reqMethod = tmp[0];
+            var reqMethod = tmp[0].ToString();
+
+            for (var i = 0; i < tmp.Length; i++) tmp[i].Dispose();
+
             if (MethodsDic.ContainsKey(reqMethod))
             {
                 Method = MethodsDic[reqMethod];
@@ -131,7 +139,7 @@ namespace Bjd.WebServer
             //バージョンの取得
             if (tmp[2] == "HTTP/0.9" || tmp[2] == "HTTP/1.0" || tmp[2] == "HTTP/1.1")
             {
-                Ver = tmp[2];
+                Ver = tmp[2].ToString();
             }
             else
             {
@@ -139,18 +147,25 @@ namespace Bjd.WebServer
                 return false;
             }
             //パラメータの取得
-            var tmp2 = tmp[1].Split('?');
+            //var tmp2 = tmp[1].Split('?');
+            var tmp2 = tmp[1].Split('?').ToArray();
             if (2 <= tmp2.Length)
-                Param = tmp2[1];
+            {
+                Param = tmp2[1].ToString();
+                tmp2[1].Dispose();
+            }
+
+            var uriTemp = tmp2[0].ToString();
+            tmp2[0].Dispose();
             // Uri の中の%xx をデコード
             try
             {
-                Uri = System.Uri.UnescapeDataString(tmp2[0]);
-                Uri = UrlDecode(tmp2[0]);
+                Uri = System.Uri.UnescapeDataString(uriTemp);
+                Uri = UrlDecode(uriTemp);
             }
             catch
             {
-                Uri = UrlDecode(tmp2[0]);
+                Uri = UrlDecode(uriTemp);
             }
 
             //Ver5.1.3-b5 制御文字が含まれる場合、デコードに失敗している
@@ -158,7 +173,7 @@ namespace Bjd.WebServer
             {
                 if (18 >= Uri[i])
                 {
-                    Uri = tmp2[0];
+                    Uri = uriTemp;
                     break;
                 }
             }

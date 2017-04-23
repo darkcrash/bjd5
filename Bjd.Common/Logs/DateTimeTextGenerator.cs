@@ -1,4 +1,5 @@
 ﻿using Bjd.Memory;
+using Bjd.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,10 +9,6 @@ namespace Bjd.Logs
 {
     public class DateTimeTextGenerator
     {
-        private static Dictionary<int, string> int2ToString = new Dictionary<int, string>();
-        private static Dictionary<int, string> int3ToString = new Dictionary<int, string>();
-        private static Dictionary<int, string> int4ToString = new Dictionary<int, string>();
-
         [ThreadStatic]
         private static Char[] CachedText;
         [ThreadStatic]
@@ -27,18 +24,6 @@ namespace Bjd.Logs
 
         static DateTimeTextGenerator()
         {
-            for (var i = 0; i < 100; i++)
-            {
-                int2ToString.Add(i, i.ToString("00"));
-            }
-            for (var i = 0; i < 1000; i++)
-            {
-                int3ToString.Add(i, i.ToString("000"));
-            }
-            for (var i = 1900; i < 2100; i++)
-            {
-                int4ToString.Add(i, i.ToString("0000"));
-            }
         }
 
         public static void AppendFormatString(CharsData buffer, ref DateTime now)
@@ -66,25 +51,25 @@ namespace Bjd.Logs
             if (hour != now.Hour)
             {
                 hour = now.Hour;
-                var hourTxt = int2ToString[now.Hour];
+                var hourTxt = IntTextGenerator.ToString00(now.Hour);
                 hourTxt.CopyTo(0, CachedText, 0, 2);
             }
             if (min != now.Minute)
             {
                 min = now.Minute;
-                var minTxt = int2ToString[now.Minute];
+                var minTxt = IntTextGenerator.ToString00(now.Minute);
                 minTxt.CopyTo(0, CachedText, 3, 2);
             }
             if (sec != now.Second)
             {
                 sec = now.Second;
-                var secTxt = int2ToString[now.Second];
+                var secTxt = IntTextGenerator.ToString00(now.Second);
                 secTxt.CopyTo(0, CachedText, 6, 2);
             }
             if (mill != now.Millisecond)
             {
                 mill = now.Millisecond;
-                var milTxt = int3ToString[now.Millisecond];
+                var milTxt = IntTextGenerator.ToString000(now.Millisecond);
                 milTxt.CopyTo(0, CachedText, 9, 3);
             }
 
@@ -137,38 +122,39 @@ namespace Bjd.Logs
 
             if (year2 != now.Year)
             {
-                var yearTxt = int4ToString[now.Year];
+                year2 = now.Year;
+                var yearTxt = IntTextGenerator.ToString0000(now.Year);
                 yearTxt.CopyTo(0, CachedTextYmd, 0, 4);
             }
 
             if (month2 != now.Month)
             {
                 month2 = now.Month;
-                var monthTxt = int2ToString[now.Month];
+                var monthTxt = IntTextGenerator.ToString00(now.Month);
                 monthTxt.CopyTo(0, CachedTextYmd, 5, 2);
             }
             if (day2 != now.Day)
             {
                 day2 = now.Day;
-                var dayTxt = int2ToString[now.Day];
+                var dayTxt = IntTextGenerator.ToString00(now.Day);
                 dayTxt.CopyTo(0, CachedTextYmd, 8, 2);
             }
             if (hour2 != now.Hour)
             {
                 hour2 = now.Hour;
-                var hourTxt = int2ToString[now.Hour];
+                var hourTxt = IntTextGenerator.ToString00(now.Hour);
                 hourTxt.CopyTo(0, CachedTextYmd, 11, 2);
             }
             if (min2 != now.Minute)
             {
                 min2 = now.Minute;
-                var minTxt = int2ToString[now.Minute];
+                var minTxt = IntTextGenerator.ToString00(now.Minute);
                 minTxt.CopyTo(0, CachedTextYmd, 14, 2);
             }
             if (sec2 != now.Second)
             {
                 sec2 = now.Second;
-                var secTxt = int2ToString[now.Second];
+                var secTxt = IntTextGenerator.ToString00(now.Second);
                 secTxt.CopyTo(0, CachedTextYmd, 17, 2);
             }
 

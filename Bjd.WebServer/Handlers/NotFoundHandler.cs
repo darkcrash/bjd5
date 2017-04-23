@@ -7,7 +7,7 @@ namespace Bjd.WebServer.Handlers
 {
     internal class NotFoundHandler : IHandler
     {
-        public bool Request(HttpRequestContext context, HandlerSelectorResult selector)
+        public bool Request(HttpContext context, HandlerSelectorResult selector)
         {
             context.ResponseCode = 404;
             return true;

@@ -17,7 +17,7 @@ namespace Bjd.Test
                 sb.Append(string.Format("key_{0:D3}: val_{0:D3}\r\n", i));
             }
             byte[] buf = Bytes.Create(sb.ToString());
-            var header = new HttpHeader(buf);
+            var header = new HttpHeaders(buf);
 
             //GetBytes()
             //自動的に追加される空行を追加すると、初期化したbyte[]と同じになるはず

@@ -23,38 +23,49 @@ namespace Bjd.WebServer
         readonly Logger _logger;
         //readonly OneOption _oneOption;
         readonly Conf _conf;
-        readonly SockTcp _sockTcp;
         readonly HttpContentType _contentType;
 
         //byte[] doc = new byte[0];
         readonly HttpResponseBody _body;
 
         //送信ヘッダ
-        readonly HttpHeader _sendHeader;
+        //readonly HttpHeaders _sendHeader;
+        readonly HttpResponseHeaders _sendHeader;
 
         public bool SetRangeTo { get; set; }//Rangeヘッダで範囲（終わり）が指定された場合True
 
-        public HttpResponse(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpContentType contentType)
+        public HttpResponse(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)
         {
             _kernel = kernel;
             _logger = logger;
             //_oneOption = oneOption;
             _conf = conf;
-            _sockTcp = tcpObj;
             _contentType = contentType;
-
             _kernel.Logger.DebugInformation($"HttpResponse..ctor");
 
-            SetRangeTo = false;
 
             //送信ヘッダ初期化
-            _sendHeader = new HttpHeader();
-            _sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
-            _sendHeader.Replace("MIME-Version", "1.0");
-            _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+            //_sendHeader = new HttpHeader();
+            //_sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
+            //_sendHeader.Replace("MIME-Version", "1.0");
+            //_sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+            _sendHeader = new HttpResponseHeaders();
+            _sendHeader.Server.ValString = Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader"));
+            _sendHeader.MIMEVersion.ValString = "1.0";
 
             _body = new HttpResponseBody(_kernel);
         }
+
+        private SockTcp _sockTcp;
+
+        public void Initialize(SockTcp tcpObj)
+        {
+            SetRangeTo = false;
+            _sockTcp = tcpObj;
+            _sendHeader.Clear();
+            Clear();
+        }
+
         //Location:ヘッダを含むかどうか
         public bool SearchLocation()
         {
@@ -64,9 +75,10 @@ namespace Bjd.WebServer
         public void Clear()
         {
             _body.Clear();
-            _sendHeader.Replace("Content-Length", _body.Length.ToString());
+            //_sendHeader.Replace("Content-Length", _body.Length.ToString());
             //_sendHeader.Replace("Content-Length",string.Format("{0}",_body.Length));
-            _sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+            //_sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+            _sendHeader.SetContentLength(_body.Length);
         }
 
         //*********************************************************************
@@ -76,7 +88,9 @@ namespace Bjd.WebServer
         public void Send(bool keepAlive, ILife iLife)
         {
             //_kernel.Trace.TraceInformation($"Document.Send");
-            _sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
+            //_sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
+            _sendHeader.Connection.ValString = keepAlive ? "Keep-Alive" : "close";
+            _sendHeader.Date.ValString = Util.UtcTime2String();
 
             //ヘッダ送信
             //_sockTcp.SendUseEncode(_sendHeader.GetBytes());//ヘッダ送信
@@ -87,16 +101,14 @@ namespace Bjd.WebServer
             {
                 //Ver5.0.0-b12
                 //if(sendHeader.GetVal("Content-Type").ToLower().IndexOf("text")!=-1){
-                var contentType = _sendHeader.GetVal("Content-Type");
+                var contentType = _sendHeader.ContentType.ValString;
                 if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
                 {
                     _body.Send(_sockTcp, true, iLife);
-                    //tcpObj.SendUseEncode(body.Get());   
                 }
                 else
                 {
                     _body.Send(_sockTcp, false, iLife);
-                    //tcpObj.SendNoEncode(body.Get());   
                 }
             }
         }
@@ -126,33 +138,34 @@ namespace Bjd.WebServer
             var l = _body.Length;
             if (SetRangeTo && rangeFrom == 0)
                 l++;
-            _sendHeader.Replace("Content-Length", l.ToString());
-            _sendHeader.Replace("Content-Type", _contentType.Get(result.FullPath));
+            //_sendHeader.Replace("Content-Length", l.ToString());
+            //_sendHeader.Replace("Content-Type", _contentType.Get(result.FullPath));
+            _sendHeader.SetContentLength(l);
+            _sendHeader.SetContentType(_contentType.Get(result.FullPath));
 
             return true;
 
         }
-        //public void SetDoc(byte [] buf){
-        //    doc = new byte[buf.Length];
-        //    Buffer.BlockCopy(buf,0,
-        //    sendHeader.Replace("Content-Length",doc.Length.ToString());
-        //}
 
         public void CreateFromXml(string str)
         {
             //_kernel.Trace.TraceInformation($"Document.CreateFromXml");
 
             _body.Set(Encoding.UTF8.GetBytes(str));
-            _sendHeader.Replace("Content-Length", _body.Length.ToString());
-            _sendHeader.Replace("Content-Type", "text/xml; charset=\"utf-8\"");
+            //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+            //_sendHeader.Replace("Content-Type", "text/xml; charset=\"utf-8\"");
+            _sendHeader.SetContentLength(_body.Length);
+            _sendHeader.SetContentType("text/xml; charset=\"utf-8\"");
         }
 
         public void CreateFromSsi(byte[] output, string fileName)
         {
             //_kernel.Trace.TraceInformation($"Document.CreateFromSsi");
             _body.Set(output);
-            _sendHeader.Replace("Content-Length", _body.Length.ToString());
-            _sendHeader.Replace("Content-Type", _contentType.Get(fileName));
+            //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+            //_sendHeader.Replace("Content-Type", _contentType.Get(fileName));
+            _sendHeader.SetContentLength(_body.Length);
+            _sendHeader.SetContentType(_contentType.Get(fileName));
         }
 
         // CGIで得られた出力から、SendHeader及びdocを生成する
@@ -195,13 +208,15 @@ namespace Bjd.WebServer
                     if (line.Length == 0)
                     {
                         _body.Set(output);
-                        _sendHeader.Replace("Content-Length", _body.Length.ToString());
+                        //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+                        _sendHeader.SetContentLength(_body.Length);
                         return true;
                     }
                     break;
-                end:
+                    end:
                     _body.Set(output);
-                    _sendHeader.Replace("Content-Length", _body.Length.ToString());
+                    //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+                    _sendHeader.SetContentLength(_body.Length);
                     return true;
                 }
             }
@@ -282,8 +297,10 @@ namespace Bjd.WebServer
                 sb.Append(str + "\r\n");
             }
             _body.Set(encoding.GetBytes(sb.ToString()));
-            _sendHeader.Replace("Content-Length", _body.Length.ToString());
-            _sendHeader.Replace("Content-Type", string.Format("text/html;charset={0}", charset));
+            //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+            //_sendHeader.Replace("Content-Type", string.Format("text/html;charset={0}", charset));
+            _sendHeader.SetContentLength(_body.Length);
+            _sendHeader.SetContentType(string.Format("text/html;charset={0}", charset));
             return true;
 
         }
@@ -364,8 +381,10 @@ namespace Bjd.WebServer
                 }
             }
             _body.Set(encoding.GetBytes(sb.ToString()));
-            _sendHeader.Replace("Content-Length", _body.Length.ToString());
-            _sendHeader.Replace("Content-Type", string.Format("text/html;charset={0}", charset));
+            //_sendHeader.Replace("Content-Length", _body.Length.ToString());
+            //_sendHeader.Replace("Content-Type", string.Format("text/html;charset={0}", charset));
+            _sendHeader.SetContentLength(_body.Length);
+            _sendHeader.SetContentType(string.Format("text/html;charset={0}", charset));
             return true;
         }
         //CreateIndexDocument()で使用される

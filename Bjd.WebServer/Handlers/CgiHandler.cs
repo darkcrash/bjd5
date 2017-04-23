@@ -25,7 +25,7 @@ namespace Bjd.WebServer.Handlers
         }
 
 
-        public bool Request(HttpRequestContext context, HandlerSelectorResult selector)
+        public bool Request(HttpContext context, HandlerSelectorResult selector)
         {
             var connection = context.Connection;
             var Logger = connection.Logger;

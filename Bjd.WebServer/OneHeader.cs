@@ -5,9 +5,9 @@ namespace Bjd
 {
     public class OneHeader
     {
-
-        private string _Key;
-        private string _KeyUpper;
+        public bool Enabled = true;
+        protected string _Key;
+        protected string _KeyUpper;
         private byte[] _Val;
         private string _ValString;
         public string Key

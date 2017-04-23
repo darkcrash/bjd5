@@ -13,6 +13,7 @@ namespace Bjd.Threading
         const int LOCKED = 1;
         const int UNLOCKED = 0;
         private int lockState = 0;
+        private int lockWaiter = 0;
         private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
         private WaitHandle[] handles = new WaitHandle[2];
         private SimpleResetPool _pool;
@@ -24,14 +25,19 @@ namespace Bjd.Threading
             Reset();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set()
         {
             if (Interlocked.Exchange(ref lockState, UNLOCKED) == LOCKED)
             {
+                if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
+                {
+                }
                 handle.Set();
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
             if (Interlocked.Exchange(ref lockState, LOCKED) == UNLOCKED)
@@ -40,46 +46,68 @@ namespace Bjd.Threading
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsLocked()
         {
             return (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Wait()
         {
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            Interlocked.Increment(ref lockWaiter);
+            try
             {
-                handle.WaitOne();
+
+                if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                {
+                    handle.WaitOne();
+                }
+
+                //var spin = new SpinWait();
+                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                //{
+                //    spin.SpinOnce();
+                //}
+
             }
-
-            //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            //{
-            //    Thread.Sleep(1);
-            //}
-
+            finally
+            {
+                Interlocked.Decrement(ref lockWaiter);
+            }
 
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            Interlocked.Increment(ref lockWaiter);
+            try
             {
-                handles[1] = cancellationToken.WaitHandle;
-                var result = WaitHandle.WaitAny(handles, millisecondsTimeout);
-                handles[1] = null;
-                if (result == 1) cancellationToken.ThrowIfCancellationRequested();
-                return (System.Threading.WaitHandle.WaitTimeout != result);
-            }
-            return true;
+                if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                {
+                    handles[1] = cancellationToken.WaitHandle;
+                    var result = WaitHandle.WaitAny(handles, millisecondsTimeout);
+                    handles[1] = null;
+                    if (result == 1) cancellationToken.ThrowIfCancellationRequested();
+                    return (System.Threading.WaitHandle.WaitTimeout != result);
+                }
+                return true;
 
-            //var timeout = DateTime.Now.AddMilliseconds(millisecondsTimeout);
-            //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            //{
-            //    Thread.Sleep(1);
-            //    if (timeout < DateTime.Now) return false;
-            //    if (cancellationToken.IsCancellationRequested) cancellationToken.ThrowIfCancellationRequested();
-            //}
-            //return true;
+                //var spin = new SpinWait();
+                //var timeout = DateTime.Now.AddMilliseconds(millisecondsTimeout);
+                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                //{
+                //    spin.SpinOnce();
+                //    if (timeout < DateTime.Now) return false;
+                //    if (cancellationToken.IsCancellationRequested) cancellationToken.ThrowIfCancellationRequested();
+                //}
+                //return true;
+            }
+            finally
+            {
+                Interlocked.Decrement(ref lockWaiter);
+            }
 
         }
 
@@ -96,12 +124,15 @@ namespace Bjd.Threading
                 {
                 }
 
+                Set();
+
                 if (handle != null)
                 {
-                    handle.Set();
                     handle.Dispose();
                     handle = null;
                 }
+
+                _pool = null;
 
                 disposedValue = true;
             }

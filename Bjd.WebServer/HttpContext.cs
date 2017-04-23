@@ -9,23 +9,22 @@ using System.Threading.Tasks;
 
 namespace Bjd.WebServer
 {
-    public class HttpRequestContext : IDisposable
+    public class HttpContext : IDisposable
     {
         public HttpConnectionContext Connection { get; private set; }
         //受信ヘッダ
-        internal HttpHeader Header;
+        internal HttpHeaders Header;
         //リクエストライン処理クラス
         internal HttpRequest Request;
         internal WebStream InputStream;
         internal WebStream OutputStream;
         public string Url;
         public int ResponseCode;
-        public HttpContentType ContentType;
         internal Authorization Auth;
         internal string AuthName;
         internal HttpResponse Response;
 
-        public HttpRequestContext(HttpConnectionContext connection)
+        public HttpContext(HttpConnectionContext connection)
         {
             Connection = connection;
         }
