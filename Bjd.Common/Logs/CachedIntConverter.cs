@@ -16,6 +16,12 @@ namespace Bjd.Logs
 
         public static void AppendFormatString(CharsData buffer, int length, int value)
         {
+            AppendFormatString(buffer, length, value, ' ');
+        }
+
+
+        public static void AppendFormatString(CharsData buffer, int length, int value, char padding)
+        {
             if (cached == null)
             {
                 cached = new Dictionary<int, string>();
@@ -29,7 +35,7 @@ namespace Bjd.Logs
             var white = length - valueString.Length;
             while(white > 0)
             {
-                buffer.Data[buffer.DataSize++] = ' ';
+                buffer.Data[buffer.DataSize++] = padding;
                 white--;
             }
             valueString.CopyTo(0, buffer.Data, buffer.DataSize, valueString.Length);

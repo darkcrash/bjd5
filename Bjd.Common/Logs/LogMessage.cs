@@ -125,7 +125,7 @@ namespace Bjd.Logs
                 sb.Append('\t');
                 sb.Append(_remoteHostname);
                 sb.Append('\t');
-                CachedIntConverter.AppendFormatString(sb, 7, _messageNo);
+                CachedIntConverter.AppendFormatString(sb, 7, _messageNo, '0');
                 sb.Append('\t');
                 sb.Append(_message);
                 sb.Append('\t');
