@@ -220,6 +220,12 @@ namespace Bjd.Net.Sockets
                 return;
             }
 
+            if (e.SocketError == SocketError.OperationAborted)
+            {
+                BeginReceive();
+                return;
+            }
+
             SetErrorReceive();
             Kernel.Logger.TraceError($"{hashText} SockTcp.E_Completed {e.SocketError}");
 
@@ -322,8 +328,6 @@ namespace Bjd.Net.Sockets
             SetError($"{hashText} SockTcp.disconnect");
             //state = SocketObjState.Disconnect;
             //Close();クローズは外部から明示的に行う
-
-            this.Cancel();
         }
 
         //受信<br>
@@ -480,7 +484,11 @@ namespace Bjd.Net.Sockets
 
         private void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
-            if (CancelToken.IsCancellationRequested) return;
+            if (SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            {
+                sendComplete.Set();
+                return;
+            }
 
             var len = 0;
             if (currentSend != null)
@@ -496,6 +504,7 @@ namespace Bjd.Net.Sockets
                 }
 
             }
+
 
             var b = _sockQueueSend.DequeueBufferWait(65536, 3000, CancelToken);
             if (b == BufferData.Empty)
@@ -525,10 +534,12 @@ namespace Bjd.Net.Sockets
 
         public void SendAsyncWait()
         {
+            if (SockState != SockState.Connect) return;
             sendComplete.Wait();
         }
         public bool IsSending()
         {
+            if (SockState != SockState.Connect) return false;
             return sendComplete.IsLocked();
         }
 

@@ -19,9 +19,10 @@ namespace Bjd.Test.Servers
         TestService _service;
         Kernel _kernel;
 
-        public OneServerTest2()
+        public OneServerTest2(Xunit.Abstractions.ITestOutputHelper helper)
         {
             _service = TestService.CreateTestService();
+            _service.AddOutput(helper);
             _kernel = _service.Kernel;
             _kernel.ListInitialize();
         }
@@ -77,7 +78,7 @@ namespace Bjd.Test.Servers
                         const int timeout = 10;
                         var buf = sockTcp.Recv(len, timeout, this);
                         sockTcp.Send(buf);
-                        break; //echoしたらセッションを閉じる
+                        //break; //echoしたらセッションを閉じる
                     }
                 }
             }
