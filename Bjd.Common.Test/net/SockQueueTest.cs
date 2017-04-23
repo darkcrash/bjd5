@@ -93,7 +93,7 @@ namespace Bjd.Test.Net
         [InlineData(50, 50, 100)]
         [InlineData(50, 100, 50)]
         [InlineData(2000000, 2000000, 2000000)]
-        [InlineData(0, 2000001, 2000001)]
+        [InlineData(0, 4000001, 4000001)]
         public void EnqueueDequeueWait(int expected, int writeLength, int dequeueLength)
         {
             //setUp
@@ -104,7 +104,7 @@ namespace Bjd.Test.Net
                 sut.Enqueue(new byte[writeLength], writeLength);
 
                 //exercise
-                var actual = sut.DequeueWait(dequeueLength, 10, cancel.Token).Length;
+                var actual = sut.DequeueWait(dequeueLength, 100, cancel.Token).Length;
 
                 //verify
                 Assert.Equal(expected, actual);
@@ -478,7 +478,7 @@ namespace Bjd.Test.Net
         [Fact]
         public void SockQueueMaxDequeueLine()
         {
-            const int max = 2000000;
+            const int max = 4000000;
 
             using (var sockQueu = new SockQueue())
             {
@@ -525,7 +525,7 @@ namespace Bjd.Test.Net
         [Fact]
         public void SockQueueMaxDequeueLineWait()
         {
-            const int max = 2000000;
+            const int max = 4000000;
 
             using (var sockQueu = new SockQueue())
             using (var cancel = new System.Threading.CancellationTokenSource())
