@@ -14,17 +14,19 @@ namespace Bjd
     {
         public HttpRequestHeaders()
         {
-            Host = KnowHeader.Empty;
-            Connection = KnowHeader.Empty;
-            ContentLength = KnowHeader.Empty;
-            Range = KnowHeader.Empty;
-
         }
 
         public OneHeader Host;
         public OneHeader Connection;
         public OneHeader ContentLength;
         public OneHeader Range;
+        public OneHeader Authorization;
+        public OneHeader PathInfo;
+        public OneHeader IfModifiedSince;
+        public OneHeader IfUnmodifiedSince;
+        public OneHeader Destination;
+        public OneHeader IfMatch;
+        public OneHeader IfNoneMatch;
 
         public override void Clear()
         {
@@ -34,6 +36,13 @@ namespace Bjd
             Connection = KnowHeader.Empty;
             ContentLength = KnowHeader.Empty;
             Range = KnowHeader.Empty;
+            Authorization = KnowHeader.Empty;
+            PathInfo = KnowHeader.Empty;
+            IfModifiedSince = KnowHeader.Empty;
+            IfUnmodifiedSince = KnowHeader.Empty;
+            Destination = KnowHeader.Empty;
+            IfMatch = KnowHeader.Empty;
+            IfNoneMatch = KnowHeader.Empty;
 
         }
 
@@ -54,7 +63,29 @@ namespace Bjd
                 case "RANGE":
                     Range = header;
                     break;
+                case "AUTHORIZATION":
+                    Authorization = header;
+                    break;
+                case "PATHINFO":
+                    PathInfo = header;
+                    break;
+                case "IF_MODIFIED_SINCE":
+                    IfModifiedSince = header;
+                    break;
+                case "IF_UNMODIFIED_SINCE":
+                    IfUnmodifiedSince = header;
+                    break;
+                case "IF-MATCH":
+                    IfMatch = header;
+                    break;
+                case "IF-NONE-MATCH":
+                    IfNoneMatch = header;
+                    break;
+                case "DESTINATION":
+                    Destination = header;
+                    break;
             }
+            
 
         }
 

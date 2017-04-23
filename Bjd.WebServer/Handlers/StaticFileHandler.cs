@@ -51,9 +51,11 @@ namespace Bjd.WebServer.Handlers
             //********************************************************************
             //Modified処理
             //********************************************************************
-            if (context.Header.GetVal("If_Modified_Since") != null)
+            //if (context.Header.GetVal("If_Modified_Since") != null)
+            if (context.Header.IfModifiedSince.ValString != null)
             {
-                var dt = Util.Str2Time(context.Header.GetVal("If-Modified-Since"));
+                //var dt = Util.Str2Time(context.Header.GetVal("If-Modified-Since"));
+                var dt = Util.Str2Time(context.Header.IfModifiedSince.ValString);
                 if (result.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 304;
@@ -61,9 +63,11 @@ namespace Bjd.WebServer.Handlers
                     return true;
                 }
             }
-            if (context.Header.GetVal("If_Unmodified_Since") != null)
+            //if (context.Header.GetVal("If_Unmodified_Since") != null)
+            if (context.Header.IfUnmodifiedSince.ValString != null)
             {
-                var dt = Util.Str2Time(context.Header.GetVal("If_Unmodified_Since"));
+                //var dt = Util.Str2Time(context.Header.GetVal("If_Unmodified_Since"));
+                var dt = Util.Str2Time(context.Header.IfUnmodifiedSince.ValString);
                 if (result.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 412;
@@ -78,13 +82,14 @@ namespace Bjd.WebServer.Handlers
             // (1) useEtagがtrueの場合は、送信時にETagを付加する
             // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
             //if ((bool)_conf.Get("useEtag") || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
-            if (useEtag || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
+            if (useEtag || context.Header.IfMatch.ValString != null || context.Header.IfNoneMatch.ValString != null)
             {
                 //Ver5.1.5
                 //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
                 var etagStr = WebServerUtil.Etag(result);
                 string str;
-                if (null != (str = context.Header.GetVal("If-Match")))
+                //if (null != (str = context.Header.GetVal("If-Match")))
+                if (null != (str = context.Header.IfMatch.ValString))
                 {
                     if (str != "*" && str != etagStr)
                     {
@@ -94,7 +99,8 @@ namespace Bjd.WebServer.Handlers
                     }
 
                 }
-                if (null != (str = context.Header.GetVal("If-None-Match")))
+                //if (null != (str = context.Header.GetVal("If-None-Match")))
+                if (null != (str = context.Header.IfNoneMatch.ValString))
                 {
                     if (str != "*" && str == etagStr)
                     {
@@ -115,7 +121,8 @@ namespace Bjd.WebServer.Handlers
             //if (context.Header.GetVal("Range") != null)
             if (context.Header.Range.ValString != null)
             {//レンジ指定のあるリクエストの場合
-                var range = context.Header.GetVal("Range");
+                //var range = context.Header.GetVal("Range");
+                var range = context.Header.Range.ValString;
                 //指定範囲を取得する（マルチ指定には未対応）
                 if (range.IndexOf("bytes=") == 0)
                 {

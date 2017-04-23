@@ -330,7 +330,8 @@ namespace Bjd.WebServer
             //var authrization = new Authorization(OneOption,Logger);
             //string authName = "";
             //request.Auth = new Authorization(_conf, Logger);
-            if (!request.Auth.Check(request.Request.Uri, request.Header.GetVal("authorization"), ref request.AuthName))
+            //if (!request.Auth.Check(request.Request.Uri, request.Header.GetVal("authorization"), ref request.AuthName))
+            if (!request.Auth.Check(request.Request.Uri, request.Header.Authorization.ValString, ref request.AuthName))
             {
                 request.ResponseCode = 401;
                 connection.KeepAlive = false;//切断
@@ -370,7 +371,8 @@ namespace Bjd.WebServer
                 }
             }
             //受信ヘッダに「PathInfo:」が設定されている場合、送信ヘッダに「PathTranslated」を追加する
-            var pathInfo = request.Header.GetVal("PathInfo");
+            //var pathInfo = request.Header.GetVal("PathInfo");
+            var pathInfo = request.Header.PathInfo.ValString;
             if (pathInfo != null)
             {
                 pathInfo = _Selector.DocumentRoot + pathInfo;
@@ -415,7 +417,8 @@ namespace Bjd.WebServer
                         request.ResponseCode = 405;
                         //Destnationで指定されたファイルは書き込み許可されているか？
                         var dstTarget = new HandlerSelector(_kernel, _conf, Logger);
-                        string destinationStr = request.Header.GetVal("Destination");
+                        //string destinationStr = request.Header.GetVal("Destination");
+                        string destinationStr = request.Header.Destination.ValString;
                         if (destinationStr != null)
                         {
                             if (destinationStr.IndexOf("://") == -1)
