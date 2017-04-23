@@ -45,6 +45,7 @@ namespace Bjd.WebServer
         private bool useDot;
         private bool useDetailsLog;
         private bool useExpansion;
+        private HttpContextPool contextPool;
 
         //通常のServerThreadの子クラスと違い、オプションはリストで受け取る
         //親クラスは、そのリストの0番目のオブジェクトで初期化する
@@ -124,7 +125,7 @@ namespace Bjd.WebServer
             _authorization = new Authorization(_kernel, _conf, Logger);
             LoadConfig();
 
-            HttpContextPool.InitializePool(_kernel, Logger, _conf, _contentType);
+            contextPool = HttpContextPool.InitializePool(_kernel, Logger, _conf, _contentType);
 
         }
 
@@ -135,6 +136,7 @@ namespace Bjd.WebServer
             {
                 db.Dispose();
             }
+            contextPool.Dispose();
             base.Dispose();
         }
 
@@ -165,7 +167,7 @@ namespace Bjd.WebServer
             System.Globalization.CultureInfo.CurrentCulture = _culture;
 
             // create Connection Context
-            using (var connection = HttpContextPool.GetContext())
+            using (var connection = contextPool.Get())
             {
                 connection.Connection = (SockTcp)sockObj;
                 connection.RemoteIp = connection.Connection.RemoteIp;

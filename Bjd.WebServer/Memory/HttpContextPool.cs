@@ -9,31 +9,24 @@ namespace Bjd.WebServer.Memory
 {
     public class HttpContextPool : PoolBase<HttpConnectionContext>
     {
-        static HttpContextPool Pool;
         Kernel kernel;
         Logger logger;
         HttpContentType contentType;
         Conf conf;
 
-        public static HttpConnectionContext GetContext()
-        {
-            return Pool.Get();
-        }
-
         private HttpContextPool()
         {
         }
 
-        public static void InitializePool(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)
+        public static HttpContextPool InitializePool(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)
         {
-            if (Pool != null) Pool.Dispose();
-            Pool = new HttpContextPool();
+            var Pool = new HttpContextPool();
             Pool.kernel = kernel;
             Pool.logger = logger;
             Pool.conf = conf;
             Pool.contentType = contentType;
             Pool.InitializePool(300, 1024);
-
+            return Pool;
         }
 
         protected override int BufferSize => 1;
