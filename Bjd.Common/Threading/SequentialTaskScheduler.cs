@@ -49,7 +49,11 @@ namespace Bjd.Threading
                     if (t != null)
                     {
                         //queue[idx] = null;
-                        this.TryExecuteTask(t);
+                        try
+                        {
+                            this.TryExecuteTask(t);
+                        }
+                        catch { }
                     }
                     else
                     {

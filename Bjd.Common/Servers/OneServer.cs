@@ -21,7 +21,7 @@ namespace Bjd.Servers
     //各サーバオブジェクトの基底クラス<br>
     public abstract class OneServer : ThreadBase
     {
-        const int listenMax = 50;
+        const int listenMax = 200;
 
         public Logger Logger;
         public String NameTag { get; private set; }

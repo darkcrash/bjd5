@@ -75,15 +75,17 @@ namespace Bjd.Logs
 
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
+            var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
+
             var t = new Task(() =>
-                SetInternal(logKind, sockBase, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
+                SetInternal(logKind, remoteHostname, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
             t.Start(sts);
 
         }
 
         //ログ出力
         //Override可能（テストで使用）
-        private void SetInternal(LogKind logKind, SockObj sockBase, int messageNo, string detailInfomation, int threadId)
+        private void SetInternal(LogKind logKind, string remoteHostName, int messageNo, string detailInfomation, int threadId)
         {
 
 
@@ -308,8 +310,7 @@ namespace Bjd.Logs
                 }
             }
 
-            var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
-            var oneLog = new LogMessage(DateTime.Now, logKind, _nameTag, threadId, remoteHostname, messageNo, message,
+            var oneLog = new LogMessage(DateTime.Now, logKind, _nameTag, threadId, remoteHostName, messageNo, message,
                                        detailInfomation);
 
             if (_useLimitString)

@@ -211,6 +211,7 @@ namespace Bjd.Net.Sockets
 
         private void E_Completed(object sender, SocketAsyncEventArgs e)
         {
+            if (disposedValue) return;
             if (CancelToken.IsCancellationRequested) return;
 
             if (e.SocketError == SocketError.Success)
@@ -455,7 +456,12 @@ namespace Bjd.Net.Sockets
 
         private void WriteAsync_Completed(Task before)
         {
-            if (CancelToken.IsCancellationRequested) return;
+            if (disposedValue) return;
+            if (SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            {
+                sendComplete.Set();
+                return;
+            }
 
             var len = 0;
             if (currentSend != null)
@@ -484,6 +490,7 @@ namespace Bjd.Net.Sockets
 
         private void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
+            if (disposedValue) return;
             if (SockState != SockState.Connect || CancelToken.IsCancellationRequested)
             {
                 sendComplete.Set();
@@ -832,32 +839,10 @@ namespace Bjd.Net.Sockets
         {
             if (!disposedValue)
             {
+                disposedValue = true;
+
                 try { this.Cancel(); }
                 catch { }
-
-                if (recvEventArgs != null)
-                {
-                    recvEventArgs.Dispose();
-                    recvEventArgs = null;
-                }
-
-                if (sendEventArgs != null)
-                {
-                    sendEventArgs.Dispose();
-                    sendEventArgs = null;
-                }
-
-                if (recvBuffer != null)
-                {
-                    recvBuffer.Dispose();
-                    recvBuffer = null;
-                }
-
-                if (sendBuffer != null)
-                {
-                    sendBuffer.Dispose();
-                    sendBuffer = null;
-                }
 
                 if (receiveTask != null)
                 {
@@ -891,6 +876,38 @@ namespace Bjd.Net.Sockets
                     _oneSsl = null;
                 }
 
+                if (recvEventArgs != null)
+                {
+                    recvEventArgs.Completed -= E_Completed;
+                    recvEventArgs.Dispose();
+                    recvEventArgs = null;
+                }
+
+                if (sendEventArgs != null)
+                {
+                    sendEventArgs.Completed -= SendEventArgs_Completed;
+                    sendEventArgs.Dispose();
+                    sendEventArgs = null;
+                }
+
+                if (recvBuffer != null)
+                {
+                    recvBuffer.Dispose();
+                    recvBuffer = null;
+                }
+
+                if (sendBuffer != null)
+                {
+                    sendBuffer.Dispose();
+                    sendBuffer = null;
+                }
+
+                if (currentSend != null)
+                {
+                    currentSend.Dispose();
+                    currentSend = null;
+                }
+
                 _lastLineSend = null;
                 if (_sockQueueRecv != null)
                 {
@@ -917,7 +934,6 @@ namespace Bjd.Net.Sockets
                     _ssl.Dispose();
                     _ssl = null;
                 }
-                disposedValue = true;
             }
 
             base.Dispose(disposing);
