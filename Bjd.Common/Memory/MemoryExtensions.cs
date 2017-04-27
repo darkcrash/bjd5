@@ -74,6 +74,24 @@ namespace Bjd.Memory
             }
         }
 
+        //public static IEnumerable<ArraySegment<char>> Split(this CharsData source, char separator)
+        //{
+        //    var pos = 0;
+        //    for (var i = 0; i < source.DataSize; i++)
+        //    {
+        //        if (source.Data[i] == separator)
+        //        {
+        //            var len = i - pos;
+        //            yield return new ArraySegment<char>(source.Data, pos, len);
+        //            pos = i + 1;
+        //        }
+        //    }
+        //    if (pos < source.DataSize)
+        //    {
+        //        var len = source.DataSize - pos;
+        //        yield return new ArraySegment<char>(source.Data, pos, len);
+        //    }
+        //}
 
 
 
@@ -128,6 +146,7 @@ namespace Bjd.Memory
 
         public static void Append(this CharsData chars, string appendText)
         {
+            if (appendText == null) return;
             var len = appendText.Length;
             appendText.CopyTo(0, chars.Data, chars.DataSize, len);
             chars.DataSize += len;

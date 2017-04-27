@@ -74,14 +74,41 @@ namespace Bjd.Threading
                 //{
                 //    spin.SpinOnce();
                 //}
-
             }
             finally
             {
                 Interlocked.Decrement(ref lockWaiter);
             }
-
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Wait(int millisecondsTimeout)
+        {
+            var waiterNo = Interlocked.Increment(ref lockWaiter);
+            try
+            {
+
+                if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                {
+                    return handle.WaitOne(millisecondsTimeout);
+                }
+                else
+                {
+                    return true;
+                }
+
+                //var spin = new SpinWait();
+                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+                //{
+                //    spin.SpinOnce();
+                //}
+            }
+            finally
+            {
+                Interlocked.Decrement(ref lockWaiter);
+            }
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -91,6 +118,7 @@ namespace Bjd.Threading
             {
                 if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
                 {
+                    if (cancellationToken.IsCancellationRequested) return false;
                     handles[1] = cancellationToken.WaitHandle;
                     var result = WaitHandle.WaitAny(handles, millisecondsTimeout);
                     handles[1] = null;

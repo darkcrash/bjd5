@@ -8,6 +8,7 @@ using Bjd.Net;
 using Bjd.Traces;
 using Bjd.Utils;
 using System.Threading;
+using Bjd.Threading;
 
 namespace Bjd.Net.Sockets
 {
@@ -19,6 +20,7 @@ namespace Bjd.Net.Sockets
         private IPEndPoint _LocalAddress;
         private Ip _LocalIp;
         private Ip _RemoteIp;
+        private SimpleResetEvent cancelWaiter = SimpleResetPool.GetResetEvent(false);
 
         //****************************************************************
         // アドレス関連
@@ -106,6 +108,7 @@ namespace Bjd.Net.Sockets
             if (this.disposedValue) return;
             Kernel.Logger.DebugInformation("SockObj.Cancel");
             this.cancelTokenSource.Cancel();
+            cancelWaiter.Set();
         }
 
         protected bool IsCancel
@@ -114,6 +117,10 @@ namespace Bjd.Net.Sockets
             {
                 return this.CancelToken.IsCancellationRequested;
             }
+        }
+        public void CancelWait()
+        {
+            cancelWaiter.Wait();
         }
 
 
@@ -228,6 +235,7 @@ namespace Bjd.Net.Sockets
 
                 //if (!this.IsCancel) this.Cancel();
                 if (cancelTokenSource != null) cancelTokenSource.Dispose();
+                if (cancelWaiter != null) cancelWaiter.Dispose();
                 cancelTokenSource = null;
                 SocketStateChanged = null;
                 _lastError = null;

@@ -28,16 +28,19 @@ namespace Bjd.Memory
             return base.Equals(obj);
         }
 
-
         public static bool operator ==(CharsData a, string b)
         {
-            if (a is null && b == null) return true;
-            if (a is null) return false;
-            if (b is null) return false;
+            //if (a is null && b == null) return true;
+            //if (a is null) return false;
+            //if (b is null) return false;
 
-            if (a.DataSize != b.Length) return false;
+            var dsa = a?.DataSize;
+            var dsb = b?.Length;
+            if (!dsa.HasValue && !dsb.HasValue) return true;
 
-            for (var i = 0; i < a.DataSize; i++)
+            if (dsa != dsb) return false;
+
+            for (var i = 0; i < dsa; i++)
             {
                 if (a.Data[i] != b[i]) return false;
             }

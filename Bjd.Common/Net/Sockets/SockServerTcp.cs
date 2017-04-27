@@ -17,8 +17,6 @@ namespace Bjd.Net.Sockets
         private Socket _socket;
         private Ip _bindIp;
         private int _bindPort;
-        private object Lock = new object();
-
         private readonly Ssl _ssl;
 
         private AddressFamily Family
@@ -115,7 +113,7 @@ namespace Bjd.Net.Sockets
                     }
                     catch (Exception ex)
                     {
-                        if (IsCancel) return null; 
+                        if (IsCancel) return null;
                         Kernel.Logger.TraceError(ex.Message);
                         Kernel.Logger.TraceError(ex.StackTrace);
                     }
@@ -167,6 +165,57 @@ namespace Bjd.Net.Sockets
             }
             return null;
         }
+
+        private SocketAsyncEventArgs AcceptEventargs;
+        private Action<object> AcceptCallback;
+
+        public void AcceptAsync(Action<SockTcp> callback, ILife iLife)
+        {
+            Kernel.Logger.DebugInformation($"SockServerTcp.Select");
+            try
+            {
+                if (AcceptCallback == null)
+                {
+                    AcceptCallback = (o) =>
+                    {
+                        callback(new SockTcp(Kernel, _ssl, (Socket)o));
+                    };
+                }
+                AcceptEventargs = new SocketAsyncEventArgs();
+                //AcceptEventargs.Completed += AcceptEventargs_Completed;
+                AcceptEventargs.Completed += (sender, e) =>
+                {
+                    if (IsCancel) return;
+
+                    var sock = e.AcceptSocket;
+                    e.AcceptSocket = null;
+                    _socket.AcceptAsync(AcceptEventargs);
+
+                    if (e.SocketError == SocketError.Success)
+                    {
+                        //callback(new SockTcp(Kernel, _ssl, sock));
+                        //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
+                        var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
+                        t.Start();
+                    }
+                };
+
+                _socket.AcceptAsync(AcceptEventargs);
+
+                this.SockState = SockState.Bind;
+
+            }
+            catch (OperationCanceledException)
+            {
+                Kernel.Logger.TraceInformation("SockServerTcp.Select OperationCanceledException");
+            }
+            catch (Exception ex)
+            {
+                Kernel.Logger.TraceError(ex.Message);
+                Kernel.Logger.TraceError(ex.StackTrace);
+            }
+        }
+
 
     }
 

@@ -169,6 +169,7 @@ namespace Bjd.WebServer
             // create Connection Context
             using (var connection = contextPool.Get())
             {
+                connection.Initialize();
                 connection.Connection = (SockTcp)sockObj;
                 connection.RemoteIp = connection.Connection.RemoteIp;
 

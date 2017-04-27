@@ -133,7 +133,7 @@ namespace Bjd.WebServer
 
             if (Method == HttpMethod.Unknown)
             {
-                Log(LogKind.Secure, 1, string.Format("{0}", requestStr));//�T�|�[�g�O�̃��\�b�h�ł��i������p���ł��܂���j
+                Log(LogKind.Secure, 1, LogStr);
                 return false;
             }
             //バージョンの取得
@@ -143,9 +143,10 @@ namespace Bjd.WebServer
             }
             else
             {
-                Log(LogKind.Secure, 2, string.Format("{0}", requestStr));//�T�|�[�g�O�̃o�[�W�����ł��i������p���ł��܂���j
+                Log(LogKind.Secure, 2, LogStr);
                 return false;
             }
+
             //パラメータの取得
             //var tmp2 = tmp[1].Split('?');
             var tmp2 = tmp[1].Split('?').ToArray();

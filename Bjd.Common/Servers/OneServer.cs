@@ -38,17 +38,14 @@ namespace Bjd.Servers
         private SockServerTcp _sockServerTcp;
         private SockServerUdp _sockServerUdp;
 
-        // 子スレッド管理 - 排他制御オブジェクト
-        private readonly object SyncObj1 = new object();
-        //private List<SockObj> _childs = new List<SockObj>();
-
         private const int _cArrayMax = 1024;
         private int _cArrayIndex = 0;
         private SockObj[] _cArray = new SockObj[_cArrayMax];
 
         // 子スレッドコレクション
         private int _count = 0;
-        private ManualResetEventSlim _childNone = new ManualResetEventSlim(true, 0);
+        //private ManualResetEventSlim _childNone = new ManualResetEventSlim(true, 0);
+        private SimpleResetEvent _childNone = SimpleResetPool.GetResetEvent(true);
 
         // 同時接続数
         private readonly int _port;
@@ -300,67 +297,112 @@ namespace Bjd.Servers
             // 生存してる限り実行し続ける
             while (IsLife())
             {
-                var childTask = _sockServerTcp.SelectAsync(this);
+                //var childTask = _sockServerTcp.SelectAsync(this);
 
-                // Nullが返されたときは終了する
-                if (childTask == null)
-                    break;
+                //// Nullが返されたときは終了する
+                //if (childTask == null)
+                //    break;
+
+                //// 子タスクで処理させる
+                //var t = childTask.ContinueWith(
+                //    (Task<SockTcp> b) =>
+                //    {
+                //        var child = b.Result;
+                //        int? idx = null;
+                //        try
+                //        {
+                //            idx = this.StartTask(child);
+
+                //            // 同時接続数チェック
+                //            if (Increment())
+                //            {
+                //                // 同時接続数を超えたのでリクエストをキャンセルします
+                //                //_kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                //                _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
+                //                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                //                return;
+                //            }
+
+                //            try
+                //            {
+                //                // ACL制限のチェック
+                //                if (AclCheck(child) == AclKind.Deny)
+                //                {
+                //                    return;
+                //                }
+                //                // 受信開始
+                //                child.BeginReceive();
+                //                // 各実装へ
+                //                this.SubThread(child);
+                //            }
+                //            finally
+                //            {
+                //                Decrement();
+                //            }
+
+                //        }
+                //        finally
+                //        {
+                //            RemoveTask(idx, child);
+                //        }
+                //    }, _cancelToken, continueOptions, TaskScheduler.Default);
+                //try
+                //{
+                //    childTask.Start();
+                //    childTask.Wait(this._cancelToken);
+                //}
+                //catch (OperationCanceledException) { }
+                //catch (Exception ex)
+                //{
+                //    _kernel.Logger.TraceError(ex.Message);
+                //    _kernel.Logger.TraceError(ex.StackTrace);
+                //}
 
                 // 子タスクで処理させる
-                var t = childTask.ContinueWith(
-                    (Task<SockTcp> b) =>
+                Action<SockTcp> taction = (SockTcp child) =>
+                {
+                    int? idx = null;
+                    try
                     {
-                        var child = b.Result;
-                        int? idx = null;
+                        idx = this.StartTask(child);
+
+                        // 同時接続数チェック
+                        if (Increment())
+                        {
+                            // 同時接続数を超えたのでリクエストをキャンセルします
+                            //_kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
+                            _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
+                            Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                            return;
+                        }
+
                         try
                         {
-                            idx = this.StartTask(child);
-
-                            // 同時接続数チェック
-                            if (Increment())
+                            // ACL制限のチェック
+                            if (AclCheck(child) == AclKind.Deny)
                             {
-                                // 同時接続数を超えたのでリクエストをキャンセルします
-                                //_kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
-                                _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
-                                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
                                 return;
                             }
-
-                            try
-                            {
-                                // ACL制限のチェック
-                                if (AclCheck(child) == AclKind.Deny)
-                                {
-                                    return;
-                                }
-                                // 受信開始
-                                child.BeginReceive();
-                                // 各実装へ
-                                this.SubThread(child);
-                            }
-                            finally
-                            {
-                                Decrement();
-                            }
-
+                            // 受信開始
+                            child.BeginReceive();
+                            // 各実装へ
+                            this.SubThread(child);
                         }
                         finally
                         {
-                            RemoveTask(idx, child);
+                            Decrement();
                         }
-                    }, _cancelToken, continueOptions, TaskScheduler.Default);
-                try
-                {
-                    childTask.Start();
-                    childTask.Wait(this._cancelToken);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception ex)
-                {
-                    _kernel.Logger.TraceError(ex.Message);
-                    _kernel.Logger.TraceError(ex.StackTrace);
-                }
 
+                    }
+                    finally
+                    {
+                        RemoveTask(idx, child);
+                    }
+                };
+
+                _sockServerTcp.AcceptAsync(taction, this);
+
+                _sockServerTcp.CancelWait();
             }
 
         }
@@ -441,7 +483,7 @@ namespace Bjd.Servers
             {
                 idx = idx % _cArrayMax;
                 Interlocked.CompareExchange(ref _cArrayIndex, idx, _cArrayMax + idx);
-                _cArrayIndex = _cArrayIndex % _cArrayMax;
+                //_cArrayIndex = _cArrayIndex % _cArrayMax;
             }
             _cArray[idx] = o;
             return idx;

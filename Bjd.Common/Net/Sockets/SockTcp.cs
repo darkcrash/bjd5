@@ -34,6 +34,7 @@ namespace Bjd.Net.Sockets
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
         //private ManualResetEventSlim sendComplete = new ManualResetEventSlim(true, 0);
+        private SimpleResetEvent recvComplete = SimpleResetPool.GetResetEvent(false);
         private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent(true);
         private BufferData recvBuffer;
         private BufferData sendBuffer;
@@ -63,8 +64,6 @@ namespace Bjd.Net.Sockets
             _socket.ReceiveTimeout = timeout * 1000;
             try
             {
-                //var tConnect = _socket.ConnectAsync(ip.IPAddress, port);
-                //tConnect.Wait();
                 _socket.Connect(ip.IPAddress, port);
 
                 if (!_socket.Connected)
@@ -90,16 +89,8 @@ namespace Bjd.Net.Sockets
             {
                 SetError("BeginConnect() faild");
             }
-            ////[C#] 接続が完了するまで待機する
-            //while (SockState == SockState.Idle)
-            //{
-            //    Thread.Sleep(10);
-            //}
-            //ここまでくると接続が完了している
 
             SetConnectionInfo();
-            //var t = new Task(BeginReceive, this.CancelToken, TaskCreationOptions.LongRunning);
-            //t.Start();
             BeginReceive(); //接続完了処理（受信待機開始）
 
         }
@@ -129,11 +120,6 @@ namespace Bjd.Net.Sockets
             }
 
             SetConnectionInfo();
-            ////read待機
-            ////接続完了処理（受信待機開始）
-            //var t = new Task(BeginReceive, this.CancelToken, TaskCreationOptions.LongRunning);
-            //t.Start();
-            //BeginReceive(); //接続完了処理（受信待機開始）
 
         }
 
@@ -146,7 +132,6 @@ namespace Bjd.Net.Sockets
         private void SetConnectionInfo()
         {
             //受信バッファは接続完了後に確保される
-            //_sockQueue = new SockQueue();
             _sockQueueRecv = SockQueuePool.Instance.Get();
             _sockQueueSend = SockQueuePool.Instance.Get();
 
@@ -167,12 +152,13 @@ namespace Bjd.Net.Sockets
         //接続完了処理（受信待機開始）
         internal void BeginReceive()
         {
-            if (this.CancelToken.IsCancellationRequested) return;
+            if (disposedValue || CancelToken.IsCancellationRequested)
+            {
+                recvComplete?.Set();
+                return;
+            }
 
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.BeginReceive");
-
-            // Using the LocalEndPoint property.
-            //string s = string.Format("My local IpAddress is :" + IPAddress.Parse(((IPEndPoint)_socket.LocalEndPoint).Address.ToString()) + "I am connected on port number " + ((IPEndPoint)_socket.LocalEndPoint).Port.ToString());
+            Kernel?.Logger.DebugInformation(hashText, " SockTcp.BeginReceive");
 
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
@@ -185,7 +171,6 @@ namespace Bjd.Net.Sockets
                 }
                 else
                 {
-                    //receiveTask = _socket.ReceiveAsync(recvBufSeg, SocketFlags.None);
                     if (recvEventArgs == null)
                     {
                         recvBuffer = BufferPool.GetMaximum(65536);
@@ -195,9 +180,6 @@ namespace Bjd.Net.Sockets
                         recvEventArgs.Completed += E_Completed;
                         recvEventArgs.SetBuffer(recvBuffer.Data, 0, recvBuffer.Length);
                     }
-                    //var recvBufSeg = _sockQueueRecv.GetWriteSegment();
-                    //recvEventArgs.SetBuffer(recvBufSeg.Array, recvBufSeg.Offset, recvBufSeg.Count);
-                    recvEventArgs.SetBuffer(0, recvBuffer.Length);
                     _socket.ReceiveAsync(recvEventArgs);
                 }
             }
@@ -211,19 +193,16 @@ namespace Bjd.Net.Sockets
 
         private void E_Completed(object sender, SocketAsyncEventArgs e)
         {
-            if (disposedValue) return;
-            if (CancelToken.IsCancellationRequested) return;
+            if (disposedValue || CancelToken.IsCancellationRequested)
+            {
+                recvComplete?.Set();
+                return;
+            }
 
             if (e.SocketError == SocketError.Success)
             {
                 recvBuffer.DataSize = e.BytesTransferred;
                 EndReceive(e.BytesTransferred);
-                return;
-            }
-
-            if (e.SocketError == SocketError.OperationAborted)
-            {
-                BeginReceive();
                 return;
             }
 
@@ -237,6 +216,7 @@ namespace Bjd.Net.Sockets
             if (result.IsCanceled)
             {
                 Kernel.Logger.TraceWarning($"{hashText} SockTcp.EndReceive IsCanceled=true");
+                recvComplete.Set();
                 return;
             }
 
@@ -246,14 +226,6 @@ namespace Bjd.Net.Sockets
                 if (ex != null)
                 {
                     Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.SocketErrorCode:{ex.SocketErrorCode}");
-                }
-
-                // 一部のエラーでは再試行する
-                switch (ex.SocketErrorCode)
-                {
-                    case SocketError.OperationAborted:
-                        BeginReceive();
-                        return;
                 }
 
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.ExceptionType:{result.Exception.InnerException.GetType().FullName}");
@@ -324,12 +296,16 @@ namespace Bjd.Net.Sockets
 
         private void SetErrorReceive()
         {
-            //err: //エラー発生
-            //【2009.01.12 追加】相手が存在しなくなっている
+            recvComplete?.Set();
             SetError($"{hashText} SockTcp.disconnect");
-            //state = SocketObjState.Disconnect;
-            //Close();クローズは外部から明示的に行う
         }
+        private void SetErrorSend()
+        {
+            sendComplete?.Set();
+            SetError($"{hashText} SockTcp.disconnect");
+        }
+
+
 
         //受信<br>
         //切断・タイムアウトでnullが返される
@@ -410,16 +386,19 @@ namespace Bjd.Net.Sockets
 
         private void BeginSend(BufferData buf)
         {
+            currentSend = buf;
 
-            if (this.CancelToken.IsCancellationRequested) return;
-
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.BeginSend");
-
+            if (disposedValue || this.CancelToken.IsCancellationRequested)
+            {
+                sendComplete?.Set();
+                return;
+            }
 
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
             {
-                currentSend = buf;
+                Kernel?.Logger.DebugInformation(hashText, " SockTcp.BeginSend");
+
                 if (isSsl)
                 {
                     sendTask = _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
@@ -446,7 +425,7 @@ namespace Bjd.Net.Sockets
             {
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginSend ExceptionMessage:{ex.Message}");
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginSend StackTrace:{ex.StackTrace}");
-                this.SetErrorReceive();
+                SetErrorSend();
             }
 
         }
@@ -456,10 +435,9 @@ namespace Bjd.Net.Sockets
 
         private void WriteAsync_Completed(Task before)
         {
-            if (disposedValue) return;
-            if (SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
             {
-                sendComplete.Set();
+                sendComplete?.Set();
                 return;
             }
 
@@ -469,12 +447,11 @@ namespace Bjd.Net.Sockets
                 len += currentSend.DataSize;
                 currentSend.Dispose();
                 currentSend = null;
-            }
-
-            if (Interlocked.Add(ref sendCounter, -len) == 0)
-            {
-                sendComplete.Set();
-                return;
+                if (Interlocked.Add(ref sendCounter, -len) == 0)
+                {
+                    sendComplete.Set();
+                    return;
+                }
             }
 
             var b = _sockQueueSend.DequeueBufferWait(65536, 100, CancelToken);
@@ -490,10 +467,9 @@ namespace Bjd.Net.Sockets
 
         private void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
-            if (disposedValue) return;
-            if (SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
             {
-                sendComplete.Set();
+                sendComplete?.Set();
                 return;
             }
 
@@ -513,10 +489,10 @@ namespace Bjd.Net.Sockets
             }
 
 
-            var b = _sockQueueSend.DequeueBufferWait(65536, 3000, CancelToken);
-            if (b == BufferData.Empty)
+            var b = _sockQueueSend?.DequeueBufferWait(65536, 3000, CancelToken);
+            if (b == null || b == BufferData.Empty)
             {
-                sendComplete.Set();
+                sendComplete?.Set();
                 return;
             }
             BeginSend(b);
@@ -755,16 +731,20 @@ namespace Bjd.Net.Sockets
 
         public void AsciiSendAsync(CharsData data)
         {
-            var buf = data.ToAsciiBufferData();
-            SendAsync(buf);
-            data.Dispose();
+            using (CharsData d = data)
+            {
+                var buf = data.ToAsciiBufferData();
+                SendAsync(buf);
+            }
         }
 
         public void AsciiLineSendAsync(CharsData data)
         {
-            var buf = data.ToAsciiLineBufferData();
-            SendAsync(buf);
-            data.Dispose();
+            using (CharsData d = data)
+            {
+                var buf = data.ToAsciiLineBufferData();
+                SendAsync(buf);
+            }
         }
 
 
@@ -832,6 +812,13 @@ namespace Bjd.Net.Sockets
             this.Dispose();
         }
 
+        private static bool RequireWait(SocketError error)
+        {
+            //if (error == SocketError.Shutdown) return false;
+            //if (error == SocketError.ConnectionReset) return false;
+            if (error == SocketError.ConnectionAborted) return false;
+            return false;
+        }
 
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
@@ -846,27 +833,21 @@ namespace Bjd.Net.Sockets
 
                 if (receiveTask != null)
                 {
-                    //try { receiveTask.Wait(); }
-                    //catch { }
-                    //finally { receiveTask = null; }
                     receiveTask = null;
                 }
                 if (receiveCompleteTask != null)
                 {
                     try { receiveCompleteTask.Wait(); }
                     catch { }
-                    finally { receiveCompleteTask = null; }
+                    receiveCompleteTask = null;
                 }
 
                 //TCPのソケットをシャットダウンするとエラーになる（無視する）
-                try { if (this._socket != null && this._socket.Connected) this._socket.Shutdown(SocketShutdown.Both); }
+                try { if (_socket.Connected) _socket.Shutdown(SocketShutdown.Both); }
                 catch { }
 
                 if (_socket != null)
                 {
-                    //_socket.Close();
-                    if (this._socket.Connected)
-                        _socket.Poll(1000000, SelectMode.SelectRead);
                     _socket.Dispose();
                     _socket = null;
                 }
@@ -876,16 +857,34 @@ namespace Bjd.Net.Sockets
                     _oneSsl = null;
                 }
 
+                if (sendComplete != null)
+                {
+                    if (RequireWait(sendEventArgs.SocketError))
+                    {
+                        sendComplete.Wait();
+                    }
+                    sendComplete.Dispose();
+                    sendComplete = null;
+                }
+
+                if (recvComplete != null)
+                {
+                    if (RequireWait(recvEventArgs.SocketError))
+                    {
+                        recvComplete.Wait();
+                    }
+                    recvComplete.Dispose();
+                    recvComplete = null;
+                }
+
                 if (recvEventArgs != null)
                 {
-                    recvEventArgs.Completed -= E_Completed;
                     recvEventArgs.Dispose();
                     recvEventArgs = null;
                 }
 
                 if (sendEventArgs != null)
                 {
-                    sendEventArgs.Completed -= SendEventArgs_Completed;
                     sendEventArgs.Dispose();
                     sendEventArgs = null;
                 }
@@ -908,6 +907,7 @@ namespace Bjd.Net.Sockets
                     currentSend = null;
                 }
 
+
                 _lastLineSend = null;
                 if (_sockQueueRecv != null)
                 {
@@ -922,12 +922,6 @@ namespace Bjd.Net.Sockets
                     _sockQueueSend = null;
                 }
 
-                if (sendComplete != null)
-                {
-                    sendComplete.Set();
-                    sendComplete.Dispose();
-                    sendComplete = null;
-                }
 
                 if (_ssl != null)
                 {

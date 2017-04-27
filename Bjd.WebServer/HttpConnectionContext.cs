@@ -31,6 +31,7 @@ namespace Bjd.WebServer
 
         public Logs.Logger Logger => _Logger;
 
+
         public HttpConnectionContext(HttpContextPool pool, Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)
         {
             _pool = pool;
@@ -73,6 +74,8 @@ namespace Bjd.WebServer
         public void Initialize()
         {
             // null
+            KeepAlive = true;
+            CheckVirtual = true;
         }
 
         public void DisposeInternal()
