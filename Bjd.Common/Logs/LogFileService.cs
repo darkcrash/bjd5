@@ -28,6 +28,7 @@ namespace Bjd.Logs
 
         private LogFileWriter _normalLog; // 通常ログ
         private LogFileWriter _secureLog; // セキュアログ
+        private LogFileWriter _errorLog; // エラーログ
 
         private DateTime _dt; //インスタンス生成時に初期化し、日付が変化したかどうかの確認に使用する
         private DateTime _lastDelete = new DateTime(0);
@@ -61,31 +62,70 @@ namespace Bjd.Logs
 
         public void Append(CharsData logChars, LogMessage oneLog)
         {
+            //if (isDisposed) return;
+            //try
+            //{
+            //    tailSignal.Wait();
+            //    emptySignal.Reset();
+
+
+            //    var isSecureLog = _secureLog != null;
+            //    var isNormalLog = _normalLog != null;
+            //    if (isSecureLog || isNormalLog)
+            //    {
+            //        // セキュリティログは、表示制限に関係なく書き込む
+            //        if (isSecureLog && oneLog.IsSecure())
+            //        {
+            //            //_secureLog.WriteLine(oneLog.ToString());
+            //            _secureLog.WriteLine(logChars);
+            //        }
+            //        // 通常ログの場合
+            //        if (isNormalLog)
+            //        {
+            //            // ルール適用除外　もしくは　表示対象になっている場合
+            //            //_normalLog.WriteLine(oneLog.ToString());
+            //            _normalLog.WriteLine(logChars);
+            //        }
+            //    }
+
+            //}
+            //catch (IOException) { }
+            //finally
+            //{
+            //    emptySignal.Set();
+            //}
+
+            var isSecureLog = _secureLog != null;
+            var isNormalLog = _normalLog != null;
+            if (isSecureLog || isNormalLog)
+            {
+                // セキュリティログは、表示制限に関係なく書き込む
+                if (isSecureLog && oneLog.IsSecure())
+                {
+                    WriteSecure(logChars);
+                }
+                // 通常ログの場合
+                if (isNormalLog)
+                {
+                    // ルール適用除外　もしくは　表示対象になっている場合
+                    WriteNormal(logChars);
+                }
+            }
+
+        }
+
+        public void WriteNormal(CharsData logChars)
+        {
             if (isDisposed) return;
             try
             {
-
                 tailSignal.Wait();
                 emptySignal.Reset();
 
-
-                var isSecureLog = _secureLog != null;
                 var isNormalLog = _normalLog != null;
-                if (isSecureLog || isNormalLog)
+                if ( isNormalLog)
                 {
-                    // セキュリティログは、表示制限に関係なく書き込む
-                    if (isSecureLog && oneLog.IsSecure())
-                    {
-                        //_secureLog.WriteLine(oneLog.ToString());
-                        _secureLog.WriteLine(logChars);
-                    }
-                    // 通常ログの場合
-                    if (isNormalLog)
-                    {
-                        // ルール適用除外　もしくは　表示対象になっている場合
-                        //_normalLog.WriteLine(oneLog.ToString());
-                        _normalLog.WriteLine(logChars);
-                    }
+                    _normalLog.WriteLine(logChars);
                 }
 
             }
@@ -95,6 +135,51 @@ namespace Bjd.Logs
                 emptySignal.Set();
             }
         }
+
+        public void WriteSecure(CharsData logChars)
+        {
+            if (isDisposed) return;
+            try
+            {
+                tailSignal.Wait();
+                emptySignal.Reset();
+
+                var isSecureLog = _secureLog != null;
+                if (isSecureLog)
+                {
+                    _secureLog.WriteLine(logChars);
+                }
+
+            }
+            catch (IOException) { }
+            finally
+            {
+                emptySignal.Set();
+            }
+        }
+
+        public void WriteError(CharsData logChars)
+        {
+            if (isDisposed) return;
+            try
+            {
+                tailSignal.Wait();
+                emptySignal.Reset();
+
+                var isErrorLog = _errorLog != null;
+                if (isErrorLog)
+                {
+                    _errorLog.WriteLine(logChars);
+                }
+
+            }
+            catch (IOException) { }
+            finally
+            {
+                emptySignal.Set();
+            }
+        }
+
 
 
         public void TraceAppend(CharsData logChars, LogMessage oneLog)
@@ -175,6 +260,19 @@ namespace Bjd.Logs
                 _secureLog = null;
                 throw new IOException(string.Format("file open error. \"{0}\"", fileName));
             }
+
+            fileName = "error.Log";
+            fileName = System.IO.Path.Combine(_saveDirectory, fileName);
+            try
+            {
+                _errorLog = new LogFileWriter(fileName);
+            }
+            catch (IOException)
+            {
+                _errorLog = null;
+                throw new IOException(string.Format("file open error. \"{0}\"", fileName));
+            }
+
         }
 
         //オープンしているログファイルを全てクローズする
@@ -191,6 +289,12 @@ namespace Bjd.Logs
                 _secureLog.Dispose();
                 _secureLog = null;
             }
+            if (_errorLog != null)
+            {
+                _errorLog.Dispose();
+                _errorLog = null;
+            }
+
 
         }
         //過去ログの自動削除
@@ -209,13 +313,13 @@ namespace Bjd.Logs
             // ログディレクトリの検索
             var di = new DirectoryInfo(_saveDirectory);
             // 一定
-            var allLog = di.GetFiles("BlackJumboDog.Log").Union(di.GetFiles("secure.Log"));
+            var allLog = di.GetFiles("BlackJumboDog.Log").Union(di.GetFiles("secure.Log")).Union(di.GetFiles("error.Log"));
             foreach (var f in allLog)
             {
                 Tail(f.FullName, _saveDays, DateTime.Now); //saveDays日分以外を削除
             }
             // 日ごと
-            var dayLog = di.GetFiles("bjd.????.??.??.Log").Union(di.GetFiles("secure.????.??.??.Log"));
+            var dayLog = di.GetFiles("bjd.????.??.??.Log").Union(di.GetFiles("secure.????.??.??.Log")).Union(di.GetFiles("error.????.??.??.Log"));
             foreach (var f in dayLog)
             {
                 var tmp = f.Name.Split('.');
@@ -234,7 +338,7 @@ namespace Bjd.Logs
             }
 
             // 月ごと
-            var monLog = di.GetFiles("bjd.????.??.Log").Union(di.GetFiles("secure.????.??.Log"));
+            var monLog = di.GetFiles("bjd.????.??.Log").Union(di.GetFiles("secure.????.??.Log")).Union(di.GetFiles("error.????.??.Log"));
             foreach (var f in monLog)
             {
                 var tmp = f.Name.Split('.');
@@ -387,6 +491,7 @@ namespace Bjd.Logs
 
         public void TraceError(CharsData message)
         {
+            WriteError(message);
         }
     }
 }

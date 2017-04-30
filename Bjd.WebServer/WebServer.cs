@@ -189,7 +189,10 @@ namespace Bjd.WebServer
                     }
                     //connection.Connection.SendAsyncWait();
                 }
+
             }
+
+            ((SockTcp)sockObj).SendAsyncWait();
 
         }
 

@@ -419,6 +419,13 @@ namespace Bjd.Net.Sockets
         }
 
         //キューからのデータ取得
+        public BufferData DequeueBuffer(int len)
+        {
+            return DequeueBuffer(len, false);
+        }
+
+
+        //キューからのデータ取得
         private BufferData DequeueBuffer(int len, bool must)
         {
             if (len == 0) return BufferData.Empty;

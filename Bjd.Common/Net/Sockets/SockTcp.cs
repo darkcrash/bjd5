@@ -11,6 +11,7 @@ using Bjd.Threading;
 using Bjd.Memory;
 using System.Collections.Generic;
 using System.Linq;
+using Bjd.Logs;
 
 namespace Bjd.Net.Sockets
 {
@@ -180,7 +181,13 @@ namespace Bjd.Net.Sockets
                         recvEventArgs.Completed += E_Completed;
                         recvEventArgs.SetBuffer(recvBuffer.Data, 0, recvBuffer.Length);
                     }
-                    _socket.ReceiveAsync(recvEventArgs);
+                    var s = _socket;
+                    if (s == null)
+                    {
+                        SetErrorReceive();
+                        return;
+                    }
+                    s.ReceiveAsync(recvEventArgs);
                 }
             }
             catch (Exception ex)
@@ -297,10 +304,12 @@ namespace Bjd.Net.Sockets
         private void SetErrorReceive()
         {
             recvComplete?.Set();
+            sendComplete?.Set();
             SetError($"{hashText} SockTcp.disconnect");
         }
         private void SetErrorSend()
         {
+            recvComplete?.Set();
             sendComplete?.Set();
             SetError($"{hashText} SockTcp.disconnect");
         }
@@ -388,15 +397,15 @@ namespace Bjd.Net.Sockets
         {
             currentSend = buf;
 
-            if (disposedValue || this.CancelToken.IsCancellationRequested)
-            {
-                sendComplete?.Set();
-                return;
-            }
-
             //受信待機の開始(oneSsl!=nullの場合、受信バイト数は0に設定する)
             try
             {
+                if (disposedValue || this.CancelToken.IsCancellationRequested)
+                {
+                    sendComplete?.Set();
+                    return;
+                }
+
                 Kernel?.Logger.DebugInformation(hashText, " SockTcp.BeginSend");
 
                 if (isSsl)
@@ -418,7 +427,13 @@ namespace Bjd.Net.Sockets
                     var len = buf.DataSize;
                     Buffer.BlockCopy(buf.Data, 0, sendBuffer.Data, 0, len);
                     sendEventArgs.SetBuffer(0, len);
-                    _socket.SendAsync(sendEventArgs);
+                    var s = _socket;
+                    if (s == null)
+                    {
+                        SetErrorSend();
+                        return;
+                    }
+                    s.SendAsync(sendEventArgs);
                 }
             }
             catch (Exception ex)
@@ -435,83 +450,110 @@ namespace Bjd.Net.Sockets
 
         private void WriteAsync_Completed(Task before)
         {
-            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            try
             {
-                sendComplete?.Set();
-                return;
-            }
-
-            var len = 0;
-            if (currentSend != null)
-            {
-                len += currentSend.DataSize;
-                currentSend.Dispose();
-                currentSend = null;
-                if (Interlocked.Add(ref sendCounter, -len) == 0)
+                if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
                 {
-                    sendComplete.Set();
+                    sendComplete?.Set();
                     return;
                 }
-            }
 
-            var b = _sockQueueSend.DequeueBufferWait(65536, 100, CancelToken);
-            if (b == BufferData.Empty)
+                var len = 0;
+                if (currentSend != null)
+                {
+                    len += currentSend.DataSize;
+                    currentSend.Dispose();
+                    currentSend = null;
+                    if (Interlocked.Add(ref sendCounter, -len) == 0)
+                    {
+                        sendComplete.Set();
+                        return;
+                    }
+                }
+
+                //var b = _sockQueueSend.DequeueBufferWait(65536, 100, CancelToken);
+                var b = _sockQueueSend?.DequeueBuffer(65536);
+                if (b == null || b == BufferData.Empty)
+                {
+                    sendComplete?.Set();
+                    return;
+                }
+                BeginSend(b);
+
+            }
+            catch (Exception ex)
             {
-                sendComplete.Set();
-                return;
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.WriteAsync_Completed ExceptionMessage:{ex.Message}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.WriteAsync_Completed StackTrace:{ex.StackTrace}");
+                SetErrorSend();
             }
-            BeginSend(b);
-
         }
 
 
         private void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
-            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            try
             {
-                sendComplete?.Set();
-                return;
-            }
 
-            var len = 0;
-            if (currentSend != null)
-            {
-                len += currentSend.DataSize;
-                currentSend.Dispose();
-                currentSend = null;
-
-                if (Interlocked.Add(ref sendCounter, -len) == 0)
+                if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
                 {
-                    sendComplete.Set();
+                    sendComplete?.Set();
                     return;
                 }
 
+                var len = 0;
+                if (currentSend != null)
+                {
+                    len += currentSend.DataSize;
+                    currentSend.Dispose();
+                    currentSend = null;
+
+                    if (Interlocked.Add(ref sendCounter, -len) == 0)
+                    {
+                        sendComplete.Set();
+                        return;
+                    }
+
+                }
+
+
+                //var b = _sockQueueSend?.DequeueBufferWait(65536, 3000, CancelToken);
+                var b = _sockQueueSend?.DequeueBuffer(65536);
+                if (b == null || b == BufferData.Empty)
+                {
+                    sendComplete?.Set();
+                    return;
+                }
+                BeginSend(b);
             }
-
-
-            var b = _sockQueueSend?.DequeueBufferWait(65536, 3000, CancelToken);
-            if (b == null || b == BufferData.Empty)
+            catch (Exception ex)
             {
-                sendComplete?.Set();
-                return;
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.SendEventArgs_Completed ExceptionMessage:{ex.Message}");
+                Kernel?.Logger.TraceError($"{hashText} SockTcp.SendEventArgs_Completed StackTrace:{ex.StackTrace}");
+                SetErrorSend();
             }
-            BeginSend(b);
-
         }
 
 
         public void SendAsync(BufferData buf)
         {
+            IfThrowOnDisposed();
+            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+            {
+                buf.Dispose();
+                return;
+            }
+            _sockQueueSend.Enqueue(buf);
+            var currentSize = Interlocked.Add(ref sendCounter, buf.DataSize);
 
-            if (Interlocked.Add(ref sendCounter, buf.DataSize) == buf.DataSize)
+            if (currentSize == buf.DataSize)
             {
                 //SendEventArgs_Completed(_socket, null);
+                //sendComplete.Reset();
+                //BeginSend(buf);
                 sendComplete.Reset();
-                BeginSend(buf);
-            }
-            else
-            {
-                _sockQueueSend.Enqueue(buf);
+                var b = _sockQueueSend?.DequeueBuffer(65536);
+                BeginSend(b);
             }
         }
 
@@ -530,6 +572,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(byte[] buf, int length)
         {
+            IfThrowOnDisposed();
             var lengthtxt = length.ToString();
             Kernel.Logger.DebugInformation(hashText, " SockTcp.Send ", lengthtxt);
             try
@@ -554,6 +597,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(IList<ArraySegment<byte>> buffers)
         {
+            IfThrowOnDisposed();
 #if DEBUG
             var length = buffers.Sum(_ => _.Count);
             Kernel.Logger.DebugInformation(hashText, " SockTcp.Send IList<ArraySegment<byte>> ", length.ToString());
@@ -579,6 +623,7 @@ namespace Bjd.Net.Sockets
 
         public int Send(BufferData buf)
         {
+            IfThrowOnDisposed();
             Kernel.Logger.DebugInformation(hashText, " SockTcp.Send ", buf.DataSize.ToString());
             try
             {
@@ -598,6 +643,55 @@ namespace Bjd.Net.Sockets
                 return -1;
             }
         }
+
+        //【送信】(トレースなし)
+        //リモートサーバがトレース内容を送信するときに更にトレースするとオーバーフローするため
+        //RemoteObj.Send()では、こちらを使用する
+        public int SendNoTrace(byte[] buffer)
+        {
+            IfThrowOnDisposed();
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.SendNoTrace ", buffer.Length.ToString());
+            try
+            {
+                if (isSsl)
+                {
+                    return _oneSsl.Write(buffer, buffer.Length);
+                }
+
+                if (_socket.Connected)
+                {
+                    return _socket.Send(buffer, SocketFlags.None);
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"{hashText} SendNoTrace Length={buffer.Length} {ex.Message}");
+                //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
+            }
+            return -1;
+        }
+        public int SendNoTrace(ArraySegment<byte> buffer)
+        {
+            try
+            {
+                if (isSsl)
+                {
+                    return _oneSsl.Write(buffer);
+                }
+
+                if (_socket.Connected)
+                {
+                    return _socket.Send(buffer.Array, buffer.Offset, buffer.Count, SocketFlags.None);
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"{hashText} SendNoTrace Length={buffer.Count} {ex.Message}");
+                //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Count, ex.Message));
+            }
+            return -1;
+        }
+
 
 
         public int Send(byte[] buf)
@@ -652,60 +746,11 @@ namespace Bjd.Net.Sockets
         }
 
 
-        //【送信】(トレースなし)
-        //リモートサーバがトレース内容を送信するときに更にトレースするとオーバーフローするため
-        //RemoteObj.Send()では、こちらを使用する
-        public int SendNoTrace(byte[] buffer)
-        {
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.SendNoTrace ", buffer.Length.ToString());
-            try
-            {
-                if (isSsl)
-                {
-                    return _oneSsl.Write(buffer, buffer.Length);
-                }
-
-                if (_socket.Connected)
-                {
-                    return _socket.Send(buffer, SocketFlags.None);
-                }
-            }
-            catch (Exception ex)
-            {
-                SetError($"{hashText} SendNoTrace Length={buffer.Length} {ex.Message}");
-                //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
-            }
-            return -1;
-        }
-
-        public int SendNoTrace(ArraySegment<byte> buffer)
-        {
-            try
-            {
-                if (isSsl)
-                {
-                    return _oneSsl.Write(buffer);
-                }
-
-                if (_socket.Connected)
-                {
-                    return _socket.Send(buffer.Array, buffer.Offset, buffer.Count, SocketFlags.None);
-                }
-            }
-            catch (Exception ex)
-            {
-                SetError($"{hashText} SendNoTrace Length={buffer.Count} {ex.Message}");
-                //Logger.Set(LogKind.Error, this, 9000046, string.Format("Length={0} {1}", buffer.Length, ex.Message));
-            }
-            return -1;
-        }
-
-
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
         public int SendUseEncode(byte[] buf)
         {
             //実際の送信処理にテキストとバイナリの区別はない
-            return SendNoTrace(buf);
+            return Send(buf);
         }
 
         //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
@@ -760,18 +805,6 @@ namespace Bjd.Net.Sockets
             return LineSend(buf);
         }
 
-        //AsciiSendを使用したいが、文字コードがASCII以外の可能性がある場合、こちらを使用する  (\r\nが付加される)
-        //public int SjisSend(string str, OperateCrlf operateCrlf) {
-        public int SjisSend(string str)
-        {
-            _lastLineSend = str;
-            var enc = CodePagesEncodingProvider.Instance.GetEncoding(932);
-            var buf = enc.GetBytes(str);
-            //return LineSend(buf, operateCrlf);
-            //とりあえずCrLfの設定を無視している
-            return LineSend(buf);
-        }
-
         // 【１行受信】
         //切断されている場合、nullが返される
         //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
@@ -800,12 +833,6 @@ namespace Bjd.Net.Sockets
             return SendNoTrace(buf);
         }
 
-        public int SendNoEncode(ArraySegment<byte> buf)
-        {
-            //実際の送信処理にテキストとバイナリの区別はない
-            return SendNoTrace(buf);
-        }
-
         public override void Close()
         {
             if (this.disposedValue) return;
@@ -814,10 +841,15 @@ namespace Bjd.Net.Sockets
 
         private static bool RequireWait(SocketError error)
         {
-            //if (error == SocketError.Shutdown) return false;
+            if (error == SocketError.Shutdown) return false;
             //if (error == SocketError.ConnectionReset) return false;
-            if (error == SocketError.ConnectionAborted) return false;
-            return false;
+            //if (error == SocketError.ConnectionAborted) return false;
+            return true;
+        }
+
+        private void IfThrowOnDisposed()
+        {
+            if (disposedValue) throw new ObjectDisposedException("SockTcp");
         }
 
         private bool disposedValue = false; // 重複する呼び出しを検出するには
@@ -842,9 +874,72 @@ namespace Bjd.Net.Sockets
                     receiveCompleteTask = null;
                 }
 
+
                 //TCPのソケットをシャットダウンするとエラーになる（無視する）
-                try { if (_socket.Connected) _socket.Shutdown(SocketShutdown.Both); }
+                try
+                {
+                    _socket.Shutdown(SocketShutdown.Both);
+                    //_socket.Shutdown(SocketShutdown.Receive);
+                }
                 catch { }
+
+                //recvComplete.Wait();
+                if (RequireWait(recvEventArgs.SocketError))
+                {
+                    //recvComplete.Wait();
+                }
+                if (recvEventArgs != null)
+                {
+                    recvEventArgs.Completed -= E_Completed;
+                    recvEventArgs.Dispose();
+                    recvEventArgs = null;
+                }
+                if (recvBuffer != null)
+                {
+                    recvBuffer.Dispose();
+                    recvBuffer = null;
+                }
+                recvComplete.Dispose();
+                recvComplete = null;
+
+
+                //sendComplete.Wait();
+                if (RequireWait(sendEventArgs.SocketError))
+                {
+                    //sendComplete.Wait();
+                }
+                if (sendEventArgs != null)
+                {
+                    sendEventArgs.Completed -= SendEventArgs_Completed;
+                    sendEventArgs.Dispose();
+                    sendEventArgs = null;
+                }
+
+                if (sendBuffer != null)
+                {
+                    sendBuffer.Dispose();
+                    sendBuffer = null;
+                }
+                if (currentSend != null)
+                {
+                    currentSend.Dispose();
+                    currentSend = null;
+                }
+
+                sendComplete.Dispose();
+                sendComplete = null;
+
+                _lastLineSend = null;
+                if (_sockQueueRecv != null)
+                {
+                    SockQueuePool.Instance.Pool(ref this._sockQueueRecv);
+                    _sockQueueRecv = null;
+                }
+                if (_sockQueueSend != null)
+                {
+                    SockQueuePool.Instance.Pool(ref this._sockQueueSend);
+                    _sockQueueSend = null;
+                }
 
                 if (_socket != null)
                 {
@@ -857,77 +952,12 @@ namespace Bjd.Net.Sockets
                     _oneSsl = null;
                 }
 
-                if (sendComplete != null)
-                {
-                    if (RequireWait(sendEventArgs.SocketError))
-                    {
-                        sendComplete.Wait();
-                    }
-                    sendComplete.Dispose();
-                    sendComplete = null;
-                }
-
-                if (recvComplete != null)
-                {
-                    if (RequireWait(recvEventArgs.SocketError))
-                    {
-                        recvComplete.Wait();
-                    }
-                    recvComplete.Dispose();
-                    recvComplete = null;
-                }
-
-                if (recvEventArgs != null)
-                {
-                    recvEventArgs.Dispose();
-                    recvEventArgs = null;
-                }
-
-                if (sendEventArgs != null)
-                {
-                    sendEventArgs.Dispose();
-                    sendEventArgs = null;
-                }
-
-                if (recvBuffer != null)
-                {
-                    recvBuffer.Dispose();
-                    recvBuffer = null;
-                }
-
-                if (sendBuffer != null)
-                {
-                    sendBuffer.Dispose();
-                    sendBuffer = null;
-                }
-
-                if (currentSend != null)
-                {
-                    currentSend.Dispose();
-                    currentSend = null;
-                }
-
-
-                _lastLineSend = null;
-                if (_sockQueueRecv != null)
-                {
-                    //this._sockQueue.Dispose();
-                    SockQueuePool.Instance.Pool(ref this._sockQueueRecv);
-                    _sockQueueRecv = null;
-                }
-                if (_sockQueueSend != null)
-                {
-                    //this._sockQueue.Dispose();
-                    SockQueuePool.Instance.Pool(ref this._sockQueueSend);
-                    _sockQueueSend = null;
-                }
-
-
                 if (_ssl != null)
                 {
                     _ssl.Dispose();
                     _ssl = null;
                 }
+
             }
 
             base.Dispose(disposing);
