@@ -20,7 +20,7 @@ namespace Bjd.WebServer
 
         static HttpRequest()
         {
-            foreach(var method in Methods)
+            foreach (var method in Methods)
             {
                 MethodsDic.Add(method.ToString().ToUpper(), method);
                 MethodsDic.Add(method.ToString(), method);
@@ -80,9 +80,6 @@ namespace Bjd.WebServer
             Ver = "";
             Method = HttpMethod.Unknown;//Ver5.1.x
 
-            //string str = sockTcp.AsciiRecv(timeout,OperateCrlf.Yes,ref life);
-            //if (str == null)
-            //    return false;
 
             // メソッド・URI・バージョンに分割
 
@@ -99,95 +96,112 @@ namespace Bjd.WebServer
 
             //var tmp = requestStr.Split(' ');
             var tmp = requestStr.Split(' ').ToArray();
-            if (tmp.Length != 3)
-            {
-                //Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
-                Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, LogStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
-                return false;
-            }
-            if (tmp[0] == "" || tmp[1] == "" || tmp[1] == "")
-            {
-                //Log(LogKind.Secure, 0, string.Format("{0}", requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
-                Log(LogKind.Secure, 0, LogStr);//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
-                return false;
-            }
-
-            // メソッドの取得
-            //foreach (HttpMethod m in Enum.GetValues(typeof(HttpMethod)))
-            //foreach (HttpMethod m in Methods)
-            //{
-            //    if (tmp[0].ToUpper() == m.ToString().ToUpper())
-            //    {
-            //        Method = m;
-            //        break;
-            //    }
-            //}
-            var reqMethod = tmp[0].ToString();
-
-            for (var i = 0; i < tmp.Length; i++) tmp[i].Dispose();
-
-            if (MethodsDic.ContainsKey(reqMethod))
-            {
-                Method = MethodsDic[reqMethod];
-            }
-
-            if (Method == HttpMethod.Unknown)
-            {
-                Log(LogKind.Secure, 1, LogStr);
-                return false;
-            }
-            //バージョンの取得
-            if (tmp[2] == "HTTP/0.9" || tmp[2] == "HTTP/1.0" || tmp[2] == "HTTP/1.1")
-            {
-                Ver = tmp[2].ToString();
-            }
-            else
-            {
-                Log(LogKind.Secure, 2, LogStr);
-                return false;
-            }
-
-            //パラメータの取得
-            //var tmp2 = tmp[1].Split('?');
-            var tmp2 = tmp[1].Split('?').ToArray();
-            if (2 <= tmp2.Length)
-            {
-                Param = tmp2[1].ToString();
-                tmp2[1].Dispose();
-            }
-
-            var uriTemp = tmp2[0].ToString();
-            tmp2[0].Dispose();
-            // Uri の中の%xx をデコード
             try
             {
-                Uri = System.Uri.UnescapeDataString(uriTemp);
-                Uri = UrlDecode(uriTemp);
-            }
-            catch
-            {
-                Uri = UrlDecode(uriTemp);
-            }
 
-            //Ver5.1.3-b5 制御文字が含まれる場合、デコードに失敗している
-            for (var i = 0; i < Uri.Length; i++)
-            {
-                if (18 >= Uri[i])
+
+                if (tmp.Length != 3)
                 {
-                    Uri = uriTemp;
-                    break;
+                    //Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                    Log(LogKind.Secure, 0, string.Format("Length={0} {1}", tmp.Length, LogStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                    return false;
                 }
+
+                if (tmp[0] == "" || tmp[1] == "" || tmp[2] == "")
+                {
+                    //Log(LogKind.Secure, 0, string.Format("{0}", requestStr));//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                    Log(LogKind.Secure, 0, LogStr);//リクエストの解釈に失敗しました（不正なリクエストの可能性があるため切断しました
+                    return false;
+                }
+
+                // メソッドの取得
+                //foreach (HttpMethod m in Enum.GetValues(typeof(HttpMethod)))
+                //foreach (HttpMethod m in Methods)
+                //{
+                //    if (tmp[0].ToUpper() == m.ToString().ToUpper())
+                //    {
+                //        Method = m;
+                //        break;
+                //    }
+                //}
+                var reqMethod = tmp[0].ToString();
+
+
+                if (MethodsDic.ContainsKey(reqMethod))
+                {
+                    Method = MethodsDic[reqMethod];
+                }
+
+                if (Method == HttpMethod.Unknown)
+                {
+                    Log(LogKind.Secure, 1, LogStr);
+                    return false;
+                }
+
+                //バージョンの取得
+                Ver = tmp[2].ToString();
+                if (Ver != "HTTP/1.1" && Ver != "HTTP/1.0" && Ver != "HTTP/0.9")
+                {
+                    // サポート外のバージョンです（処理を継続できません）
+                    Log(LogKind.Secure, 2, LogStr);
+                    return false;
+                }
+
+                //パラメータの取得
+                //var tmp2 = tmp[1].Split('?');
+                var tmp2 = tmp[1].Split('?').ToArray();
+                try
+                {
+                    if (2 <= tmp2.Length)
+                    {
+                        Param = tmp2[1].ToString();
+                    }
+
+                    var uriTemp = tmp2[0].ToString();
+
+
+                    // Uri の中の%xx をデコード
+                    try
+                    {
+                        Uri = System.Uri.UnescapeDataString(uriTemp);
+                        Uri = UrlDecode(uriTemp);
+                    }
+                    catch
+                    {
+                        Uri = UrlDecode(uriTemp);
+                    }
+
+                    //Ver5.1.3-b5 制御文字が含まれる場合、デコードに失敗している
+                    for (var i = 0; i < Uri.Length; i++)
+                    {
+                        if (18 >= Uri[i])
+                        {
+                            Uri = uriTemp;
+                            break;
+                        }
+                    }
+
+                }
+                finally
+                {
+                    for (var i = 0; i < tmp2.Length; i++) tmp2[i].Dispose();
+                }
+
+
+                //Uriに/が続く場合の対処
+                Uri = Util.SwapStr("//", "/", Uri);
+
+                //Ver5.8.8
+                if (Uri == "" || Uri[0] != '/')
+                {
+                    Log(LogKind.Secure, 5, LogStr);
+                    return false;
+                }
+
             }
-
-
-            //Uriに/が続く場合の対処
-            Uri = Util.SwapStr("//", "/", Uri);
-
-            //Ver5.8.8
-            if (Uri == "" || Uri[0] != '/')
+            finally
             {
-                Log(LogKind.Secure, 5, LogStr);
-                return false;
+                for (var i = 0; i < tmp.Length; i++) tmp[i].Dispose();
             }
 
             return true;
