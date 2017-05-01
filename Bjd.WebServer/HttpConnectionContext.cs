@@ -68,6 +68,8 @@ namespace Bjd.WebServer
 
         public void Dispose()
         {
+            Connection = null;
+            RemoteIp = null;
             _pool.PoolInternal(this);
         }
 
@@ -76,6 +78,8 @@ namespace Bjd.WebServer
             // null
             KeepAlive = true;
             CheckVirtual = true;
+            Connection = null;
+            RemoteIp = null;
         }
 
         public void DisposeInternal()

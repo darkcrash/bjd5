@@ -174,13 +174,11 @@ namespace Bjd.Net.Sockets
             Kernel.Logger.DebugInformation($"SockServerTcp.Select");
             try
             {
-                if (AcceptCallback == null)
+                AcceptCallback = (o) =>
                 {
-                    AcceptCallback = (o) =>
-                    {
-                        callback(new SockTcp(Kernel, _ssl, (Socket)o));
-                    };
-                }
+                    callback(new SockTcp(Kernel, _ssl, (Socket)o));
+                };
+
                 AcceptEventargs = new SocketAsyncEventArgs();
                 //AcceptEventargs.Completed += AcceptEventargs_Completed;
                 AcceptEventargs.Completed += (sender, e) =>

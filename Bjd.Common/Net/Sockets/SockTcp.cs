@@ -861,7 +861,8 @@ namespace Bjd.Net.Sockets
                 disposedValue = true;
 
                 try { this.Cancel(); }
-                catch { }
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error Cancel {ex.Message} {ex.StackTrace} "); }
 
                 if (receiveTask != null)
                 {
@@ -881,53 +882,52 @@ namespace Bjd.Net.Sockets
                     _socket.Shutdown(SocketShutdown.Both);
                     //_socket.Shutdown(SocketShutdown.Receive);
                 }
-                catch { }
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error Shutdown {ex.Message} {ex.StackTrace} "); }
 
-                //recvComplete.Wait();
-                if (RequireWait(recvEventArgs.SocketError))
+                try
                 {
-                    //recvComplete.Wait();
+                    if (recvEventArgs != null)
+                    {
+                        recvEventArgs.Completed -= E_Completed;
+                        recvEventArgs.Dispose();
+                        recvEventArgs = null;
+                    }
+                    if (recvBuffer != null)
+                    {
+                        recvBuffer.Dispose();
+                        recvBuffer = null;
+                    }
+                    recvComplete.Dispose();
+                    recvComplete = null;
                 }
-                if (recvEventArgs != null)
-                {
-                    recvEventArgs.Completed -= E_Completed;
-                    recvEventArgs.Dispose();
-                    recvEventArgs = null;
-                }
-                if (recvBuffer != null)
-                {
-                    recvBuffer.Dispose();
-                    recvBuffer = null;
-                }
-                recvComplete.Dispose();
-                recvComplete = null;
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error recvComplete {ex.Message} {ex.StackTrace} "); }
 
+                try
+                {
+                    if (sendEventArgs != null)
+                    {
+                        sendEventArgs.Completed -= SendEventArgs_Completed;
+                        sendEventArgs.Dispose();
+                        sendEventArgs = null;
+                    }
 
-                //sendComplete.Wait();
-                if (RequireWait(sendEventArgs.SocketError))
-                {
-                    //sendComplete.Wait();
+                    if (sendBuffer != null)
+                    {
+                        sendBuffer.Dispose();
+                        sendBuffer = null;
+                    }
+                    if (currentSend != null)
+                    {
+                        currentSend.Dispose();
+                        currentSend = null;
+                    }
+                    sendComplete.Dispose();
+                    sendComplete = null;
                 }
-                if (sendEventArgs != null)
-                {
-                    sendEventArgs.Completed -= SendEventArgs_Completed;
-                    sendEventArgs.Dispose();
-                    sendEventArgs = null;
-                }
-
-                if (sendBuffer != null)
-                {
-                    sendBuffer.Dispose();
-                    sendBuffer = null;
-                }
-                if (currentSend != null)
-                {
-                    currentSend.Dispose();
-                    currentSend = null;
-                }
-
-                sendComplete.Dispose();
-                sendComplete = null;
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error sendComplete {ex.Message} {ex.StackTrace} "); }
 
                 _lastLineSend = null;
                 if (_sockQueueRecv != null)
