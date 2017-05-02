@@ -748,18 +748,17 @@ namespace Bjd.Net.Sockets
 
         public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
+            var cc = new CancellationTokenSource(millisecondsTimeout);
             var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cancel.CancelAfter(millisecondsTimeout);
-            //_modifyLfEvent.WaitCallback(t);
+            cc.Token.Register(() => { cancel.Cancel(); });
             var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            return t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
+            var resultTask = t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
+            resultTask.ContinueWith(_ => { cc.Dispose(); cancel.Dispose(); });
+            return resultTask;
         }
 
         public Task<BufferData> DequeueLineBufferAsync(CancellationToken cancellationToken)
         {
-            //var t = new Task<BufferData>(TaskFunc, cancellationToken, TaskCreationOptions.LongRunning);
-            //_modifyLfEvent.WaitCallback(t);
-            //return t;
             var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
 
@@ -775,9 +774,9 @@ namespace Bjd.Net.Sockets
             {
                 if (_TaskFuncContinue == null)
                 {
-                    _TaskFuncContinue = _ =>
+                    _TaskFuncContinue = (t) =>
                     {
-                        if (_.IsCanceled) return BufferData.Empty;
+                        if (t.IsCanceled) return BufferData.Empty;
                         return DequeueLineBuffer();
                     };
                 }

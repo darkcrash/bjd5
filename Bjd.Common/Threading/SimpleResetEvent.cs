@@ -17,10 +17,8 @@ namespace Bjd.Threading
         private int lockState = 0;
         private int signalState = 0;
         private int lockWaiter = 0;
-        private int callbackCount = 0;
         private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
         private WaitHandle[] handles = new WaitHandle[2];
-        private Task[] callbacks = new Task[16];
         private SimpleResetPool _pool;
         private Task waitTask;
         private static Action nullAction = () => { };
@@ -31,6 +29,7 @@ namespace Bjd.Threading
             _pool = pool;
             handles[0] = handle;
             Reset();
+            waitTask = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,22 +37,17 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, UNLOCKED) == LOCKED)
             {
-                if (Interlocked.CompareExchange(ref usewaitTask, USE, USE) == USE && waitTask != null)
+                if (Interlocked.CompareExchange(ref usewaitTask, NOTUSE, USE) == USE)
                 {
-                    waitTask.RunSynchronously();
-                    waitTask = null;
+                    var t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
+                    var nowT = Interlocked.Exchange(ref waitTask, t);
+                    nowT.RunSynchronously();
                 }
                 if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
                 {
                     Interlocked.Exchange(ref signalState, UNLOCKED);
                     handle.Set();
                 }
-                for (var i = 0; i < callbackCount; i++)
-                {
-                    Task a = Interlocked.Exchange(ref callbacks[i], null);
-                    a.Start();
-                }
-                callbackCount = 0;
             }
         }
 
@@ -62,7 +56,6 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, LOCKED) == UNLOCKED)
             {
-                if (waitTask == null) waitTask = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
                 if (Interlocked.Exchange(ref signalState, LOCKED) == UNLOCKED)
                 {
                     handle.Reset();
@@ -149,33 +142,19 @@ namespace Bjd.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task WaitAsync()
         {
-            Interlocked.Exchange(ref usewaitTask, USE);
+            //Task t = waitTask;
+            //if (Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE) == NOTUSE)
+            //{
+            //    t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
+            //    waitTask = t;
+            //}
+            var t = waitTask;
+            Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
             if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
             {
-                return waitTask;
+                return t;
             }
             return Task.CompletedTask;
-        }
-
-        public bool WaitCallback(Task callback)
-        {
-            var cb = Interlocked.Increment(ref callbackCount);
-
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            {
-                callbacks[cb] = callback;
-                return false;
-            }
-
-            try
-            {
-                callback.RunSynchronously();
-            }
-            catch { }
-
-            Interlocked.Decrement(ref callbackCount);
-            return true;
-
         }
 
 
@@ -200,7 +179,6 @@ namespace Bjd.Threading
                 }
 
                 handles = null;
-                callbacks = null;
 
                 _pool = null;
 
