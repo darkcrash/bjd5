@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using Bjd.Memory;
 using Bjd.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.Net.Sockets
 {
@@ -43,6 +44,7 @@ namespace Bjd.Net.Sockets
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
         SimpleResetEvent _modifyEvent = SimpleResetPool.GetResetEvent(false);
+        SimpleResetEvent _modifyLfEvent = SimpleResetPool.GetResetEvent(false);
 
         public int Max { get { return max; } }
 
@@ -90,6 +92,7 @@ namespace Bjd.Net.Sockets
             else
             {
                 _modifyEvent.Reset();
+                _modifyLfEvent.Reset();
             }
         }
 
@@ -164,6 +167,7 @@ namespace Bjd.Net.Sockets
 
             //データベースの内容が変化した
             SetModify(true);
+            if (buf.ExistsLf()) _modifyLfEvent.Set();
 
         }
 
@@ -182,6 +186,7 @@ namespace Bjd.Net.Sockets
 
             // 追加データをコピー
             int leftOversSize = len;
+            bool existsLf = false;
 
             while (leftOversSize > 0)
             {
@@ -190,6 +195,7 @@ namespace Bjd.Net.Sockets
                 if (size > b.Length) size = b.Length;
                 Buffer.BlockCopy(buf, 0, b.Data, 0, size);
                 b.DataSize = size;
+                if (!existsLf) existsLf = b.ExistsLf();
 
                 //while (!_db.TryAdd(b)) { }
                 _blocks[_nextBlocks++] = b;
@@ -211,6 +217,7 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
+            if (existsLf) _modifyLfEvent.Set();
 
             return len;
 
@@ -248,6 +255,7 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
+            if (buf.ExistsLf()) _modifyLfEvent.Set();
 
             return len;
 
@@ -289,6 +297,7 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
+            if (buf.ExistsLf()) _modifyLfEvent.Set();
 
             return len;
 
@@ -511,7 +520,7 @@ namespace Bjd.Net.Sockets
                 var result = DequeueLine();
                 if (result == empty)
                 {
-                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
+                    try { if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
                     catch (OperationCanceledException) { return empty; }
                     continue;
                 }
@@ -609,7 +618,7 @@ namespace Bjd.Net.Sockets
                 var result = DequeueLineBuffer();
                 if (result == BufferData.Empty)
                 {
-                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty; }
+                    try { if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty; }
                     catch (OperationCanceledException) { return BufferData.Empty; }
                     continue;
                 }
@@ -704,47 +713,69 @@ namespace Bjd.Net.Sockets
         }
 
 
-        #region IDisposable Support
-        private bool disposedValue = false; // 重複する呼び出しを検出するには
-
-        protected void Dispose(bool disposing)
+        public Task<BufferData> DequeueLineBufferAsync(CancellationToken cancellationToken)
         {
-            if (!disposedValue)
+            var t = new Task<BufferData>(TaskFunc, cancellationToken, TaskCreationOptions.LongRunning);
+            _modifyLfEvent.WaitCallback(t);
+            return t;
+        }
+
+        private Func<BufferData> _TaskFunc;
+        private Func<BufferData> TaskFunc
+        {
+            get
             {
-                if (disposing)
+                if (_TaskFunc == null)
                 {
-                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                    _TaskFunc = () => DequeueLineBuffer();
                 }
-
-                if (_current != null) _current.Dispose();
-
-                for (var i = 0; i < MaxBlockSize; i++)
-                {
-                    if (_blocks[i] == null) continue;
-                    _blocks[i].Dispose();
-                    _blocks[i] = null;
-                }
-
-                _modifyEvent.Dispose();
-                _modifyEvent = null;
-                //_db = null;
-                _blocks = null;
-
-                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
-                // TODO: 大きなフィールドを null に設定します。
-
-                disposedValue = true;
+                return _TaskFunc;
             }
         }
 
-
-        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
+
+    #region IDisposable Support
+    private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+    protected void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+            }
+
+            if (_current != null) _current.Dispose();
+
+            for (var i = 0; i < MaxBlockSize; i++)
+            {
+                if (_blocks[i] == null) continue;
+                _blocks[i].Dispose();
+                _blocks[i] = null;
+            }
+
+            _modifyEvent.Dispose();
+            _modifyEvent = null;
+            //_db = null;
+            _blocks = null;
+
+            // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+            // TODO: 大きなフィールドを null に設定します。
+
+            disposedValue = true;
+        }
+    }
+
+
+    // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+    public void Dispose()
+    {
+        Dispose(true);
+    }
+
+    #endregion
+}
 }
 

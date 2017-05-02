@@ -533,6 +533,12 @@ namespace Bjd.Servers
 
         protected abstract void OnSubThread(SockObj sockObj);
 
+        protected virtual Task OnSubThreadAsync(SockObj sockObj)
+        {
+            return Task.CompletedTask;
+        }
+
+
         //１リクエストに対する子スレッドとして起動される
         private void SubThread(SockObj o)
         {
@@ -548,6 +554,7 @@ namespace Bjd.Servers
             try
             {
                 OnSubThread(sockObj); //接続単位の処理
+                OnSubThreadAsync(sockObj).Wait();
             }
             catch (Exception ex)
             {

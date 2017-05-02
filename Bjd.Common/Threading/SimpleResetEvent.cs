@@ -15,8 +15,10 @@ namespace Bjd.Threading
         private int lockState = 0;
         private int signalState = 0;
         private int lockWaiter = 0;
+        private int callbackCount = 0;
         private EventWaitHandle handle = new EventWaitHandle(true, EventResetMode.ManualReset);
         private WaitHandle[] handles = new WaitHandle[2];
+        private Task[] callbacks = new Task[16];
         private SimpleResetPool _pool;
 
         public SimpleResetEvent(SimpleResetPool pool)
@@ -36,6 +38,12 @@ namespace Bjd.Threading
                     Interlocked.Exchange(ref signalState, UNLOCKED);
                     handle.Set();
                 }
+                for (var i = 0; i < callbackCount; i++)
+                {
+                    Task a = Interlocked.Exchange(ref callbacks[i], null);
+                    a.Start();
+                }
+                callbackCount = 0;
             }
         }
 
@@ -69,11 +77,6 @@ namespace Bjd.Threading
                     handle.WaitOne();
                 }
 
-                //var spin = new SpinWait();
-                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-                //{
-                //    spin.SpinOnce();
-                //}
             }
             finally
             {
@@ -97,11 +100,6 @@ namespace Bjd.Threading
                     return true;
                 }
 
-                //var spin = new SpinWait();
-                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-                //{
-                //    spin.SpinOnce();
-                //}
             }
             finally
             {
@@ -127,15 +125,6 @@ namespace Bjd.Threading
                 }
                 return true;
 
-                //var spin = new SpinWait();
-                //var timeout = DateTime.Now.AddMilliseconds(millisecondsTimeout);
-                //while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-                //{
-                //    spin.SpinOnce();
-                //    if (timeout < DateTime.Now) return false;
-                //    if (cancellationToken.IsCancellationRequested) cancellationToken.ThrowIfCancellationRequested();
-                //}
-                //return true;
             }
             finally
             {
@@ -144,6 +133,27 @@ namespace Bjd.Threading
 
         }
 
+
+        public bool WaitCallback(Task callback)
+        {
+            var cb = Interlocked.Increment(ref callbackCount);
+
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            {
+                callbacks[cb] = callback;
+                return false;
+            }
+
+            try
+            {
+                callback.RunSynchronously();
+            }
+            catch { }
+
+            Interlocked.Decrement(ref callbackCount);
+            return true;
+
+        }
 
 
         #region IDisposable Support
@@ -164,6 +174,9 @@ namespace Bjd.Threading
                     handle.Dispose();
                     handle = null;
                 }
+
+                handles = null;
+                callbacks = null;
 
                 _pool = null;
 

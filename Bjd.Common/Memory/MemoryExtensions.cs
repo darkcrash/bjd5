@@ -94,6 +94,14 @@ namespace Bjd.Memory
         //}
 
 
+        public static bool ExistsLf(this BufferData data)
+        {
+            for (var i = data.DataSize; i >= 0; i--)
+            {
+                if (data.Data[i] == Lf) return true;
+            }
+            return false;
+        }
 
 
         public static CharsData ToAsciiCharsData(this BufferData data)

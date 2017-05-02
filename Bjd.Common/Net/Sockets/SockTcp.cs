@@ -346,7 +346,14 @@ namespace Bjd.Net.Sockets
             var result = _sockQueueRecv.DequeueLineBufferWait(toutms, this.CancelToken);
             if (result.DataSize == 0) return null;
             var length = (result != null ? result.DataSize.ToString() : "null");
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.LineRecv ", length);
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecv ", length);
+            return result;
+        }
+
+        public Task<BufferData> LineBufferRecvAsync()
+        {
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
+            var result = _sockQueueRecv.DequeueLineBufferAsync(this.CancelToken);
             return result;
         }
 
@@ -392,6 +399,58 @@ namespace Bjd.Net.Sockets
             }
             return null;
         }
+
+        // 【１行受信】
+        //切断されている場合、nullが返される
+        //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
+        public string AsciiRecv(int timeout, ILife iLife)
+        {
+            using (var buf = LineBufferRecv(timeout, iLife))
+            {
+                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
+            }
+        }
+
+        // 【１行受信】
+        //切断されている場合、nullが返される
+        public CharsData AsciiRecvChars(int timeout, ILife iLife)
+        {
+            using (var buf = LineBufferRecv(timeout, iLife))
+            {
+                return buf == null ? null : buf.ToAsciiCharsData();
+            }
+        }
+
+        public Task<CharsData> AsciiRecvCharsAsync()
+        {
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
+            var result = _sockQueueRecv.DequeueLineBufferAsync(CancelToken);
+            return result.ContinueWith<CharsData>(AsciiFunc, CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        }
+
+        private static Func<Task<BufferData>, CharsData> _AsciiFunc;
+        private static Func<Task<BufferData>, CharsData> AsciiFunc
+        {
+            get
+            {
+                if (_AsciiFunc != null)
+                {
+                    _AsciiFunc = _ =>
+                    {
+                        try
+                        {
+                            return _.Result.ToAsciiCharsData();
+                        }
+                        finally
+                        {
+                            _.Result.Dispose();
+                        }
+                    };
+                }
+                return _AsciiFunc;
+            }
+        }
+
 
         private void BeginSend(BufferData buf)
         {
@@ -753,12 +812,6 @@ namespace Bjd.Net.Sockets
             return Send(buf);
         }
 
-        //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
-        public int SendUseEncode(ArraySegment<byte> buf)
-        {
-            //実際の送信処理にテキストとバイナリの区別はない
-            return SendNoTrace(buf);
-        }
 
         /*******************************************************************/
         //以下、C#のコードを通すために設置（最終的に削除の予定）
@@ -805,33 +858,13 @@ namespace Bjd.Net.Sockets
             return LineSend(buf);
         }
 
-        // 【１行受信】
-        //切断されている場合、nullが返される
-        //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
-        public string AsciiRecv(int timeout, ILife iLife)
-        {
-            using (var buf = LineBufferRecv(timeout, iLife))
-            {
-                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
-            }
-        }
-
-        // 【１行受信】
-        //切断されている場合、nullが返される
-        public CharsData AsciiRecvChars(int timeout, ILife iLife)
-        {
-            using (var buf = LineBufferRecv(timeout, iLife))
-            {
-                return buf == null ? null : buf.ToAsciiCharsData();
-            }
-        }
-
         //【送信】バイナリ
         public int SendNoEncode(byte[] buf)
         {
             //実際の送信処理にテキストとバイナリの区別はない
             return SendNoTrace(buf);
         }
+
 
         public override void Close()
         {
