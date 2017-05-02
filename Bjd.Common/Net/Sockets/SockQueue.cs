@@ -733,49 +733,48 @@ namespace Bjd.Net.Sockets
             }
         }
 
-    }
 
-    #region IDisposable Support
-    private bool disposedValue = false; // 重複する呼び出しを検出するには
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
 
-    protected void Dispose(bool disposing)
-    {
-        if (!disposedValue)
+        protected void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposedValue)
             {
-                // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                if (disposing)
+                {
+                    // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+                }
+
+                if (_current != null) _current.Dispose();
+
+                for (var i = 0; i < MaxBlockSize; i++)
+                {
+                    if (_blocks[i] == null) continue;
+                    _blocks[i].Dispose();
+                    _blocks[i] = null;
+                }
+
+                _modifyEvent.Dispose();
+                _modifyEvent = null;
+                //_db = null;
+                _blocks = null;
+
+                // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
+                // TODO: 大きなフィールドを null に設定します。
+
+                disposedValue = true;
             }
-
-            if (_current != null) _current.Dispose();
-
-            for (var i = 0; i < MaxBlockSize; i++)
-            {
-                if (_blocks[i] == null) continue;
-                _blocks[i].Dispose();
-                _blocks[i] = null;
-            }
-
-            _modifyEvent.Dispose();
-            _modifyEvent = null;
-            //_db = null;
-            _blocks = null;
-
-            // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
-            // TODO: 大きなフィールドを null に設定します。
-
-            disposedValue = true;
         }
+
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
-
-
-    // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
-    public void Dispose()
-    {
-        Dispose(true);
-    }
-
-    #endregion
-}
 }
 
