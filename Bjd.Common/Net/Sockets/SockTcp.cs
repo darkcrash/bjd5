@@ -433,7 +433,7 @@ namespace Bjd.Net.Sockets
         {
             get
             {
-                if (_AsciiFunc != null)
+                if (_AsciiFunc == null)
                 {
                     _AsciiFunc = _ =>
                     {
