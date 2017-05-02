@@ -10,6 +10,8 @@ namespace Bjd.Threading
 {
     public class SimpleResetEvent : IDisposable, IPoolBuffer
     {
+        const int USE = 1;
+        const int NOTUSE = 0;
         const int LOCKED = 1;
         const int UNLOCKED = 0;
         private int lockState = 0;
@@ -20,6 +22,9 @@ namespace Bjd.Threading
         private WaitHandle[] handles = new WaitHandle[2];
         private Task[] callbacks = new Task[16];
         private SimpleResetPool _pool;
+        private Task waitTask;
+        private static Action nullAction = () => { };
+        private int usewaitTask = NOTUSE;
 
         public SimpleResetEvent(SimpleResetPool pool)
         {
@@ -33,6 +38,11 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, UNLOCKED) == LOCKED)
             {
+                if (Interlocked.CompareExchange(ref usewaitTask, USE, USE) == USE && waitTask != null)
+                {
+                    waitTask.RunSynchronously();
+                    waitTask = null;
+                }
                 if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
                 {
                     Interlocked.Exchange(ref signalState, UNLOCKED);
@@ -52,6 +62,7 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, LOCKED) == UNLOCKED)
             {
+                if (waitTask == null) waitTask = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
                 if (Interlocked.Exchange(ref signalState, LOCKED) == UNLOCKED)
                 {
                     handle.Reset();
@@ -59,10 +70,12 @@ namespace Bjd.Threading
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsLocked()
+        public bool IsLocked
         {
-            return (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED);
+            get
+            {
+                return (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,6 +146,16 @@ namespace Bjd.Threading
 
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Task WaitAsync()
+        {
+            Interlocked.Exchange(ref usewaitTask, USE);
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            {
+                return waitTask;
+            }
+            return Task.CompletedTask;
+        }
 
         public bool WaitCallback(Task callback)
         {
@@ -157,6 +180,7 @@ namespace Bjd.Threading
 
 
         #region IDisposable Support
+
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -196,6 +220,7 @@ namespace Bjd.Threading
 
         public void Initialize()
         {
+            Interlocked.Exchange(ref usewaitTask, NOTUSE);
             Reset();
         }
 

@@ -353,9 +353,18 @@ namespace Bjd.Net.Sockets
         public Task<BufferData> LineBufferRecvAsync()
         {
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
-            var result = _sockQueueRecv.DequeueLineBufferAsync(this.CancelToken);
+            var result = _sockQueueRecv.DequeueLineBufferAsync(CancelToken);
             return result;
         }
+
+        public Task<BufferData> LineBufferRecvAsync(int timeoutSec)
+        {
+            var toutms = timeoutSec * 1000;
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
+            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
+            return result;
+        }
+
 
         //１行のString受信
         public string StringRecv(Encoding enc, int sec, ILife iLife)
@@ -421,10 +430,11 @@ namespace Bjd.Net.Sockets
             }
         }
 
-        public Task<CharsData> AsciiRecvCharsAsync()
+        public Task<CharsData> AsciiRecvCharsAsync(int timeoutSec)
         {
+            var toutms = timeoutSec * 1000;
             Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
-            var result = _sockQueueRecv.DequeueLineBufferAsync(CancelToken);
+            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
             return result.ContinueWith<CharsData>(AsciiFunc, CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
@@ -437,13 +447,19 @@ namespace Bjd.Net.Sockets
                 {
                     _AsciiFunc = _ =>
                     {
+                        if (_.IsCanceled) return null;
+                        if (_.Result == null) return null;
+                        var result = _.Result;
                         try
                         {
-                            return _.Result.ToAsciiCharsData();
+                            return result.ToAsciiCharsData();
                         }
                         finally
                         {
-                            _.Result.Dispose();
+                            if (result != BufferData.Empty)
+                            {
+                                _.Result.Dispose();
+                            }
                         }
                     };
                 }
@@ -616,15 +632,21 @@ namespace Bjd.Net.Sockets
             }
         }
 
-        public void SendAsyncWait()
+        public void SendWait()
         {
             if (SockState != SockState.Connect) return;
             sendComplete.Wait();
         }
+        public Task SendWaitAsync()
+        {
+            if (SockState != SockState.Connect) return Task.CompletedTask;
+            return sendComplete.WaitAsync();
+        }
+
         public bool IsSending()
         {
             if (SockState != SockState.Connect) return false;
-            return sendComplete.IsLocked();
+            return sendComplete.IsLocked;
         }
 
 

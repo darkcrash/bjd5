@@ -7,6 +7,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
 using Bjd.Memory;
+using System.Threading.Tasks;
 
 namespace Bjd
 {
@@ -139,6 +140,46 @@ namespace Bjd
             while (iLife.IsLife())
             {
                 using (var line = sockTcp.LineBufferRecv(timeout, iLife))
+                {
+                    // error
+                    if (line == null)
+                        return false;
+
+                    // remove cr lf
+                    Inet.TrimCrlf(line);
+
+                    // end header
+                    if (line.DataSize == 0)
+                        return true;
+
+                    //１行分のデータからKeyとValを取得する
+                    var val = GetKeyVal(line, ref key);
+                    if (key != "")
+                    {
+                        Append(key, val);
+                    }
+                    else
+                    {
+                        //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
+                        var s = Encoding.ASCII.GetString(line.Data, 0, line.DataSize);
+                        if (s.IndexOf("HTTP/") != 0)
+                            return false;//ヘッダ異常
+                    }
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> RecvAsync(SockTcp sockTcp, int timeout, ILife iLife)
+        {
+
+            //ヘッダ取得（データは初期化される）
+            _ar.Clear();
+
+            var key = "";
+            while (iLife.IsLife())
+            {
+                using (var line = await sockTcp.LineBufferRecvAsync(timeout))
                 {
                     // error
                     if (line == null)

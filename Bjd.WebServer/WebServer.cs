@@ -20,6 +20,7 @@ using Bjd.WebServer.Outside;
 using Bjd.WebServer.WebDav;
 using Bjd.WebServer.Authority;
 using Bjd.WebServer.Memory;
+using System.Threading.Tasks;
 
 namespace Bjd.WebServer
 {
@@ -162,6 +163,42 @@ namespace Bjd.WebServer
         //接続単位の処理
         override protected void OnSubThread(SockObj sockObj)
         {
+            //_kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
+            ////Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            //System.Globalization.CultureInfo.CurrentCulture = _culture;
+
+            //// create Connection Context
+            //using (var connection = contextPool.Get())
+            //{
+            //    connection.Initialize();
+            //    connection.Connection = (SockTcp)sockObj;
+            //    connection.RemoteIp = connection.Connection.RemoteIp;
+
+            //    //opBase 及び loggerはバーチャルホストで変更されるので、
+            //    //このポインタを初期化に使用できない
+            //    //接続が継続している間は、このループの中にいる(継続か否かをkeepAliveで保持する)
+            //    //「continue」は、次のリクエストを待つ　「break」は、接続を切断する事を意味する
+
+            //    while (connection.KeepAlive && IsLife())
+            //    {
+            //        // create Request Context
+            //        var request = connection.GetRequestContext();
+            //        if (!RequestProcess(connection, request))
+            //        {
+            //            if (connection.Connection.IsSending()) continue;
+            //            break;
+            //        }
+            //        //connection.Connection.SendAsyncWait();
+            //    }
+
+            //}
+
+            //((SockTcp)sockObj).SendAsyncWait();
+
+        }
+
+        protected override async Task OnSubThreadAsync(SockObj sockObj)
+        {
             _kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
@@ -182,17 +219,15 @@ namespace Bjd.WebServer
                 {
                     // create Request Context
                     var request = connection.GetRequestContext();
-                    if (!RequestProcess(connection, request))
+                    var result = await RequestProcessAsync(connection, request);
+                    if (!result)
                     {
-                        if (connection.Connection.IsSending()) continue;
                         break;
                     }
-                    //connection.Connection.SendAsyncWait();
+                    await ((SockTcp)sockObj).SendWaitAsync();
                 }
 
             }
-
-            ((SockTcp)sockObj).SendAsyncWait();
 
         }
 
@@ -220,6 +255,277 @@ namespace Bjd.WebServer
 
             //ヘッダ取得（内部データは初期化される）
             if (!request.Header.Recv(connection.Connection, timeOut, this))
+                return false;
+
+            {
+                //Ver5.1.x
+                //var hostStr = request.Header.GetVal("host");
+                var hostStr = request.Header.Host.ValString;
+                request.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
+                _kernel.Logger.DebugInformation($"WebServer.OnSubThread {request.Url}");
+            }
+
+            //***************************************************************
+            // ドキュメント生成クラスの初期化
+            //***************************************************************
+            //request.ContentType = _contentType;
+            //request.Response = new HttpResponse(_kernel, Logger, _conf, connection.Connection, request.ContentType);
+
+            request.Auth = _authorization;
+            request.AuthName = "";
+
+            //入力取得（POST及びPUTの場合）
+            //var contentLengthStr = request.Header.GetVal("Content-Length");
+            var contentLengthStr = request.Header.ContentLength.ValString;
+            if (contentLengthStr != null)
+            {
+                try
+                {
+                    //max,lenはともにlong
+                    var max = Convert.ToInt64(contentLengthStr);
+                    if (max != 0)
+                    {//送信データあり
+                        request.InputStream = new WebStream((256000 < max) ? -1 : (int)max);
+                        var errorCount = 0;
+                        while (request.InputStream.Length < max && IsLife())
+                        {
+
+                            var len = max - request.InputStream.Length;
+                            if (len > 51200000)
+                            {
+                                len = 51200000;
+                            }
+                            var b = connection.Connection.Recv((int)len, timeOut, this);
+                            if (!request.InputStream.Add(b))
+                            {
+                                errorCount++;//エラー蓄積
+                                Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, request.InputStream.Length));
+                            }
+                            else
+                            {
+                                errorCount = 0;//初期化
+                            }
+                            Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, request.InputStream.Length));
+                            if (errorCount > 5)
+                            {//５回連続して受信が無かった場合、サーバエラー
+                                request.ResponseCode = 500;
+                                goto SEND;//サーバエラー
+                            }
+                            Thread.Sleep(10);
+                        }
+                        Logger.Set(LogKind.Detail, null, 39, string.Format("Content-Length={0} {1}bytes", max, request.InputStream.Length));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _kernel.Logger.TraceError($"WebServer.OnSubThread {ex.Message}");
+                    Logger.Set(LogKind.Error, null, 40, ex.Message);
+                }
+            }
+
+            //***************************************************************
+            //バーチャルホストの検索を実施し、opBase、logger及び webDavDb を置き換える
+            //***************************************************************
+            if (connection.CheckVirtual)
+            {//初回のみ
+                //ReplaceVirtualHost(request.Header.GetVal("host"), connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
+                ReplaceVirtualHost(request.Header.Host.ValString, connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
+                connection.CheckVirtual = false;
+            }
+            //***************************************************************
+            //接続を継続するかどうかの判断 keepAliveの初期化
+            //***************************************************************
+            if (ssl != null)
+            {
+                connection.KeepAlive = false;//SSL通信では、１回づつコネクションが必要
+            }
+            else
+            {
+                if (request.Request.Ver == "HTTP/1.1")
+                {//HTTP1.1はデフォルトで keepAlive=true
+                    connection.KeepAlive = true;
+                }
+                else
+                { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
+                    //connection.KeepAlive = request.Header.GetVal("Connection") == "Keep-Alive";
+                    connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
+                }
+            }
+
+            //***************************************************************
+            // ドキュメント生成クラスの初期化
+            //***************************************************************
+            //var contentType = new ContentType(OneOption);
+            //var document = new Document(kernel,Logger,OneOption,sockTcp,contentType);
+
+            //***************************************************************
+            // ログ
+            //***************************************************************
+            Logger.Set(LogKind.Normal, connection.Connection, ssl != null ? 23 : 24, request.Request.LogStr);
+
+            //***************************************************************
+            // 認証
+            //***************************************************************
+            //var authrization = new Authorization(OneOption,Logger);
+            //string authName = "";
+            //request.Auth = new Authorization(_conf, Logger);
+            //if (!request.Auth.Check(request.Request.Uri, request.Header.GetVal("authorization"), ref request.AuthName))
+            if (!request.Auth.Check(request.Request.Uri, request.Header.Authorization.ValString, ref request.AuthName))
+            {
+                request.ResponseCode = 401;
+                connection.KeepAlive = false;//切断
+                goto SEND;
+            }
+            //***************************************************************
+            // 不正なURIに対するエラー処理
+            //***************************************************************
+            //URIを点検して不正な場合はエラーコードを返す
+            request.ResponseCode = CheckUri(connection.Connection, request.Request, request.Header);
+            if (request.ResponseCode != 200)
+            {
+                connection.KeepAlive = false;//切断
+                goto SEND;
+            }
+
+            //***************************************************************
+            //ターゲットオブジェクトの初期化
+            //***************************************************************
+            if (_Selector.DocumentRoot == null)
+            {
+                Logger.Set(LogKind.Error, connection.Connection, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
+                return false;//ドキュメントルートが無効な場合は、処理を継続できない
+            }
+            var handleSelectorResult = _Selector.InitFromUri(request.Request.Uri);
+
+            //***************************************************************
+            // 送信ヘッダの追加
+            //***************************************************************
+            // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
+            if (useExpansion)
+            {
+                //if (request.Header.GetVal("Host") != null)
+                if (request.Header.Host.ValString != null)
+                {
+                    request.Response.AddHeader("RemoteHost", connection.Connection.RemoteAddress.Address.ToString());
+                }
+            }
+            //受信ヘッダに「PathInfo:」が設定されている場合、送信ヘッダに「PathTranslated」を追加する
+            //var pathInfo = request.Header.GetVal("PathInfo");
+            var pathInfo = request.Header.PathInfo.ValString;
+            if (pathInfo != null)
+            {
+                pathInfo = _Selector.DocumentRoot + pathInfo;
+                //document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
+                request.Response.AddHeader("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
+            }
+            //***************************************************************
+            //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
+            //***************************************************************
+            if (WebDav.WebDav.IsTarget(request.Request.Method))
+            {
+                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, request.Response, request.Url, request.Header.GetVal("Depth"), _contentType, (bool)_conf.Get("useEtag"));
+
+                var inputBuf = new byte[0];
+                if (request.InputStream != null)
+                {
+                    inputBuf = request.InputStream.GetBytes();
+                }
+
+                switch (request.Request.Method)
+                {
+                    case HttpMethod.Options:
+                        request.ResponseCode = webDav.Option();
+                        break;
+                    case HttpMethod.Delete:
+                        request.ResponseCode = webDav.Delete();
+                        break;
+                    case HttpMethod.Put:
+                        request.ResponseCode = webDav.Put(inputBuf);
+                        break;
+                    case HttpMethod.Proppatch:
+                        request.ResponseCode = webDav.PropPatch(inputBuf);
+                        break;
+                    case HttpMethod.Propfind:
+                        request.ResponseCode = webDav.PropFind();
+                        break;
+                    case HttpMethod.Mkcol:
+                        request.ResponseCode = webDav.MkCol();
+                        break;
+                    case HttpMethod.Copy:
+                    case HttpMethod.Move:
+                        request.ResponseCode = 405;
+                        //Destnationで指定されたファイルは書き込み許可されているか？
+                        var dstTarget = new HandlerSelector(_kernel, _conf, Logger);
+                        //string destinationStr = request.Header.GetVal("Destination");
+                        string destinationStr = request.Header.Destination.ValString;
+                        if (destinationStr != null)
+                        {
+                            if (destinationStr.IndexOf("://") == -1)
+                            {
+                                destinationStr = request.Url + destinationStr;
+                            }
+                            var uri = new Uri(destinationStr);
+                            var result = dstTarget.InitFromUri(uri.LocalPath);
+
+
+                            if (result.WebDavKind == WebDavKind.Write)
+                            {
+                                var overwrite = false;
+                                var overwriteStr = request.Header.GetVal("Overwrite");
+                                if (overwriteStr != null)
+                                {
+                                    if (overwriteStr == "F")
+                                    {
+                                        overwrite = true;
+                                    }
+                                }
+                                request.ResponseCode = webDav.MoveCopy(result, overwrite, request.Request.Method);
+                                request.Response.AddHeader("Location", destinationStr);
+                            }
+                        }
+                        break;
+                }
+                //WebDAVに対するリクエストは、ここで処理完了
+                goto SEND;
+
+            }
+
+            // handler
+            if (!handleSelectorResult.Handler.Request(request, handleSelectorResult))
+            {
+                return false;
+            }
+
+            SEND:
+            Send(request);
+
+            return true;
+        }
+
+        private async Task<bool> RequestProcessAsync(HttpConnectionContext connection, HttpContext request)
+        {
+            //***************************************************************
+            //データ取得
+            //***************************************************************
+            //リクエスト取得
+            //ここのタイムアウト値は、大きすぎるとブラウザの切断を取得できないでブロックしてしまう
+            using (var requestStr = await connection.Connection.AsciiRecvCharsAsync(TimeoutSec))
+            {
+                if (requestStr == null || requestStr.DataSize == 0)
+                    return false;
+
+                //\r\nの削除
+                //requestStr = Inet.TrimCrlf(requestStr);
+                Inet.TrimCrlf(requestStr);
+                //Ver5.8.8 リクエストの解釈に失敗した場合に、処理を中断する
+                if (!request.Request.Init(requestStr))
+                {
+                    return false;
+                }
+            }
+
+            //ヘッダ取得（内部データは初期化される）
+            if (!await request.Header.RecvAsync(connection.Connection, timeOut, this))
                 return false;
 
             {

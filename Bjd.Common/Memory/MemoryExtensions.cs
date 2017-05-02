@@ -103,6 +103,15 @@ namespace Bjd.Memory
             return false;
         }
 
+        public static int CountLf(this BufferData data)
+        {
+            var result = 0;
+            for (var i = 0; i < data.DataSize; i++)
+            {
+                if (data.Data[i] == Lf) result++;
+            }
+            return result;
+        }
 
         public static CharsData ToAsciiCharsData(this BufferData data)
         {
