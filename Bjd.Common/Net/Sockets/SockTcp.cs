@@ -134,6 +134,7 @@ namespace Bjd.Net.Sockets
         {
             //受信バッファは接続完了後に確保される
             _sockQueueRecv = SockQueuePool.Instance.Get();
+            _sockQueueRecv.UseLf();
             _sockQueueSend = SockQueuePool.Instance.Get();
 
             try
@@ -361,7 +362,8 @@ namespace Bjd.Net.Sockets
         {
             var toutms = timeoutSec * 1000;
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
-            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
+            //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
+            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms);
             return result;
         }
 
@@ -434,7 +436,8 @@ namespace Bjd.Net.Sockets
         {
             var toutms = timeoutSec * 1000;
             Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
-            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
+            //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
+            var result = _sockQueueRecv.DequeueLineBufferAsync(toutms);
             return result.ContinueWith<CharsData>(AsciiFunc, CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 

@@ -106,9 +106,11 @@ namespace Bjd.Memory
         public static int CountLf(this BufferData data)
         {
             var result = 0;
+            var arr = data.Data;
             for (var i = 0; i < data.DataSize; i++)
             {
-                if (data.Data[i] == Lf) result++;
+                if (arr[i] != LfByte) continue;
+                result++;
             }
             return result;
         }

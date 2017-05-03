@@ -37,16 +37,16 @@ namespace Bjd.Threading
         {
             if (Interlocked.Exchange(ref lockState, UNLOCKED) == LOCKED)
             {
+                if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
+                {
+                    Interlocked.Exchange(ref signalState, UNLOCKED);
+                    handle.Set();
+                }
                 if (Interlocked.CompareExchange(ref usewaitTask, NOTUSE, USE) == USE)
                 {
                     var t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
                     var nowT = Interlocked.Exchange(ref waitTask, t);
                     nowT.RunSynchronously();
-                }
-                if (Interlocked.CompareExchange(ref lockWaiter, 0, 0) != 0)
-                {
-                    Interlocked.Exchange(ref signalState, UNLOCKED);
-                    handle.Set();
                 }
             }
         }

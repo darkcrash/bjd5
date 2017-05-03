@@ -31,6 +31,7 @@ namespace Bjd.Net.Sockets
         int beforeSize = int.MaxValue;
         int lfCount = 0;
         object lfLock = new object();
+        bool useLfCount = false;
 
         int enqueueCounter = 0;
         int dequeueCounter = 0;
@@ -62,6 +63,7 @@ namespace Bjd.Net.Sockets
         {
             SetModify(false);
             _modifyLfEvent.Reset();
+            useLfCount = false;
             lfCount = 0;
             _length = 0;
             _totallength = 0;
@@ -115,6 +117,11 @@ namespace Bjd.Net.Sockets
                 }
             }
 
+        }
+
+        public void UseLf()
+        {
+            useLfCount = true;
         }
 
 
@@ -189,9 +196,12 @@ namespace Bjd.Net.Sockets
 
             //データベースの内容が変化した
             SetModify(true);
-            var cntLf = buf.CountLf();
-            Interlocked.Add(ref lfCount, cntLf);
-            SetLfModify();
+            if (useLfCount)
+            {
+                var cntLf = buf.CountLf();
+                Interlocked.Add(ref lfCount, cntLf);
+                SetLfModify();
+            }
 
         }
 
@@ -219,7 +229,7 @@ namespace Bjd.Net.Sockets
                 if (size > b.Length) size = b.Length;
                 Buffer.BlockCopy(buf, 0, b.Data, 0, size);
                 b.DataSize = size;
-                cntLf += b.CountLf();
+                if (useLfCount) cntLf += b.CountLf();
 
                 //while (!_db.TryAdd(b)) { }
                 _blocks[_nextBlocks++] = b;
@@ -241,9 +251,11 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
-            Interlocked.Add(ref lfCount, cntLf);
-            SetLfModify();
-
+            if (useLfCount)
+            {
+                Interlocked.Add(ref lfCount, cntLf);
+                SetLfModify();
+            }
             return len;
 
 
@@ -280,9 +292,12 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
-            var cntLf = buf.CountLf();
-            Interlocked.Add(ref lfCount, cntLf);
-            SetLfModify();
+            if (useLfCount)
+            {
+                var cntLf = buf.CountLf();
+                Interlocked.Add(ref lfCount, cntLf);
+                SetLfModify();
+            }
 
             return len;
 
@@ -324,9 +339,12 @@ namespace Bjd.Net.Sockets
 
             //_modify = true; //データベースの内容が変化した
             SetModify(true);
-            var cntLf = buf.CountLf();
-            Interlocked.Add(ref lfCount, cntLf);
-            SetLfModify();
+            if (useLfCount)
+            {
+                var cntLf = buf.CountLf();
+                Interlocked.Add(ref lfCount, cntLf);
+                SetLfModify();
+            }
 
             return len;
 
@@ -549,7 +567,17 @@ namespace Bjd.Net.Sockets
                 var result = DequeueLine();
                 if (result == empty)
                 {
-                    try { if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return empty; }
+                    try
+                    {
+                        if (useLfCount)
+                        {
+                            if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return empty;
+                        }
+                        else
+                        {
+                            if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty;
+                        }
+                    }
                     catch (OperationCanceledException) { return empty; }
                     continue;
                 }
@@ -626,8 +654,11 @@ namespace Bjd.Net.Sockets
                     alloc.Clear();
 
                     System.Threading.Interlocked.Add(ref _length, -len);
-                    var cntLf = Interlocked.Decrement(ref lfCount);
-                    SetLfModify();
+                    if (useLfCount)
+                    {
+                        var cntLf = Interlocked.Decrement(ref lfCount);
+                        SetLfModify();
+                    }
 
                     return retBuf;
 
@@ -649,7 +680,17 @@ namespace Bjd.Net.Sockets
                 var result = DequeueLineBuffer();
                 if (result == BufferData.Empty)
                 {
-                    try { if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty; }
+                    try
+                    {
+                        if (useLfCount)
+                        {
+                            if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty;
+                        }
+                        else
+                        {
+                            if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty;
+                        }
+                    }
                     catch (OperationCanceledException) { return BufferData.Empty; }
                     continue;
                 }
@@ -731,8 +772,11 @@ namespace Bjd.Net.Sockets
                     alloc.Clear();
 
                     System.Threading.Interlocked.Add(ref _length, -len);
-                    var cntLf = Interlocked.Decrement(ref lfCount);
-                    SetLfModify();
+                    if (useLfCount)
+                    {
+                        var cntLf = Interlocked.Decrement(ref lfCount);
+                        SetLfModify();
+                    }
 
                     return retBuf;
 
@@ -745,27 +789,38 @@ namespace Bjd.Net.Sockets
             return BufferData.Empty;
         }
 
+        public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout)
+        {
+            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
+            var cancel = new CancellationTokenSource(millisecondsTimeout);
+            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            t.ContinueWith(CancelDispose, cancel, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            return t.ContinueWith<BufferData>(TaskFuncContinue, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        }
 
         public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
+            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
             var cc = new CancellationTokenSource(millisecondsTimeout);
             var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cc.Token.Register(() => { cancel.Cancel(); });
+            cc.Token.Register(CancelRegister, cancel);
             var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            var resultTask = t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
-            resultTask.ContinueWith(_ => { cc.Dispose(); cancel.Dispose(); });
-            return resultTask;
+            t.ContinueWith(CancelDispose, cc, TaskContinuationOptions.ExecuteSynchronously)
+             .ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
+            return t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
         }
 
         public Task<BufferData> DequeueLineBufferAsync(CancellationToken cancellationToken)
         {
+            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
             var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return t.ContinueWith<BufferData>(TaskFuncContinue, TaskContinuationOptions.ExecuteSynchronously);
-
         }
 
 
         private static Action<Task> _ActionEmpty = _ => { };
+        private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();
+        private static Action<Task, object> CancelDispose = (t, o) => ((CancellationTokenSource)o).Dispose();
 
         private Func<Task, BufferData> _TaskFuncContinue;
         private Func<Task, BufferData> TaskFuncContinue
@@ -783,6 +838,8 @@ namespace Bjd.Net.Sockets
                 return _TaskFuncContinue;
             }
         }
+
+
 
 
         #region IDisposable Support
