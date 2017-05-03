@@ -792,10 +792,16 @@ namespace Bjd.Net.Sockets
         public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout)
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
-            var cancel = new CancellationTokenSource(millisecondsTimeout);
-            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            t.ContinueWith(CancelDispose, cancel, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            //var cancel = new CancellationTokenSource(millisecondsTimeout);
+            //var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            //t.ContinueWith(CancelDispose, cancel, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            //return t.ContinueWith<BufferData>(TaskFuncContinue, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+
+            var token = timer.Get(millisecondsTimeout);
+            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            //t.ContinueWith(CancelDispose, cancel, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return t.ContinueWith<BufferData>(TaskFuncContinue, default(CancellationToken), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+
         }
 
         public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -839,7 +845,7 @@ namespace Bjd.Net.Sockets
             }
         }
 
-
+        static LazyCancelTimer timer = new LazyCancelTimer();
 
 
         #region IDisposable Support

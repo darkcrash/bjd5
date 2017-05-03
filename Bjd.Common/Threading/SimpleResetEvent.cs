@@ -44,7 +44,7 @@ namespace Bjd.Threading
                 }
                 if (Interlocked.CompareExchange(ref usewaitTask, NOTUSE, USE) == USE)
                 {
-                    var t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
+                    var t = new Task(nullAction, TaskCreationOptions.AttachedToParent);
                     var nowT = Interlocked.Exchange(ref waitTask, t);
                     nowT.RunSynchronously();
                 }
