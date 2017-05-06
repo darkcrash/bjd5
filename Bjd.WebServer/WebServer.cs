@@ -199,14 +199,11 @@ namespace Bjd.WebServer
 
         }
 
-        private int reqCount = 0;
         protected override async Task OnSubThreadAsync(SockObj sockObj)
         {
             _kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
-
-            var subReqCount = 0;
 
             // create Connection Context
             using (var connection = contextPool.Get())
@@ -224,14 +221,9 @@ namespace Bjd.WebServer
 
                 while (connection.KeepAlive && IsLife())
                 {
-                    subReqCount++;
-                    sw.Restart();
-                    var req = Interlocked.Increment(ref reqCount);
                     // create Request Context
                     var request = connection.GetRequestContext();
                     var result = await RequestProcessAsync(connection, request);
-
-                    sw.Stop();
 
                     await ((SockTcp)sockObj).SendWaitAsync();
 
@@ -240,15 +232,7 @@ namespace Bjd.WebServer
                         break;
                     }
 
-                    if (sw.ElapsedMilliseconds > 4500)
-                    {
-                        _kernel.Logger.TraceError("WebServer.OnSubThread " + sw.ElapsedMilliseconds.ToString() + " Main:" + req.ToString() + " - Sub:" + subReqCount.ToString());
-                        System.Diagnostics.Debug.WriteLine("{0}", sw.ElapsedMilliseconds);
-                    }
-
                 }
-
-                //await ((SockTcp)sockObj).SendWaitAsync();
 
             }
 

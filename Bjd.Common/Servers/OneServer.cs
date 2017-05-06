@@ -500,9 +500,6 @@ namespace Bjd.Servers
             try
             {
                 OnSubThread(sockObj); //接続単位の処理
-                var t = OnSubThreadAsync(sockObj);
-                t.ConfigureAwait(false);
-                t.Wait();
             }
             catch (Exception ex)
             {
