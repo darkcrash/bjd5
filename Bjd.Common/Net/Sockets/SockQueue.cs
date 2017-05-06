@@ -842,13 +842,18 @@ namespace Bjd.Net.Sockets
 
 
 
-        public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout)
+        public async ValueTask<BufferData> DequeueLineBufferAsync(int millisecondsTimeout)
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
 
-            var token = timer.Get(millisecondsTimeout);
-            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, token, ContinueOptions, TaskScheduler.Default);
-            return t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, this, default(CancellationToken), ContinueOptions, TaskScheduler.Default);
+            //var token = timer.Get(millisecondsTimeout);
+            //var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, token, ContinueOptions, TaskScheduler.Default);
+            //return await t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, this, default(CancellationToken), ContinueOptions, TaskScheduler.Default);
+
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout);
+            if (!result) return BufferData.Empty;
+
+            return DequeueLineBuffer();
 
         }
 

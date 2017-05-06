@@ -84,37 +84,6 @@ namespace Bjd.WebServer
             _sendHeader.SetContentLength(_body.Length);
         }
 
-        //*********************************************************************
-        // 送信
-        //*********************************************************************
-        //public void Send(bool keepAlive,ref bool life) {
-        public void Send(bool keepAlive, ILife iLife)
-        {
-            //_kernel.Trace.TraceInformation($"Document.Send");
-            //_sendHeader.Replace("Connection", keepAlive ? "Keep-Alive" : "close");
-            _sendHeader.Connection.ValString = keepAlive ? "Keep-Alive" : "close";
-            _sendHeader.Date.ValString = Util.UtcTime2String();
-
-            //ヘッダ送信
-            //_sockTcp.SendUseEncode(_sendHeader.GetBytes());//ヘッダ送信
-            _sockTcp.SendAsync(_sendHeader.GetBuffer());
-
-            //本文送信
-            if (_body.Length > 0)
-            {
-                //Ver5.0.0-b12
-                //if(sendHeader.GetVal("Content-Type").ToLower().IndexOf("text")!=-1){
-                var contentType = _sendHeader.ContentType.ValString;
-                if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
-                {
-                    _body.Send(_sockTcp, true, iLife);
-                }
-                else
-                {
-                    _body.Send(_sockTcp, false, iLife);
-                }
-            }
-        }
 
         public async Task SendAsync(bool keepAlive, ILife iLife)
         {
@@ -123,7 +92,7 @@ namespace Bjd.WebServer
 
             //ヘッダ送信
             //_sockTcp.SendAsync(_sendHeader.GetBuffer());
-            await _sockTcp.SendDirectAsync(_sendHeader.GetBuffer());
+            await _sockTcp.SendAsync(_sendHeader.GetBuffer());
 
             //本文送信
             if (_body.Length > 0)

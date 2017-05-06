@@ -175,43 +175,42 @@ namespace Bjd.Net.Sockets
             Kernel.Logger.DebugInformation($"SockServerTcp.Select");
             try
             {
-                // AcceptCallback = (o) =>
-                //{
-                //    callback(new SockTcp(Kernel, _ssl, (Socket)o));
-                //};
+                AcceptCallback = async (o) =>
+               {
+                   await callback(new SockTcp(Kernel, _ssl, (Socket)o));
+               };
 
-                //AcceptEventargs = new SocketAsyncEventArgs();
-                //AcceptEventargs.Completed += AcceptEventargs_Completed;
-                //AcceptEventargs.Completed += (sender, e) =>
-                //{
-                //    if (IsCancel) return;
-
-                //    var sock = e.AcceptSocket;
-                //    e.AcceptSocket = null;
-                //    _socket.AcceptAsync(AcceptEventargs);
-
-                //    if (e.SocketError == SocketError.Success)
-                //    {
-                //        //callback(new SockTcp(Kernel, _ssl, sock));
-                //        //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
-                //        var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
-                //        t.Start(TaskScheduler.Default);
-                //    }
-                //};
-
-
-                //_socket.AcceptAsync(AcceptEventargs);
-
-
-                AcceptContinue = (t) =>
+                AcceptEventargs = new SocketAsyncEventArgs();
+                AcceptEventargs.Completed += (sender, e) =>
                 {
                     if (IsCancel) return;
-                    if (t.IsCanceled) return;
-                    _socket.AcceptAsync().ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
-                    callback(new SockTcp(Kernel, _ssl, (Socket)t.Result));
+
+                    var sock = e.AcceptSocket;
+                    e.AcceptSocket = null;
+                    _socket.AcceptAsync(AcceptEventargs);
+
+                    if (e.SocketError == SocketError.Success)
+                    {
+                        //callback(new SockTcp(Kernel, _ssl, sock));
+                        //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
+                        var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
+                        t.Start(TaskScheduler.Default);
+                    }
                 };
-                var acceptTask = _socket.AcceptAsync();
-                acceptTask.ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+
+
+                _socket.AcceptAsync(AcceptEventargs);
+
+
+                //AcceptContinue = (t) =>
+                //{
+                //    if (IsCancel) return;
+                //    if (t.IsCanceled) return;
+                //    _socket.AcceptAsync().ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+                //    callback(new SockTcp(Kernel, _ssl, (Socket)t.Result));
+                //};
+                //var acceptTask = _socket.AcceptAsync();
+                //acceptTask.ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                 this.SockState = SockState.Bind;
 

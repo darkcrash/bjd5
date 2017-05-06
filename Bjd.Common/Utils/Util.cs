@@ -74,6 +74,9 @@ namespace Bjd.Utils
         {
             if (beforeStr == afterStr)
                 return str;
+
+            return str.Replace(beforeStr, afterStr);
+
             var offset = 0; //処理済み文字位置
             while (true)
             {
