@@ -1,8 +1,6 @@
 ﻿using Bjd.Memory;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,12 +22,15 @@ namespace Bjd.Threading
         private static Action nullAction = () => { };
         private int usewaitTask = NOTUSE;
 
+
+
         public SimpleResetEvent(SimpleResetPool pool)
         {
             _pool = pool;
             handles[0] = handle;
             Reset();
             waitTask = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
+            waitTask.ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,9 +45,10 @@ namespace Bjd.Threading
                 }
                 if (Interlocked.CompareExchange(ref usewaitTask, NOTUSE, USE) == USE)
                 {
-                    var t = new Task(nullAction, TaskCreationOptions.AttachedToParent);
+                    var t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
+                    t.ConfigureAwait(false);
                     var nowT = Interlocked.Exchange(ref waitTask, t);
-                    nowT.RunSynchronously();
+                    nowT.RunSynchronously(TaskScheduler.Default);
                 }
             }
         }
@@ -142,12 +144,6 @@ namespace Bjd.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task WaitAsync()
         {
-            //Task t = waitTask;
-            //if (Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE) == NOTUSE)
-            //{
-            //    t = new Task(nullAction, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
-            //    waitTask = t;
-            //}
             var t = waitTask;
             Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
             if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
@@ -156,6 +152,16 @@ namespace Bjd.Threading
             }
             return Task.CompletedTask;
         }
+
+        //public async Task WaitAsync()
+        //{
+        //    var t = waitTask;
+        //    //Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
+        //    while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+        //    {
+        //        await Task.Yield();
+        //    }
+        //}
 
 
         #region IDisposable Support
@@ -193,12 +199,13 @@ namespace Bjd.Threading
 
         public void Dispose()
         {
+            Set();
             _pool.PoolInternal(this);
         }
 
         public void Initialize()
         {
-            Interlocked.Exchange(ref usewaitTask, NOTUSE);
+            //Interlocked.Exchange(ref usewaitTask, NOTUSE);
             Reset();
         }
 

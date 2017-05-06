@@ -194,7 +194,7 @@ namespace Bjd.Net.Sockets
                         //callback(new SockTcp(Kernel, _ssl, sock));
                         //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
                         var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
-                        t.Start();
+                        t.Start(TaskScheduler.Default);
                     }
                 };
 

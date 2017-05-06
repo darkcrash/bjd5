@@ -197,11 +197,14 @@ namespace Bjd.WebServer
 
         }
 
+        private int reqCount = 0;
         protected override async Task OnSubThreadAsync(SockObj sockObj)
         {
             _kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             System.Globalization.CultureInfo.CurrentCulture = _culture;
+
+            var subReqCount = 0;
 
             // create Connection Context
             using (var connection = contextPool.Get())
@@ -215,17 +218,34 @@ namespace Bjd.WebServer
                 //接続が継続している間は、このループの中にいる(継続か否かをkeepAliveで保持する)
                 //「continue」は、次のリクエストを待つ　「break」は、接続を切断する事を意味する
 
+                var sw = new System.Diagnostics.Stopwatch();
+
                 while (connection.KeepAlive && IsLife())
                 {
+                    subReqCount++;
+                    sw.Restart();
+                    var req = Interlocked.Increment(ref reqCount);
                     // create Request Context
                     var request = connection.GetRequestContext();
                     var result = await RequestProcessAsync(connection, request);
+
+                    sw.Stop();
+
+                    if (subReqCount == 1 && sw.ElapsedMilliseconds > 4500)
+                    {
+                        _kernel.Logger.TraceError("WebServer.OnSubThread " + sw.ElapsedMilliseconds.ToString() + " " + req.ToString());
+                        System.Diagnostics.Debug.WriteLine("{0}", sw.ElapsedMilliseconds);
+                    }
+
                     if (!result)
                     {
                         break;
                     }
-                    await ((SockTcp)sockObj).SendWaitAsync();
+
+
+
                 }
+                await ((SockTcp)sockObj).SendWaitAsync();
 
             }
 
@@ -768,7 +788,7 @@ namespace Bjd.WebServer
             }
 
             SEND:
-            Send(request);
+            await SendAsync(request);
 
             return true;
         }
@@ -923,6 +943,52 @@ namespace Bjd.WebServer
 
 
             response.Send(contextConnection.KeepAlive, this);//ドキュメント本体送信
+        }
+
+        private async Task SendAsync(HttpContext contextRequest)
+        {
+            var contextConnection = contextRequest.Connection;
+            var response = contextRequest.Response;
+
+            _kernel.Logger.DebugInformation($"WebServer.OnSubThread SEND");
+            //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
+            if (contextRequest.ResponseCode != 200 && contextRequest.ResponseCode != 302 && contextRequest.ResponseCode != 206 && contextRequest.ResponseCode != 207 && contextRequest.ResponseCode != 204 && contextRequest.ResponseCode != 201)
+            {
+                //ResponceCodeの応じてエラードキュメントを生成する
+                if (!response.CreateFromErrorCode(contextRequest.Request, contextRequest.ResponseCode))
+                    return;
+
+                if (contextRequest.ResponseCode == 301)
+                {//ターゲットがファイルではなくディレクトの間違いの場合
+                    if (contextRequest.Url != null)
+                    {
+                        var str = string.Format("{0}{1}/", contextRequest.Url, contextRequest.Request.Uri);
+                        response.AddHeader("Location", Encoding.UTF8.GetBytes(str));
+                    }
+                }
+
+                if (contextRequest.ResponseCode == 304 || contextRequest.ResponseCode == 301)
+                {//304 or 301 の場合は、ヘッダのみになる
+                    response.Clear();
+                }
+                else
+                {
+                    if (contextRequest.ResponseCode == 401)
+                    {
+                        response.AddHeader("WWW-Authenticate", string.Format("Basic realm=\"{0}\"", contextRequest.AuthName));
+                    }
+                }
+            }
+
+            //Ver5.6.2 request.Send()廃止
+            //Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseStr);//ログ
+
+            var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
+            Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
+            contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
+
+
+            await response.SendAsync(contextConnection.KeepAlive, this);//ドキュメント本体送信
         }
 
         //テスト用

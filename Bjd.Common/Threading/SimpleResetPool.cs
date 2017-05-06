@@ -35,7 +35,7 @@ namespace Bjd.Threading
 
         private SimpleResetPool()
         {
-            InitializePool(2048, 8192);
+            InitializePool(2048, 16384);
         }
 
         ~SimpleResetPool()

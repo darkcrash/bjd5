@@ -126,6 +126,49 @@ namespace Bjd.WebServer
             }
             return true;
         }
+
+        public async Task<bool> SendAsync(SockTcp tcpObj, bool encode, ILife iLife)
+        {
+            _kernel.Logger.DebugInformation($"HttpResponseBody.Send encode={encode}");
+            if (_kindBuf == KindBuf.Memory)
+            {
+                tcpObj.SendAsync(_doc);
+                _doc = empty;
+            }
+            else
+            {
+                using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
+                {
+                    var bufSize = 65536;
+                    fs.Seek(_rangeFrom, SeekOrigin.Begin);
+                    var start = _rangeFrom;
+                    while (iLife.IsLife())
+                    {
+                        long size = _rangeTo - start + 1;
+                        if (size > bufSize)
+                            size = bufSize;
+                        if (size <= 0)
+                            break;
+
+                        var b = Bjd.Memory.BufferPool.Get(size);
+
+                        int len =  await fs.ReadAsync(b.Data, 0, (int)size);
+                        if (len <= 0)
+                            break;
+
+                        b.DataSize = len;
+                        tcpObj.SendAsync(b);
+
+                        start += len;
+                        if (_rangeTo - start <= 0)
+                            break;
+
+                    }
+                }
+            }
+            return true;
+        }
+
     }
 
 }

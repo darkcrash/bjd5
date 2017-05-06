@@ -383,8 +383,8 @@ namespace Bjd.Servers
                             {
                                 return;
                             }
-                            // 受信開始
-                            child.BeginReceive();
+                            // 送受信開始
+                            child.BeginAsync();
                             // 各実装へ
                             this.SubThread(child);
                         }
@@ -554,7 +554,9 @@ namespace Bjd.Servers
             try
             {
                 OnSubThread(sockObj); //接続単位の処理
-                OnSubThreadAsync(sockObj).Wait();
+                var t = OnSubThreadAsync(sockObj);
+                t.ConfigureAwait(false);
+                t.Wait();
             }
             catch (Exception ex)
             {

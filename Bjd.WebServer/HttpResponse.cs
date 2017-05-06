@@ -11,6 +11,7 @@ using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
 using Bjd.WebServer.Handlers;
+using System.Threading.Tasks;
 
 namespace Bjd.WebServer
 {
@@ -111,6 +112,29 @@ namespace Bjd.WebServer
                 else
                 {
                     _body.Send(_sockTcp, false, iLife);
+                }
+            }
+        }
+
+        public async Task SendAsync(bool keepAlive, ILife iLife)
+        {
+            _sendHeader.Connection.ValString = keepAlive ? "Keep-Alive" : "close";
+            _sendHeader.Date.ValString = Util.UtcTime2String();
+
+            //ヘッダ送信
+            _sockTcp.SendAsync(_sendHeader.GetBuffer());
+
+            //本文送信
+            if (_body.Length > 0)
+            {
+                var contentType = _sendHeader.ContentType.ValString;
+                if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
+                {
+                    await _body.SendAsync(_sockTcp, true, iLife);
+                }
+                else
+                {
+                    await _body.SendAsync(_sockTcp, false, iLife);
                 }
             }
         }
