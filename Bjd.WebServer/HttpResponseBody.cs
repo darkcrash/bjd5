@@ -132,7 +132,8 @@ namespace Bjd.WebServer
             _kernel.Logger.DebugInformation($"HttpResponseBody.Send encode={encode}");
             if (_kindBuf == KindBuf.Memory)
             {
-                tcpObj.SendAsync(_doc);
+                //tcpObj.SendAsync(_doc);
+                await tcpObj.SendDirectAsync(_doc);
                 _doc = empty;
             }
             else
@@ -157,7 +158,8 @@ namespace Bjd.WebServer
                             break;
 
                         b.DataSize = len;
-                        tcpObj.SendAsync(b);
+                        //tcpObj.SendAsync(b);
+                        await tcpObj.SendDirectAsync(b);
 
                         start += len;
                         if (_rangeTo - start <= 0)

@@ -9,6 +9,7 @@ using Bjd.Traces;
 using Bjd.Utils;
 using System.Threading;
 using Bjd.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.Net.Sockets
 {
@@ -118,9 +119,9 @@ namespace Bjd.Net.Sockets
                 return this.CancelToken.IsCancellationRequested;
             }
         }
-        public void CancelWait()
+        public Task CancelWaitAsync()
         {
-            cancelWaiter.Wait();
+            return cancelWaiter.WaitAsync();
         }
 
 
@@ -175,8 +176,11 @@ namespace Bjd.Net.Sockets
 
         protected void SetError(String msg)
         {
-            Kernel?.Logger.TraceError($"{this.GetType().Name}.SetError {msg}");
-            _lastError = msg;
+            if (!disposedValue)
+            {
+                Kernel?.Logger.TraceError($"{this.GetType().Name}.SetError {msg}");
+                _lastError = msg;
+            }
             SockState = SockState.Error;
         }
 

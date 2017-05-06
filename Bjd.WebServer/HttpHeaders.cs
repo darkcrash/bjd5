@@ -197,14 +197,13 @@ namespace Bjd
                     if (key != "")
                     {
                         Append(key, val);
+                        continue;
                     }
-                    else
-                    {
-                        //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
-                        var s = Encoding.ASCII.GetString(line.Data, 0, line.DataSize);
-                        if (s.IndexOf("HTTP/") != 0)
-                            return false;//ヘッダ異常
-                    }
+
+                    //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
+                    var s = Encoding.ASCII.GetString(line.Data, 0, line.DataSize);
+                    if (s.IndexOf("HTTP/") != 0)
+                        return false;//ヘッダ異常
                 }
             }
             return false;

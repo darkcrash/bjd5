@@ -56,7 +56,7 @@ namespace Bjd.Test.Sockets
                     var child = _sockServer.Select(this);
                     if (child == null) break;
                     // 受信開始
-                    child.BeginReceive();
+                    child.BeginAsync();
                     while (IsLife() && child.SockState == SockState.Connect)
                     {
                         var len = child.Length();

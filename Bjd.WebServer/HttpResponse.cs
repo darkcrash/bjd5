@@ -122,7 +122,8 @@ namespace Bjd.WebServer
             _sendHeader.Date.ValString = Util.UtcTime2String();
 
             //ヘッダ送信
-            _sockTcp.SendAsync(_sendHeader.GetBuffer());
+            //_sockTcp.SendAsync(_sendHeader.GetBuffer());
+            await _sockTcp.SendDirectAsync(_sendHeader.GetBuffer());
 
             //本文送信
             if (_body.Length > 0)

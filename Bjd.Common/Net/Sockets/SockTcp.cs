@@ -191,7 +191,7 @@ namespace Bjd.Net.Sockets
                     var s = _socket;
                     if (s == null)
                     {
-                        SetErrorReceive();
+                        SetErrorReceive("SockTcp.BeginReceive");
                         return;
                     }
                     s.ReceiveAsync(recvEventArgs);
@@ -201,7 +201,7 @@ namespace Bjd.Net.Sockets
             {
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive ExceptionMessage:{ex.Message}");
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.BeginReceive StackTrace:{ex.StackTrace}");
-                SetErrorReceive();
+                SetErrorReceive("SockTcp.BeginReceive");
             }
         }
 
@@ -221,7 +221,7 @@ namespace Bjd.Net.Sockets
                 return;
             }
 
-            SetErrorReceive();
+            SetErrorReceive(e.SocketError.ToString());
             Kernel.Logger.TraceError($"{hashText} SockTcp.E_Completed {e.SocketError}");
 
         }
@@ -247,7 +247,7 @@ namespace Bjd.Net.Sockets
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.InnerException.Message}");
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.ExceptionMessage:{result.Exception.Message}");
                 Kernel.Logger.TraceError($"{hashText} SockTcp.EndReceive Result.StackTrace:{result.Exception.StackTrace}");
-                SetErrorReceive();
+                SetErrorReceive("SockTcp.EndReceive(Task<int> result)");
                 return;
             }
 
@@ -268,7 +268,7 @@ namespace Bjd.Net.Sockets
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
-                    SetErrorReceive();
+                    //SetErrorReceive("SockTcp.EndReceive(int result) receive zero");
                     return;
                 }
                 if (recvBuffer != null)
@@ -285,7 +285,7 @@ namespace Bjd.Net.Sockets
             {
                 //受信待機のままソケットがクローズされた場合は、ここにくる
                 Kernel?.Logger.TraceError($"{hashText} SockTcp.EndReceive ExceptionMessage:{ex.Message}");
-                SetErrorReceive();
+                SetErrorReceive("SockTcp.EndReceive(int result)" + ex.Message);
                 return;
             }
 
@@ -299,7 +299,7 @@ namespace Bjd.Net.Sockets
                 if (SockState != SockState.Connect)
                 {
                     Kernel?.Logger.TraceWarning($"{hashText} SockTcp.EndReceive Not Connected");
-                    SetErrorReceive();
+                    SetErrorReceive("SockTcp.EndReceive(int result) waiting for free space");
                     return;
                 }
             }
@@ -315,6 +315,13 @@ namespace Bjd.Net.Sockets
             sendComplete?.Set();
             SetError($"{hashText} SockTcp.SetErrorReceive");
         }
+        private void SetErrorReceive(string message)
+        {
+            recvComplete?.Set();
+            sendComplete?.Set();
+            SetError($"{hashText} SockTcp.SetErrorReceive " + message);
+        }
+
         private void SetErrorSend()
         {
             recvComplete?.Set();
@@ -358,18 +365,10 @@ namespace Bjd.Net.Sockets
             return result;
         }
 
-        public Task<BufferData> LineBufferRecvAsync()
-        {
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
-            var result = _sockQueueRecv.DequeueLineBufferAsync(CancelToken);
-            return result;
-        }
-
         public Task<BufferData> LineBufferRecvAsync(int timeoutSec)
         {
             var toutms = timeoutSec * 1000;
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
-            //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
             var result = _sockQueueRecv.DequeueLineBufferAsync(toutms);
             return result;
         }
@@ -673,6 +672,33 @@ namespace Bjd.Net.Sockets
             //}
         }
 
+        public async Task SendDirectAsync(BufferData buf)
+        {
+            try
+            {
+                IfThrowOnDisposed();
+                if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                if (isSsl)
+                {
+                    await _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
+                }
+                else
+                {
+                    var seg = new ArraySegment<byte>(buf.Data, 0, buf.DataSize);
+                    await _socket.SendAsync(seg, SocketFlags.None);
+                }
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+
         public Task SendWaitAsync()
         {
             if (SockState != SockState.Connect) return Task.CompletedTask;
@@ -903,6 +929,14 @@ namespace Bjd.Net.Sockets
             }
         }
 
+        public async Task AsciiLineSendDirectAsync(CharsData data)
+        {
+            using (CharsData d = data)
+            {
+                var buf = data.ToAsciiLineBufferData();
+                await SendDirectAsync(buf);
+            }
+        }
 
         //内部でASCIIコードとしてエンコードする１行送信  (\r\nが付加される)
         //LineSend()のオーバーライドバージョン

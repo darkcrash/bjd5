@@ -51,6 +51,8 @@ namespace Bjd.WebServer
         //通常のServerThreadの子クラスと違い、オプションはリストで受け取る
         //親クラスは、そのリストの0番目のオブジェクトで初期化する
 
+        protected override bool AsyncMode => true;
+
         //コンストラクタ
         public WebServer(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
@@ -231,21 +233,22 @@ namespace Bjd.WebServer
 
                     sw.Stop();
 
-                    if (subReqCount == 1 && sw.ElapsedMilliseconds > 4500)
-                    {
-                        _kernel.Logger.TraceError("WebServer.OnSubThread " + sw.ElapsedMilliseconds.ToString() + " " + req.ToString());
-                        System.Diagnostics.Debug.WriteLine("{0}", sw.ElapsedMilliseconds);
-                    }
+                    await ((SockTcp)sockObj).SendWaitAsync();
 
                     if (!result)
                     {
                         break;
                     }
 
-
+                    if (sw.ElapsedMilliseconds > 4500)
+                    {
+                        _kernel.Logger.TraceError("WebServer.OnSubThread " + sw.ElapsedMilliseconds.ToString() + " Main:" + req.ToString() + " - Sub:" + subReqCount.ToString());
+                        System.Diagnostics.Debug.WriteLine("{0}", sw.ElapsedMilliseconds);
+                    }
 
                 }
-                await ((SockTcp)sockObj).SendWaitAsync();
+
+                //await ((SockTcp)sockObj).SendWaitAsync();
 
             }
 
@@ -985,7 +988,7 @@ namespace Bjd.WebServer
 
             var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
             Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
-            contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
+            await contextConnection.Connection.AsciiLineSendDirectAsync(responseChars);//レスポンス送信
 
 
             await response.SendAsync(contextConnection.KeepAlive, this);//ドキュメント本体送信

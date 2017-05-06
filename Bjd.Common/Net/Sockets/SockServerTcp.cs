@@ -168,37 +168,50 @@ namespace Bjd.Net.Sockets
 
         private SocketAsyncEventArgs AcceptEventargs;
         private Action<object> AcceptCallback;
+        private Action<Task<Socket>> AcceptContinue;
 
-        public void AcceptAsync(Action<SockTcp> callback, ILife iLife)
+        public void AcceptAsync(Func<SockTcp, Task> callback, ILife iLife)
         {
             Kernel.Logger.DebugInformation($"SockServerTcp.Select");
             try
             {
-                AcceptCallback = (o) =>
-                {
-                    callback(new SockTcp(Kernel, _ssl, (Socket)o));
-                };
+                // AcceptCallback = (o) =>
+                //{
+                //    callback(new SockTcp(Kernel, _ssl, (Socket)o));
+                //};
 
-                AcceptEventargs = new SocketAsyncEventArgs();
+                //AcceptEventargs = new SocketAsyncEventArgs();
                 //AcceptEventargs.Completed += AcceptEventargs_Completed;
-                AcceptEventargs.Completed += (sender, e) =>
+                //AcceptEventargs.Completed += (sender, e) =>
+                //{
+                //    if (IsCancel) return;
+
+                //    var sock = e.AcceptSocket;
+                //    e.AcceptSocket = null;
+                //    _socket.AcceptAsync(AcceptEventargs);
+
+                //    if (e.SocketError == SocketError.Success)
+                //    {
+                //        //callback(new SockTcp(Kernel, _ssl, sock));
+                //        //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
+                //        var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
+                //        t.Start(TaskScheduler.Default);
+                //    }
+                //};
+
+
+                //_socket.AcceptAsync(AcceptEventargs);
+
+
+                AcceptContinue = (t) =>
                 {
                     if (IsCancel) return;
-
-                    var sock = e.AcceptSocket;
-                    e.AcceptSocket = null;
-                    _socket.AcceptAsync(AcceptEventargs);
-
-                    if (e.SocketError == SocketError.Success)
-                    {
-                        //callback(new SockTcp(Kernel, _ssl, sock));
-                        //System.Threading.ThreadPool.QueueUserWorkItem(AcceptCallback, sock);
-                        var t = new Task(AcceptCallback, sock, TaskCreationOptions.LongRunning);
-                        t.Start(TaskScheduler.Default);
-                    }
+                    if (t.IsCanceled) return;
+                    _socket.AcceptAsync().ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
+                    callback(new SockTcp(Kernel, _ssl, (Socket)t.Result));
                 };
-
-                _socket.AcceptAsync(AcceptEventargs);
+                var acceptTask = _socket.AcceptAsync();
+                acceptTask.ContinueWith(AcceptContinue, CancelToken, TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                 this.SockState = SockState.Bind;
 

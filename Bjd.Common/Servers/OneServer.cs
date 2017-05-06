@@ -85,6 +85,7 @@ namespace Bjd.Servers
             set { _multiple = value; }
         }
 
+        protected virtual bool AsyncMode { get { return false; } }
         //リモート操作(データの取得)
         public String cmd(String cmdStr)
         {
@@ -290,81 +291,17 @@ namespace Bjd.Servers
                 return;
             }
 
-            var continueOptions = TaskContinuationOptions.ExecuteSynchronously |
-                                  TaskContinuationOptions.NotOnFaulted |
-                                  TaskContinuationOptions.NotOnCanceled;
-
             // 生存してる限り実行し続ける
             while (IsLife())
             {
-                //var childTask = _sockServerTcp.SelectAsync(this);
-
-                //// Nullが返されたときは終了する
-                //if (childTask == null)
-                //    break;
-
-                //// 子タスクで処理させる
-                //var t = childTask.ContinueWith(
-                //    (Task<SockTcp> b) =>
-                //    {
-                //        var child = b.Result;
-                //        int? idx = null;
-                //        try
-                //        {
-                //            idx = this.StartTask(child);
-
-                //            // 同時接続数チェック
-                //            if (Increment())
-                //            {
-                //                // 同時接続数を超えたのでリクエストをキャンセルします
-                //                //_kernel.Logger.DebugInformation($"OneServer.RunTcpServer over count:{Count}/multiple:{_multiple}");
-                //                _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
-                //                Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
-                //                return;
-                //            }
-
-                //            try
-                //            {
-                //                // ACL制限のチェック
-                //                if (AclCheck(child) == AclKind.Deny)
-                //                {
-                //                    return;
-                //                }
-                //                // 受信開始
-                //                child.BeginReceive();
-                //                // 各実装へ
-                //                this.SubThread(child);
-                //            }
-                //            finally
-                //            {
-                //                Decrement();
-                //            }
-
-                //        }
-                //        finally
-                //        {
-                //            RemoveTask(idx, child);
-                //        }
-                //    }, _cancelToken, continueOptions, TaskScheduler.Default);
-                //try
-                //{
-                //    childTask.Start();
-                //    childTask.Wait(this._cancelToken);
-                //}
-                //catch (OperationCanceledException) { }
-                //catch (Exception ex)
-                //{
-                //    _kernel.Logger.TraceError(ex.Message);
-                //    _kernel.Logger.TraceError(ex.StackTrace);
-                //}
 
                 // 子タスクで処理させる
-                Action<SockTcp> taction = (SockTcp child) =>
+                Func<SockTcp, Task> taction = async (SockTcp child) =>
                 {
                     int? idx = null;
                     try
                     {
-                        idx = this.StartTask(child);
+                        idx = StartTask(child);
 
                         // 同時接続数チェック
                         if (Increment())
@@ -383,10 +320,19 @@ namespace Bjd.Servers
                             {
                                 return;
                             }
+
                             // 送受信開始
                             child.BeginAsync();
+
                             // 各実装へ
-                            this.SubThread(child);
+                            if (AsyncMode)
+                            {
+                                await this.SubThreadAsync(child);
+                            }
+                            else
+                            {
+                                this.SubThread(child);
+                            }
                         }
                         finally
                         {
@@ -402,7 +348,7 @@ namespace Bjd.Servers
 
                 _sockServerTcp.AcceptAsync(taction, this);
 
-                _sockServerTcp.CancelWait();
+                _sockServerTcp.CancelWaitAsync().Wait();
             }
 
         }
@@ -557,6 +503,38 @@ namespace Bjd.Servers
                 var t = OnSubThreadAsync(sockObj);
                 t.ConfigureAwait(false);
                 t.Wait();
+            }
+            catch (Exception ex)
+            {
+                _kernel.Logger.Fail(ex.Message);
+                _kernel.Logger.Fail(ex.StackTrace);
+                if (Logger != null)
+                {
+                    Logger.Set(LogKind.Error, null, 9000061, ex.Message);
+                    Logger.Exception(ex, null, 2);
+                }
+            }
+            finally
+            {
+                Logger.Set(LogKind.Detail, sockObj, 9000003, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
+            }
+
+        }
+
+        private async Task SubThreadAsync(SockObj o)
+        {
+            var sockObj = (SockObj)o;
+
+            //クライアントのホスト名を逆引きする
+            sockObj.Resolve(useResolve, Logger);
+
+            //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
+            Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
+
+            //Ver5.8.9 Java fix 接続単位のすべての例外をキャッチしてプログラムの停止を避ける
+            try
+            {
+                await OnSubThreadAsync(sockObj);
             }
             catch (Exception ex)
             {

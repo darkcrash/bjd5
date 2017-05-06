@@ -9,6 +9,7 @@ using Bjd.Utils;
 using Bjd.WebServer.WebDav;
 using System.Collections.Concurrent;
 using Bjd.Common.IO;
+using Bjd.Memory;
 
 namespace Bjd.WebServer.Handlers
 {
@@ -351,8 +352,15 @@ namespace Bjd.WebServer.Handlers
             /*************************************************/
             // uriから物理的なパス名を生成する
             /*************************************************/
-            var newFullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
-            result.ResetFullPath(newFullPath);
+            //var newFullPath = Util.SwapChar('/', Path.DirectorySeparatorChar, result.DocumentRoot + uri);
+            //result.ResetFullPath(newFullPath);
+            using (var path = CharsPool.GetMaximum(512))
+            {
+                path.Append(result.DocumentRoot);
+                path.Append(uri);
+                Util.SwapChar('/', Path.DirectorySeparatorChar, path);
+                result.ResetFullPath(path.ToString());
+            }
             _kernel.Logger.DebugInformation($"Target.Init {result.FullPath}");
 
             /*************************************************/
