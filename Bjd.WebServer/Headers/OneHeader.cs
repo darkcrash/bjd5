@@ -49,6 +49,14 @@ namespace Bjd
             Val = val;
         }
 
+        public OneHeader(string key, string keyUpper, byte[] val)
+        {
+            _Key = key;
+            _KeyUpper = keyUpper;
+            Val = val;
+        }
+
+
         public OneHeader(string key, string val)
         {
             Key = key;

@@ -117,6 +117,14 @@ namespace Bjd
             return header;
         }
 
+        public IHeader Append(string key, string keyUpper, byte[] val)
+        {
+            var header = new OneHeader(key, keyUpper, val);
+            _ar.Add(header);
+            return header;
+        }
+
+
         public IHeader Append(string key, string val)
         {
             var header = new OneHeader(key, val);
@@ -156,11 +164,12 @@ namespace Bjd
                     var val = GetKeyVal(line, ref key);
                     if (key != "")
                     {
+                        var keyUpper = key.ToUpper();
                         // know header
-                        if (AppendHeader(key.ToUpper(), val)) continue;
+                        if (AppendHeader(keyUpper, val)) continue;
 
                         // other header
-                        Append(key, val);
+                        Append(key, keyUpper, val);
                         continue;
                     }
 

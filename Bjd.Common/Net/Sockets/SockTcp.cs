@@ -443,7 +443,7 @@ namespace Bjd.Net.Sockets
 
         }
 
-        private Task SendAsyncInternal(BufferData buf)
+        private async ValueTask<bool> SendAsyncInternal(BufferData buf)
         {
             if (sendEventArgs == null)
             {
@@ -455,20 +455,11 @@ namespace Bjd.Net.Sockets
                 sendEventArgs.Completed += SendAsyncComplete;
             }
             sendComplete.Reset();
-            //Buffer.BlockCopy(buf.Data, 0, sendBuffer.Data, 0, buf.DataSize);
-            //unsafe
-            //{
-            //    fixed (byte* srcP = &buf.Data[0], dstP = &sendBuffer.Data[0])
-            //    {
-            //        Buffer.MemoryCopy(srcP, dstP, sendBuffer.Length, buf.DataSize);
-            //    }
-            //}
-            //sendBuffer.DataSize = buf.DataSize;
             buf.CopyTo(sendBuffer);
             sendEventArgs.SetBuffer(0, sendBuffer.DataSize);
             var result = _socket.SendAsync(sendEventArgs);
-            if (!result) return Task.CompletedTask;
-            return sendComplete.WaitAsync();
+            if (!result) return true;
+            return await sendComplete.WaitAsyncValueTask();
         }
 
         private static EventHandler<SocketAsyncEventArgs> SendAsyncComplete =
@@ -478,26 +469,27 @@ namespace Bjd.Net.Sockets
                 ins.sendComplete.Set();
             };
 
-        public Task SendAsync(BufferData buf)
+        public async ValueTask<bool> SendAsync(BufferData buf)
         {
             try
             {
                 IfThrowOnDisposed();
                 if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
                 {
-                    return Task.CompletedTask;
+                    return true;
                 }
 
                 if (isSsl)
                 {
-                    return _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
+                    await _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
                 }
                 else
                 {
-                    //var seg = new ArraySegment<byte>(buf.Data, 0, buf.DataSize);
-                    //return _socket.SendAsync(seg, SocketFlags.None);
-                    return SendAsyncInternal(buf);
+                    await SendAsyncInternal(buf);
                 }
+
+                return true;
+
             }
             finally
             {
@@ -705,23 +697,25 @@ namespace Bjd.Net.Sockets
         }
 
 
-        public async Task AsciiSendAsync(CharsData data)
+        public async ValueTask<bool> AsciiSendAsync(CharsData data)
         {
             using (CharsData d = data)
             {
                 var buf = data.ToAsciiBufferData();
                 await SendAsync(buf);
             }
+            return true;
         }
 
 
-        public async Task AsciiLineSendAsync(CharsData data)
+        public async ValueTask<bool> AsciiLineSendAsync(CharsData data)
         {
             using (CharsData d = data)
             {
                 var buf = data.ToAsciiLineBufferData();
                 await SendAsync(buf);
             }
+            return true;
         }
 
         //内部でASCIIコードとしてエンコードする１行送信  (\r\nが付加される)

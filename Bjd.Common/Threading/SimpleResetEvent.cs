@@ -16,6 +16,8 @@ namespace Bjd.Threading
         static LazyCancelTimer timer = new LazyCancelTimer();
         private static Action<Task> _ActionEmpty = _ => { } ;
         private static Func<Task, bool> _FuncCancelFalse = _ =>  (_.IsCanceled ? false : true) ;
+        private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();
+        private static Action<Task, object> CancelDispose = (t, o) => ((CancellationTokenSource)o).Dispose();
 
         private int lockState = 0;
         private int signalState = 0;
@@ -178,6 +180,36 @@ namespace Bjd.Threading
             {
                 var token = timer.Get(millisecondsTimeout);
                 var t2 = t1.ContinueWith(_ActionEmpty, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
+                return await t3;
+            }
+            return true;
+        }
+
+        public async ValueTask<bool> WaitAsyncValueTask(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            var t1 = waitTask;
+            Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            {
+                var token = timer.Get(millisecondsTimeout);
+                var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                token.Register(CancelRegister, cancel);
+                var t2 = t1.ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                var t2_2 = t2.ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
+                var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
+                return await t3;
+            }
+            return true;
+        }
+
+        public async ValueTask<bool> WaitAsyncValueTask( CancellationToken cancellationToken)
+        {
+            var t1 = waitTask;
+            Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
+            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            {
+                var t2 = t1.ContinueWith(_ActionEmpty, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                 var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
                 return await t3;
             }

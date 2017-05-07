@@ -336,8 +336,9 @@ namespace Bjd.Net.Sockets
             var len = buf.DataSize;
 
             var newBuf = BufferPool.GetMaximum(len);
-            newBuf.DataSize = len;
-            Buffer.BlockCopy(buf.Data, 0, newBuf.Data, 0, len);
+            //newBuf.DataSize = len;
+            //Buffer.BlockCopy(buf.Data, 0, newBuf.Data, 0, len);
+            buf.CopyTo(newBuf);
 
             _blocks[_nextBlocks] = newBuf;
 
@@ -474,31 +475,11 @@ namespace Bjd.Net.Sockets
 
         }
 
-
-        public BufferData DequeueBufferWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-
-            while (true)
-            {
-                if (len == 0) return BufferData.Empty;
-                if (cancellationToken.IsCancellationRequested) return BufferData.Empty;
-                var result = DequeueBuffer(len, false);
-                if (result == BufferData.Empty)
-                {
-                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return DequeueBuffer(len, false); }
-                    catch (OperationCanceledException) { return BufferData.Empty; }
-                    continue;
-                }
-                return result;
-            }
-        }
-
         //キューからのデータ取得
         public BufferData DequeueBuffer(int len)
         {
             return DequeueBuffer(len, false);
         }
-
 
         //キューからのデータ取得
         private BufferData DequeueBuffer(int len, bool must)
@@ -574,9 +555,6 @@ namespace Bjd.Net.Sockets
             return retBuf;
 
         }
-
-
-
 
 
         public byte[] DequeueLineWait(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -819,36 +797,42 @@ namespace Bjd.Net.Sockets
         }
 
 
-        private const TaskContinuationOptions ContinueOptions = TaskContinuationOptions.PreferFairness | TaskContinuationOptions.ExecuteSynchronously;
-
-
-        public Task<BufferData> DequeueBufferAsync(int len)
+        public async ValueTask<BufferData> DequeueBufferAsync(int len)
         {
-            return DequeueBufferAsync(len, default(CancellationToken));
+            var result = await _modifySizeEvent.WaitAsyncValueTask();
+            if (!result) return BufferData.Empty;
+
+            return DequeueBuffer(len);
         }
 
-        public Task<BufferData> DequeueBufferAsync(int len, CancellationToken cancellationToken)
+        public async ValueTask<BufferData> DequeueBufferAsync(int len, CancellationToken cancellationToken)
         {
-            var t = _modifySizeEvent.WaitAsync().ContinueWith(_ActionEmpty, cancellationToken, ContinueOptions, TaskScheduler.Default);
-            return t.ContinueWith<BufferData>(TaskFuncContinueDequeueBuffer, len, cancellationToken, ContinueOptions, TaskScheduler.Default);
+            var result = await _modifySizeEvent.WaitAsyncValueTask(cancellationToken);
+            if (!result) return BufferData.Empty;
+
+            return DequeueBuffer(len);
         }
 
-        public Task<BufferData> DequeueBufferAsync(int len, int millisecondsTimeout)
+        public async ValueTask<BufferData> DequeueBufferAsync(int len, int millisecondsTimeout)
         {
-            var token = timer.Get(millisecondsTimeout);
-            var t = _modifySizeEvent.WaitAsync().ContinueWith(_ActionEmpty, token, ContinueOptions, TaskScheduler.Default);
-            return t.ContinueWith<BufferData>(TaskFuncContinueDequeueBuffer, len, default(CancellationToken), ContinueOptions, TaskScheduler.Default);
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout);
+            if (!result) return BufferData.Empty;
+
+            return DequeueBuffer(len);
         }
 
+        public async ValueTask<BufferData> DequeueBufferAsync(int len, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
+            if (!result) return BufferData.Empty;
+
+            return DequeueBuffer(len);
+        }
 
 
         public async ValueTask<BufferData> DequeueLineBufferAsync(int millisecondsTimeout)
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
-
-            //var token = timer.Get(millisecondsTimeout);
-            //var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, token, ContinueOptions, TaskScheduler.Default);
-            //return await t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, this, default(CancellationToken), ContinueOptions, TaskScheduler.Default);
 
             var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout);
             if (!result) return BufferData.Empty;
@@ -857,79 +841,26 @@ namespace Bjd.Net.Sockets
 
         }
 
-        public Task<BufferData> DequeueLineBufferAsync(int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            //if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
-            //var cc = new CancellationTokenSource(millisecondsTimeout);
-            //var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            //cc.Token.Register(CancelRegister, cancel);
-            //var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            //t.ContinueWith(CancelDispose, cc, TaskContinuationOptions.ExecuteSynchronously)
-            // .ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
-            //return t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, TaskContinuationOptions.ExecuteSynchronously);
-
-            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
-
-            var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            var token = timer.Get(millisecondsTimeout);
-            token.Register(CancelRegister, cancel);
-
-            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancel.Token, ContinueOptions, TaskScheduler.Default);
-            t.ContinueWith(CancelDispose, cancel, ContinueOptions);
-            return t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, ContinueOptions);
-
-        }
-
-        public Task<BufferData> DequeueLineBufferAsync(CancellationToken cancellationToken)
+        public async ValueTask<BufferData> DequeueLineBufferAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
-            var t = _modifyLfEvent.WaitAsync().ContinueWith(_ActionEmpty, cancellationToken, ContinueOptions, TaskScheduler.Default);
-            return t.ContinueWith<BufferData>(TaskFuncContinueDequeueLineBuffer, ContinueOptions);
+
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
+            if (!result) return BufferData.Empty;
+
+            return DequeueLineBuffer();
         }
 
-
-        private static Action<Task> _ActionEmpty = _ => { };
-        private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();
-        private static Action<Task, object> CancelDispose = (t, o) => ((CancellationTokenSource)o).Dispose();
-
-        private static Func<Task, object, BufferData> _TaskFuncContinueDequeueLineBuffer;
-        private static Func<Task, object, BufferData> TaskFuncContinueDequeueLineBuffer
+        public async ValueTask<BufferData> DequeueLineBufferAsync(CancellationToken cancellationToken)
         {
-            get
-            {
-                if (_TaskFuncContinueDequeueLineBuffer == null)
-                {
-                    _TaskFuncContinueDequeueLineBuffer = (t, o) =>
-                    {
-                        var ins = (SockQueue)o;
-                        if (t.IsCanceled) return BufferData.Empty;
-                        return ins.DequeueLineBuffer();
-                    };
-                }
-                return _TaskFuncContinueDequeueLineBuffer;
-            }
+            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
+
+            var result = await _modifyLfEvent.WaitAsyncValueTask(cancellationToken);
+            if (!result) return BufferData.Empty;
+
+            return DequeueLineBuffer();
+
         }
-
-        private Func<Task, object, BufferData> _TaskFuncContinueDequeueBuffer;
-        private Func<Task, object, BufferData> TaskFuncContinueDequeueBuffer
-        {
-            get
-            {
-                if (_TaskFuncContinueDequeueBuffer == null)
-                {
-                    _TaskFuncContinueDequeueBuffer = (t, o) =>
-                    {
-                        if (t.IsCanceled) return BufferData.Empty;
-                        return DequeueBuffer((int)o);
-                    };
-                }
-                return _TaskFuncContinueDequeueBuffer;
-            }
-        }
-
-
-        static LazyCancelTimer timer = new LazyCancelTimer();
-
 
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
