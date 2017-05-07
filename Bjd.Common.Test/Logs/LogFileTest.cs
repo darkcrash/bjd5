@@ -94,7 +94,7 @@ namespace Bjd.Test.Logs
         }
 
         [Fact]
-        public void ログの種類固定で予想されたパターンのファイルが２つ生成される()
+        public void ログの種類固定で予想されたパターンのファイルが３つ生成される()
         {
 
             const int logKind = 2; //固定ログの種類
@@ -106,7 +106,7 @@ namespace Bjd.Test.Logs
             Directory.CreateDirectory(dir);
             using (var sut = new LogFileService(dir, logKind, logKind, 0, true))
             {
-                const int expected = 2;
+                const int expected = 3;
 
                 //exercise
                 var actual = Directory.GetFiles(dir, pattern).Count();

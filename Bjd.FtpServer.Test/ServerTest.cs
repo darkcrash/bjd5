@@ -479,20 +479,20 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20349);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //stor
             cl.StringSend("STOR 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 0.txt.\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for 0.txt.\r\n", cl.StringRecv(1, this));
 
             dl.Send(new byte[3]);
             dl.Close();
 
-            Assert.Equal(cl.StringRecv(1, this), "226 Transfer complete.\r\n");
+            Assert.Equal("226 Transfer complete.\r\n", cl.StringRecv(1, this));
 
             //dele
             cl.StringSend("DELE 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 Dele command successful.\r\n");
+            Assert.Equal("250 Dele command successful.\r\n", cl.StringRecv(1, this));
 
         }
 

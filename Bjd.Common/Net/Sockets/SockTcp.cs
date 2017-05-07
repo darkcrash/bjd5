@@ -88,7 +88,7 @@ namespace Bjd.Net.Sockets
             }
 
             SetConnectionInfo();
-            BeginReceive(); //接続完了処理（受信待機開始）
+            BeginAsync(); 
 
         }
 

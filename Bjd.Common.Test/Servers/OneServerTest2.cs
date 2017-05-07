@@ -22,9 +22,11 @@ namespace Bjd.Test.Servers
         public OneServerTest2(Xunit.Abstractions.ITestOutputHelper helper)
         {
             _service = TestService.CreateTestService();
-            _service.AddOutput(helper);
+            _service.SetOption("Option.ini");
+
             _kernel = _service.Kernel;
             _kernel.ListInitialize();
+            _service.AddOutput(helper);
         }
 
         public void Dispose()

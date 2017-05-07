@@ -12,6 +12,7 @@ using Xunit;
 using Bjd.Controls;
 using Bjd.Initialization;
 using Bjd.Threading;
+using Xunit.Abstractions;
 
 namespace Bjd.Test.Servers
 {
@@ -22,13 +23,14 @@ namespace Bjd.Test.Servers
         TestService _service;
         Kernel _kernel;
 
-        public OneServerTest()
+        public OneServerTest(ITestOutputHelper output)
         {
             _service = TestService.CreateTestService();
             _service.SetOption("Option.ini");
 
             _kernel = _service.Kernel;
             _kernel.ListInitialize();
+            _service.AddOutput(output);
         }
 
         public void Dispose()
@@ -212,7 +214,7 @@ namespace Bjd.Test.Servers
             var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
-            var port = _service.GetAvailablePort(ip, 88);
+            var port = _service.GetAvailablePort(ip, 10088);
             var oneBind = new OneBind(ip, ProtocolKind.Tcp);
             Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
@@ -244,7 +246,7 @@ namespace Bjd.Test.Servers
             var kernel = _kernel;
 
             var ip = new Ip(IpKind.V4Localhost);
-            var port = _service.GetAvailableUdpPort(ip, 88);
+            var port = _service.GetAvailableUdpPort(ip, 10089);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
             Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
