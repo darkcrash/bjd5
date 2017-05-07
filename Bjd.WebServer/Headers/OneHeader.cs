@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Bjd
 {
-    public class OneHeader
+    public class OneHeader : IHeader
     {
-        public bool Enabled = true;
+        public bool Enabled { get; set; } = true;
         protected string _Key;
         protected string _KeyUpper;
         protected byte[] _Val;
@@ -31,7 +31,7 @@ namespace Bjd
             set
             {
                 _Val = value;
-                ValString = Encoding.ASCII.GetString(_Val);
+                _ValString = Encoding.ASCII.GetString(_Val);
             }
         }
         public string ValString

@@ -245,9 +245,9 @@ namespace Bjd.WebServer
             request.AuthName = "";
 
             //入力取得（POST及びPUTの場合）
-            var contentLengthStr = request.Header.ContentLength.ValString;
-            if (contentLengthStr != null)
+            if (request.Header.ContentLength.Enabled)
             {
+                var contentLengthStr = request.Header.ContentLength.ValString;
                 try
                 {
                     //max,lenはともにlong
@@ -366,14 +366,14 @@ namespace Bjd.WebServer
                 }
             }
             //受信ヘッダに「PathInfo:」が設定されている場合、送信ヘッダに「PathTranslated」を追加する
-            var pathInfo = request.Header.PathInfo.ValString;
-            if (pathInfo != null)
+            if (request.Header.PathInfo.Enabled)
             {
+                var pathInfo = request.Header.PathInfo.ValString;
                 pathInfo = _Selector.DocumentRoot + pathInfo;
                 //document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
                 request.Response.AddHeader("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
             }
-        
+
             //***************************************************************
             //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
             //***************************************************************
@@ -412,16 +412,15 @@ namespace Bjd.WebServer
                         request.ResponseCode = 405;
                         //Destnationで指定されたファイルは書き込み許可されているか？
                         var dstTarget = new HandlerSelector(_kernel, _conf, Logger);
-                        string destinationStr = request.Header.Destination.ValString;
-                        if (destinationStr != null)
+                        if (request.Header.Destination.Enabled)
                         {
+                            string destinationStr = request.Header.Destination.ValString;
                             if (destinationStr.IndexOf("://") == -1)
                             {
                                 destinationStr = request.Url + destinationStr;
                             }
                             var uri = new Uri(destinationStr);
                             var result = dstTarget.InitFromUri(uri.LocalPath);
-
 
                             if (result.WebDavKind == WebDavKind.Write)
                             {

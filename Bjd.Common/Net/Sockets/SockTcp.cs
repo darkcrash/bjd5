@@ -26,14 +26,15 @@ namespace Bjd.Net.Sockets
         internal SockQueue _sockQueueRecv;
         private Task<int> receiveTask;
         private Task receiveCompleteTask;
-        private Task sendTask;
-        private Task sendCompleteTask;
         private bool isSsl = false;
         private int hash;
         private string hashText;
         private SocketAsyncEventArgs recvEventArgs;
+        private SocketAsyncEventArgs sendEventArgs;
         private SimpleResetEvent recvComplete = SimpleResetPool.GetResetEvent(false);
+        private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent(false);
         private BufferData recvBuffer;
+        private BufferData sendBuffer;
 
 
         //***************************************************************************
@@ -134,6 +135,8 @@ namespace Bjd.Net.Sockets
             try
             {
                 _socket.NoDelay = true;
+                _socket.ReceiveBufferSize = 65536;
+                _socket.SendBufferSize = 65536;
 
                 //Ver5.6.0
                 Set(SockState.Connect, (IPEndPoint)_socket.LocalEndPoint, (IPEndPoint)_socket.RemoteEndPoint);
@@ -440,36 +443,40 @@ namespace Bjd.Net.Sockets
 
         }
 
-        private static Func<Task<BufferData>, CharsData> _AsciiFunc;
-        private static Func<Task<BufferData>, CharsData> AsciiFunc
+        private Task SendAsyncInternal(BufferData buf)
         {
-            get
+            if (sendEventArgs == null)
             {
-                if (_AsciiFunc == null)
-                {
-                    _AsciiFunc = _ =>
-                    {
-                        if (_.IsCanceled) return null;
-                        if (_.Result == null) return null;
-                        var result = _.Result;
-                        try
-                        {
-                            return result.ToAsciiCharsData();
-                        }
-                        finally
-                        {
-                            if (result != BufferData.Empty)
-                            {
-                                _.Result.Dispose();
-                            }
-                        }
-                    };
-                }
-                return _AsciiFunc;
+                sendBuffer = BufferPool.GetMaximum(65536);
+                sendEventArgs = new SocketAsyncEventArgs();
+                sendEventArgs.SetBuffer(sendBuffer.Data, 0, sendBuffer.DataSize);
+                sendEventArgs.SocketFlags = SocketFlags.None;
+                sendEventArgs.UserToken = this;
+                sendEventArgs.Completed += SendAsyncComplete;
             }
+            sendComplete.Reset();
+            //Buffer.BlockCopy(buf.Data, 0, sendBuffer.Data, 0, buf.DataSize);
+            //unsafe
+            //{
+            //    fixed (byte* srcP = &buf.Data[0], dstP = &sendBuffer.Data[0])
+            //    {
+            //        Buffer.MemoryCopy(srcP, dstP, sendBuffer.Length, buf.DataSize);
+            //    }
+            //}
+            //sendBuffer.DataSize = buf.DataSize;
+            buf.CopyTo(sendBuffer);
+            sendEventArgs.SetBuffer(0, sendBuffer.DataSize);
+            var result = _socket.SendAsync(sendEventArgs);
+            if (!result) return Task.CompletedTask;
+            return sendComplete.WaitAsync();
         }
 
-
+        private static EventHandler<SocketAsyncEventArgs> SendAsyncComplete =
+            (s, e) =>
+            {
+                var ins = (SockTcp)e.UserToken;
+                ins.sendComplete.Set();
+            };
 
         public Task SendAsync(BufferData buf)
         {
@@ -487,8 +494,9 @@ namespace Bjd.Net.Sockets
                 }
                 else
                 {
-                    var seg = new ArraySegment<byte>(buf.Data, 0, buf.DataSize);
-                    return _socket.SendAsync(seg, SocketFlags.None);
+                    //var seg = new ArraySegment<byte>(buf.Data, 0, buf.DataSize);
+                    //return _socket.SendAsync(seg, SocketFlags.None);
+                    return SendAsyncInternal(buf);
                 }
             }
             finally
@@ -787,6 +795,25 @@ namespace Bjd.Net.Sockets
                 }
                 catch (Exception ex)
                 { Kernel?.Logger.TraceError($"{hashText} Dispose Error Shutdown {ex.Message} {ex.StackTrace} "); }
+
+                try
+                {
+                    if (sendEventArgs != null)
+                    {
+                        sendEventArgs.Completed -= SendAsyncComplete;
+                        sendEventArgs.Dispose();
+                        sendEventArgs = null;
+                    }
+                    if (sendBuffer != null)
+                    {
+                        sendBuffer.Dispose();
+                        sendBuffer = null;
+                    }
+                    sendComplete.Dispose();
+                    sendComplete = null;
+                }
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error sendComplete {ex.Message} {ex.StackTrace} "); }
 
                 try
                 {

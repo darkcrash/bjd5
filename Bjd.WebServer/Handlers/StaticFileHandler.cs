@@ -52,7 +52,7 @@ namespace Bjd.WebServer.Handlers
             //Modified処理
             //********************************************************************
             //if (context.Header.GetVal("If_Modified_Since") != null)
-            if (context.Header.IfModifiedSince.ValString != null)
+            if (context.Header.IfModifiedSince.Enabled)
             {
                 //var dt = Util.Str2Time(context.Header.GetVal("If-Modified-Since"));
                 var dt = Util.Str2Time(context.Header.IfModifiedSince.ValString);
@@ -64,7 +64,7 @@ namespace Bjd.WebServer.Handlers
                 }
             }
             //if (context.Header.GetVal("If_Unmodified_Since") != null)
-            if (context.Header.IfUnmodifiedSince.ValString != null)
+            if (context.Header.IfUnmodifiedSince.Enabled)
             {
                 //var dt = Util.Str2Time(context.Header.GetVal("If_Unmodified_Since"));
                 var dt = Util.Str2Time(context.Header.IfUnmodifiedSince.ValString);
@@ -83,7 +83,7 @@ namespace Bjd.WebServer.Handlers
             // (1) useEtagがtrueの場合は、送信時にETagを付加する
             // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
             //if ((bool)_conf.Get("useEtag") || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
-            if (useEtag || context.Header.IfMatch.ValString != null || context.Header.IfNoneMatch.ValString != null)
+            if (useEtag || context.Header.IfMatch.Enabled || context.Header.IfNoneMatch.Enabled)
             {
                 //Ver5.1.5
                 //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
@@ -121,7 +121,7 @@ namespace Bjd.WebServer.Handlers
             var rangeFrom = 0L;//デフォルトは最初から
             var rangeTo = result.FileSize;//デフォルトは最後まで（ファイルサイズ）
             //if (context.Header.GetVal("Range") != null)
-            if (context.Header.Range.ValString != null)
+            if (context.Header.Range.Enabled)
             {//レンジ指定のあるリクエストの場合
                 //var range = context.Header.GetVal("Range");
                 var range = context.Header.Range.ValString;

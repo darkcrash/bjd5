@@ -69,7 +69,7 @@ namespace Bjd.WebServer.Handlers
 
             _HandlerCgi = new CgiHandler(kernel, conf);
             _HandlerDefault = new StaticFileHandler(kernel, conf, logger);
-            _HandlerDirectoryList = new DirectoryListHandler();
+            _HandlerDirectoryList = new DirectoryListHandler(kernel, conf, logger);
             _HandlerMove = new MoveHandler();
             _HandlerNotFound = new NotFoundHandler();
             _HandlerSsi = new SsiHandler(kernel, conf);

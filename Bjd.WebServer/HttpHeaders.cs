@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Bjd
 {
-    public class HttpHeaders : IEnumerable<OneHeader>
+    public class HttpHeaders : IEnumerable<IHeader>
     {
-        protected readonly List<OneHeader> _ar = new List<OneHeader>(25);
+        protected readonly List<IHeader> _ar = new List<IHeader>(25);
         static byte Cr = 0x0D;
         static byte Lf = 0x0A;
         static byte Colon = (byte)':';
@@ -25,12 +25,12 @@ namespace Bjd
         }
         public HttpHeaders(HttpHeaders header)
         {
-            _ar = new List<OneHeader>(header);
+            _ar = new List<IHeader>(header);
         }
 
         public HttpHeaders(byte[] buf)
         {
-            _ar = new List<OneHeader>();
+            _ar = new List<IHeader>();
 
             //\r\nを排除した行単位に加工する
             var lines = from b in Inet.GetLines(buf) select Inet.TrimCrlf(b);
@@ -49,9 +49,9 @@ namespace Bjd
 
 
         //IEnumerable<T>の実装
-        public IEnumerator<OneHeader> GetEnumerator()
+        public IEnumerator<IHeader> GetEnumerator()
         {
-            return ((IEnumerable<OneHeader>)_ar).GetEnumerator();
+            return ((IEnumerable<IHeader>)_ar).GetEnumerator();
         }
 
         //IEnumerable<T>の実装
@@ -110,71 +110,31 @@ namespace Bjd
         }
 
         //同一のヘッダがあっても無条件に追加する
-        public OneHeader Append(string key, byte[] val)
+        public IHeader Append(string key, byte[] val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
-            AppendHeader(header);
             return header;
         }
 
-        public OneHeader Append(string key, string val)
+        public IHeader Append(string key, string val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
-            AppendHeader(header);
             return header;
         }
 
-        protected virtual void AppendHeader(OneHeader header)
+
+        protected virtual bool AppendHeader(string keyUpper, byte[] val)
         {
-        }
-
-        public bool Recv(SockTcp sockTcp, int timeout, ILife iLife)
-        {
-
-            //ヘッダ取得（データは初期化される）
-            _ar.Clear();
-
-            var key = "";
-            while (iLife.IsLife())
-            {
-                using (var line = sockTcp.LineBufferRecv(timeout, iLife))
-                {
-                    // error
-                    if (line == null)
-                        return false;
-
-                    // remove cr lf
-                    Inet.TrimCrlf(line);
-
-                    // end header
-                    if (line.DataSize == 0)
-                        return true;
-
-                    //１行分のデータからKeyとValを取得する
-                    var val = GetKeyVal(line, ref key);
-                    if (key != "")
-                    {
-                        Append(key, val);
-                    }
-                    else
-                    {
-                        //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
-                        var s = Encoding.ASCII.GetString(line.Data, 0, line.DataSize);
-                        if (s.IndexOf("HTTP/") != 0)
-                            return false;//ヘッダ異常
-                    }
-                }
-            }
             return false;
         }
 
         public async Task<bool> RecvAsync(SockTcp sockTcp, int timeout, ILife iLife)
         {
 
-            //ヘッダ取得（データは初期化される）
-            _ar.Clear();
+            ////ヘッダ取得（データは初期化される）
+            //_ar.Clear();
 
             var key = "";
             while (iLife.IsLife())
@@ -196,6 +156,10 @@ namespace Bjd
                     var val = GetKeyVal(line, ref key);
                     if (key != "")
                     {
+                        // know header
+                        if (AppendHeader(key.ToUpper(), val)) continue;
+
+                        // other header
                         Append(key, val);
                         continue;
                     }

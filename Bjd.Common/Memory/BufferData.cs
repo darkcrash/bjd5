@@ -6,11 +6,13 @@ using System.Threading;
 
 namespace Bjd.Memory
 {
-    public class BufferData : IPoolBuffer
+    public unsafe class BufferData : IPoolBuffer
     {
+
         private static Dictionary<int, BufferData> _internal = new Dictionary<int, BufferData>(65536);
         private static int _internalCount = -1;
         public static readonly BufferData Empty = new BufferData(0, null);
+
         public byte[] Data;
         public int DataSize;
         public readonly int Length;
@@ -18,6 +20,7 @@ namespace Bjd.Memory
         private GCHandle handle;
         private int byteCount = 0;
         private int Id = 0;
+        private byte* DataPoint = null;
 
         public ref byte this[int i] => ref Data[i];
 
@@ -30,6 +33,13 @@ namespace Bjd.Memory
             byteCount = Buffer.ByteLength(Data);
             Id = Interlocked.Increment(ref _internalCount);
             _internal[Id] = this;
+            if (length > 0)
+            {
+                fixed (byte* pt = &Data[0])
+                {
+                    DataPoint = pt;
+                }
+            }
         }
 
         ~BufferData()
@@ -39,6 +49,7 @@ namespace Bjd.Memory
             {
                 handle.Free();
                 Data = null;
+                DataPoint = null;
             }
             if (_pool != null)
             {
@@ -46,6 +57,14 @@ namespace Bjd.Memory
                 _pool = null;
             }
         }
+
+        public void CopyTo(BufferData destnation)
+        {
+            if (destnation == null) throw new NullReferenceException("destnation is null");
+            Buffer.MemoryCopy(DataPoint, destnation.DataPoint, destnation.Length, DataSize);
+            destnation.DataSize = DataSize;
+        }
+
 
         void IPoolBuffer.Initialize()
         {

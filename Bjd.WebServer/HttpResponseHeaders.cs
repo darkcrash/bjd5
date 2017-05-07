@@ -44,14 +44,14 @@ namespace Bjd
 
         }
 
-        public OneHeader Server;
-        public OneHeader Date;
-        public OneHeader ContentLength;
-        public OneHeader ContentType;
-        public OneHeader MIMEVersion;
-        public OneHeader Connection;
-        public OneHeader LastModified;
-        public OneHeader ETag;
+        public IHeader Server;
+        public IHeader Date;
+        public IHeader ContentLength;
+        public IHeader ContentType;
+        public IHeader MIMEVersion;
+        public IHeader Connection;
+        public IHeader LastModified;
+        public IHeader ETag;
 
         public override void Clear()
         {
@@ -65,10 +65,14 @@ namespace Bjd
             _ar.Add(ETag);
             _ar.Add(MIMEVersion);
 
+            Server.Enabled = true;
+            Date.Enabled = true;
             ContentLength.Enabled = false;
             ContentType.Enabled = false;
+            Connection.Enabled = true;
             LastModified.Enabled = false;
             ETag.Enabled = false;
+            MIMEVersion.Enabled = true;
         }
 
         public void SetContentLength(int length)
