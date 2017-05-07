@@ -38,9 +38,9 @@ namespace Bjd.Memory
 
         static CharsPool()
         {
-            var L = System.Environment.ProcessorCount * 8 + 128;
-            var M = System.Environment.ProcessorCount * 4 + 64;
-            var S = System.Environment.ProcessorCount * 2 + 32;
+            var L = System.Environment.ProcessorCount * 4 + 16;
+            var M = System.Environment.ProcessorCount * 2 + 8;
+            var S = System.Environment.ProcessorCount * 1 + 4;
             var poolSize = 4096;
 
 
