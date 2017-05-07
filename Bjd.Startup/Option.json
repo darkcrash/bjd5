@@ -377,6 +377,12 @@
         "protocol": "0",
         "host": "0.0.0.0",
         "port": 3080
+      },
+      {
+        "enable": true,
+        "protocol": "0",
+        "host": "0.0.0.0",
+        "port": 3443
       }
     ],
     "certificate": "example.pfx",
@@ -596,6 +602,221 @@
     "autoAclLabel": "「ACL」設定で「指定するアドレスからのアクセスのみを」-「禁止する」にチェックされている必要があります",
     "autoAclGroup": []
   },
+  "Web-0.0.0.0:3443": {
+    "enableAcl": 1,
+    "acl": [],
+    "useServer": true,
+    "protocol": "https",
+    "protocolKind": "Tcp",
+    "port": 3443,
+    "bindAddress2": "V4Only,INADDR_ANY,IN6ADDR_ANY_INIT",
+    "useResolve": false,
+    "useDetailsLog": false,
+    "multiple": 500,
+    "timeOut": 5,
+    "documentRoot": "wwwroot",
+    "welcomeFileName": "index.html",
+    "useHidden": false,
+    "useDot": false,
+    "useExpansion": false,
+    "useDirectoryEnum": false,
+    "serverHeader": "BlackJumboDog - .NET Core Version $v",
+    "useEtag": false,
+    "serverAdmin": "",
+    "useCgi": true,
+    "cgiCmd": [
+      {
+        "enable": true,
+        "cgiExtension": "pl",
+        "Program": "C:\\Perl64\\bin\\perl.exe"
+      },
+      {
+        "enable": true,
+        "cgiExtension": "cgi",
+        "Program": "C:\\Perl64\\bin\\perl.exe"
+      },
+      {
+        "enable": true,
+        "cgiExtension": "php",
+        "Program": "D:\\xampp\\php\\php-cgi.exe"
+      },
+      {
+        "enable": false,
+        "cgiExtension": "bin",
+        "Program": "C:\\Windows\\System32\\cmd.exe"
+      }
+    ],
+    "cgiTimeout": 10,
+    "cgiPath": [],
+    "useSsi": true,
+    "ssiExt": "shtml,shtm",
+    "useExec": true,
+    "useWebDav": false,
+    "webDavPath": [],
+    "aliaseList": [],
+    "mime": [
+      {
+        "enable": true,
+        "mimeExtension": "txt",
+        "mimeType": "text/plain"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "shtml",
+        "mimeType": "text/html"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "html",
+        "mimeType": "text/html"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "htm",
+        "mimeType": "text/html"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "gif",
+        "mimeType": "image/gif"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "jpg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "sht",
+        "mimeType": "text/html"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "map",
+        "mimeType": "text/html"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "jpeg",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "mid",
+        "mimeType": "audio/x-midi"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "mov",
+        "mimeType": "video/quicktime"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "class",
+        "mimeType": "application/octet-stream"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "pdf",
+        "mimeType": "application/pdf"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "dxr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "dir",
+        "mimeType": "application/x-director"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "dcr",
+        "mimeType": "application/x-director"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "xbm",
+        "mimeType": "image/s-sbitmap"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "css",
+        "mimeType": "text/css"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "js",
+        "mimeType": "text/javascript"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "xml",
+        "mimeType": "text/xml"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "vbs",
+        "mimeType": "text/vbscript"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "zip",
+        "mimeType": "application/zip"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "z",
+        "mimeType": "application/x-compress"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "gz",
+        "mimeType": "application/x-gzip"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "tgz",
+        "mimeType": "application/x-compressed"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "tar",
+        "mimeType": "application/x-tar"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "mpg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "mpeg",
+        "mimeType": "video/mpeg"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "avi",
+        "mimeType": "video/x-msvideo"
+      },
+      {
+        "enable": true,
+        "mimeExtension": "qt",
+        "mimeType": "video/quicktime"
+      }
+    ],
+    "authList": [],
+    "userList": [],
+    "groupList": [],
+    "encode": "Utf8",
+    "indexDocument": "<html>\t<head>\t<title>Index of $URI</title>\t</head>\t<body>\t<h2>Index of $URI</h2>\t<hr>\t<table border=0>\t<!--$LOOP--><tr><td width=250><a href=$HREF>$NAME</a><td width=250>$DATE<td width=250>$SIZE\t</table>\t<hr>\t<br>From server at: $SERVER\t<br>Running: $VER\t</body>\t</html>",
+    "errorDocument": "<html>\t<head>\t<title>Error</title>\t</head>\t<body>\tError...Your request could not be honored.\t<hr>\t<h2>$CODE $MSG</h2>\t<br>From server at: $SERVER\t<br>Running: $VER\t<br>RequestUri: $URI\t\t</body>\t</html>",
+    "useAutoAcl": false,
+    "autoAclLabel": "「ACL」設定で「指定するアドレスからのアクセスのみを」-「禁止する」にチェックされている必要があります",
+    "autoAclGroup": []
+  },
+
   "MailBox": {
     "dir": "mailbox",
     "useDetailsLog": false,

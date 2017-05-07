@@ -303,21 +303,30 @@ namespace Bjd.WebServer
             //***************************************************************
             //接続を継続するかどうかの判断 keepAliveの初期化
             //***************************************************************
-            if (ssl != null)
-            {
-                connection.KeepAlive = false;//SSL通信では、１回づつコネクションが必要
+            //if (ssl != null)
+            //{
+            //    connection.KeepAlive = false;//SSL通信では、１回づつコネクションが必要
+            //}
+            //else
+            //{
+            //    if (request.Request.Ver == "HTTP/1.1")
+            //    {//HTTP1.1はデフォルトで keepAlive=true
+            //        connection.KeepAlive = true;
+            //    }
+            //    else
+            //    { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
+            //        connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
+            //    }
+            //}
+            if (request.Request.Ver == "HTTP/1.1")
+            {//HTTP1.1はデフォルトで keepAlive=true
+                connection.KeepAlive = true;
             }
             else
-            {
-                if (request.Request.Ver == "HTTP/1.1")
-                {//HTTP1.1はデフォルトで keepAlive=true
-                    connection.KeepAlive = true;
-                }
-                else
-                { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
-                    connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
-                }
+            { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
+                connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
             }
+
 
             //***************************************************************
             // ログ
