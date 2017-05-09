@@ -164,10 +164,9 @@ namespace Bjd
                     var val = GetKeyVal(line, ref key);
                     if (key != "")
                     {
-                        // know header
-                        if (AppendHeader(key, val)) continue;
-
                         var keyUpper = key.ToUpper();
+                     
+                        // know header
                         if (AppendHeader(keyUpper, val)) continue;
 
                         // other header
