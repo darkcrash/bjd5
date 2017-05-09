@@ -13,11 +13,16 @@ namespace Bjd.Threading
         static LazyCancelTimer timer = LazyCancelTimer.Instance;
         static Action<object> Registar => _ => { ((SimpleAwait)_).Cancel(); };
         private static WaitCallback queueWorker = (o) => { ((Action)o)(); };
+        private static ParameterizedThreadStart queueThread = (o) => { ((Action)o)(); };
+        private static Action<object> queueTask = (o) => { ((Action)o)(); };
 
         private static void Queue(Action continuation)
         {
             if (continuation == null) return;
             System.Threading.ThreadPool.QueueUserWorkItem(queueWorker, continuation);
+            //var t = new System.Threading.Thread(queueThread);
+            //t.Start(continuation);
+            //System.Threading.Tasks.Task.Factory.StartNew(queueTask, continuation);
         }
 
         private Action _continuation;

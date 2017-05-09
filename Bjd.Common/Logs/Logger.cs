@@ -77,10 +77,34 @@ namespace Bjd.Logs
 
             var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
 
-            var t = new Task(() =>
-                SetInternal(logKind, remoteHostname, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
+            //var t = new Task(() =>
+            //    SetInternal(logKind, remoteHostname, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
+            var arg = new InternalArgs();
+            arg.logger = this;
+            arg.logKind = logKind;
+            arg.remoteHostname = remoteHostname;
+            arg.messageNo = messageNo;
+            arg.detailInfomation = detailInfomation;
+            arg.threadId = threadId;
+            var t = new Task(InternalAction, arg, TaskCreationOptions.PreferFairness);
+
             t.Start(sts);
 
+        }
+
+        static Action<object> InternalAction = _ => 
+        {
+            var arg = (InternalArgs)_;
+            arg.logger.SetInternal(arg.logKind, arg.remoteHostname, arg.messageNo, arg.detailInfomation, arg.threadId);
+        };
+        private struct InternalArgs
+        {
+            public Logger logger;
+            public LogKind logKind;
+            public string remoteHostname;
+            public int messageNo;
+            public string detailInfomation;
+            public int threadId;
         }
 
         //ログ出力

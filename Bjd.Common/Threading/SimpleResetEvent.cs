@@ -13,7 +13,7 @@ namespace Bjd.Threading
         const int LOCKED = 1;
         const int UNLOCKED = 0;
 
-        static LazyCancelTimer timer =  LazyCancelTimer.Instance;
+        static LazyCancelTimer timer = LazyCancelTimer.Instance;
         private static Action<Task> _ActionEmpty = _ => { };
         private static Func<Task, bool> _FuncCancelFalse = _ => (_.IsCanceled ? false : true);
         private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();
@@ -177,40 +177,26 @@ namespace Bjd.Threading
         {
             //var t = waitTask;
             var a = waitAwaiterAsync;
-            //Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
             Interlocked.CompareExchange(ref usewaitAwait, USE, NOTUSE);
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, LOCKED, LOCKED) == UNLOCKED)
             {
-                await a;
-                //await t;
+                return true;
             }
-            return true;
+            return await a;
         }
 
 
         public async ValueTask<bool> WaitAsyncValueTask(int millisecondsTimeout)
         {
-            //var t1 = waitTask;
-
-            //Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
-            //if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-            //{
-            //    var token = timer.Get(millisecondsTimeout);
-            //    var t2 = t1.ContinueWith(_ActionEmpty, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            //    var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
-            //    return await t3;
-            //}
-            //return true;
-
             var a = waitAwaiterAsync;
 
             Interlocked.CompareExchange(ref usewaitAwait, USE, NOTUSE);
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, LOCKED, LOCKED) == UNLOCKED)
             {
-                var limited = a.GetLimited(millisecondsTimeout);
-                return await limited;
+                return true;
             }
-            return true;
+
+            return await a.GetLimited(millisecondsTimeout);
 
         }
 
@@ -218,40 +204,32 @@ namespace Bjd.Threading
         {
             var t1 = waitTask;
             Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, LOCKED, LOCKED) == UNLOCKED)
             {
-                var token = timer.Get(millisecondsTimeout);
-                var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                token.Register(CancelRegister, cancel);
-                var t2 = t1.ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-                var t2_2 = t2.ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
-                var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
-                return await t3;
+                return true;
             }
-            return true;
+
+            var token = timer.Get(millisecondsTimeout);
+            var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            token.Register(CancelRegister, cancel);
+            var t2 = t1.ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            var t2_2 = t2.ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
+            var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
+            return await t3;
         }
 
         public async ValueTask<bool> WaitAsyncValueTask(CancellationToken cancellationToken)
         {
             var t1 = waitTask;
             Interlocked.CompareExchange(ref usewaitTask, USE, NOTUSE);
-            if (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
+            if (Interlocked.CompareExchange(ref lockState, LOCKED, LOCKED) == UNLOCKED)
             {
-                var t2 = t1.ContinueWith(_ActionEmpty, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-                var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
-                return await t3;
+                return true;
             }
-            return true;
+            var t2 = t1.ContinueWith(_ActionEmpty, cancellationToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
+            return await t3;
         }
-
-        //public async Task WaitAsync()
-        //{
-        //    while (Interlocked.CompareExchange(ref lockState, UNLOCKED, UNLOCKED) == LOCKED)
-        //    {
-        //        await Task.Yield();
-        //    }
-        //}
-
 
         #region IDisposable Support
 
