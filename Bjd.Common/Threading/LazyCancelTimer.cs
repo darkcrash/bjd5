@@ -7,6 +7,8 @@ namespace Bjd.Threading
 {
     public class LazyCancelTimer
     {
+        public static readonly LazyCancelTimer Instance = new LazyCancelTimer();
+
         private const int MaxQueue = 240;
         private const int MaxCancelQueue = 1024;
         private const int TimerPeriod = 250;
@@ -15,7 +17,7 @@ namespace Bjd.Threading
         private System.Threading.TimerCallback _timerCallback;
         private System.Threading.Timer _timer;
 
-        public LazyCancelTimer()
+        private LazyCancelTimer()
         {
             _timerCallback = TimerCallback;
 

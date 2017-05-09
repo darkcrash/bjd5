@@ -13,7 +13,7 @@ namespace Bjd.Threading
         const int LOCKED = 1;
         const int UNLOCKED = 0;
 
-        static LazyCancelTimer timer = new LazyCancelTimer();
+        static LazyCancelTimer timer =  LazyCancelTimer.Instance;
         private static Action<Task> _ActionEmpty = _ => { };
         private static Func<Task, bool> _FuncCancelFalse = _ => (_.IsCanceled ? false : true);
         private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();

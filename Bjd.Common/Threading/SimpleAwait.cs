@@ -10,7 +10,7 @@ namespace Bjd.Threading
 {
     internal class SimpleAwait
     {
-        static LazyCancelTimer timer = new LazyCancelTimer();
+        static LazyCancelTimer timer = LazyCancelTimer.Instance;
         static Action<object> Registar => _ => { ((SimpleAwait)_).Cancel(); };
         private static WaitCallback queueWorker = (o) => { ((Action)o)(); };
 
