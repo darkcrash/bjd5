@@ -42,6 +42,13 @@ namespace Bjd
             _ar.Add(ETag);
             ETag.Enabled = false;
 
+            ContentRange = new KnowHeader("Content-Range", "CONTENT-RANGE", "");
+            _ar.Add(ContentRange);
+            ContentRange.Enabled = false;
+
+            AcceptRange =  new KnowHeader("Accept-Range", "ACCEPT-RANGE", "");
+            _ar.Add(AcceptRange);
+            AcceptRange.Enabled = false;
         }
 
         public IHeader Server;
@@ -52,6 +59,8 @@ namespace Bjd
         public IHeader Connection;
         public IHeader LastModified;
         public IHeader ETag;
+        public IHeader ContentRange;
+        public IHeader AcceptRange;
 
         public override void Clear()
         {
@@ -64,6 +73,8 @@ namespace Bjd
             _ar.Add(LastModified);
             _ar.Add(ETag);
             _ar.Add(MIMEVersion);
+            _ar.Add(AcceptRange);
+            _ar.Add(ContentRange);
 
             Server.Enabled = true;
             Date.Enabled = true;
@@ -73,6 +84,8 @@ namespace Bjd
             LastModified.Enabled = false;
             ETag.Enabled = false;
             MIMEVersion.Enabled = true;
+            AcceptRange.Enabled = false;
+            ContentRange.Enabled = false;
         }
 
         public void SetContentLength(int length)
@@ -84,6 +97,18 @@ namespace Bjd
         {
             ContentLength.Enabled = true;
             ContentLength.ValString = length.ToString();
+        }
+
+        public void SetAcceptRange(string range)
+        {
+            AcceptRange.Enabled = true;
+            AcceptRange.ValString = range;
+        }
+
+        public void SetContentRange(string range)
+        {
+            ContentRange.Enabled = true;
+            ContentRange.ValString = range;
         }
 
         public void SetContentType(string contentType)

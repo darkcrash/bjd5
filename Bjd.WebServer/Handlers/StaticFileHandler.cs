@@ -117,7 +117,8 @@ namespace Bjd.WebServer.Handlers
             //********************************************************************
             //Range処理
             //********************************************************************
-            context.Response.AddHeader("Accept-Range", "bytes");
+            //context.Response.AddHeader("Accept-Range", "bytes");
+            context.Response.Headers.SetAcceptRange("bytes");
             var rangeFrom = 0L;//デフォルトは最初から
             var rangeTo = result.FileSize;//デフォルトは最後まで（ファイルサイズ）
             //if (context.Header.GetVal("Range") != null)
@@ -193,7 +194,8 @@ namespace Bjd.WebServer.Handlers
                         if (rangeFrom <= rangeTo)
                         {
                             //正常に範囲を取得できた場合、事後Rangeモードで動作する
-                            context.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
+                            //context.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
+                            context.Response.Headers.SetContentRange(string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
                             context.ResponseCode = 206;
                         }
                     }
