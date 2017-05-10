@@ -43,6 +43,7 @@ namespace Bjd.WebServer
         public void Clear()
         {
             _kindBuf = KindBuf.Memory;
+            if (_doc != null && _doc != empty) _doc.Dispose();
             _doc = empty;
             _fileName = string.Empty;
             _rangeFrom = 0;
