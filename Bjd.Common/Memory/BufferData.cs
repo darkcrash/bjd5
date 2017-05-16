@@ -64,6 +64,15 @@ namespace Bjd.Memory
             Buffer.MemoryCopy(DataPoint, destnation.DataPoint, destnation.Length, DataSize);
             destnation.DataSize = DataSize;
         }
+        public void CopyTo(BufferData destnation, int offsetSource, int size)
+        {
+            if (destnation == null) throw new NullReferenceException("destnation is null");
+            if (destnation.Length < size) throw new OverflowException("destnation is overflow");
+            if (DataSize < (size + offsetSource)) throw new OverflowException("source is overflow");
+            var startPt = DataPoint + offsetSource;
+            Buffer.MemoryCopy(startPt, destnation.DataPoint, size, size);
+            destnation.DataSize = size;
+        }
 
 
         void IPoolBuffer.Initialize()

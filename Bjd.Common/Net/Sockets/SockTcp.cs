@@ -489,14 +489,18 @@ namespace Bjd.Net.Sockets
                 _sockQueueRecv.SendAsyncCallback = SendAsyncComplete;
             }
             var len = buf.DataSize;
+            var offset = 0;
             while (len > 0)
             {
                 sendComplete.Reset();
-                buf.CopyTo(sendBuffer);
-                sendEventArgs.SetBuffer(0, sendBuffer.DataSize);
+                var size = (len > sendBuffer.Length ? sendBuffer.Length : len);
+
+                buf.CopyTo(sendBuffer, offset, size);
+                sendEventArgs.SetBuffer(0, size);
                 var result = _socket.SendAsync(sendEventArgs);
-                if (!result) continue;
-                await sendComplete.WaitAsyncValueTask();
+                if (result) await sendComplete.WaitAsyncValueTask();
+                len -= size;
+                offset += size;
             }
             return true;
         }
