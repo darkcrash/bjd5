@@ -14,7 +14,7 @@ namespace Bjd.Net.Sockets
 
         private SockQueuePool()
         {
-            InitializePool(2000, poolSize);
+            InitializePool(1000, poolSize);
         }
 
         ~SockQueuePool()

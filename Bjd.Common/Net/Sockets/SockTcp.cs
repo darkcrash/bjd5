@@ -88,7 +88,7 @@ namespace Bjd.Net.Sockets
             }
 
             SetConnectionInfo();
-            BeginAsync(); 
+            BeginAsync();
 
         }
 
@@ -135,8 +135,8 @@ namespace Bjd.Net.Sockets
             try
             {
                 _socket.NoDelay = true;
-                _socket.ReceiveBufferSize = 65536;
-                _socket.SendBufferSize = 65536;
+                _socket.ReceiveBufferSize = 16384;
+                _socket.SendBufferSize = 16384;
 
                 //Ver5.6.0
                 Set(SockState.Connect, (IPEndPoint)_socket.LocalEndPoint, (IPEndPoint)_socket.RemoteEndPoint);
@@ -177,12 +177,16 @@ namespace Bjd.Net.Sockets
                 {
                     if (recvEventArgs == null)
                     {
-                        recvBuffer = BufferPool.GetMaximum(16384);
-                        receiveCompleteTask = Task.CompletedTask;
-                        recvEventArgs = new SocketAsyncEventArgs();
-                        recvEventArgs.SocketFlags = SocketFlags.None;
-                        recvEventArgs.Completed += E_Completed;
-                        recvEventArgs.SetBuffer(recvBuffer.Data, 0, recvBuffer.Length);
+                        //recvBuffer = BufferPool.GetMaximum(16384);
+                        //receiveCompleteTask = Task.CompletedTask;
+                        //recvEventArgs = new SocketAsyncEventArgs();
+                        //recvEventArgs.SocketFlags = SocketFlags.None;
+                        //recvEventArgs.Completed += E_Completed;
+                        //recvEventArgs.SetBuffer(recvBuffer.Data, 0, recvBuffer.Length);
+                        recvBuffer = _sockQueueRecv.RecvAsyncBuffer;
+                        recvEventArgs = _sockQueueRecv.RecvAsyncEventArgs;
+                        recvEventArgs.UserToken = this;
+                        _sockQueueRecv.RecvAsyncCallback = RecvAsyncComplete;
                     }
                     var s = _socket;
                     if (s == null)
@@ -200,6 +204,32 @@ namespace Bjd.Net.Sockets
                 SetErrorReceive("SockTcp.BeginReceive");
             }
         }
+
+        private static EventHandler<SocketAsyncEventArgs> RecvAsyncComplete =
+            (s, e) =>
+        {
+            var ins = (SockTcp)e.UserToken;
+
+
+            if (ins.disposedValue || ins.CancelToken.IsCancellationRequested)
+            {
+                ins.recvComplete?.Set();
+                return;
+            }
+
+            if (e.SocketError == SocketError.Success)
+            {
+                var recvBuf = ins.recvBuffer;
+                if (recvBuf != null) recvBuf.DataSize = e.BytesTransferred;
+                ins.EndReceive(e.BytesTransferred);
+                return;
+            }
+
+            ins.SetErrorReceive(e.SocketError.ToString());
+            ins.Kernel.Logger.TraceError($"{ins.hashText} SockTcp.RecvAsyncComplete {e.SocketError}");
+
+        };
+
 
         private void E_Completed(object sender, SocketAsyncEventArgs e)
         {
@@ -447,19 +477,28 @@ namespace Bjd.Net.Sockets
         {
             if (sendEventArgs == null)
             {
-                sendBuffer = BufferPool.GetMaximum(16384);
-                sendEventArgs = new SocketAsyncEventArgs();
-                sendEventArgs.SetBuffer(sendBuffer.Data, 0, sendBuffer.DataSize);
-                sendEventArgs.SocketFlags = SocketFlags.None;
+                //sendBuffer = BufferPool.GetMaximum(16384);
+                //sendEventArgs = new SocketAsyncEventArgs();
+                //sendEventArgs.SetBuffer(sendBuffer.Data, 0, sendBuffer.DataSize);
+                //sendEventArgs.SocketFlags = SocketFlags.None;
+                //sendEventArgs.UserToken = this;
+                //sendEventArgs.Completed += SendAsyncComplete;
+                sendBuffer = _sockQueueRecv.SendAsyncBuffer;
+                sendEventArgs = _sockQueueRecv.SendAsyncEventArgs;
                 sendEventArgs.UserToken = this;
-                sendEventArgs.Completed += SendAsyncComplete;
+                _sockQueueRecv.SendAsyncCallback = SendAsyncComplete;
             }
-            sendComplete.Reset();
-            buf.CopyTo(sendBuffer);
-            sendEventArgs.SetBuffer(0, sendBuffer.DataSize);
-            var result = _socket.SendAsync(sendEventArgs);
-            if (!result) return true;
-            return await sendComplete.WaitAsyncValueTask();
+            var len = buf.DataSize;
+            while (len > 0)
+            {
+                sendComplete.Reset();
+                buf.CopyTo(sendBuffer);
+                sendEventArgs.SetBuffer(0, sendBuffer.DataSize);
+                var result = _socket.SendAsync(sendEventArgs);
+                if (!result) continue;
+                await sendComplete.WaitAsyncValueTask();
+            }
+            return true;
         }
 
         private static EventHandler<SocketAsyncEventArgs> SendAsyncComplete =
@@ -794,13 +833,13 @@ namespace Bjd.Net.Sockets
                 {
                     if (sendEventArgs != null)
                     {
-                        sendEventArgs.Completed -= SendAsyncComplete;
-                        sendEventArgs.Dispose();
+                        //sendEventArgs.Completed -= SendAsyncComplete;
+                        //sendEventArgs.Dispose();
                         sendEventArgs = null;
                     }
                     if (sendBuffer != null)
                     {
-                        sendBuffer.Dispose();
+                        //sendBuffer.Dispose();
                         sendBuffer = null;
                     }
                     sendComplete.Dispose();
@@ -813,13 +852,13 @@ namespace Bjd.Net.Sockets
                 {
                     if (recvEventArgs != null)
                     {
-                        recvEventArgs.Completed -= E_Completed;
-                        recvEventArgs.Dispose();
+                        //recvEventArgs.Completed -= E_Completed;
+                        //recvEventArgs.Dispose();
                         recvEventArgs = null;
                     }
                     if (recvBuffer != null)
                     {
-                        recvBuffer.Dispose();
+                        //recvBuffer.Dispose();
                         recvBuffer = null;
                     }
                     recvComplete.Dispose();

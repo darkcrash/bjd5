@@ -5,6 +5,7 @@ using System.Threading;
 using Bjd.Memory;
 using Bjd.Threading;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 
 namespace Bjd.Net.Sockets
 {
@@ -49,6 +50,14 @@ namespace Bjd.Net.Sockets
         SimpleResetEvent _modifySizeEvent = SimpleResetPool.GetResetEvent(false);
         SimpleResetEvent _modifyLfEvent = SimpleResetPool.GetResetEvent(false);
 
+        public SocketAsyncEventArgs RecvAsyncEventArgs;
+        public BufferData RecvAsyncBuffer;
+        public EventHandler<SocketAsyncEventArgs> RecvAsyncCallback;
+
+        public SocketAsyncEventArgs SendAsyncEventArgs;
+        public BufferData SendAsyncBuffer;
+        public EventHandler<SocketAsyncEventArgs> SendAsyncCallback;
+
         public int Max { get { return max; } }
 
         public int UseBlocks { get { return _useBlocks; } }
@@ -61,10 +70,46 @@ namespace Bjd.Net.Sockets
 
         public bool IsEmpty { get { return _modifySizeEvent.IsLocked; } }
 
+
         SockQueuePool _pool;
+
+        internal SockQueue() : this(null)
+        {
+        }
+
         internal SockQueue(SockQueuePool pool)
         {
             _pool = pool;
+
+            RecvAsyncBuffer = BufferPool.GetMaximum(16384);
+            RecvAsyncEventArgs = new SocketAsyncEventArgs();
+            RecvAsyncEventArgs.SocketFlags = SocketFlags.None;
+            RecvAsyncEventArgs.Completed += RecvAsyncCompleted;
+            RecvAsyncEventArgs.SetBuffer(RecvAsyncBuffer.Data, 0, RecvAsyncBuffer.Length);
+
+            SendAsyncBuffer = BufferPool.GetMaximum(16384);
+            SendAsyncEventArgs = new SocketAsyncEventArgs();
+            SendAsyncEventArgs.SocketFlags = SocketFlags.None;
+            SendAsyncEventArgs.Completed += SendAsyncCompleted;
+            SendAsyncEventArgs.SetBuffer(SendAsyncBuffer.Data, 0, SendAsyncBuffer.Length);
+
+        }
+
+        private void RecvAsyncCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            RecvAsyncCallback?.Invoke(sender, e);
+        }
+
+        private void SendAsyncCompleted(object sender, SocketAsyncEventArgs e)
+        {
+            SendAsyncCallback?.Invoke(sender, e);
+        }
+        private void Clear()
+        {
+            RecvAsyncCallback = null;
+            SendAsyncCallback = null;
+            RecvAsyncEventArgs.UserToken = null;
+            SendAsyncEventArgs.UserToken = null;
         }
 
         internal void Initialize()
@@ -894,6 +939,16 @@ namespace Bjd.Net.Sockets
                 //_db = null;
                 _blocks = null;
 
+                RecvAsyncBuffer?.Dispose();
+                RecvAsyncBuffer = null;
+                RecvAsyncEventArgs?.Dispose();
+                RecvAsyncEventArgs = null;
+
+                SendAsyncBuffer?.Dispose();
+                SendAsyncBuffer = null;
+                SendAsyncEventArgs?.Dispose();
+                SendAsyncEventArgs = null;
+
                 // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
                 // TODO: 大きなフィールドを null に設定します。
 
@@ -905,7 +960,13 @@ namespace Bjd.Net.Sockets
         // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
         public void Dispose()
         {
-            _pool.PoolInternal(this);
+            Clear();
+            if (_pool != null)
+            {
+                _pool.PoolInternal(this);
+                return;
+            }
+            Dispose(true);
         }
 
         void IPoolBuffer.Initialize()
@@ -915,6 +976,7 @@ namespace Bjd.Net.Sockets
 
         void IPoolBuffer.DisposeInternal()
         {
+            Clear();
             Dispose(true);
         }
 
