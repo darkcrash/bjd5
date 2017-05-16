@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Bjd.Net.Sockets
 {
     //SockTcpで使用されるデータキュー
-    public class SockQueue : IDisposable
+    public class SockQueue : IPoolBuffer
     {
         static byte[] empty = new byte[0];
 
@@ -60,6 +60,12 @@ namespace Bjd.Net.Sockets
         public int Length { get { return _length; } }
 
         public bool IsEmpty { get { return _modifySizeEvent.IsLocked; } }
+
+        SockQueuePool _pool;
+        internal SockQueue(SockQueuePool pool)
+        {
+            _pool = pool;
+        }
 
         internal void Initialize()
         {
@@ -898,6 +904,16 @@ namespace Bjd.Net.Sockets
 
         // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
         public void Dispose()
+        {
+            _pool.PoolInternal(this);
+        }
+
+        void IPoolBuffer.Initialize()
+        {
+            this.Initialize();
+        }
+
+        void IPoolBuffer.DisposeInternal()
         {
             Dispose(true);
         }

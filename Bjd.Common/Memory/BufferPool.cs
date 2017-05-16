@@ -11,11 +11,11 @@ namespace Bjd.Memory
     public class BufferPool : PoolBase<BufferData>
     {
         const int bufferSizeXXXXL = 67108864;
-        const int bufferSizeXXXL = 16777216;
-        const int bufferSizeXXL = 4194304;
-        const int bufferSizeXL = 1048576;
-        const int bufferSizeL = 262144;
-        const int bufferSizeM = 65536;
+        const int bufferSizeXXXL = 4194304;
+        const int bufferSizeXXL = 1048576;
+        const int bufferSizeXL = 262144;
+        const int bufferSizeL = 65536;
+        const int bufferSizeM = 16384;
         const int bufferSizeS = 4096;
         const int bufferSizeXS = 1024;
 
@@ -42,7 +42,7 @@ namespace Bjd.Memory
             var L = System.Environment.ProcessorCount * 32 + 256;
             var M = System.Environment.ProcessorCount * 8 + 64;
             var S = System.Environment.ProcessorCount * 1;
-            var poolSize = 8192;
+            var poolSize = 16384;
 
             Large = new BufferPool(0, poolSize, bufferSizeL);
             Medium = new BufferPool(L, poolSize, bufferSizeM);

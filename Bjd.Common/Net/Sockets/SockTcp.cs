@@ -177,7 +177,7 @@ namespace Bjd.Net.Sockets
                 {
                     if (recvEventArgs == null)
                     {
-                        recvBuffer = BufferPool.GetMaximum(65536);
+                        recvBuffer = BufferPool.GetMaximum(16384);
                         receiveCompleteTask = Task.CompletedTask;
                         recvEventArgs = new SocketAsyncEventArgs();
                         recvEventArgs.SocketFlags = SocketFlags.None;
@@ -447,7 +447,7 @@ namespace Bjd.Net.Sockets
         {
             if (sendEventArgs == null)
             {
-                sendBuffer = BufferPool.GetMaximum(65536);
+                sendBuffer = BufferPool.GetMaximum(16384);
                 sendEventArgs = new SocketAsyncEventArgs();
                 sendEventArgs.SetBuffer(sendBuffer.Data, 0, sendBuffer.DataSize);
                 sendEventArgs.SocketFlags = SocketFlags.None;
@@ -831,7 +831,8 @@ namespace Bjd.Net.Sockets
                 _lastLineSend = null;
                 if (_sockQueueRecv != null)
                 {
-                    SockQueuePool.Instance.Pool(ref this._sockQueueRecv);
+                    //SockQueuePool.Instance.Pool(ref this._sockQueueRecv);
+                    _sockQueueRecv.Dispose();
                     _sockQueueRecv = null;
                 }
 

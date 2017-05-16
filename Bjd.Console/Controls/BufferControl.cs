@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bjd.Memory;
 using Bjd.Threading;
+using Bjd.Net.Sockets;
 
 namespace Bjd.Console.Controls
 {
@@ -26,6 +27,7 @@ namespace Bjd.Console.Controls
         private List<BufferPool> BufferPoolList;
         private List<CharsPool> CharsPoolList;
         private List<SimpleResetPool> SimpleResetPoolList;
+        private List<SockQueuePool> SockQueuePoolList;
 
         public BufferControl(ControlContext cc) : base(cc)
         {
@@ -101,7 +103,7 @@ namespace Bjd.Console.Controls
                 SetActiveServerViewIndex();
                 return true;
             }
-            if (key.Key == ConsoleKey.DownArrow && ActiveServerIndex < (BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count) - 1)
+            if (key.Key == ConsoleKey.DownArrow && ActiveServerIndex < (BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count + SockQueuePoolList.Count) - 1)
             {
                 ActiveServerIndex++;
                 SetActiveServerViewIndex();
@@ -130,7 +132,7 @@ namespace Bjd.Console.Controls
                 var sv = BufferPoolList[idx];
                 var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
-                context.Write($"Buffer:{sv.ToConsoleString()}", frColor, bgColor);
+                context.Write($"Buffer    :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
                 return;
             }
@@ -140,7 +142,7 @@ namespace Bjd.Console.Controls
                 var sv = CharsPoolList[idx - BufferPoolList.Count];
                 var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
-                context.Write($"Chars :{sv.ToConsoleString()}", frColor, bgColor);
+                context.Write($"Chars     :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
                 return;
             }
@@ -150,7 +152,16 @@ namespace Bjd.Console.Controls
                 var sv = SimpleResetPoolList[idx - BufferPoolList.Count - CharsPoolList.Count];
                 var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
-                context.Write($"Reset :{sv.ToConsoleString()}", frColor, bgColor);
+                context.Write($"Reset     :{sv.ToConsoleString()}", frColor, bgColor);
+                base.Output(row, context);
+            }
+            cnt = cnt + SockQueuePoolList.Count;
+            if (cnt > idx)
+            {
+                var sv = SockQueuePoolList[idx - BufferPoolList.Count - CharsPoolList.Count - SimpleResetPoolList.Count];
+                var bgColor = (ActiveServerIndex == idx ? ConsoleColor.DarkBlue : ConsoleColor.Black);
+                var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
+                context.Write($"SockQueue :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
             }
 
@@ -202,14 +213,20 @@ namespace Bjd.Console.Controls
                 {
                     SimpleResetPoolList.Add((SimpleResetPool)p);
                 }
+                SockQueuePoolList = new List<SockQueuePool>();
+                foreach (var p in SockQueuePool.PoolList)
+                {
+                    SockQueuePoolList.Add((SockQueuePool)p);
+                }
             }
             else
             {
                 BufferPoolList = new List<BufferPool>();
                 CharsPoolList = new List<CharsPool>();
                 SimpleResetPoolList = new List<SimpleResetPool>();
+                SockQueuePoolList = new List<SockQueuePool>();
             }
-            Row = BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count + headerRow;
+            Row = BufferPoolList.Count + CharsPoolList.Count + SimpleResetPoolList.Count + SockQueuePoolList.Count + headerRow;
             Redraw = true;
         }
 

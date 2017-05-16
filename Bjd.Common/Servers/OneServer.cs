@@ -71,7 +71,7 @@ namespace Bjd.Servers
             {
                 stat = "-";
             }
-            return string.Format("{0} [{2,16}:{3} {4,5}] [Thread {5,3}/{6,3}] {1}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), _port, Count, _multiple);
+            return string.Format("{0} [{2,16}:{3} {4,5}] [Thread {5,5}/{6,5}] {1}", stat, NameTag, _oneBind.Addr, _oneBind.Protocol.ToString().ToUpper(), _port, Count, _multiple);
         }
 
         public int Count

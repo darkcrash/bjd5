@@ -20,6 +20,8 @@ namespace Bjd.Threading
         {
             if (continuation == null) return;
             System.Threading.ThreadPool.QueueUserWorkItem(queueWorker, continuation);
+            //SimpleWoekerQueue.QueueUserWorkItem(queueWorker, continuation);
+
             //var t = new System.Threading.Thread(queueThread);
             //t.Start(continuation);
             //System.Threading.Tasks.Task.Factory.StartNew(queueTask, continuation);

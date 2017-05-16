@@ -168,7 +168,7 @@ namespace Bjd.Net.Sockets
 
         private SocketAsyncEventArgs AcceptEventargs;
         private Action<object> AcceptCallback;
-        private Action<Task<Socket>> AcceptContinue;
+        //private Action<Task<Socket>> AcceptContinue;
 
         public void AcceptAsync(Func<SockTcp, Task> callback, ILife iLife)
         {
