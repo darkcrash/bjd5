@@ -115,6 +115,20 @@ namespace Bjd.Memory
             return result;
         }
 
+        public static void Append(this BufferData data, byte append)
+        {
+            data[data.DataSize++] = append;
+        }
+
+
+        public static CharsData ToCharsData(this BufferData data, Encoding enc)
+        {
+            var size = enc.GetCharCount(data.Data, 0, data.DataSize);
+            var chars = CharsPool.GetMaximum(size);
+            chars.DataSize = enc.GetChars(data.Data, 0, data.DataSize, chars.Data, 0);
+            return chars;
+        }
+
         public static CharsData ToAsciiCharsData(this BufferData data)
         {
             var ascii = System.Text.Encoding.ASCII;

@@ -607,9 +607,11 @@ namespace Bjd.WebServer
             //Ver5.6.2 request.Send()廃止
             //Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseStr);//ログ
 
-            var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode);
-            Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
-            await contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
+            using (var responseChars = contextRequest.Request.CreateResponseChars(contextRequest.ResponseCode))
+            {
+                Logger.Set(LogKind.Detail, contextConnection.Connection, 4, responseChars);//ログ
+                await contextConnection.Connection.AsciiLineSendAsync(responseChars);//レスポンス送信
+            }
 
 
             await response.SendAsync(contextConnection.KeepAlive, this);//ドキュメント本体送信

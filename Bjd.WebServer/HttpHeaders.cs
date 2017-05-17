@@ -316,7 +316,8 @@ namespace Bjd
                 if (key == "")
                 {
                     //if (line.Data[i] == ':')
-                    if (line.Data[i] == Colon)
+                    //if (line.Data[i] == Colon)
+                    if (line[i] == Colon)
                     {
                         key = Encoding.ASCII.GetString(line.Data, 0, i);
                     }

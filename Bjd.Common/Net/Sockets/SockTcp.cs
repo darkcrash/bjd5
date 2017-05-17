@@ -452,7 +452,11 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<CharsData> AsciiRecvCharsAsync(int timeoutSec)
         {
-            var toutms = timeoutSec * 1000;
+            int toutms;
+            unsafe
+            {
+                toutms = timeoutSec * 1000;
+            }
             Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
             //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
             //var result =  _sockQueueRecv.DequeueLineBufferAsync(toutms);
@@ -514,30 +518,23 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<bool> SendAsync(BufferData buf)
         {
-            try
+            IfThrowOnDisposed();
+            if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
             {
-                IfThrowOnDisposed();
-                if (disposedValue || SockState != SockState.Connect || CancelToken.IsCancellationRequested)
-                {
-                    return true;
-                }
-
-                if (isSsl)
-                {
-                    await _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
-                }
-                else
-                {
-                    await SendAsyncInternal(buf);
-                }
-
                 return true;
+            }
 
-            }
-            finally
+            if (isSsl)
             {
-                buf.Dispose();
+                await _oneSsl.WriteAsync(buf.Data, buf.DataSize, this.CancelToken);
             }
+            else
+            {
+                await SendAsyncInternal(buf);
+            }
+
+            return true;
+
         }
 
 
@@ -742,9 +739,8 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<bool> AsciiSendAsync(CharsData data)
         {
-            using (CharsData d = data)
+            using (var buf = data.ToAsciiBufferData())
             {
-                var buf = data.ToAsciiBufferData();
                 await SendAsync(buf);
             }
             return true;
@@ -753,9 +749,8 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<bool> AsciiLineSendAsync(CharsData data)
         {
-            using (CharsData d = data)
+            using (var buf = data.ToAsciiLineBufferData())
             {
-                var buf = data.ToAsciiLineBufferData();
                 await SendAsync(buf);
             }
             return true;

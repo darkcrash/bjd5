@@ -92,39 +92,41 @@ namespace Bjd.WebServer
             if (_kindBuf == KindBuf.Memory)
             {
                 //tcpObj.SendAsync(_doc);
-                await tcpObj.SendAsync(_doc);
-                _doc = empty;
+                try
+                {
+                    await tcpObj.SendAsync(_doc);
+                }
+                finally
+                {
+                    _doc.Dispose();
+                    _doc = empty;
+                }
             }
             else
             {
+                var bufSize = 65536;
                 using (var fs = Common.IO.CachedFileStream.GetFileStream(_fileName))
+                using (var b = Bjd.Memory.BufferPool.Get(bufSize))
                 {
-                    var bufSize = 65536;
                     fs.Seek(_rangeFrom, SeekOrigin.Begin);
                     var start = _rangeFrom;
                     while (iLife.IsLife())
                     {
                         long size = _rangeTo - start + 1;
-                        if (size > bufSize)
-                            size = bufSize;
-                        if (size <= 0)
-                            break;
+                        if (size > bufSize) size = bufSize;
+                        if (size <= 0) break;
 
-                        var b = Bjd.Memory.BufferPool.Get(size);
-
-                        int len =  await fs.ReadAsync(b.Data, 0, (int)size);
-                        if (len <= 0)
-                            break;
+                        int len = await fs.ReadAsync(b.Data, 0, (int)size);
+                        if (len <= 0) break;
 
                         b.DataSize = len;
                         //tcpObj.SendAsync(b);
                         await tcpObj.SendAsync(b);
 
                         start += len;
-                        if (_rangeTo - start <= 0)
-                            break;
-
+                        if (_rangeTo - start <= 0) break;
                     }
+
                 }
             }
             return true;

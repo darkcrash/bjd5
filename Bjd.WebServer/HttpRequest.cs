@@ -157,26 +157,28 @@ namespace Bjd.WebServer
                         Param = tmp2[1].ToString();
                     }
 
-                    var uriTemp = tmp2[0].ToString();
+                    var uriTemp  = tmp2[0];
 
 
                     // Uri の中の%xx をデコード
-                    try
-                    {
-                        Uri = System.Uri.UnescapeDataString(uriTemp);
-                        Uri = UrlDecode(uriTemp);
-                    }
-                    catch
-                    {
-                        Uri = UrlDecode(uriTemp);
-                    }
+                    //try
+                    //{
+                    //    Uri = System.Uri.UnescapeDataString(uriTemp);
+                    //    Uri = UrlDecode(uriTemp2);
+                    //}
+                    //catch
+                    //{
+                    //    Uri = UrlDecode(uriTemp2);
+                    //}
+                    Uri = UrlDecode(uriTemp);
 
                     //Ver5.1.3-b5 制御文字が含まれる場合、デコードに失敗している
                     for (var i = 0; i < Uri.Length; i++)
                     {
                         if (18 >= Uri[i])
                         {
-                            Uri = uriTemp;
+                            //Uri = uriTemp;
+                            Uri = tmp2[0].ToString();
                             break;
                         }
                     }
@@ -207,7 +209,7 @@ namespace Bjd.WebServer
             return true;
         }
 
-        string UrlDecode(string s)
+        string UrlDecode(CharsData s)
         {
             //Ver5.9.0
             try
@@ -218,9 +220,11 @@ namespace Bjd.WebServer
             {
                 //Ver5.9.0
                 _logger.Set(LogKind.Error, null, 0, string.Format("Exception ex.Message={0} [WebServer.Request.UrlDecode({1})]", ex.Message, s));
-                return s;
+                return s.ToString();
             }
         }
+
+
 
         //レスポンスの送信
         //public void Send(sockTcp sockTcp,int code) {

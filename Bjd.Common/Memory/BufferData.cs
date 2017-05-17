@@ -69,8 +69,19 @@ namespace Bjd.Memory
             if (destnation == null) throw new NullReferenceException("destnation is null");
             if (destnation.Length < size) throw new OverflowException("destnation is overflow");
             if (DataSize < (size + offsetSource)) throw new OverflowException("source is overflow");
-            var startPt = DataPoint + offsetSource;
-            Buffer.MemoryCopy(startPt, destnation.DataPoint, size, size);
+            var srcPt = DataPoint + offsetSource;
+            Buffer.MemoryCopy(srcPt, destnation.DataPoint, size, size);
+            destnation.DataSize = size;
+        }
+
+        public void CopyTo(BufferData destnation, int offsetSource, int offsetDestnatin, int size)
+        {
+            if (destnation == null) throw new NullReferenceException("destnation is null");
+            if (destnation.Length < size) throw new OverflowException("destnation is overflow");
+            if (DataSize < (size + offsetSource)) throw new OverflowException("source is overflow");
+            var srcPt = DataPoint + offsetSource;
+            var dstPt = destnation.DataPoint + offsetDestnatin;
+            Buffer.MemoryCopy(srcPt, dstPt, size, size);
             destnation.DataSize = size;
         }
 

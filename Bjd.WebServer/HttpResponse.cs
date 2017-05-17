@@ -93,14 +93,18 @@ namespace Bjd.WebServer
             _sendHeader.Date.ValString = Util.UtcTime2String();
 
             //ヘッダ送信
-            //_sockTcp.SendAsync(_sendHeader.GetBuffer());
-            await _sockTcp.SendAsync(_sendHeader.GetBuffer());
+            using (var headerBuffer = _sendHeader.GetBuffer())
+            {
+                //_sockTcp.SendAsync(_sendHeader.GetBuffer());
+                await _sockTcp.SendAsync(headerBuffer);
+            }
 
             //本文送信
             if (_body.Length > 0)
             {
                 var contentType = _sendHeader.ContentType.ValString;
-                if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
+                //if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
+                if (contentType != null && contentType.IndexOf("text", StringComparison.CurrentCultureIgnoreCase) != -1)
                 {
                     await _body.SendAsync(_sockTcp, true, iLife);
                 }

@@ -317,6 +317,49 @@ namespace Bjd.Utils
             return MLang.GetEncoding(buf2);
         }
 
+        static public Encoding GetUrlEncoding(CharsData str)
+        {
+            var tmp = str.Split(' ').ToArray();
+            try
+            {
+                if (tmp.Length >= 3)
+                    str = tmp[1];
+
+                using (var buf = BufferPool.GetMaximum(str.DataSize))
+                {
+                    var len = 0;
+                    var find = false;
+                    for (int i = 0; i < str.DataSize; i++)
+                    {
+                        if (str[i] == '%')
+                        {
+                            find = true;
+                            var hex = string.Format("{0}{1}", str[i + 1], str[i + 2]);
+                            var n = Convert.ToInt32(hex, 16);
+                            buf[len++] = (byte)n;
+                            i += 2;
+                        }
+                        else
+                        {
+                            buf[len++] = (byte)str[i];
+                        }
+                    }
+                    if (!find)
+                        return Encoding.ASCII;
+                    //var buf2 = new byte[len];
+                    //Buffer.BlockCopy(buf, 0, buf2, 0, len);
+                    //return MLang.GetEncoding(buf2);
+                    return MLang.GetEncoding(buf);
+                }
+
+            }
+            finally
+            {
+                foreach (var b in tmp) b.Dispose();
+            }
+
+        }
+
         static public List<String> RecvLines(SockTcp cl, int sec, ILife iLife)
         {
             var lines = new List<string>();

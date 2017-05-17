@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bjd.Memory
 {
-    public class CharsData : IPoolBuffer
+    public unsafe class CharsData : IPoolBuffer
     {
         private static Dictionary<int, CharsData> _internal = new Dictionary<int, CharsData>(65536);
         private static int _internalCount = -1;
@@ -20,6 +20,7 @@ namespace Bjd.Memory
         private GCHandle handle;
         private int byteCount = 0;
         private int Id = 0;
+        private char* DataPoint = null;
 
         public ref char this[int i] => ref Data[i];
 
@@ -61,6 +62,13 @@ namespace Bjd.Memory
             byteCount = Buffer.ByteLength(Data);
             Id = Interlocked.Increment(ref _internalCount);
             _internal[Id] = this;
+            if (length > 0)
+            {
+                fixed (char* pt = &Data[0])
+                {
+                    DataPoint = pt;
+                }
+            }
         }
 
         ~CharsData()
@@ -108,7 +116,8 @@ namespace Bjd.Memory
 
         public override string ToString()
         {
-            return new string(Data, 0, DataSize);
+            //return new string(Data, 0, DataSize);
+            return new string(DataPoint, 0, DataSize);
         }
 
         public override int GetHashCode()

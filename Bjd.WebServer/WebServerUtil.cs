@@ -1,4 +1,5 @@
-﻿using Bjd.Utils;
+﻿using Bjd.Memory;
+using Bjd.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -101,25 +102,81 @@ namespace Bjd.WebServer
 
         public static string UrlDecode(string s)
         {
+            //var enc = Inet.GetUrlEncoding(s);
+            //var b = new List<byte>();
+            //for (var i = 0; i < s.Length; i++)
+            //{
+            //    switch (s[i])
+            //    {
+            //        case '%':
+            //            b.Add((byte)int.Parse(s[++i].ToString() + s[++i].ToString(), NumberStyles.HexNumber));
+            //            break;
+            //        case '+':
+            //            b.Add(0x20);
+            //            break;
+            //        default:
+            //            b.Add((byte)s[i]);
+            //            break;
+            //    }
+            //}
+            //return enc.GetString(b.ToArray(), 0, b.Count);
+
             var enc = Inet.GetUrlEncoding(s);
-            var b = new List<byte>();
-            for (var i = 0; i < s.Length; i++)
+            using (var b = BufferPool.Get(s.Length))
             {
-                switch (s[i])
+
+                for (var i = 0; i < s.Length; i++)
                 {
-                    case '%':
-                        b.Add((byte)int.Parse(s[++i].ToString() + s[++i].ToString(), NumberStyles.HexNumber));
-                        break;
-                    case '+':
-                        b.Add(0x20);
-                        break;
-                    default:
-                        b.Add((byte)s[i]);
-                        break;
+                    switch (s[i])
+                    {
+                        case '%':
+                            b.Append((byte)int.Parse(s[++i].ToString() + s[++i].ToString(), NumberStyles.HexNumber));
+                            break;
+                        case '+':
+                            b.Append(0x20);
+                            break;
+                        default:
+                            b.Append((byte)s[i]);
+                            break;
+                    }
+                }
+                using (var c = b.ToCharsData(enc))
+                {
+                    return c.ToString();
                 }
             }
-            return enc.GetString(b.ToArray(), 0, b.Count);
+
 
         }
+
+        public static string UrlDecode(CharsData s)
+        {
+            var enc = Inet.GetUrlEncoding(s);
+            using (var b = BufferPool.Get(s.Length))
+            {
+
+                for (var i = 0; i < s.DataSize; i++)
+                {
+                    switch (s[i])
+                    {
+                        case '%':
+                            b.Append((byte)int.Parse(s[++i].ToString() + s[++i].ToString(), NumberStyles.HexNumber));
+                            break;
+                        case '+':
+                            b.Append(0x20);
+                            break;
+                        default:
+                            b.Append((byte)s[i]);
+                            break;
+                    }
+                }
+                using (var c = b.ToCharsData(enc))
+                {
+                    return c.ToString();
+                }
+            }
+
+        }
+
     }
 }

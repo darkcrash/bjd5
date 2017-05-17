@@ -801,13 +801,16 @@ namespace Bjd.Net.Sockets
                         var buf = _blocks[idx];
                         _blocks[idx] = null;
                         var wSize = buf.DataSize;
-                        Buffer.BlockCopy(buf.Data, 0, retBuf.Data, writeSize, wSize);
+                        //Buffer.BlockCopy(buf.Data, 0, retBuf.Data, writeSize, wSize);
+                        buf.CopyTo(retBuf, 0, writeSize, wSize);
                         writeSize += wSize;
                         buf.Dispose();
                         System.Threading.Interlocked.Decrement(ref _useBlocks);
                     }
 
-                    Buffer.BlockCopy(d, 0, retBuf.Data, writeSize, c + 1);
+                    //Buffer.BlockCopy(d, 0, retBuf.Data, writeSize, c + 1);
+                    item.CopyTo(retBuf, 0, writeSize, c + 1);
+
                     writeSize += c + 1;
                     retBuf.DataSize = writeSize;
                     _readBlocks = offset;
