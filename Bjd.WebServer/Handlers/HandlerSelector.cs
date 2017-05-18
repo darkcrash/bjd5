@@ -395,9 +395,10 @@ namespace Bjd.WebServer.Handlers
                 {
                     if (Path.GetFileName(result.FullPath) == "")
                     {
+                        var fullPathDir = Path.GetDirectoryName(result.FullPath);
                         foreach (string welcomeFileName in welcomeFileNames)
                         {
-                            var newPath = Path.Combine(Path.GetDirectoryName(result.FullPath), welcomeFileName);
+                            var newPath = Path.Combine(fullPathDir, welcomeFileName);
                             if (!CachedFileExists.ExistsFile(newPath)) continue;
 
                             result.ResetFullPath(newPath, true);

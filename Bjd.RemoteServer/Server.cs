@@ -47,7 +47,8 @@ namespace Bjd.RemoteServer
             {
                 Logger.Set(LogKind.Normal, _sockTcp, 5, "");
             }
-            else {//パスワード認証が必要な場合
+            else
+            {//パスワード認証が必要な場合
                 var challengeStr = Inet.ChallengeStr(10);//チャレンジ文字列の生成
 
                 RemoteData.Send(_sockTcp, RemoteDataKind.DatAuth, challengeStr);
@@ -75,13 +76,15 @@ namespace Bjd.RemoteServer
                                 //tcpObj.Close();//この接続は破棄される
                                 //return;
                             }
-                            else {
+                            else
+                            {
                                 success = true;//Ver5.0.0-b14
                             }
                             break;
                         }
                     }
-                    else {
+                    else
+                    {
                         Thread.Sleep(500);
                     }
                 }
@@ -139,7 +142,8 @@ namespace Bjd.RemoteServer
                     //GC.Collect();
                     Thread.Sleep(500);
                 }
-                else {
+                else
+                {
                     Cmd(_queue.Dequeue());
                 }
             }
@@ -180,7 +184,8 @@ namespace Bjd.RemoteServer
                         {
                             buffer = _kernel.Cmd(cmdStr);//リモート操作（データ取得）
                         }
-                        else {
+                        else
+                        {
                             var server = _kernel.ListServer.Get(nameTag);
                             if (server != null)
                             {
@@ -232,6 +237,7 @@ namespace Bjd.RemoteServer
         //ログのAppendイベントでリモートクライアントへログを送信する
         public override void Append(LogMessage oneLog)
         {
+            if (_sockTcp == null) return;
             RemoteData.Send(_sockTcp, RemoteDataKind.DatLog, oneLog.ToString());
         }
     }

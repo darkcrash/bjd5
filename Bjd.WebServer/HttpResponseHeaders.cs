@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Linq;
 using Bjd.Net;
@@ -12,6 +13,15 @@ namespace Bjd
 {
     public class HttpResponseHeaders : HttpHeaders
     {
+        static System.Collections.Concurrent.ConcurrentDictionary<string, bool> contentTypeIsIncludeText = new ConcurrentDictionary<string, bool>();
+        static Func<string, bool> AddIsIncludeTextFunc = _ => _.ToLower().IndexOf("text") != -1;
+
+        static bool IsIncludeText(string contentType)
+        {
+            return contentTypeIsIncludeText.GetOrAdd(contentType, AddIsIncludeTextFunc);
+        }
+
+
         public HttpResponseHeaders()
         {
             Server = new KnowHeader("Server", "SERVER", "");
@@ -46,7 +56,7 @@ namespace Bjd
             _ar.Add(ContentRange);
             ContentRange.Enabled = false;
 
-            AcceptRange =  new KnowHeader("Accept-Range", "ACCEPT-RANGE", "");
+            AcceptRange = new KnowHeader("Accept-Range", "ACCEPT-RANGE", "");
             _ar.Add(AcceptRange);
             AcceptRange.Enabled = false;
         }
@@ -61,6 +71,7 @@ namespace Bjd
         public IHeader ETag;
         public IHeader ContentRange;
         public IHeader AcceptRange;
+        public bool IsText = false;
 
         public override void Clear()
         {
@@ -86,6 +97,7 @@ namespace Bjd
             MIMEVersion.Enabled = true;
             AcceptRange.Enabled = false;
             ContentRange.Enabled = false;
+            IsText = false;
         }
 
         public void SetContentLength(int length)
@@ -115,6 +127,7 @@ namespace Bjd
         {
             ContentType.Enabled = true;
             ContentType.ValString = contentType;
+            IsText = IsIncludeText(contentType);
         }
 
         public void SetLastModified(string lastModified)

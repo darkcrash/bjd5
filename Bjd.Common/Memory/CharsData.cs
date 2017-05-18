@@ -64,10 +64,11 @@ namespace Bjd.Memory
             _internal[Id] = this;
             if (length > 0)
             {
-                fixed (char* pt = &Data[0])
-                {
-                    DataPoint = pt;
-                }
+                DataPoint = (char*)handle.AddrOfPinnedObject().ToPointer();
+                //fixed (char* pt = &Data[0])
+                //{
+                //    DataPoint = pt;
+                //}
             }
         }
 
@@ -84,6 +85,28 @@ namespace Bjd.Memory
                 _pool.Finalized(this);
                 _pool = null;
             }
+        }
+
+        public void CopyTo(CharsData destnation, int offsetSource, int size)
+        {
+            if (destnation == null) throw new NullReferenceException("destnation is null");
+            if (destnation.Length < size ) throw new OverflowException("destnation is overflow");
+            if (DataSize < (size + offsetSource)) throw new OverflowException("source is overflow");
+            var srcPt = DataPoint + (offsetSource);
+            var dstPt = destnation.DataPoint;
+            Buffer.MemoryCopy(srcPt, dstPt, size * 2, size * 2);
+            destnation.DataSize = size;
+        }
+
+        public void CopyTo(CharsData destnation, int offsetSource, int offsetDestnation, int size)
+        {
+            if (destnation == null) throw new NullReferenceException("destnation is null");
+            if (destnation.Length < (size + offsetDestnation)) throw new OverflowException("destnation is overflow");
+            if (DataSize < (size + offsetSource)) throw new OverflowException("source is overflow");
+            var srcPt = DataPoint + offsetSource;
+            var dstPt = destnation.DataPoint + offsetDestnation;
+            Buffer.MemoryCopy(srcPt, dstPt, size * 2, size * 2);
+            destnation.DataSize = offsetDestnation + size;
         }
 
         void IPoolBuffer.Initialize()

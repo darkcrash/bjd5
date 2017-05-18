@@ -102,9 +102,10 @@ namespace Bjd.WebServer
             //本文送信
             if (_body.Length > 0)
             {
-                var contentType = _sendHeader.ContentType.ValString;
-                //if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
-                if (contentType != null && contentType.IndexOf("text", StringComparison.CurrentCultureIgnoreCase) != -1)
+                //var contentType = _sendHeader.ContentType.ValString;
+                ////if (contentType != null && contentType.ToLower().IndexOf("text") != -1)
+                //if (contentType != null && contentType.IndexOf("text", StringComparison.CurrentCultureIgnoreCase) != -1)
+                if (_sendHeader.ContentType.Enabled && _sendHeader.IsText)
                 {
                     await _body.SendAsync(_sockTcp, true, iLife);
                 }

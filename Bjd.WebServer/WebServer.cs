@@ -537,35 +537,42 @@ namespace Bjd.WebServer
             // v2.3.1 Uri の１文字目が/で無い場合
             if (request.Uri[0] != '/')
             {
-                responseCode = 400;
-
-                //Uriの最後に空白が入っている場合
+                //responseCode = 400;
+                return 400;
             }
-            else if (request.Uri[request.Uri.Length - 1] == (' ') || request.Uri[request.Uri.Length - 1] == ('.'))
+
+            // Uriの最後に空白が入っている場合
+            var lastchar = request.Uri[request.Uri.Length - 1];
+            if (lastchar == (' ') || lastchar == ('.'))
             {
-                responseCode = 404;
-
-                // ./の含まれるリクエストは404で落とす
-                // %20/の含まれるリクエストは404で落とす
+                //responseCode = 404;
+                return 404;
             }
-            else if ((0 <= request.Uri.IndexOf("./")) || (0 <= request.Uri.IndexOf(" /")))
+
+            // ./の含まれるリクエストは404で落とす
+            // %20/の含まれるリクエストは404で落とす
+            if ((0 <= request.Uri.IndexOf("./")) || (0 <= request.Uri.IndexOf(" /")))
             {
-                responseCode = 404;
-
-                // HTTP1.1でhostヘッダのないものはエラー
+                //responseCode = 404;
+                return 404;
             }
+
+            // HTTP1.1でhostヘッダのないものはエラー
             //else if (request.Ver == "HTTP/1.1" && recvHeader.GetVal("Host") == null)
-            else if (request.Ver == "HTTP/1.1" && recvHeader.Host.ValString == null)
+            if (request.Ver == "HTTP/1.1" && recvHeader.Host.ValString == null)
             {
-                responseCode = 400;
-
-                // ..を参照するパスの排除
+                //responseCode = 400;
+                return 400;
             }
-            else if (!useDot && 0 <= request.Uri.IndexOf(".."))
+
+            // ..を参照するパスの排除
+            if (!useDot && 0 <= request.Uri.IndexOf(".."))
             {
                 Logger.Set(LogKind.Secure, sockTcp, 13, "URI=" + request.Uri);//.. が含まれるリクエストは許可されていません。
-                responseCode = 403;
+                //responseCode = 403;
+                return 403;
             }
+
             return responseCode;
         }
 

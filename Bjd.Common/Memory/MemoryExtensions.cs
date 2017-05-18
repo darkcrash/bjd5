@@ -54,11 +54,12 @@ namespace Bjd.Memory
             var pos = 0;
             for (var i = 0; i < source.DataSize; i++)
             {
-                if (source.Data[i] == separator)
+                if (source[i] == separator)
                 {
                     var len = i - pos;
                     var chars = CharsPool.GetMaximum(len);
-                    if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize, len * 2);
+                    //if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize * 2, len * 2);
+                    if (len > 0) source.CopyTo(chars, pos, len);
                     chars.DataSize = len;
                     yield return chars;
                     pos = i + 1;
@@ -68,7 +69,8 @@ namespace Bjd.Memory
             {
                 var len = source.DataSize - pos;
                 var chars = CharsPool.GetMaximum(len);
-                if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize, len * 2);
+                //if (len > 0) Buffer.BlockCopy(source.Data, pos * 2, chars.Data, chars.DataSize * 2, len * 2);
+                if (len > 0) source.CopyTo(chars, pos, len);
                 chars.DataSize = len;
                 yield return chars;
             }
