@@ -452,17 +452,12 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<CharsData> AsciiRecvCharsAsync(int timeoutSec)
         {
-            int toutms;
-            unsafe
-            {
-                toutms = timeoutSec * 1000;
-            }
             Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
             //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
             //var result =  _sockQueueRecv.DequeueLineBufferAsync(toutms);
             //return result.ContinueWith<CharsData>(AsciiFunc, CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
-            var result = await _sockQueueRecv.DequeueLineBufferAsync(toutms);
+            var result = await _sockQueueRecv.DequeueLineBufferAsync(timeoutSec * 1000);
             try
             {
                 return result.ToAsciiCharsData();

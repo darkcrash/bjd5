@@ -226,10 +226,11 @@ namespace Bjd
         {
             //高速化のため、Buffer.BlockCopyに修正
             int size = 2;//空白行 \r\n
-            _ar.ForEach(o =>
+            foreach (var o in _ar)
             {
+                if (!o.Enabled) continue;
                 size += o.Key.Length + o.Val.Length + 4; //':'+' '+\r+\n
-            });
+            }
             var buf = BufferPool.GetMaximum(size);
             ref int p = ref buf.DataSize;
             //_ar.ForEach(o =>
@@ -251,7 +252,7 @@ namespace Bjd
 
             foreach (var o in _ar)
             {
-                if (!o.Enabled) break;
+                if (!o.Enabled) continue;
 
                 buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
                 buf[buf.DataSize++] = Colon;
