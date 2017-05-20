@@ -113,8 +113,8 @@ namespace Bjd.WebServer.Handlers
             }
 
             context.Response.Body.Set(encoding.GetBytes(sb.ToString()));
-            context.Response.Headers.SetContentLength(context.Response.Body.Length);
-            context.Response.Headers.SetContentType(string.Format("text/html;charset={0}", charset));
+            context.ResponseHeader.SetContentLength(context.Response.Body.Length);
+            context.ResponseHeader.SetContentType(string.Format("text/html;charset={0}", charset));
             return true;
         }
 

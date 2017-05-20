@@ -21,6 +21,7 @@ using Bjd.WebServer.WebDav;
 using Bjd.WebServer.Authority;
 using Bjd.WebServer.Memory;
 using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.WebServer
 {
@@ -205,7 +206,7 @@ namespace Bjd.WebServer
 
         }
 
-        private async Task<bool> RequestProcessAsync(HttpConnectionContext connection, HttpContext request)
+        private async Task<bool> RequestProcessAsync(HttpConnectionContext connection, HttpContext context)
         {
             //***************************************************************
             //データ取得
@@ -220,69 +221,69 @@ namespace Bjd.WebServer
                 //\r\nの削除
                 Inet.TrimCrlf(requestStr);
                 //Ver5.8.8 リクエストの解釈に失敗した場合に、処理を中断する
-                if (!request.Request.Init(requestStr))
+                if (!context.Request.Init(requestStr))
                 {
                     return false;
                 }
             }
 
             //ヘッダ取得（内部データは初期化される）
-            if (!await request.Header.RecvAsync(connection.Connection, timeOut, this))
+            if (!await context.RequestHeader.RecvAsync(connection.Connection, timeOut, this))
                 return false;
 
             {
                 //Ver5.1.x
-                var hostStr = request.Header.Host.ValString;
-                request.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
-                _kernel.Logger.DebugInformation($"WebServer.OnSubThread {request.Url}");
+                var hostStr = context.RequestHeader.Host.ValString;
+                context.Url = hostStr == null ? null : string.Format("{0}://{1}", (ssl != null) ? "https" : "http", hostStr);
+                _kernel.Logger.DebugInformation($"WebServer.OnSubThread {context.Url}");
             }
 
             //***************************************************************
             // ドキュメント生成クラスの初期化
             //***************************************************************
 
-            request.Auth = _authorization;
-            request.AuthName = "";
+            context.Auth = _authorization;
+            context.AuthName = "";
 
             //入力取得（POST及びPUTの場合）
-            if (request.Header.ContentLength.Enabled)
+            if (context.RequestHeader.ContentLength.Enabled)
             {
-                var contentLengthStr = request.Header.ContentLength.ValString;
+                var contentLengthStr = context.RequestHeader.ContentLength.ValString;
                 try
                 {
                     //max,lenはともにlong
                     var max = Convert.ToInt64(contentLengthStr);
                     if (max != 0)
                     {//送信データあり
-                        request.InputStream = new WebStream((256000 < max) ? -1 : (int)max);
+                        context.InputStream = new WebStream((256000 < max) ? -1 : (int)max);
                         var errorCount = 0;
-                        while (request.InputStream.Length < max && IsLife())
+                        while (context.InputStream.Length < max && IsLife())
                         {
 
-                            var len = max - request.InputStream.Length;
+                            var len = max - context.InputStream.Length;
                             if (len > 51200000)
                             {
                                 len = 51200000;
                             }
                             var b = connection.Connection.Recv((int)len, timeOut, this);
-                            if (!request.InputStream.Add(b))
+                            if (!context.InputStream.Add(b))
                             {
                                 errorCount++;//エラー蓄積
-                                Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, request.InputStream.Length));
+                                Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, context.InputStream.Length));
                             }
                             else
                             {
                                 errorCount = 0;//初期化
                             }
-                            Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, request.InputStream.Length));
+                            Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, context.InputStream.Length));
                             if (errorCount > 5)
                             {//５回連続して受信が無かった場合、サーバエラー
-                                request.ResponseCode = 500;
+                                context.ResponseCode = 500;
                                 goto SEND;//サーバエラー
                             }
                             Thread.Sleep(10);
                         }
-                        Logger.Set(LogKind.Detail, null, 39, string.Format("Content-Length={0} {1}bytes", max, request.InputStream.Length));
+                        Logger.Set(LogKind.Detail, null, 39, string.Format("Content-Length={0} {1}bytes", max, context.InputStream.Length));
                     }
                 }
                 catch (Exception ex)
@@ -297,7 +298,7 @@ namespace Bjd.WebServer
             //***************************************************************
             if (connection.CheckVirtual)
             {//初回のみ
-                ReplaceVirtualHost(request.Header.Host.ValString, connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
+                ReplaceVirtualHost(context.RequestHeader.Host.ValString, connection.Connection.LocalAddress.Address, connection.Connection.LocalAddress.Port);
                 connection.CheckVirtual = false;
             }
             //***************************************************************
@@ -318,27 +319,27 @@ namespace Bjd.WebServer
             //        connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
             //    }
             //}
-            if (request.Request.Ver == "HTTP/1.1")
+            if (context.Request.Ver == "HTTP/1.1")
             {//HTTP1.1はデフォルトで keepAlive=true
                 connection.KeepAlive = true;
             }
             else
             { // HTTP/1.1以外の場合、継続接続は、Connection: Keep-Aliveの有無に従う
-                connection.KeepAlive = request.Header.Connection.ValString == "Keep-Alive";
+                connection.KeepAlive = context.RequestHeader.Connection.ValString == "Keep-Alive";
             }
 
 
             //***************************************************************
             // ログ
             //***************************************************************
-            Logger.Set(LogKind.Normal, connection.Connection, ssl != null ? 23 : 24, request.Request.LogStr);
+            Logger.Set(LogKind.Normal, connection.Connection, ssl != null ? 23 : 24, context.Request.LogStr);
 
             //***************************************************************
             // 認証
             //***************************************************************
-            if (!request.Auth.Check(request.Request.Uri, request.Header.Authorization.ValString, ref request.AuthName))
+            if (!context.Auth.Check(context.Request.Uri, context.RequestHeader.Authorization.ValString, ref context.AuthName))
             {
-                request.ResponseCode = 401;
+                context.ResponseCode = 401;
                 connection.KeepAlive = false;//切断
                 goto SEND;
             }
@@ -346,8 +347,8 @@ namespace Bjd.WebServer
             // 不正なURIに対するエラー処理
             //***************************************************************
             //URIを点検して不正な場合はエラーコードを返す
-            request.ResponseCode = CheckUri(connection.Connection, request.Request, request.Header);
-            if (request.ResponseCode != 200)
+            context.ResponseCode = CheckUri(connection.Connection, context.Request, context.RequestHeader);
+            if (context.ResponseCode != 200)
             {
                 connection.KeepAlive = false;//切断
                 goto SEND;
@@ -361,7 +362,7 @@ namespace Bjd.WebServer
                 Logger.Set(LogKind.Error, connection.Connection, 14, string.Format("documentRoot={0}", _conf.Get("documentRoot")));//ドキュメントルートで指定されたフォルダが存在しません（処理を継続できません）
                 return false;//ドキュメントルートが無効な場合は、処理を継続できない
             }
-            var handleSelectorResult = _Selector.InitFromUri(request.Request.Uri);
+            var handleSelectorResult = _Selector.InitFromUri(context.Request.Uri);
 
             //***************************************************************
             // 送信ヘッダの追加
@@ -369,64 +370,64 @@ namespace Bjd.WebServer
             // 特別拡張 BlackJumboDog経由のリクエストの場合 送信ヘッダにRemoteHostを追加する
             if (useExpansion)
             {
-                if (request.Header.Host.ValString != null)
+                if (context.RequestHeader.Host.ValString != null)
                 {
-                    request.Response.AddHeader("RemoteHost", connection.Connection.RemoteAddress.Address.ToString());
+                    context.ResponseHeader.Append("RemoteHost", connection.Connection.RemoteAddress.Address.ToString());
                 }
             }
             //受信ヘッダに「PathInfo:」が設定されている場合、送信ヘッダに「PathTranslated」を追加する
-            if (request.Header.PathInfo.Enabled)
+            if (context.RequestHeader.PathInfo.Enabled)
             {
-                var pathInfo = request.Header.PathInfo.ValString;
+                var pathInfo = context.RequestHeader.PathInfo.ValString;
                 pathInfo = _Selector.DocumentRoot + pathInfo;
                 //document.AddHeader("PathTranslated", Util.SwapChar('/', '\\', pathInfo));
-                request.Response.AddHeader("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
+                context.ResponseHeader.Append("PathTranslated", Util.SwapChar('/', Path.DirectorySeparatorChar, pathInfo));
             }
 
             //***************************************************************
             //メソッドに応じた処理 OPTIONS 対応 Ver5.1.x
             //***************************************************************
-            if (WebDav.WebDav.IsTarget(request.Request.Method))
+            if (WebDav.WebDav.IsTarget(context.Request.Method))
             {
-                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, request.Response, request.Url, request.Header.GetVal("Depth"), _contentType, (bool)_conf.Get("useEtag"));
+                var webDav = new WebDav.WebDav(Logger, _webDavDb, handleSelectorResult, context.Response, context.Url, context.RequestHeader.GetVal("Depth"), _contentType, (bool)_conf.Get("useEtag"));
 
                 var inputBuf = new byte[0];
-                if (request.InputStream != null)
+                if (context.InputStream != null)
                 {
-                    inputBuf = request.InputStream.GetBytes();
+                    inputBuf = context.InputStream.GetBytes();
                 }
 
-                switch (request.Request.Method)
+                switch (context.Request.Method)
                 {
                     case HttpMethod.Options:
-                        request.ResponseCode = webDav.Option();
+                        context.ResponseCode = webDav.Option();
                         break;
                     case HttpMethod.Delete:
-                        request.ResponseCode = webDav.Delete();
+                        context.ResponseCode = webDav.Delete();
                         break;
                     case HttpMethod.Put:
-                        request.ResponseCode = webDav.Put(inputBuf);
+                        context.ResponseCode = webDav.Put(inputBuf);
                         break;
                     case HttpMethod.Proppatch:
-                        request.ResponseCode = webDav.PropPatch(inputBuf);
+                        context.ResponseCode = webDav.PropPatch(inputBuf);
                         break;
                     case HttpMethod.Propfind:
-                        request.ResponseCode = webDav.PropFind();
+                        context.ResponseCode = webDav.PropFind();
                         break;
                     case HttpMethod.Mkcol:
-                        request.ResponseCode = webDav.MkCol();
+                        context.ResponseCode = webDav.MkCol();
                         break;
                     case HttpMethod.Copy:
                     case HttpMethod.Move:
-                        request.ResponseCode = 405;
+                        context.ResponseCode = 405;
                         //Destnationで指定されたファイルは書き込み許可されているか？
                         var dstTarget = new HandlerSelector(_kernel, _conf, Logger);
-                        if (request.Header.Destination.Enabled)
+                        if (context.RequestHeader.Destination.Enabled)
                         {
-                            string destinationStr = request.Header.Destination.ValString;
+                            string destinationStr = context.RequestHeader.Destination.ValString;
                             if (destinationStr.IndexOf("://") == -1)
                             {
-                                destinationStr = request.Url + destinationStr;
+                                destinationStr = context.Url + destinationStr;
                             }
                             var uri = new Uri(destinationStr);
                             var result = dstTarget.InitFromUri(uri.LocalPath);
@@ -434,7 +435,7 @@ namespace Bjd.WebServer
                             if (result.WebDavKind == WebDavKind.Write)
                             {
                                 var overwrite = false;
-                                var overwriteStr = request.Header.GetVal("Overwrite");
+                                var overwriteStr = context.RequestHeader.GetVal("Overwrite");
                                 if (overwriteStr != null)
                                 {
                                     if (overwriteStr == "F")
@@ -442,8 +443,9 @@ namespace Bjd.WebServer
                                         overwrite = true;
                                     }
                                 }
-                                request.ResponseCode = webDav.MoveCopy(result, overwrite, request.Request.Method);
-                                request.Response.AddHeader("Location", destinationStr);
+                                context.ResponseCode = webDav.MoveCopy(result, overwrite, context.Request.Method);
+                                //context.ResponseHeader.Append("Location", destinationStr);
+                                context.ResponseHeader.SetLocation(destinationStr);
                             }
                         }
                         break;
@@ -454,13 +456,13 @@ namespace Bjd.WebServer
             }
 
             // handler
-            if (!handleSelectorResult.Handler.Request(request, handleSelectorResult))
+            if (!handleSelectorResult.Handler.Request(context, handleSelectorResult))
             {
                 return false;
             }
 
             SEND:
-            await SendAsync(request);
+            await SendAsync(context);
 
             return true;
         }
@@ -580,6 +582,7 @@ namespace Bjd.WebServer
         {
             var contextConnection = contextRequest.Connection;
             var response = contextRequest.Response;
+            var responseHeader = contextRequest.ResponseHeader;
 
             _kernel.Logger.DebugInformation($"WebServer.OnSubThread SEND");
             //レスポンスコードが200以外の場合は、ドキュメント（及び送信ヘッダ）をエラー用に変更する
@@ -594,7 +597,8 @@ namespace Bjd.WebServer
                     if (contextRequest.Url != null)
                     {
                         var str = string.Format("{0}{1}/", contextRequest.Url, contextRequest.Request.Uri);
-                        response.AddHeader("Location", Encoding.UTF8.GetBytes(str));
+                        //response.AddHeader("Location", Encoding.UTF8.GetBytes(str));
+                        responseHeader.SetLocation(str.ToUtf8BufferData());
                     }
                 }
 
@@ -606,7 +610,7 @@ namespace Bjd.WebServer
                 {
                     if (contextRequest.ResponseCode == 401)
                     {
-                        response.AddHeader("WWW-Authenticate", string.Format("Basic realm=\"{0}\"", contextRequest.AuthName));
+                        responseHeader.Append("WWW-Authenticate", string.Format("Basic realm=\"{0}\"", contextRequest.AuthName));
                     }
                 }
             }

@@ -59,6 +59,10 @@ namespace Bjd
             AcceptRange = new KnowHeader("Accept-Range", "ACCEPT-RANGE", "");
             _ar.Add(AcceptRange);
             AcceptRange.Enabled = false;
+
+            Location = new KnowHeader("Location", "LOCATION", "");
+            _ar.Add(Location);
+            Location.Enabled = false;
         }
 
         public IHeader Server;
@@ -71,6 +75,7 @@ namespace Bjd
         public IHeader ETag;
         public IHeader ContentRange;
         public IHeader AcceptRange;
+        public IHeader Location;
         public bool IsText = false;
 
         public override void Clear()
@@ -86,6 +91,7 @@ namespace Bjd
             _ar.Add(MIMEVersion);
             _ar.Add(AcceptRange);
             _ar.Add(ContentRange);
+            _ar.Add(Location);
 
             Server.Enabled = true;
             Date.Enabled = true;
@@ -97,6 +103,7 @@ namespace Bjd
             MIMEVersion.Enabled = true;
             AcceptRange.Enabled = false;
             ContentRange.Enabled = false;
+            Location.Enabled = false;
             IsText = false;
         }
 
@@ -140,6 +147,17 @@ namespace Bjd
         {
             ETag.Enabled = true;
             ETag.ValString = etag;
+        }
+
+        public void SetLocation(BufferData location)
+        {
+            Location.Enabled = true;
+            Location.Val = location;
+        }
+        public void SetLocation(string location)
+        {
+            Location.Enabled = true;
+            Location.ValString = location;
         }
 
     }

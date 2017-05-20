@@ -46,13 +46,14 @@ namespace Bjd.WebServer
             if (requestContext == null)
             {
                 requestContext = new HttpContext(this);
+                requestContext.RequestHeader = new HttpRequestHeaders();
                 requestContext.Request = new HttpRequest(_Kernel, _Logger);
-                requestContext.Header = new HttpRequestHeaders();
-                requestContext.Response = new HttpResponse(_Kernel, _Logger, _Conf, _ContentType);
+                requestContext.ResponseHeader = new HttpResponseHeaders();
+                requestContext.Response = new HttpResponse(_Kernel, _Logger, _Conf, _ContentType, requestContext.ResponseHeader);
             }
             requestContext.Clear();
             requestContext.Request.Initialize(Connection);
-            requestContext.Header.Clear();
+            requestContext.RequestHeader.Clear();
             requestContext.Auth = null;
             requestContext.AuthName = null;
             requestContext.InputStream = null;
@@ -60,6 +61,7 @@ namespace Bjd.WebServer
             //requestContext.Response = null;
             requestContext.Response.Initialize(Connection);
             requestContext.ResponseCode = 0;
+            requestContext.ResponseHeader.Clear();
             requestContext.Url = null;
             return requestContext;
         }
@@ -87,6 +89,8 @@ namespace Bjd.WebServer
             Connection = null;
             RemoteIp = null;
             _Logger = null;
+            requestContext?.RequestHeader?.Dispose();
+            requestContext?.ResponseHeader?.Dispose();
         }
     }
 }

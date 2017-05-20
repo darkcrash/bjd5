@@ -1,15 +1,15 @@
-﻿using System;
-using System.Text;
-using Bjd.Net;
+﻿using Bjd;
 using Bjd.Configurations;
-using Bjd.Net.Sockets;
-using Bjd.Test;
-using Xunit;
-using Bjd.WebServer;
-using Bjd;
-using System.Net;
+using Bjd.Memory;
 using Bjd.Initialization;
+using Bjd.Net;
+using Bjd.Net.Sockets;
+using Bjd.WebServer;
 using Bjd.WebServer.Outside;
+using System;
+using System.Net;
+using System.Text;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace WebServerTest
@@ -172,13 +172,18 @@ namespace WebServerTest
 
             var request = new HttpRequest(_service.Kernel, null);
             var header = new HttpHeaders();
-            header.Append("Connection", Encoding.ASCII.GetBytes("keep-alive"));
-            header.Append("User-Agent", Encoding.ASCII.GetBytes("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"));
-            header.Append("Accept", Encoding.ASCII.GetBytes("text/html,application/xhtml"));
-            header.Append("Accept-Encoding", Encoding.ASCII.GetBytes("gzip,deflate,sdch"));
-            header.Append("Accept-Language", Encoding.ASCII.GetBytes("ja,en-US;q=0.8,en;q=0.6"));
-            header.Append("Accept-Charset", Encoding.ASCII.GetBytes("Shift_JIS,utf-8;q=0.7,*;q=0.3"));
-            header.Append("Cache-Control", Encoding.ASCII.GetBytes("max-age=0"));
+            header.Append("Connection", "keep-alive".ToAsciiBufferData());
+            header.Append("User-Agent", "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)".ToAsciiBufferData());
+            //header.Append("Accept", Encoding.ASCII.GetBytes("text/html,application/xhtml"));
+            //header.Append("Accept-Encoding", Encoding.ASCII.GetBytes("gzip,deflate,sdch"));
+            //header.Append("Accept-Language", Encoding.ASCII.GetBytes("ja,en-US;q=0.8,en;q=0.6"));
+            //header.Append("Accept-Charset", Encoding.ASCII.GetBytes("Shift_JIS,utf-8;q=0.7,*;q=0.3"));
+            //header.Append("Cache-Control", Encoding.ASCII.GetBytes("max-age=0"));
+            header.Append("Accept", "text/html,application/xhtml".ToAsciiBufferData());
+            header.Append("Accept-Encoding", "gzip,deflate,sdch".ToAsciiBufferData());
+            header.Append("Accept-Language", "ja,en-US;q=0.8,en;q=0.6".ToAsciiBufferData());
+            header.Append("Accept-Charset", "Shift_JIS,utf-8;q=0.7,*;q=0.3".ToAsciiBufferData());
+            header.Append("Cache-Control", "max-age=0".ToAsciiBufferData());
 
             var tcpObj = new SockTcp(_kernel, ip, port, 3, null);
             const string fileName = "";

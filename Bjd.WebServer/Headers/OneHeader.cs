@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bjd.Memory;
+using System;
 using System.Text;
 
 namespace Bjd
@@ -8,7 +9,8 @@ namespace Bjd
         public bool Enabled { get; set; } = true;
         protected string _Key;
         protected string _KeyUpper;
-        protected byte[] _Val;
+        //protected byte[] _Val;
+        protected BufferData _Val;
         protected string _ValString;
         public string Key
         {
@@ -25,13 +27,15 @@ namespace Bjd
             get { return _KeyUpper; }
         }
 
-        public byte[] Val
+        public BufferData Val
         {
             get { return _Val; }
             set
             {
+                _Val?.Dispose();
                 _Val = value;
-                _ValString = Encoding.ASCII.GetString(_Val);
+                //_ValString = Encoding.ASCII.GetString(_Val);
+                _ValString = _Val.ToAsciiString();
             }
         }
         public string ValString
@@ -40,16 +44,18 @@ namespace Bjd
             set
             {
                 _ValString = value;
-                _Val = Encoding.ASCII.GetBytes(_ValString);
+                //_Val = Encoding.ASCII.GetBytes(_ValString);
+                _Val?.Dispose();
+                _Val = _ValString.ToAsciiBufferData();
             }
         }
-        public OneHeader(string key, byte[] val)
+        public OneHeader(string key, BufferData val)
         {
             Key = key;
             Val = val;
         }
 
-        public OneHeader(string key, string keyUpper, byte[] val)
+        public OneHeader(string key, string keyUpper, BufferData val)
         {
             _Key = key;
             _KeyUpper = keyUpper;
@@ -61,6 +67,18 @@ namespace Bjd
         {
             Key = key;
             ValString = val;
+        }
+
+        ~OneHeader()
+        {
+            _Val?.Dispose();
+            _Val = null;
+        }
+
+        public void Dispose()
+        {
+            _Val?.Dispose();
+            _Val = null;
         }
 
     }

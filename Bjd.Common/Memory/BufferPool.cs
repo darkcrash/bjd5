@@ -20,6 +20,7 @@ namespace Bjd.Memory
         const int bufferSizeXS = 1024;
         const int bufferSizeXXS = 256;
         const int bufferSizeXXXS = 64;
+        const int bufferSizeXXXXS = 16;
 
         const long L_bufferSizeXXXXL = bufferSizeXXXXL;
         const long L_bufferSizeXXXL = bufferSizeXXXL;
@@ -31,6 +32,7 @@ namespace Bjd.Memory
         const long L_bufferSizeXS = bufferSizeXS;
         const long L_bufferSizeXXS = bufferSizeXXS;
         const long L_bufferSizeXXXS = bufferSizeXXXS;
+        const long L_bufferSizeXXXXS = bufferSizeXXXXS;
 
         private readonly static BufferPool ExtraExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXXL);
         private readonly static BufferPool ExtraExtraExtraLarge = new BufferPool(0, 4, bufferSizeXXXL);
@@ -42,6 +44,7 @@ namespace Bjd.Memory
         private readonly static BufferPool ExtraSmall;
         private readonly static BufferPool ExtraExtraSmall;
         private readonly static BufferPool ExtraExtraExtraSmall;
+        private readonly static BufferPool ExtraExtraExtraExtraSmall;
 
         static BufferPool()
         {
@@ -55,7 +58,8 @@ namespace Bjd.Memory
             Small = new BufferPool(M, poolSize, bufferSizeS);
             ExtraSmall = new BufferPool(M, poolSize, bufferSizeXS);
             ExtraExtraSmall = new BufferPool(M, poolSize, bufferSizeXXS);
-            ExtraExtraExtraSmall = new BufferPool(M, poolSize, bufferSizeXXXS);
+            ExtraExtraExtraSmall = new BufferPool(M, poolSize * 2, bufferSizeXXXS);
+            ExtraExtraExtraExtraSmall = new BufferPool(M, poolSize * 4, bufferSizeXXXXS);
 
         }
 
@@ -82,6 +86,7 @@ namespace Bjd.Memory
         }
         public static BufferData Get(long length)
         {
+            if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
             if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
             if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
             if (length <= L_bufferSizeXS) return ExtraSmall.Get();
@@ -92,6 +97,7 @@ namespace Bjd.Memory
         }
         public static BufferData GetMaximum(long length)
         {
+            if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
             if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
             if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
             if (length <= L_bufferSizeXS) return ExtraSmall.Get();

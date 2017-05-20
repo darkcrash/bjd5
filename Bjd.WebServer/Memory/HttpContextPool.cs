@@ -25,7 +25,7 @@ namespace Bjd.WebServer.Memory
             Pool.logger = logger;
             Pool.conf = conf;
             Pool.contentType = contentType;
-            Pool.InitializePool(300, 1024);
+            Pool.InitializePool(300, 8192);
             return Pool;
         }
 

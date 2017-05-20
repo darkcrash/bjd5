@@ -13,6 +13,24 @@ namespace Bjd.Memory
         private static char Cr = (char)0x0D;
         private static char Lf = (char)0x0A;
 
+        public static BufferData ToAsciiBufferData(this string text)
+        {
+            var ascii = System.Text.Encoding.ASCII;
+            var len = ascii.GetByteCount( text);
+            var buffer = BufferPool.GetMaximum(len);
+            buffer.DataSize = ascii.GetBytes(text, 0, text.Length, buffer.Data, 0);
+            return buffer;
+        }
+
+        public static BufferData ToUtf8BufferData(this string text)
+        {
+            var ascii = System.Text.Encoding.UTF8;
+            var len = ascii.GetByteCount(text);
+            var buffer = BufferPool.GetMaximum(len);
+            buffer.DataSize = ascii.GetBytes(text, 0, text.Length, buffer.Data, 0);
+            return buffer;
+        }
+
         public static BufferData ToBufferData(this byte[] data)
         {
             var buffer = BufferPool.GetMaximum(data.Length);
@@ -148,6 +166,14 @@ namespace Bjd.Memory
             chars.DataSize = len;
             return chars;
         }
+
+        public static string ToAsciiString(this BufferData data)
+        {
+            var ascii = System.Text.Encoding.ASCII;
+            return ascii.GetString(data.Data, 0, data.DataSize);
+        }
+
+
 
         public static CharsData ToCharsData(this string text)
         {

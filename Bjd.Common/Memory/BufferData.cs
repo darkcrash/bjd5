@@ -82,7 +82,7 @@ namespace Bjd.Memory
             var srcPt = DataPoint + offsetSource;
             var dstPt = destnation.DataPoint + offsetDestnation;
             Buffer.MemoryCopy(srcPt, dstPt, size, size);
-            destnation.DataSize = size;
+            destnation.DataSize = offsetDestnation + size;
         }
 
 
@@ -106,7 +106,7 @@ namespace Bjd.Memory
         public void Dispose()
         {
             Data.Initialize();
-            _pool.PoolInternal(this);
+            _pool?.PoolInternal(this);
         }
 
         void IPoolBuffer.DisposeInternal()

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Bjd
 {
-    public class HttpHeaders : IEnumerable<IHeader>
+    public class HttpHeaders : IEnumerable<IHeader>, IDisposable
     {
         protected readonly List<IHeader> _ar = new List<IHeader>(25);
         static byte Cr = 0x0D;
@@ -35,15 +35,36 @@ namespace Bjd
             //\r\nを排除した行単位に加工する
             var lines = from b in Inet.GetLines(buf) select Inet.TrimCrlf(b);
             var key = "";
-            foreach (byte[] val in lines.Select(line => GetKeyVal(line, ref key)))
+            foreach (BufferData val in lines.Select(line => GetKeyVal(line, ref key)))
             {
                 Append(key, val);
             }
         }
 
+        ~HttpHeaders()
+        {
+            foreach (var h in _ar)
+            {
+                h.Dispose();
+            }
+            _ar.Clear();
+        }
+
+        public void Dispose()
+        {
+            foreach (var h in _ar)
+            {
+                 h.Dispose();
+            }
+            _ar.Clear();
+        }
 
         public virtual void Clear()
         {
+            foreach (var h in _ar)
+            {
+                if (h is OneHeader) h.Dispose();
+            }
             _ar.Clear();
         }
 
@@ -96,7 +117,8 @@ namespace Bjd
         {
             var kUpper = key.ToUpper();
             //byte[] への変換
-            var val = Encoding.ASCII.GetBytes(valStr);
+            //var val = Encoding.ASCII.GetBytes(valStr);
+            var val = valStr.ToAsciiBufferData();
             //Keyの存在確認
             var o = _ar.Find(h => h.KeyUpper == kUpper);
             if (o == null)
@@ -110,14 +132,14 @@ namespace Bjd
         }
 
         //同一のヘッダがあっても無条件に追加する
-        public IHeader Append(string key, byte[] val)
+        public IHeader Append(string key, BufferData val)
         {
             var header = new OneHeader(key, val);
             _ar.Add(header);
             return header;
         }
 
-        public IHeader Append(string key, string keyUpper, byte[] val)
+        public IHeader Append(string key, string keyUpper, BufferData val)
         {
             var header = new OneHeader(key, keyUpper, val);
             _ar.Add(header);
@@ -133,7 +155,7 @@ namespace Bjd
         }
 
 
-        protected virtual bool AppendHeader(string keyUpper, byte[] val)
+        protected virtual bool AppendHeader(string keyUpper, BufferData val)
         {
             return false;
         }
@@ -173,6 +195,7 @@ namespace Bjd
                         Append(key, keyUpper, val);
                         continue;
                     }
+                    val?.Dispose();
 
                     //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
                     var s = Encoding.ASCII.GetString(line.Data, 0, line.DataSize);
@@ -197,7 +220,7 @@ namespace Bjd
             int size = 2;//空白行 \r\n
             _ar.ForEach(o =>
             {
-                size += o.Key.Length + o.Val.Length + 4; //':'+' '+\r+\n
+                size += o.Key.Length + o.Val.DataSize + 4; //':'+' '+\r+\n
             });
             var buf = new byte[size];
             int p = 0;//書き込みポインタ
@@ -209,8 +232,8 @@ namespace Bjd
                 buf[p] = (byte)':';
                 buf[p + 1] = (byte)' ';
                 p += 2;
-                Buffer.BlockCopy(o.Val, 0, buf, p, o.Val.Length);
-                p += o.Val.Length;
+                Buffer.BlockCopy(o.Val.Data, 0, buf, p, o.Val.DataSize);
+                p += o.Val.DataSize;
                 buf[p] = (byte)'\r';
                 buf[p + 1] = (byte)'\n';
                 p += 2;
@@ -229,7 +252,7 @@ namespace Bjd
             foreach (var o in _ar)
             {
                 if (!o.Enabled) continue;
-                size += o.Key.Length + o.Val.Length + 4; //':'+' '+\r+\n
+                size += o.Key.Length + o.Val.DataSize + 4; //':'+' '+\r+\n
             }
             var buf = BufferPool.GetMaximum(size);
             ref int p = ref buf.DataSize;
@@ -257,8 +280,9 @@ namespace Bjd
                 buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
                 buf[buf.DataSize++] = Colon;
                 buf[buf.DataSize++] = Space;
-                Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
-                buf.DataSize += o.Val.Length;
+                //Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
+                o.Val.CopyTo(buf, 0, buf.DataSize, o.Val.DataSize);
+                //buf.DataSize += o.Val.DataSize;
                 buf[buf.DataSize++] = Cr;
                 buf[buf.DataSize++] = Lf;
             }
@@ -275,13 +299,14 @@ namespace Bjd
             var sb = new StringBuilder();
             _ar.ForEach(o =>
             {
-                sb.Append(string.Format("{0}: {1}\r\n", o.Key, Encoding.ASCII.GetString(o.Val)));
+                //sb.Append(string.Format("{0}: {1}\r\n", o.Key, Encoding.ASCII.GetString(o.Val)));
+                sb.Append(string.Format("{0}: {1}\r\n", o.Key, o.Val.ToAsciiString()));
             });
             sb.Append("\r\n");
             return sb.ToString();
         }
         //１行分のデータからKeyとValを取得する
-        byte[] GetKeyVal(byte[] line, ref string key)
+        BufferData GetKeyVal(byte[] line, ref string key)
         {
             key = "";
             for (int i = 0; i < line.Length; i++)
@@ -300,16 +325,19 @@ namespace Bjd
                 {
                     if (line[i] != ' ')
                     {
-                        var val = new byte[line.Length - i];
-                        Buffer.BlockCopy(line, i, val, 0, line.Length - i);
+                        //var val = new byte[line.Length - i];
+                        //Buffer.BlockCopy(line, i, val, 0, line.Length - i);
+                        var len = line.Length - i;
+                        var val = BufferPool.GetMaximum(len);
+                        Buffer.BlockCopy(line, i, val.Data, 0, len);
                         return val;
                     }
                 }
             }
-            return empty;
+            return BufferData.Empty;
         }
         //１行分のデータからKeyとValを取得する
-        byte[] GetKeyVal(BufferData line, ref string key)
+        BufferData GetKeyVal(BufferData line, ref string key)
         {
             key = "";
             for (int i = 0; i < line.DataSize; i++)
@@ -327,16 +355,17 @@ namespace Bjd
                 {
                     if (line.Data[i] != ' ')
                     {
-                        var val = new byte[line.DataSize - i];
-                        Buffer.BlockCopy(line.Data, i, val, 0, line.DataSize - i);
+                        //var val = new byte[line.DataSize - i];
+                        //Buffer.BlockCopy(line.Data, i, val, 0, line.DataSize - i);
+                        var len = line.DataSize - i;
+                        var val = BufferPool.GetMaximum(len);
+                        line.CopyTo(val, i, 0, len);
                         return val;
                     }
                 }
             }
-            return empty;
+            return BufferData.Empty;
         }
 
-        static byte[] empty = new byte[0];
-        static ArraySegment<byte> emptySegment = new ArraySegment<byte>(empty);
     }
 }

@@ -72,7 +72,7 @@ namespace Bjd
 
 
 
-        protected override bool AppendHeader(string keyUpper, byte[] val)
+        protected override bool AppendHeader(string keyUpper, BufferData val)
         {
             IHeader header;
             switch (keyUpper)

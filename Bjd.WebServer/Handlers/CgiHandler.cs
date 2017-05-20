@@ -33,7 +33,7 @@ namespace Bjd.WebServer.Handlers
             connection.KeepAlive = false;//デフォルトで切断
 
             //環境変数作成
-            var env = new Env(_kernel, _conf, context.Request, context.Header, connection.Connection, selector.FullPath);
+            var env = new Env(_kernel, _conf, context.Request, context.RequestHeader, connection.Connection, selector.FullPath);
 
             // 詳細ログ
             Logger.Set(LogKind.Detail, connection.Connection, 18, string.Format("{0} {1}", selector.CgiCmd, Path.GetFileName(selector.FullPath)));
@@ -68,7 +68,8 @@ namespace Bjd.WebServer.Handlers
             _kernel.Logger.TraceInformation("CgiHandler.CreateFromCgi ");
 
             // cgi出力で、Location:が含まれる場合、レスポンスコードを302にする
-            if (context.Response.SearchLocation())//Location:ヘッダを含むかどうか
+            //if (context.Response.SearchLocation())//Location:ヘッダを含むかどうか
+            if (context.ResponseHeader.Location.Enabled)//Location:ヘッダを含むかどうか
                 context.ResponseCode = 302;
 
             return true;

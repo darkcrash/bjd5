@@ -12,6 +12,7 @@ using Bjd.Utils;
 using Bjd.Threading;
 using Bjd.WebServer.Handlers;
 using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.WebServer
 {
@@ -31,15 +32,15 @@ namespace Bjd.WebServer
 
         public HttpResponseBody Body { get => _body; }
 
-        //送信ヘッダ
-        //readonly HttpHeaders _sendHeader;
+        ////送信ヘッダ
+        ////readonly HttpHeaders _sendHeader;
         readonly HttpResponseHeaders _sendHeader;
 
-        public HttpResponseHeaders Headers => _sendHeader;
+        //public HttpResponseHeaders Headers => _sendHeader;
 
         public bool SetRangeTo { get; set; }//Rangeヘッダで範囲（終わり）が指定された場合True
 
-        public HttpResponse(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType)
+        public HttpResponse(Kernel kernel, Logger logger, Conf conf, HttpContentType contentType, HttpResponseHeaders responseHeader)
         {
             _kernel = kernel;
             _logger = logger;
@@ -48,13 +49,13 @@ namespace Bjd.WebServer
             _contentType = contentType;
             _kernel.Logger.DebugInformation($"HttpResponse..ctor");
 
-
-            //送信ヘッダ初期化
-            //_sendHeader = new HttpHeader();
-            //_sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
-            //_sendHeader.Replace("MIME-Version", "1.0");
-            //_sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
-            _sendHeader = new HttpResponseHeaders();
+            ////送信ヘッダ初期化
+            ////_sendHeader = new HttpHeader();
+            ////_sendHeader.Replace("Server", Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
+            ////_sendHeader.Replace("MIME-Version", "1.0");
+            ////_sendHeader.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+            //_sendHeader = new HttpResponseHeaders();
+            _sendHeader = responseHeader;
             _sendHeader.Server.ValString = Util.SwapStr("$v", kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader"));
             _sendHeader.MIMEVersion.ValString = "1.0";
 
@@ -67,15 +68,15 @@ namespace Bjd.WebServer
         {
             SetRangeTo = false;
             _sockTcp = tcpObj;
-            _sendHeader.Clear();
             Clear();
         }
 
-        //Location:ヘッダを含むかどうか
-        public bool SearchLocation()
-        {
-            return null != _sendHeader.GetVal("Location");
-        }
+        ////Location:ヘッダを含むかどうか
+        //public bool SearchLocation()
+        //{
+        //    //return null != _sendHeader.GetVal("Location");
+        //    return _sendHeader.Location.Enabled;
+        //}
 
         public void Clear()
         {
@@ -117,11 +118,6 @@ namespace Bjd.WebServer
         }
 
         public void AddHeader(string key, string val)
-        {
-            _sendHeader.Append(key, val);
-        }
-        //Encoding.ASCII以外でエンコードしたい場合、こちらを使用する
-        public void AddHeader(string key, byte[] val)
         {
             _sendHeader.Append(key, val);
         }
@@ -197,7 +193,8 @@ namespace Bjd.WebServer
                         {
                             var tag = line.Substring(0, n);
                             var val = line.Substring(n + 1).Trim();
-                            _sendHeader.Append(tag.Trim(), Encoding.ASCII.GetBytes(val));
+                            //_sendHeader.Append(tag.Trim(), Encoding.ASCII.GetBytes(val));
+                            _sendHeader.Append(tag.Trim(), val);
                         }
                         else
                         {

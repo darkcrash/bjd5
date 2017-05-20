@@ -29,13 +29,13 @@ namespace Bjd.WebServer.Handlers
             connection.KeepAlive = false;//デフォルトで切断
 
             //環境変数作成
-            var env = new Env(_kernel, _conf, context.Request, context.Header, connection.Connection, result.FullPath);
+            var env = new Env(_kernel, _conf, context.Request, context.RequestHeader, connection.Connection, result.FullPath);
 
             // 詳細ログ
             Logger.Set(LogKind.Detail, connection.Connection, 18, string.Format("{0} {1}", result.CgiCmd, Path.GetFileName(result.FullPath)));
 
             //SSI
-            var ssi = new Ssi(_kernel, Logger, _conf, connection.Connection, context.Request, context.Header);
+            var ssi = new Ssi(_kernel, Logger, _conf, connection.Connection, context.Request, context.RequestHeader);
             if (!ssi.Exec(result, env, out context.OutputStream))
             {
                 // エラー出力

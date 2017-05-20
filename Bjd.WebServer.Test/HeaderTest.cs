@@ -2,6 +2,7 @@
 using Bjd.Utils;
 using Xunit;
 using Bjd;
+using Bjd.Memory;
 
 namespace Bjd.Test
 {
@@ -51,7 +52,8 @@ namespace Bjd.Test
                 //Append(string key,string val)
                 var key = string.Format("AppendKey_{0:D3}", i);
                 var val = string.Format("AppendVal_{0:D3}", i);
-                header.Append(key, Encoding.ASCII.GetBytes(val));
+                //header.Append(key, Encoding.ASCII.GetBytes(val));
+                header.Append(key, val.ToAsciiBufferData());
                 //string s = header.GetVal(key);
                 Assert.Equal(header.GetVal(key), val);
             }

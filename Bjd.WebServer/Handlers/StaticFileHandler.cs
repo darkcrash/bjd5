@@ -52,10 +52,10 @@ namespace Bjd.WebServer.Handlers
             //Modified処理
             //********************************************************************
             //if (context.Header.GetVal("If_Modified_Since") != null)
-            if (context.Header.IfModifiedSince.Enabled)
+            if (context.RequestHeader.IfModifiedSince.Enabled)
             {
                 //var dt = Util.Str2Time(context.Header.GetVal("If-Modified-Since"));
-                var dt = Util.Str2Time(context.Header.IfModifiedSince.ValString);
+                var dt = Util.Str2Time(context.RequestHeader.IfModifiedSince.ValString);
                 if (result.LastWriteTimeUtc.Ticks / 10000000 <= dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 304;
@@ -64,10 +64,10 @@ namespace Bjd.WebServer.Handlers
                 }
             }
             //if (context.Header.GetVal("If_Unmodified_Since") != null)
-            if (context.Header.IfUnmodifiedSince.Enabled)
+            if (context.RequestHeader.IfUnmodifiedSince.Enabled)
             {
                 //var dt = Util.Str2Time(context.Header.GetVal("If_Unmodified_Since"));
-                var dt = Util.Str2Time(context.Header.IfUnmodifiedSince.ValString);
+                var dt = Util.Str2Time(context.RequestHeader.IfUnmodifiedSince.ValString);
                 if (result.LastWriteTimeUtc.Ticks / 10000000 > dt.Ticks / 10000000)
                 {
                     context.ResponseCode = 412;
@@ -76,21 +76,21 @@ namespace Bjd.WebServer.Handlers
                 }
             }
             //context.Response.AddHeader("Last-Modified", Util.UtcTime2Str(result.LastWriteTimeUtc));
-            context.Response.Headers.SetLastModified(Util.UtcTime2Str(result.LastWriteTimeUtc));
+            context.ResponseHeader.SetLastModified(Util.UtcTime2Str(result.LastWriteTimeUtc));
             //********************************************************************
             //ETag処理
             //********************************************************************
             // (1) useEtagがtrueの場合は、送信時にETagを付加する
             // (2) If-None-Match 若しくはIf-Matchヘッダが指定されている場合は、排除対象かどうかの判断が必要になる
             //if ((bool)_conf.Get("useEtag") || context.Header.GetVal("If-Match") != null || context.Header.GetVal("If-None-Match") != null)
-            if (useEtag || context.Header.IfMatch.Enabled || context.Header.IfNoneMatch.Enabled)
+            if (useEtag || context.RequestHeader.IfMatch.Enabled || context.RequestHeader.IfNoneMatch.Enabled)
             {
                 //Ver5.1.5
                 //string etagStr = string.Format("\"{0:x}-{1:x}\"", target.FileInfo.Length, (target.FileInfo.LastWriteTimeUtc.Ticks / 10000000));
                 var etagStr = WebServerUtil.Etag(result);
                 string str;
                 //if (null != (str = context.Header.GetVal("If-Match")))
-                if (null != (str = context.Header.IfMatch.ValString))
+                if (null != (str = context.RequestHeader.IfMatch.ValString))
                 {
                     if (str != "*" && str != etagStr)
                     {
@@ -101,7 +101,7 @@ namespace Bjd.WebServer.Handlers
 
                 }
                 //if (null != (str = context.Header.GetVal("If-None-Match")))
-                if (null != (str = context.Header.IfNoneMatch.ValString))
+                if (null != (str = context.RequestHeader.IfNoneMatch.ValString))
                 {
                     if (str != "*" && str == etagStr)
                     {
@@ -112,20 +112,20 @@ namespace Bjd.WebServer.Handlers
                 }
                 if (useEtag)
                     //context.Response.AddHeader("ETag", etagStr);
-                    context.Response.Headers.SetETag(etagStr);
+                    context.ResponseHeader.SetETag(etagStr);
             }
             //********************************************************************
             //Range処理
             //********************************************************************
             //context.Response.AddHeader("Accept-Range", "bytes");
-            context.Response.Headers.SetAcceptRange("bytes");
+            context.ResponseHeader.SetAcceptRange("bytes");
             var rangeFrom = 0L;//デフォルトは最初から
             var rangeTo = result.FileSize;//デフォルトは最後まで（ファイルサイズ）
             //if (context.Header.GetVal("Range") != null)
-            if (context.Header.Range.Enabled)
+            if (context.RequestHeader.Range.Enabled)
             {//レンジ指定のあるリクエストの場合
                 //var range = context.Header.GetVal("Range");
-                var range = context.Header.Range.ValString;
+                var range = context.RequestHeader.Range.ValString;
                 //指定範囲を取得する（マルチ指定には未対応）
                 if (range.IndexOf("bytes=") == 0)
                 {
@@ -195,7 +195,7 @@ namespace Bjd.WebServer.Handlers
                         {
                             //正常に範囲を取得できた場合、事後Rangeモードで動作する
                             //context.Response.AddHeader("Content-Range", string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
-                            context.Response.Headers.SetContentRange(string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
+                            context.ResponseHeader.SetContentRange(string.Format("bytes {0}-{1}/{2}", rangeFrom, rangeTo, result.FileSize));
                             context.ResponseCode = 206;
                         }
                     }
