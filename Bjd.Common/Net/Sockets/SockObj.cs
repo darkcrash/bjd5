@@ -21,7 +21,7 @@ namespace Bjd.Net.Sockets
         private IPEndPoint _LocalAddress;
         private Ip _LocalIp;
         private Ip _RemoteIp;
-        private SimpleResetEvent cancelWaiter = SimpleResetPool.GetResetEvent(false);
+        private SimpleAsyncAwaiter cancelWaiter = SimpleAsyncAwaiterPool.GetResetEvent(false);
 
         //****************************************************************
         // アドレス関連

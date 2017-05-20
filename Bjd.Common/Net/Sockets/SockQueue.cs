@@ -47,7 +47,7 @@ namespace Bjd.Net.Sockets
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
         SimpleResetEvent _modifyEvent = SimpleResetPool.GetResetEvent(false);
-        SimpleResetEvent _modifySizeEvent = SimpleResetPool.GetResetEvent(false);
+        SimpleAsyncAwaiter _modifySizeEvent = SimpleAsyncAwaiterPool.GetResetEvent(false);
         SimpleResetEvent _modifyLfEvent = SimpleResetPool.GetResetEvent(false);
 
         public SocketAsyncEventArgs RecvAsyncEventArgs;

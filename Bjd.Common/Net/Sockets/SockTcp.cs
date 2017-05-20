@@ -31,8 +31,8 @@ namespace Bjd.Net.Sockets
         private string hashText;
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
-        private SimpleResetEvent recvComplete = SimpleResetPool.GetResetEvent(false);
-        private SimpleResetEvent sendComplete = SimpleResetPool.GetResetEvent(false);
+        private SimpleAsyncAwaiter recvComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
+        private SimpleAsyncAwaiter sendComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
         private BufferData recvBuffer;
         private BufferData sendBuffer;
 

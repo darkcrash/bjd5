@@ -39,6 +39,7 @@ namespace Bjd.Memory
             BufferPool.GetMaximum(0).Dispose();
             CharsPool.GetMaximum(0).Dispose();
             SimpleResetPool.GetResetEvent().Dispose();
+            SimpleAsyncAwaiterPool.GetResetEvent().Dispose();
 
             
 
