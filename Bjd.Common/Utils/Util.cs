@@ -204,10 +204,10 @@ namespace Bjd.Utils
 
         }
 
+
         public static DateTime Str2Time(string str)
         {
-            string[] monthList = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
+            if (string.IsNullOrWhiteSpace(str)) return new DateTime(0);
             try
             {
                 var tmp = str.Split(' ');

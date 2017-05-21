@@ -66,7 +66,7 @@ namespace Bjd.ProxyHttpServer {
                 if (directory != null && !Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
 
-                var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+                var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write,  FileShare.None, 65536);
 
                 //バージョン記録
                 WriteLine(fs, "V100");
@@ -102,7 +102,7 @@ namespace Bjd.ProxyHttpServer {
         public bool Read(string fileName) {
             if (File.Exists(fileName)) {
                 try {
-                    var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                    var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, 65536);
 
                     //バージョン復元
                     string verStr = ReadLine(fs);

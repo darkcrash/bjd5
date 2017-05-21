@@ -22,7 +22,7 @@ namespace Bjd
     {
         public Enviroments Enviroment { get; private set; }
 
-
+        public bool IsTest { get; private set; }
         public DnsCache DnsCache { get; private set; }
         //サーバ起動時に最初期化される変数
         public ListOption ListOption { get; private set; }
@@ -76,6 +76,7 @@ namespace Bjd
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Interactive;
             System.Runtime.GCSettings.LargeObjectHeapCompactionMode = System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
 
+            IsTest = isTest;
             Logger = new TmpLogger(this);
 
             Logger.TraceInformation("Kernel..ctor Start");

@@ -56,6 +56,23 @@ namespace Bjd.ProxyHttpServer
             CanUse = true;
             _threwLength = 0;
         }
+
+        public void Set(BufferData b)
+        {
+            if (b == null || b.Length == 0)
+            {
+                _buf = new byte[0];
+            }
+            else
+            {
+                _buf = new byte[b.DataSize];
+                Buffer.BlockCopy(b.Data, 0, _buf, 0, b.DataSize);
+            }
+            CanUse = true;
+            _threwLength = 0;
+        }
+
+
         public byte[] Get()
         {
             return CanUse ? _buf : null;
@@ -100,5 +117,47 @@ namespace Bjd.ProxyHttpServer
 
             return buf;
         }
+
+        public BufferData GetSendBuffer(int start)
+        {
+            if (start < 0)
+            {
+                CanUse = false;
+            }
+
+            if (CanUse)
+            {
+                var len = _buf.Length - start;
+
+                //これ以上データは無い
+                if (len == 0) return null;
+                
+                var b = BufferPool.GetMaximum(len);
+                Buffer.BlockCopy(_buf, start, b.Data, 0, len);
+                b.DataSize = len;
+
+                if (_buf.Length > _max)
+                {
+                    CanUse = false;
+
+                    _threwLength += _buf.Length;//サイズ保存
+                    _buf = new byte[0];//現在のバッファを捨てる
+                }
+                return b;
+            }
+            //start が<0の時、intをオーバーしているので条件判断しない
+            if (start != _threwLength && start >= 0)
+            {
+                return null;
+            }
+            var buf = BufferPool.GetMaximum(_buf.Length);
+            Buffer.BlockCopy(_buf, 0, buf.Data, 0, _buf.Length);
+            buf.DataSize = _buf.Length;
+            _threwLength += _buf.Length; //サイズ保存
+            _buf = new byte[0]; //現在のバッファを捨てる
+
+            return buf;
+        }
+
     }
 }

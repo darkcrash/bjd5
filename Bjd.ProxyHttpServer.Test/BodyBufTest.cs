@@ -1,6 +1,7 @@
 ﻿using System;
 using Xunit;
 using Bjd.ProxyHttpServer;
+using Bjd.Memory;
 
 namespace ProxyHttpServerTest
 {
@@ -8,12 +9,15 @@ namespace ProxyHttpServerTest
     {
 
         //BodyBuf bodyBuf;
-        byte[] _dmyData;
+        //byte[] _dmyData;
+        BufferData _dmyData;
         private const int DmyMax = 1000; //1Kbyte
 
         public BodyBufTest()
         {
-            _dmyData = new byte[DmyMax];
+            //_dmyData = new byte[DmyMax];
+            _dmyData = BufferPool.GetMaximum(DmyMax);
+            _dmyData.DataSize = DmyMax;
             for (int i = 0; i < DmyMax; i++)
             {
                 _dmyData[i] = (byte)i;

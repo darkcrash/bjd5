@@ -12,9 +12,10 @@ namespace Bjd.ProxyHttpServer
 {
     class ProxyHttp : ProxyObj
     {
+        static long[] emptyLong = new long[] { 0 };
 
-        //readonly OneOption _oneOption;//オプションヘッダの追加のため
-        Conf _conf;
+    //readonly OneOption _oneOption;//オプションヘッダの追加のため
+    Conf _conf;
         readonly Kernel _kernel;//オプションヘッダの追加のため
         readonly Cache _cache;
         public LimitString LimitString { get; private set; }
@@ -68,7 +69,7 @@ namespace Bjd.ProxyHttpServer
         {
             if (IsFinish())
             {
-                var waitTime = _ar.Select(oneProxyHttp => oneProxyHttp.WaitTime).Concat(new long[] { 0 }).Min();
+                var waitTime = _ar.Select(oneProxyHttp => oneProxyHttp.WaitTime).Concat(emptyLong).Min();
                 if (waitTime > Proxy.OptionTimeout)
                 {
                     return true;

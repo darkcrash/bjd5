@@ -86,22 +86,28 @@ namespace Bjd.Memory
         }
         public static BufferData Get(long length)
         {
-            if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
-            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeS)
+            {
+                if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+                if (length <= L_bufferSizeS) return Small.Get();
+            }
             if (length <= L_bufferSizeM) return Medium.Get();
             if (length <= L_bufferSizeL) return Large.Get();
             return ExtraLarge.Get();
         }
         public static BufferData GetMaximum(long length)
         {
-            if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
-            if (length <= L_bufferSizeXS) return ExtraSmall.Get();
-            if (length <= L_bufferSizeS) return Small.Get();
+            if (length <= L_bufferSizeS)
+            {
+                if (length <= L_bufferSizeXXXXS) return ExtraExtraExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXXXS) return ExtraExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXXS) return ExtraExtraSmall.Get();
+                if (length <= L_bufferSizeXS) return ExtraSmall.Get();
+                if (length <= L_bufferSizeS) return Small.Get();
+            }
             if (length <= L_bufferSizeM) return Medium.Get();
             if (length <= L_bufferSizeL) return Large.Get();
             if (length <= L_bufferSizeXL) return ExtraLarge.Get();

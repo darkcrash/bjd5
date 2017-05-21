@@ -80,7 +80,8 @@ namespace Bjd.ProxyHttpServer
         public string GetVal(string key)
         {
             //Keyの存在確認
-            var o = _ar.Find(h => h.Key.ToUpper() == key.ToUpper());
+            //var o = _ar.Find(h => h.Key.ToUpper() == key.ToUpper());
+            var o = _ar.Find(h => string.Compare(h.Key, key, true) == 0);
             return o == null ? null : Encoding.ASCII.GetString(o.Val);
         }
         //Ver5.4.4 ヘッダの削除
@@ -118,7 +119,8 @@ namespace Bjd.ProxyHttpServer
             //byte[] への変換
             var val = Encoding.ASCII.GetBytes(valStr);
             //Keyの存在確認
-            var o = _ar.Find(h => h.Key.ToUpper() == key.ToUpper());
+            //var o = _ar.Find(h => h.Key.ToUpper() == key.ToUpper());
+            var o = _ar.Find(h => string.Compare(h.Key, key, true) == 0);
             if (o == null)
             {
                 Append(key, val);//存在しない場合は追加

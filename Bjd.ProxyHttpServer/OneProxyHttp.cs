@@ -86,7 +86,8 @@ namespace Bjd.ProxyHttpServer
         {
             get
             {
-                return (DateTime.Now.Ticks - _lastRecvServer) / 1000 / 1000 / 10;
+                //return (DateTime.Now.Ticks - _lastRecvServer) / 1000 / 1000 / 10;
+                return (DateTime.Now.Ticks - _lastRecvServer) / 10000000;
             }
         }
 
@@ -173,7 +174,8 @@ namespace Bjd.ProxyHttpServer
 
                             _response.Recv("HTTP/1.1 200 OK");
                             _oneObj.Header[CS.Server] = new Header(oneCache.Header);
-                            _oneObj.Body[CS.Server].Set(new byte[oneCache.Body.Length]);
+
+                            //_oneObj.Body[CS.Server].Set(new byte[oneCache.Body.Length]);
 
                             //Buffer.BlockCopy(oneCache.Body, 0, oneObj.Body[CS.Server], 0, oneCache.Body.Length);
                             _oneObj.Body[CS.Server].Set(oneCache.Body);
@@ -999,9 +1001,11 @@ namespace Bjd.ProxyHttpServer
             if (len > 0)
             {
                 //Ver5.6.1
-                byte[] sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
-                if (!await SendAsync(sock, sendBuf))//送信
-                    return false;
+                using (var sendBuf = _oneObj.Body[cs].GetSendBuffer((int)_oneObj.Pos[cs]))
+                {
+                    if (!await SendAsync(sock, sendBuf))//送信
+                        return false;
+                }
                 _oneObj.Pos[cs] += len;
 
             }
@@ -1024,6 +1028,10 @@ namespace Bjd.ProxyHttpServer
             {
                 return await sock.SendAsync(buf);
             }
+        }
+        async ValueTask<bool> SendAsync(SockTcp sock, BufferData sendBuf)
+        {
+            return await sock.SendAsync(sendBuf);
         }
 
         //コンテンツ制限の確認

@@ -9,6 +9,7 @@ using Bjd.Configurations;
 using Bjd.Components;
 using Bjd.Utils;
 using Bjd.Threading;
+using Bjd.Net.Sockets;
 
 namespace Bjd.Memory
 {
@@ -34,14 +35,15 @@ namespace Bjd.Memory
 
             BufferPool._log = _log;
             CharsPool._log = _log;
+            SockQueuePool._log = _log;
             SimpleResetPool._log = _log;
+            SimpleAsyncAwaiterPool._log = _log;
 
             BufferPool.GetMaximum(0).Dispose();
             CharsPool.GetMaximum(0).Dispose();
+            SockQueuePool.Instance.Get().Dispose();
             SimpleResetPool.GetResetEvent().Dispose();
             SimpleAsyncAwaiterPool.GetResetEvent().Dispose();
-
-            
 
         }
 
@@ -54,7 +56,9 @@ namespace Bjd.Memory
         {
             BufferPool._log = null;
             CharsPool._log = null;
+            SockQueuePool._log = null;
             SimpleResetPool._log = null;
+            SimpleAsyncAwaiterPool._log = null;
 
             base.Dispose();
         }
