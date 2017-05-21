@@ -5,6 +5,7 @@ using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.ProxyHttpServer {
     internal class Response {
@@ -20,6 +21,18 @@ namespace Bjd.ProxyHttpServer {
             }
             return Interpretation(Inet.TrimCrlf(str));
         }
+        public async ValueTask<bool> RecvAsync(Logger logger, SockTcp sockTcp, int timeout, ILife iLife)
+        {
+            _logger = logger;
+            //int limit = 3600;//文字数制限
+            var str = await sockTcp.AsciiRecvAsync(timeout);
+            if (str == null)
+            {
+                return false;
+            }
+            return Interpretation(Inet.TrimCrlf(str));
+        }
+
         //キャッシュ用
         public bool Recv(string str) {
             return Interpretation(str);

@@ -35,6 +35,7 @@ namespace Bjd.Memory
         {
             var buffer = BufferPool.GetMaximum(data.Length);
             Buffer.BlockCopy(data, 0, buffer.Data, 0, data.Length);
+            buffer.DataSize = data.Length;
             return buffer;
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Bjd
 {
-    public enum CS
+    public enum CS : int
     {
         Client = 0,
         Server = 1

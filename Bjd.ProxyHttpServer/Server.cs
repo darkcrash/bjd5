@@ -9,6 +9,7 @@ using Bjd.Net;
 using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace Bjd.ProxyHttpServer
 {
@@ -38,6 +39,16 @@ namespace Bjd.ProxyHttpServer
 
         //リクエストを通常ログで表示する
         readonly bool _useRequestLog;
+
+        readonly bool useUpperProxy;
+        readonly string upperProxyServer;
+        readonly int upperProxyPort;
+        readonly bool upperProxyUseAuth;
+        readonly string upperProxyAuthName;
+        readonly string upperProxyAuthPass;
+
+        protected override bool AsyncMode => true;
+
 
         public Server(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, conf, oneBind)
@@ -87,7 +98,15 @@ namespace Bjd.ProxyHttpServer
 
             _dataPort = DataPortMin;
 
+
+            useUpperProxy = (bool)_conf.Get("useUpperProxy");
+            upperProxyServer = (string)_conf.Get("upperProxyServer");
+            upperProxyPort = (int)_conf.Get("upperProxyPort");
+            upperProxyUseAuth = (bool)_conf.Get("upperProxyUseAuth");
+            upperProxyAuthName = (string)_conf.Get("upperProxyAuthName");
+            upperProxyAuthPass = (string)_conf.Get("upperProxyAuthPass");
         }
+
         //リモート操作（データの取得）
         override public string Cmd(string cmdStr)
         {
@@ -123,16 +142,14 @@ namespace Bjd.ProxyHttpServer
 
         new public void Dispose()
         {
-            if (_cache != null)
-                _cache.Dispose();
+            _cache?.Dispose();
             _cache = null;
 
             base.Dispose();
         }
         override protected bool OnStartServer()
         {
-            if (_cache != null)
-                _cache.Start();
+            _cache?.Start();
             return true;
         }
         override protected void OnStopServer()
@@ -147,177 +164,300 @@ namespace Bjd.ProxyHttpServer
         override protected void OnSubThread(SockObj sockObj)
         {
 
+            //    //Ver5.6.9
+            //    //UpperProxy upperProxy = new UpperProxy((bool)Conf.Get("useUpperProxy"),(string)this.Conf.Get("upperProxyServer"),(int)this.Conf.Get("upperProxyPort"),disableAddressList);
+            //    var upperProxy = new UpperProxy((bool)_conf.Get("useUpperProxy"), (string)_conf.Get("upperProxyServer"), (int)_conf.Get("upperProxyPort"), _disableAddressList,
+            //        (bool)_conf.Get("upperProxyUseAuth"),
+            //        (string)_conf.Get("upperProxyAuthName"),
+            //        (string)_conf.Get("upperProxyAuthPass"));
+            //    var proxy = new Proxy(_kernel, Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
+            //    ProxyObj proxyObj = null;
+            //    OneObj oneObj = null;
+
+            //    //最初のリクエスト取得
+            //    for (int i = 0; IsLife() && proxy.Length(CS.Client) == 0; i++)
+            //    {
+            //        //まだサーバと未接続の段階では、クライアントからのリクエストがない場合、
+            //        //このスレッドはエラーとなる
+            //        Thread.Sleep(50);
+            //        if (i > 100)
+            //            goto end;//切断
+            //    }
+            //    //新たなHTTPオブジェクトを生成する
+            //    oneObj = new OneObj(proxy);
+
+            //    //リクエスト行・ヘッダ・POSTデータの読み込み・URL制限
+            //    if (!oneObj.RecvRequest(_useRequestLog, _limitUrl, this))
+            //        goto end;
+
+            //    //HTTPの場合
+            //    if (oneObj.Request.Protocol == ProxyProtocol.Http)
+            //    {
+
+            //        proxyObj = new ProxyHttp(proxy, _kernel, _conf, _cache, _limitString);//HTTPデータ管理オブジェクト
+
+            //        //最初のオブジェクトの追加
+            //        proxyObj.Add(oneObj);
+
+            //        while (IsLife())
+            //        {//デフォルトで継続型
+
+            //            //*******************************************************
+            //            //プロキシ処理
+            //            //*******************************************************
+            //            if (!proxyObj.Pipe(this))
+            //                goto end;
+
+            //            if (!((ProxyHttp)proxyObj).KeepAlive)
+            //            {
+            //                if (proxyObj.IsFinish())
+            //                {
+            //                    Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
+            //                    break;
+            //                }
+            //            }
+
+            //            //*******************************************************
+            //            //次のリクエストを取得
+            //            //*******************************************************
+            //            //if(((ProxyHttp)proxyObj).KeepAlive) {
+            //            for (var i = 0; i < 30; i++)
+            //            {
+            //                if (proxy.Length(CS.Client) != 0)
+            //                {
+
+            //                    //Ver5.9.0
+            //                    if (oneObj != null)
+            //                    {
+            //                        oneObj.Dispose();
+            //                    }
+            //                    //新たなHTTPオブジェクトを生成する
+            //                    oneObj = new OneObj(proxy);
+
+            //                    //リクエスト行・ヘッダ・POSTデータの読み込み・URL制限
+            //                    if (!oneObj.RecvRequest(_useRequestLog, _limitUrl, this))
+            //                        goto end;
+
+            //                    if (oneObj.Request.Protocol != ProxyProtocol.Http)
+            //                    {
+            //                        goto end;//Ver5.0.2
+            //                    }
+            //                    //HTTPオブジェクトの追加
+            //                    proxyObj.Add(oneObj);
+
+            //                }
+            //                else
+            //                {
+            //                    if (!proxyObj.IsFinish())
+            //                        break;
+
+            //                    //Ver5.6.1 最適化
+            //                    if (!proxyObj.WaitProcessing())
+            //                    {
+            //                        Thread.Sleep(5);
+            //                    }
+            //                }
+            //            }
+            //            //}
+            //            //デバッグログ
+            //            //proxyObj.DebugLog();
+
+            //            if (proxyObj.IsTimeout())
+            //            {
+            //                Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
+            //                break;
+            //            }
+            //            //Ver5.1.4-b1
+            //            //Thread.Sleep(500);
+
+            //            Thread.Sleep(1);//Ver5.6.1これを0にするとCPU使用率が100%になってしまう
+            //        }
+            //    }
+            //    else if (oneObj.Request.Protocol == ProxyProtocol.Ssl)
+            //    {
+
+            //        proxyObj = new ProxySsl(proxy);//SSLデータ管理オブジェクト
+
+            //        //オブジェクトの追加
+            //        proxyObj.Add(oneObj);
+
+            //        while (IsLife())
+            //        {//デフォルトで継続型
+
+            //            //*******************************************************
+            //            //プロキシ処理
+            //            //*******************************************************
+            //            if (!proxyObj.Pipe(this))
+            //                goto end;
+
+            //            //デバッグログ
+            //            //proxyObj.DebugLog();
+
+            //            if (proxyObj.IsTimeout())
+            //            {
+            //                Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
+            //                break;
+            //            }
+            //            //Ver5.0.0-b13
+            //            //Thread.Sleep(500);
+            //            Thread.Sleep(1);
+            //        }
+            //    }
+            //    else if (oneObj.Request.Protocol == ProxyProtocol.Ftp)
+            //    {
+            //        proxyObj = new ProxyFtp(proxy, _kernel, _conf, this, ++_dataPort);//FTPデータ管理オブジェクト
+
+            //        //オブジェクトの追加
+            //        proxyObj.Add(oneObj);
+
+            //        //*******************************************************
+            //        //プロキシ処理
+            //        //*******************************************************
+            //        proxyObj.Pipe(this);
+
+            //        _dataPort = ((ProxyFtp)proxyObj).DataPort;
+            //        if (_dataPort > DataPortMax)
+            //            _dataPort = DataPortMin;
+
+            //    }
+            //end:
+            //    //Ver5.9.0
+            //    if (oneObj != null)
+            //    {
+            //        oneObj.Dispose();
+            //    }
+
+
+            //    //終了処理
+            //    if (proxyObj != null)
+            //        proxyObj.Dispose();
+            //    proxy.Dispose();
+
+            //    //Java fix Ver5.9.0
+            //    //GC.Collect();
+        }
+
+        protected override async Task OnSubThreadAsync(SockObj sockObj)
+        {
+
             //Ver5.6.9
             //UpperProxy upperProxy = new UpperProxy((bool)Conf.Get("useUpperProxy"),(string)this.Conf.Get("upperProxyServer"),(int)this.Conf.Get("upperProxyPort"),disableAddressList);
-            var upperProxy = new UpperProxy((bool)_conf.Get("useUpperProxy"), (string)_conf.Get("upperProxyServer"), (int)_conf.Get("upperProxyPort"), _disableAddressList,
-                (bool)_conf.Get("upperProxyUseAuth"),
-                (string)_conf.Get("upperProxyAuthName"),
-                (string)_conf.Get("upperProxyAuthPass"));
+            var upperProxy = new UpperProxy(useUpperProxy, upperProxyServer, upperProxyPort, _disableAddressList,
+                upperProxyUseAuth,
+                upperProxyAuthName,
+                upperProxyAuthPass);
             var proxy = new Proxy(_kernel, Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
+
             ProxyObj proxyObj = null;
+            ProxyHttp proxyHttpObj = null;
+            ProxySsl proxySslObj = null;
             OneObj oneObj = null;
-
-            //最初のリクエスト取得
-            for (int i = 0; IsLife() && proxy.Length(CS.Client) == 0; i++)
-            {
-                //まだサーバと未接続の段階では、クライアントからのリクエストがない場合、
-                //このスレッドはエラーとなる
-                Thread.Sleep(50);
-                if (i > 100)
-                    goto end;//切断
-            }
-            //新たなHTTPオブジェクトを生成する
-            oneObj = new OneObj(proxy);
-
-            //リクエスト行・ヘッダ・POSTデータの読み込み・URL制限
-            if (!oneObj.RecvRequest(_useRequestLog, _limitUrl, this))
-                goto end;
-
-            //HTTPの場合
-            if (oneObj.Request.Protocol == ProxyProtocol.Http)
+            try
             {
 
-                proxyObj = new ProxyHttp(proxy, _kernel, _conf, _cache, _limitString);//HTTPデータ管理オブジェクト
-
-                //最初のオブジェクトの追加
-                proxyObj.Add(oneObj);
-
+                // デフォルトで継続型
                 while (IsLife())
-                {//デフォルトで継続型
+                {
 
-                    //*******************************************************
-                    //プロキシ処理
-                    //*******************************************************
-                    if (!proxyObj.Pipe(this))
-                        goto end;
+                    // 新たなHTTPオブジェクトを生成する
+                    oneObj?.Dispose();
+                    oneObj = new OneObj(proxy);
 
-                    if (!((ProxyHttp)proxyObj).KeepAlive)
+                    // リクエスト行・ヘッダ・POSTデータの読み込み・URL制限
+                    if (!await oneObj.RecvRequestAsync(_useRequestLog, _limitUrl, this))
+                        break;
+
+                    // HTTPの場合
+                    if (oneObj.Request.Protocol == ProxyProtocol.Http)
                     {
-                        if (proxyObj.IsFinish())
+                        // HTTPデータ管理オブジェクト
+                        if (proxyHttpObj == null) proxyHttpObj = new ProxyHttp(proxy, _kernel, _conf, _cache, _limitString);
+
+                        // 最初のオブジェクトの追加
+                        proxyHttpObj.Add(oneObj);
+
+                        // プロキシ処理
+                        if (!await proxyHttpObj.PipeAsync(this))
+                            break;
+
+                        if (!proxyHttpObj.KeepAlive)
                         {
-                            Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
+                            if (proxyHttpObj.IsFinish())
+                            {
+                                Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
+                                break;
+                            }
+                        }
+
+                        if (proxyHttpObj.IsTimeout())
+                        {
+                            Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
                             break;
                         }
+
+                        continue;
+                        //Thread.Sleep(1);//Ver5.6.1これを0にするとCPU使用率が100%になってしまう
                     }
-
-                    //*******************************************************
-                    //次のリクエストを取得
-                    //*******************************************************
-                    //if(((ProxyHttp)proxyObj).KeepAlive) {
-                    for (var i = 0; i < 30; i++)
+                    else if (oneObj.Request.Protocol == ProxyProtocol.Ssl)
                     {
-                        if (proxy.Length(CS.Client) != 0)
-                        {
 
-                            //Ver5.9.0
-                            if (oneObj != null)
-                            {
-                                oneObj.Dispose();
-                            }
-                            //新たなHTTPオブジェクトを生成する
-                            oneObj = new OneObj(proxy);
+                        if (proxySslObj == null) proxySslObj = new ProxySsl(proxy);//SSLデータ管理オブジェクト
 
-                            //リクエスト行・ヘッダ・POSTデータの読み込み・URL制限
-                            if (!oneObj.RecvRequest(_useRequestLog, _limitUrl, this))
+                        //オブジェクトの追加
+                        proxySslObj.Add(oneObj);
+
+                        while (IsLife())
+                        {//デフォルトで継続型
+
+                            //*******************************************************
+                            //プロキシ処理
+                            //*******************************************************
+                            if (!await proxySslObj.PipeAsync(this))
                                 goto end;
 
-                            if (oneObj.Request.Protocol != ProxyProtocol.Http)
+                            if (proxySslObj.IsTimeout())
                             {
-                                goto end;//Ver5.0.2
+                                Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
+                                goto end;
                             }
-                            //HTTPオブジェクトの追加
-                            proxyObj.Add(oneObj);
-
-                        }
-                        else
-                        {
-                            if (!proxyObj.IsFinish())
-                                break;
-
-                            //Ver5.6.1 最適化
-                            if (!proxyObj.WaitProcessing())
-                            {
-                                Thread.Sleep(5);
-                            }
+                            //Ver5.0.0-b13
+                            //Thread.Sleep(500);
+                            //Thread.Sleep(1);
                         }
                     }
-                    //}
-                    //デバッグログ
-                    //proxyObj.DebugLog();
-
-                    if (proxyObj.IsTimeout())
+                    else if (oneObj.Request.Protocol == ProxyProtocol.Ftp)
                     {
-                        Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
-                        break;
+                        if (proxyObj == null) proxyObj = new ProxyFtp(proxy, _kernel, _conf, this, ++_dataPort);//FTPデータ管理オブジェクト
+
+                        //オブジェクトの追加
+                        proxyObj.Add(oneObj);
+
+                        //*******************************************************
+                        //プロキシ処理
+                        //*******************************************************
+                        await proxyObj.PipeAsync(this);
+
+                        _dataPort = ((ProxyFtp)proxyObj).DataPort;
+                        if (_dataPort > DataPortMax) _dataPort = DataPortMin;
+
                     }
-                    //Ver5.1.4-b1
-                    //Thread.Sleep(500);
 
-                    Thread.Sleep(1);//Ver5.6.1これを0にするとCPU使用率が100%になってしまう
+                    end:
+                    break;
+
                 }
+
             }
-            else if (oneObj.Request.Protocol == ProxyProtocol.Ssl)
+            finally
             {
-
-                proxyObj = new ProxySsl(proxy);//SSLデータ管理オブジェクト
-
-                //オブジェクトの追加
-                proxyObj.Add(oneObj);
-
-                while (IsLife())
-                {//デフォルトで継続型
-
-                    //*******************************************************
-                    //プロキシ処理
-                    //*******************************************************
-                    if (!proxyObj.Pipe(this))
-                        goto end;
-
-                    //デバッグログ
-                    //proxyObj.DebugLog();
-
-                    if (proxyObj.IsTimeout())
-                    {
-                        Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
-                        break;
-                    }
-                    //Ver5.0.0-b13
-                    //Thread.Sleep(500);
-                    Thread.Sleep(1);
-                }
-            }
-            else if (oneObj.Request.Protocol == ProxyProtocol.Ftp)
-            {
-                proxyObj = new ProxyFtp(proxy, _kernel, _conf, this, ++_dataPort);//FTPデータ管理オブジェクト
-
-                //オブジェクトの追加
-                proxyObj.Add(oneObj);
-
-                //*******************************************************
-                //プロキシ処理
-                //*******************************************************
-                proxyObj.Pipe(this);
-
-                _dataPort = ((ProxyFtp)proxyObj).DataPort;
-                if (_dataPort > DataPortMax)
-                    _dataPort = DataPortMin;
-
-            }
-        end:
-            //Ver5.9.0
-            if (oneObj != null)
-            {
-                oneObj.Dispose();
+                //終了処理
+                oneObj?.Dispose();
+                proxyObj?.Dispose();
+                proxyHttpObj?.Dispose();
+                proxySslObj?.Dispose();
+                proxy?.Dispose();
             }
 
-
-            //終了処理
-            if (proxyObj != null)
-                proxyObj.Dispose();
-            proxy.Dispose();
-
-            //Java fix Ver5.9.0
-            //GC.Collect();
         }
 
         //RemoteServerでのみ使用される

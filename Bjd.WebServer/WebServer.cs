@@ -265,15 +265,17 @@ namespace Bjd.WebServer
                             {
                                 len = 51200000;
                             }
-                            var b = connection.Connection.Recv((int)len, timeOut, this);
-                            if (!context.InputStream.Add(b))
+                            using (var b = await connection.Connection.BufferRecvAsync((int)len, timeOut))
                             {
-                                errorCount++;//エラー蓄積
-                                Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, context.InputStream.Length));
-                            }
-                            else
-                            {
-                                errorCount = 0;//初期化
+                                if (!context.InputStream.Add(b))
+                                {
+                                    errorCount++;//エラー蓄積
+                                    Logger.Set(LogKind.Error, null, 41, string.Format("content-Length={0} Recv={1}", max, context.InputStream.Length));
+                                }
+                                else
+                                {
+                                    errorCount = 0;//初期化
+                                }
                             }
                             Logger.Set(LogKind.Detail, null, 38, string.Format("Content-Length={0} {1}bytes Received.", max, context.InputStream.Length));
                             if (errorCount > 5)

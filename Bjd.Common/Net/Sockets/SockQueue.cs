@@ -46,9 +46,9 @@ namespace Bjd.Net.Sockets
 
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false);
         //ManualResetEventSlim _modifyEvent = new ManualResetEventSlim(false, 0);
-        SimpleResetEvent _modifyEvent = SimpleResetPool.GetResetEvent(false);
+        SimpleAsyncAwaiter _modifyEvent = SimpleAsyncAwaiterPool.GetResetEvent(false);
         SimpleAsyncAwaiter _modifySizeEvent = SimpleAsyncAwaiterPool.GetResetEvent(false);
-        SimpleResetEvent _modifyLfEvent = SimpleResetPool.GetResetEvent(false);
+        SimpleAsyncAwaiter _modifyLfEvent = SimpleAsyncAwaiterPool.GetResetEvent(false);
 
         public SocketAsyncEventArgs RecvAsyncEventArgs;
         public BufferData RecvAsyncBuffer;
@@ -422,31 +422,6 @@ namespace Bjd.Net.Sockets
         }
 
 
-        public byte[] DequeueWait(int len, int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            ////要求サイズが現有数を超える場合は待機する
-            //var result = Dequeue(len, true);
-            //if (result != empty) return result;
-            //bool wait;
-            //try { wait = _modifyEvent.Wait(millisecondsTimeout, cancellationToken); }
-            //catch (OperationCanceledException) { return empty; }
-            //return Dequeue(len, false);
-
-            while (true)
-            {
-                if (len == 0) return empty;
-                if (cancellationToken.IsCancellationRequested) return empty;
-                var result = Dequeue(len, true);
-                if (result == empty)
-                {
-                    try { if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return Dequeue(len, false); }
-                    catch (OperationCanceledException) { return empty; }
-                    continue;
-                }
-                return result;
-            }
-        }
-
         //キューからのデータ取得
         public byte[] Dequeue(int len)
         {
@@ -607,33 +582,6 @@ namespace Bjd.Net.Sockets
 
         }
 
-
-        public byte[] DequeueLineWait(int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                if (cancellationToken.IsCancellationRequested) return empty;
-                var result = DequeueLine();
-                if (result == empty)
-                {
-                    try
-                    {
-                        if (useLfCount)
-                        {
-                            if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return empty;
-                        }
-                        else
-                        {
-                            if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return empty;
-                        }
-                    }
-                    catch (OperationCanceledException) { return empty; }
-                    continue;
-                }
-                return result;
-            }
-        }
-
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
@@ -723,33 +671,6 @@ namespace Bjd.Net.Sockets
 
 
             return empty;
-        }
-
-
-        public BufferData DequeueLineBufferWait(int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                if (cancellationToken.IsCancellationRequested) return BufferData.Empty;
-                var result = DequeueLineBuffer();
-                if (result == BufferData.Empty)
-                {
-                    try
-                    {
-                        if (useLfCount)
-                        {
-                            if (!_modifyLfEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty;
-                        }
-                        else
-                        {
-                            if (!_modifyEvent.Wait(millisecondsTimeout, cancellationToken)) return BufferData.Empty;
-                        }
-                    }
-                    catch (OperationCanceledException) { return BufferData.Empty; }
-                    continue;
-                }
-                return result;
-            }
         }
 
 
@@ -848,6 +769,25 @@ namespace Bjd.Net.Sockets
 
 
             return BufferData.Empty;
+        }
+
+
+        public async ValueTask<byte[]> DequeueAsync(int len, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
+            if (!result) return empty;
+
+            return Dequeue(len);
+        }
+
+        public async ValueTask<byte[]> DequeueLineAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
+
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
+            if (!result) return empty;
+
+            return DequeueLine();
         }
 
 

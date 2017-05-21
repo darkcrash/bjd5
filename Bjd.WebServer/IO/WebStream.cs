@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bjd.Memory;
+using System;
 using System.IO;
 
 namespace Bjd.WebServer.IO
@@ -95,6 +96,11 @@ namespace Bjd.WebServer.IO
             if (b == null)
                 return false;
             return Add2(b, 0, b.Length);
+        }
+        public bool Add(BufferData b)
+        {
+            if (b == null) return false;
+            return Add2(b.Data, 0, b.DataSize);
         }
 
         public bool Add2(byte[] b, int offset, int length)

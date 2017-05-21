@@ -31,8 +31,8 @@ namespace Bjd.Net.Sockets
         private string hashText;
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
-        private SimpleAsyncAwaiter recvComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
-        private SimpleAsyncAwaiter sendComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
+        private SimpleAsyncAwaiter recvComplete;
+        private SimpleAsyncAwaiter sendComplete;
         private BufferData recvBuffer;
         private BufferData sendBuffer;
 
@@ -56,9 +56,16 @@ namespace Bjd.Net.Sockets
             hash = this.GetHashCode();
             hashText = hash.ToString();
 
-            _socket = new Socket((ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            var addressFamily = (ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6;
+            _socket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
             _socket.SendTimeout = timeout * 1000;
             _socket.ReceiveTimeout = timeout * 1000;
+
+            if (ip.AddrV4 == 0 && ip.AddrV6H == 0 && ip.AddrV6L == 0)
+            {
+                Set(SockState.Connect, new IPEndPoint(0, 0), new IPEndPoint(0, 0));
+                return;
+            }
             try
             {
                 _socket.Connect(ip.IPAddress, port);
@@ -82,9 +89,10 @@ namespace Bjd.Net.Sockets
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
-                SetError("BeginConnect() faild");
+                SetError("BeginConnect() faild " + ex.Message);
+                return;
             }
 
             SetConnectionInfo();
@@ -129,6 +137,8 @@ namespace Bjd.Net.Sockets
         private void SetConnectionInfo()
         {
             //受信バッファは接続完了後に確保される
+            recvComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
+            sendComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
             _sockQueueRecv = SockQueuePool.Instance.Get();
             _sockQueueRecv.UseLf();
 
@@ -209,7 +219,7 @@ namespace Bjd.Net.Sockets
             (s, e) =>
         {
             var ins = (SockTcp)e.UserToken;
-
+            if (ins == null) return;
 
             if (ins.disposedValue || ins.CancelToken.IsCancellationRequested)
             {
@@ -347,19 +357,36 @@ namespace Bjd.Net.Sockets
         public byte[] Recv(int len, int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var result = _sockQueueRecv.DequeueWait(len, toutms, this.CancelToken);
+            var t = _sockQueueRecv.DequeueAsync(len, toutms, this.CancelToken).AsTask();
+            t.Wait();
+            var result = t.Result;
             if (result.Length == 0 && SockState != SockState.Connect) return null;
             var length = (result != null ? result.Length.ToString() : "null");
             Kernel.Logger.DebugInformation(hashText, " SockTcp.Recv ", length);
             return result;
         }
 
+        //受信<br>
+        //切断・タイムアウトでnullが返される
+        public async ValueTask<BufferData> BufferRecvAsync(int len, int sec)
+        {
+            var toutms = sec * 1000;
+            var result = await _sockQueueRecv.DequeueBufferAsync(len, toutms, this.CancelToken);
+            if (result.DataSize == 0 && SockState != SockState.Connect) return null;
+            var length = (result != null ? result.DataSize.ToString() : "null");
+            Kernel.Logger.DebugInformation(hashText, " SockTcp.BufferRecvAsync ", length);
+            return result;
+        }
+
+
         //1行受信
         //切断・タイムアウトでnullが返される
         public byte[] LineRecv(int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var result = _sockQueueRecv.DequeueLineWait(toutms, this.CancelToken);
+            var t = _sockQueueRecv.DequeueLineAsync(toutms, this.CancelToken).AsTask();
+            t.Wait();
+            var result = t.Result;
             if (result.Length == 0) return null;
             var length = (result != null ? result.Length.ToString() : "null");
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineRecv ", length);
@@ -369,7 +396,9 @@ namespace Bjd.Net.Sockets
         public BufferData LineBufferRecv(int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var result = _sockQueueRecv.DequeueLineBufferWait(toutms, this.CancelToken);
+            var resultTask = _sockQueueRecv.DequeueLineBufferAsync(toutms, this.CancelToken).AsTask();
+            resultTask.Wait();
+            var result = resultTask.Result;
             if (result.DataSize == 0) return null;
             var length = (result != null ? result.DataSize.ToString() : "null");
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecv ", length);
@@ -393,10 +422,7 @@ namespace Bjd.Net.Sockets
             {
                 using (var buffer = LineBufferRecv(sec, iLife))
                 {
-                    if (buffer == null)
-                    {
-                        return null;
-                    }
+                    if (buffer == null) return null;
                     return enc.GetString(buffer.Data, 0, buffer.DataSize);
                 }
             }
@@ -407,11 +433,35 @@ namespace Bjd.Net.Sockets
             return null;
         }
 
+        //１行のString受信
+        public async ValueTask<string> StringRecvAsync(Encoding enc, int sec, ILife iLife)
+        {
+            try
+            {
+                using (var buffer = await LineBufferRecvAsync(sec))
+                {
+                    if (buffer == null) return null;
+                    return enc.GetString(buffer.Data, 0, buffer.DataSize);
+                }
+            }
+            catch (Exception e)
+            {
+                Util.RuntimeException(e.Message);
+            }
+            return null;
+        }
+
+
         //１行のString受信(ASCII)
         public string StringRecv(int sec, ILife iLife)
         {
             return StringRecv(Encoding.ASCII, sec, iLife);
         }
+        public async ValueTask<string> StringRecvAsync(int sec, ILife iLife)
+        {
+            return await StringRecvAsync(Encoding.ASCII, sec, iLife);
+        }
+
         //１行のString受信
         public string StringRecv(string charsetName, int sec, ILife iLife)
         {
@@ -421,6 +471,21 @@ namespace Bjd.Net.Sockets
                 if (enc == null)
                     enc = Encoding.GetEncoding(charsetName);
                 return StringRecv(enc, sec, iLife);
+            }
+            catch (Exception e)
+            {
+                Util.RuntimeException(e.Message);
+            }
+            return null;
+        }
+        public async ValueTask<string> StringRecvAsync(string charsetName, int sec, ILife iLife)
+        {
+            try
+            {
+                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
+                if (enc == null)
+                    enc = Encoding.GetEncoding(charsetName);
+                return await StringRecvAsync(enc, sec, iLife);
             }
             catch (Exception e)
             {
@@ -439,6 +504,13 @@ namespace Bjd.Net.Sockets
                 return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
             }
         }
+        public async ValueTask<string> AsciiRecvAsync(int timeout)
+        {
+            using (var buf = await LineBufferRecvAsync(timeout))
+            {
+                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
+            }
+        }
 
         // 【１行受信】
         //切断されている場合、nullが返される
@@ -449,13 +521,9 @@ namespace Bjd.Net.Sockets
                 return buf == null ? null : buf.ToAsciiCharsData();
             }
         }
-
         public async ValueTask<CharsData> AsciiRecvCharsAsync(int timeoutSec)
         {
             Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
-            //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
-            //var result =  _sockQueueRecv.DequeueLineBufferAsync(toutms);
-            //return result.ContinueWith<CharsData>(AsciiFunc, CancelToken, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
             var result = await _sockQueueRecv.DequeueLineBufferAsync(timeoutSec * 1000);
             try
@@ -817,7 +885,7 @@ namespace Bjd.Net.Sockets
                 //TCPのソケットをシャットダウンするとエラーになる（無視する）
                 try
                 {
-                    _socket.Shutdown(SocketShutdown.Both);
+                    if (_socket.Connected) _socket.Shutdown(SocketShutdown.Both);
                     //_socket.Shutdown(SocketShutdown.Receive);
                 }
                 catch (Exception ex)
@@ -836,7 +904,7 @@ namespace Bjd.Net.Sockets
                         //sendBuffer.Dispose();
                         sendBuffer = null;
                     }
-                    sendComplete.Dispose();
+                    sendComplete?.Dispose();
                     sendComplete = null;
                 }
                 catch (Exception ex)
@@ -855,7 +923,7 @@ namespace Bjd.Net.Sockets
                         //recvBuffer.Dispose();
                         recvBuffer = null;
                     }
-                    recvComplete.Dispose();
+                    recvComplete?.Dispose();
                     recvComplete = null;
                 }
                 catch (Exception ex)

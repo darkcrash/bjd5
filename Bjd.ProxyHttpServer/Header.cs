@@ -6,6 +6,8 @@ using Bjd.Net;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.ProxyHttpServer
 {
@@ -164,6 +166,42 @@ namespace Bjd.ProxyHttpServer
             return false;
         }
 
+        public async ValueTask<bool> RecvAsync(SockTcp sockTcp, int timeout, ILife iLife)
+        {
+
+            //ヘッダ取得（データは初期化される）
+            _ar.Clear();
+
+            var key = "";
+            while (iLife.IsLife())
+            {
+                using (var line = await sockTcp.LineBufferRecvAsync(timeout))
+                {
+
+                    if (line == null) return false;
+                    Inet.TrimCrlf(line);
+                    //ヘッダの終了
+                    if (line.DataSize == 0) return true;
+
+                    //１行分のデータからKeyとValを取得する
+                    byte[] val = GetKeyVal(line, ref key);
+                    if (key != "")
+                    {
+                        Append(key, val);
+                    }
+                    else
+                    {
+                        //Ver5.4.4 HTTP/1.0 200 OKを２行返すサーバがいるものに対処
+                        var s = line.ToAsciiString();
+                        if (s.IndexOf("HTTP/") != 0)
+                            return false;//ヘッダ異常
+                    }
+                }
+
+            }
+            return false;
+        }
+
         public byte[] GetBytes()
         {
 
@@ -239,5 +277,34 @@ namespace Bjd.ProxyHttpServer
             }
             return new byte[0];
         }
+
+        byte[] GetKeyVal(BufferData line, ref string key)
+        {
+            key = "";
+            for (int i = 0; i < line.DataSize; i++)
+            {
+                if (key == "")
+                {
+                    if (line[i] == ':')
+                    {
+                        //var tmp = new byte[i];
+                        //Buffer.BlockCopy(line.Data, 0, tmp, 0, i);
+                        //key = Encoding.ASCII.GetString(tmp);
+                        key = Encoding.ASCII.GetString(line.Data, 0, i);
+                    }
+                }
+                else
+                {
+                    if (line[i] != ' ')
+                    {
+                        var val = new byte[line.DataSize - i];
+                        Buffer.BlockCopy(line.Data, i, val, 0, line.DataSize - i);
+                        return val;
+                    }
+                }
+            }
+            return new byte[0];
+        }
+
     }
 }

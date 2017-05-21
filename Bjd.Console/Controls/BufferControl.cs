@@ -155,6 +155,7 @@ namespace Bjd.Console.Controls
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
                 context.Write($"ResetEvent:{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
+                return;
             }
             cnt = cnt + SimpleAsyncAwaitPoolList.Count;
             if (cnt > idx)
@@ -164,6 +165,7 @@ namespace Bjd.Console.Controls
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
                 context.Write($"Awaiter   :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
+                return;
             }
             cnt = cnt + SockQueuePoolList.Count;
             if (cnt > idx)
@@ -173,6 +175,7 @@ namespace Bjd.Console.Controls
                 var frColor = (ActiveServerIndex == idx ? ConsoleColor.White : ConsoleColor.Gray);
                 context.Write($"SockQueue :{sv.ToConsoleString()}", frColor, bgColor);
                 base.Output(row, context);
+                return;
             }
 
         }

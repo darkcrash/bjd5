@@ -6,9 +6,12 @@ using Bjd.Logs;
 using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Threading;
+using System.Threading.Tasks;
 
-namespace Bjd.ProxyHttpServer {
-    class ProxyHttp : ProxyObj {
+namespace Bjd.ProxyHttpServer
+{
+    class ProxyHttp : ProxyObj
+    {
 
         //readonly OneOption _oneOption;//オプションヘッダの追加のため
         Conf _conf;
@@ -24,32 +27,50 @@ namespace Bjd.ProxyHttpServer {
         int _indexRecv;//サーバ側からのデータを、どこまで受信完了したかのインデックス
 
         public ProxyHttp(Proxy proxy, Kernel kernel, Conf conf, Cache cache, LimitString limitString)
-            : base(proxy) {
+            : base(proxy)
+        {
             _kernel = kernel;
             //_oneOption = oneOption;
             _conf = conf;
             _cache = cache;
             LimitString = limitString;
             KeepAlive = true;//デフォルトで継続型
+
+            useBrowserHedaer = (bool)_conf.Get("useBrowserHedaer");
+            addHeaderRemoteHost = (bool)_conf.Get("addHeaderRemoteHost");
+            addHeaderXForwardedFor = (bool)_conf.Get("addHeaderXForwardedFor");
+            addHeaderForwarded = (bool)_conf.Get("addHeaderForwarded");
         }
-        override public void Dispose() {
+
+        bool useBrowserHedaer;
+        bool addHeaderRemoteHost;
+        bool addHeaderXForwardedFor;
+        bool addHeaderForwarded;
+
+        override public void Dispose()
+        {
             //Ver5.9.0
-            foreach (var a in _ar) {
+            foreach (var a in _ar)
+            {
                 a.Dispose();
             }
             _ar = null;
         }
 
         //クライアントへの送信がすべて完了しているかどうかの確認
-        override public bool IsFinish() {
+        override public bool IsFinish()
+        {
             if (_indexClient == _ar.Count)
                 return true;
             return false;
         }
-        override public bool IsTimeout() {
-            if (IsFinish()) {
-                var waitTime = _ar.Select(oneProxyHttp => oneProxyHttp.WaitTime).Concat(new long[]{0}).Min();
-                if (waitTime > Proxy.OptionTimeout) {
+        override public bool IsTimeout()
+        {
+            if (IsFinish())
+            {
+                var waitTime = _ar.Select(oneProxyHttp => oneProxyHttp.WaitTime).Concat(new long[] { 0 }).Min();
+                if (waitTime > Proxy.OptionTimeout)
+                {
                     return true;
                 }
 
@@ -58,25 +79,32 @@ namespace Bjd.ProxyHttpServer {
         }
 
         //データオブジェクトの追加
-        override public void Add(OneObj oneObj) {
+        override public void Add(OneObj oneObj)
+        {
 
             //オプション指定によるヘッダの追加処理
-            if (!(bool)_conf.Get("useBrowserHedaer")) {
-                if ((bool)_conf.Get("addHeaderRemoteHost")) {
+            if (!useBrowserHedaer)
+            {
+                if (addHeaderRemoteHost)
+                {
                     //    oneObj.Header[cs].Append(key,val);
                     oneObj.Header[CS.Client].Append("Remote-Host-Wp", Encoding.ASCII.GetBytes(_kernel.Enviroment.ServerAddress));
                 }
-                if ((bool)_conf.Get("addHeaderXForwardedFor")) {
+                if (addHeaderXForwardedFor)
+                {
                     oneObj.Header[CS.Client].Append("X-Forwarded-For", Encoding.ASCII.GetBytes(_kernel.Enviroment.ServerAddress));
                 }
-                if ((bool)_conf.Get("addHeaderForwarded")) {
+                if (addHeaderForwarded)
+                {
                     string str = string.Format("by {0} (Version {1}) for {2}", _kernel.Enviroment.ApplicationName, _kernel.Enviroment.ProductVersion, _kernel.Enviroment.ServerAddress);
                     oneObj.Header[CS.Client].Append("Forwarded", Encoding.ASCII.GetBytes(str));
                 }
             }
 
-            if (_ar.Count == 0) {
-                if (oneObj.Request.HttpVer != "HTTP/1.1"){
+            if (_ar.Count == 0)
+            {
+                if (oneObj.Request.HttpVer != "HTTP/1.1" && oneObj.Header[CS.Client].GetVal("Connection")?.ToLower() != "keep-alive")
+                {
                     KeepAlive = false;//非継続型
                 }
             }
@@ -88,13 +116,17 @@ namespace Bjd.ProxyHttpServer {
         }
 
 
-        override public void DebugLog() {
+        override public void DebugLog()
+        {
             var list = new List<string>();
 
             //すべてのプロキシが完了している
-            if (_indexClient == _ar.Count) {
+            if (_indexClient == _ar.Count)
+            {
                 list.Add(string.Format("[HTTP] SOCK_STATE sv={0} cl={1} Finish/{2} HostName={3}", Proxy.Sock(CS.Server).SockState, Proxy.Sock(CS.Client).SockState, _ar.Count, Proxy.HostName));
-            } else{
+            }
+            else
+            {
                 list.Add(string.Format("[HTTP] SOCK_STATE sv={0} cl={1} {2}/{3} HostName={4}", Proxy.Sock(CS.Server).SockState, Proxy.Sock(CS.Client).SockState, _ar.Count, _indexClient, Proxy.HostName));
                 list.AddRange(_ar.Select((t, i) => t.DebugLog(i)).SelectMany(l => l));
             }
@@ -104,7 +136,8 @@ namespace Bjd.ProxyHttpServer {
 
 
         //プロキシ処理
-        override public bool Pipe(ILife iLife) {
+        override public bool Pipe(ILife iLife)
+        {
 
             if (!SendServer(iLife))//サーバへの送信
                 return false;
@@ -113,13 +146,43 @@ namespace Bjd.ProxyHttpServer {
             if (!SendClient(iLife))//クライアントへの送信
                 return false;
 
-            if (Proxy.Sock(CS.Server).SockState != SockState.Connect) {
-                if (_indexClient == _ar.Count) {
+            if (Proxy.SockState(CS.Server) != SockState.Connect)
+            {
+                if (_indexClient == _ar.Count)
+                {
                     return false;
                 }
             }
             //クライアントから切断された場合は、常に処理終了
-            if (Proxy.Sock(CS.Client).SockState != SockState.Connect) {
+            if (Proxy.Sock(CS.Client).SockState != SockState.Connect)
+            {
+                Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break ClientSocket!=CONNECT");
+                return false;
+            }
+
+            return true;
+        }
+        public override async ValueTask<bool> PipeAsync(ILife iLife)
+        {
+
+            if (!await SendServerAsync(iLife))//サーバへの送信
+                return false;
+            if (!await RecvServerAsync(iLife))//サーバからの受信
+                return false;
+            if (!await SendClientAsync(iLife))//クライアントへの送信
+                return false;
+
+            //if (Proxy.SockState(CS.Server) != SockState.Connect)
+            //{
+            //    if (_indexClient == _ar.Count)
+            //    {
+            //        return false;
+            //    }
+            //}
+
+            //クライアントから切断された場合は、常に処理終了
+            if (Proxy.Sock(CS.Client).SockState != SockState.Connect)
+            {
                 Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break ClientSocket!=CONNECT");
                 return false;
             }
@@ -128,15 +191,37 @@ namespace Bjd.ProxyHttpServer {
         }
 
         //サーバ側への送信
-        bool SendServer(ILife iLife) {
-            for (int i = _indexServer; iLife.IsLife() && i < _ar.Count; i++) {
+        bool SendServer(ILife iLife)
+        {
+            for (int i = _indexServer; iLife.IsLife() && i < _ar.Count; i++)
+            {
                 //次のオブジェクトの接続先が現在接続中のサーバと違う場合
-                if (Proxy.Sock(CS.Server) != null && _ar[i].HostName != Proxy.HostName) {
+                if (Proxy.Sock(CS.Server) != null && _ar[i].HostName != Proxy.HostName)
+                {
                     //既存のプロキシ処理が完了するまで、次のサーバ送信（リクエスト送信）は待機となる
                     if (i < _indexClient)
                         return true;
                 }
-                if (!_ar[i].SendServer(iLife)) {
+                if (!_ar[i].SendServer(iLife))
+                {
+                    return false;
+                }
+                _indexServer++;
+            }
+            return true;
+        }
+        async ValueTask<bool> SendServerAsync(ILife iLife)
+        {
+            for (int i = _indexServer; iLife.IsLife() && i < _ar.Count; i++)
+            {
+                //次のオブジェクトの接続先が現在接続中のサーバと違う場合
+                if (Proxy.Sock(CS.Server) != null && _ar[i].HostName != Proxy.HostName)
+                {
+                    //既存のプロキシ処理が完了するまで、次のサーバ送信（リクエスト送信）は待機となる
+                    if (i < _indexClient) return true;
+                }
+                if (!await _ar[i].SendServerAsync(iLife))
+                {
                     return false;
                 }
                 _indexServer++;
@@ -145,13 +230,17 @@ namespace Bjd.ProxyHttpServer {
         }
 
         //クライアント側への送信
-        bool SendClient(ILife iLife) {
-            for (int i = _indexClient; iLife.IsLife() && i < _ar.Count; i++) {
-                if (!_ar[i].SendClient(iLife)) {
+        bool SendClient(ILife iLife)
+        {
+            for (int i = _indexClient; iLife.IsLife() && i < _ar.Count; i++)
+            {
+                if (!_ar[i].SendClient(iLife))
+                {
                     return false;
                 }
                 //クライアントへの送信が完了しているかどうかの確認
-                if (_ar[i].SideState(CS.Client) != HttpSideState.ClientSideSendBody) {
+                if (_ar[i].SideState(CS.Client) != HttpSideState.ClientSideSendBody)
+                {
                     break;
                 }
                 //送信が完了している場合は、次のデータオブジェクトの処理に移行する
@@ -167,11 +256,41 @@ namespace Bjd.ProxyHttpServer {
             }
             return true;
         }
+        async ValueTask<bool> SendClientAsync(ILife iLife)
+        {
+            for (int i = _indexClient; iLife.IsLife() && i < _ar.Count; i++)
+            {
+                if (!await _ar[i].SendClientAsync(iLife))
+                {
+                    return false;
+                }
+                //クライアントへの送信が完了しているかどうかの確認
+                if (_ar[i].SideState(CS.Client) != HttpSideState.ClientSideSendBody)
+                {
+                    break;
+                }
+                //送信が完了している場合は、次のデータオブジェクトの処理に移行する
+                //proxy.Logger.Set(LogKind.Debug,null,999,string.Format("■indexClient {0}->{1}",indexClient,indexClient + 1));
+
+                //キャッシュが可能な場合は、ここでキャッシュされる
+                _ar[_indexClient].CacheWrite(_cache);
+
+                //ここでオブジェクトは破棄される
+                _ar[_indexClient].Dispose();
+
+                _indexClient++;
+
+            }
+            return true;
+        }
 
         //サーバ側からの受信
-        bool RecvServer(ILife iLife) {
-            for (int i = _indexRecv; iLife.IsLife() && i < _ar.Count; i++) {
-                if (!_ar[i].RecvServer(iLife)) {
+        bool RecvServer(ILife iLife)
+        {
+            for (int i = _indexRecv; iLife.IsLife() && i < _ar.Count; i++)
+            {
+                if (!_ar[i].RecvServer(iLife))
+                {
                     Proxy.Logger.Set(LogKind.Debug, null, 999, "[HTTP] Break RecvServer()");
                     return false;
                 }
@@ -183,7 +302,26 @@ namespace Bjd.ProxyHttpServer {
             }
             return true;
         }
-        override public bool WaitProcessing() {
+        async ValueTask<bool> RecvServerAsync(ILife iLife)
+        {
+            for (int i = _indexRecv; iLife.IsLife() && i < _ar.Count; i++)
+            {
+                if (!await _ar[i].RecvServerAsync(iLife))
+                {
+                    Proxy.Logger.Set(LogKind.Debug, null, 999, "[HTTP] Break RecvServer()");
+                    return false;
+                }
+                //サーバ側からの受信が完了しているかどうかの確認
+                if (_ar[i].SideState(CS.Server) != HttpSideState.ServerSideRecvBody)
+                    break;
+                //送信が完了しているばあは、次のデータオブジェクトの処理に移る
+                _indexRecv++;
+            }
+            return true;
+        }
+
+        override public bool WaitProcessing()
+        {
             if (_ar.Count > 0)
                 return true;
             return base.WaitProcessing();

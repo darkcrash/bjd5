@@ -5,10 +5,12 @@ using System.Threading;
 using Bjd;
 using Bjd.Logs;
 using Bjd.Net;
+using Bjd.Memory;
 using Bjd.Configurations;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
 using Bjd.Threading;
+using System.Threading.Tasks;
 
 namespace Bjd.ProxyHttpServer
 {
@@ -254,7 +256,165 @@ namespace Bjd.ProxyHttpServer
             Proxy.Sock(CS.Client).AsciiSend("HTTP/1.0 200 OK");//リプライ送信
             Proxy.Sock(CS.Client).SendUseEncode(header.GetBytes());//ヘッダ送信
             Proxy.Sock(CS.Client).SendNoEncode(doc);//ボディ送信
-        end:
+            end:
+            if (dataThread != null)
+                dataThread.Dispose();
+
+            return false;
+        }
+
+        public override async ValueTask<bool> PipeAsync(ILife iLife)
+        {
+
+            DataThread dataThread = null;
+            var paramStr = "";
+
+            //サーバ側との接続処理
+            if (!Proxy.Connect(iLife, _oneObj.Request.HostName, _oneObj.Request.Port, _oneObj.Request.RequestStr, _oneObj.Request.Protocol))
+            {
+                Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break proxy.Connect()==false");
+                return false;
+            }
+
+
+            //wait 220 welcome
+            if (!WaitLine("220", ref paramStr, iLife))
+                return false;
+
+            using (var sendData = string.Format("USER {0}", _user).ToCharsData())
+            {
+                await Proxy.Sock(CS.Server).AsciiSendAsync(sendData);
+            }
+            if (!WaitLine("331", ref paramStr, iLife))
+                return false;
+
+            using (var sendData = string.Format("PASS {0}", _pass).ToCharsData())
+            {
+                await Proxy.Sock(CS.Server).AsciiSendAsync(sendData);
+            }
+            if (!WaitLine("230", ref paramStr, iLife))
+                return false;
+
+            //Ver5.6.6
+            if (_path == "/")
+            {
+                using (var sendData = "PWD".ToCharsData())
+                {
+                    await Proxy.Sock(CS.Server).AsciiSendAsync(sendData);
+                }
+                if (!WaitLine("257", ref paramStr, iLife))
+                    return false;
+                var tmp = paramStr.Split(' ');
+                if (tmp.Length >= 1)
+                {
+                    _path = tmp[0].Trim(new[] { '"' });
+                    if (_path[_path.Length - 1] != '/')
+                    {
+                        _path = _path + "/";
+                    }
+                }
+            }
+
+
+            //リクエスト
+            if (_path != "")
+            {
+                Proxy.Sock(CS.Server).AsciiSend(string.Format("CWD {0}", _path));
+                if (!WaitLine("250", ref paramStr, iLife))
+                    goto end;
+            }
+
+            Proxy.Sock(CS.Server).AsciiSend(_file == "" ? "TYPE A" : "TYPE I");
+            if (!WaitLine("200", ref paramStr, iLife))
+                goto end;
+
+            //PORTコマンド送信
+            var bindAddr = Proxy.Sock(CS.Server).LocalIp;
+            // 利用可能なデータポートの選定
+            while (iLife.IsLife())
+            {
+                DataPort++;
+                if (DataPort >= 21000)
+                {
+                    DataPort = 20000;
+                }
+                if (SockUtil.IsAvailable(_kernel, bindAddr, DataPort))
+                {
+                    break;
+                }
+            }
+            int listenPort = DataPort;
+
+            //データスレッドの生成
+            dataThread = new DataThread(_kernel, bindAddr, listenPort);
+
+            // サーバ側に送るPORTコマンドを生成する
+            string str = string.Format("PORT {0},{1},{2},{3},{4},{5}", bindAddr.IpV4[0], bindAddr.IpV4[1], bindAddr.IpV4[2], bindAddr.IpV4[3], listenPort / 256, listenPort % 256);
+
+
+
+            Proxy.Sock(CS.Server).AsciiSend(str);
+            if (!WaitLine("200", ref paramStr, iLife))
+                goto end;
+
+            if (_file == "")
+            {
+                Proxy.Sock(CS.Server).AsciiSend("LIST");
+                if (!WaitLine("150", ref paramStr, iLife))
+                    goto end;
+            }
+            else
+            {
+                Proxy.Sock(CS.Server).AsciiSend("RETR " + _file);
+                if (!WaitLine("150", ref paramStr, iLife))
+                    goto end;
+
+            }
+
+            //Ver5.0.2
+            while (iLife.IsLife())
+            {
+                if (!dataThread.IsRecv)
+                    break;
+            }
+
+            if (!WaitLine("226", ref paramStr, iLife))
+                goto end;
+
+            byte[] doc;
+            if (_file == "")
+            {
+                //受信結果をデータスレッドから取得する
+                List<string> lines = Inet.GetLines(dataThread.ToString());
+                //ＦＴＰサーバから取得したLISTの情報をHTMLにコンバートする
+                doc = ConvFtpList(lines, _path);
+            }
+            else
+            {
+                doc = dataThread.ToBytes();
+            }
+
+            //クライアントへリプライ及びヘッダを送信する
+            var header = new Header();
+            header.Replace("Server", Util.SwapStr("$v", _kernel.Enviroment.ProductVersion, (string)_conf.Get("serverHeader")));
+
+            header.Replace("MIME-Version", "1.0");
+
+            if (_file == "")
+            {
+                header.Replace("Date", Util.UtcTime2Str(DateTime.UtcNow));
+                header.Replace("Content-Type", "text/html");
+            }
+            else
+            {
+                header.Replace("Content-Type", "none/none");
+            }
+            header.Replace("Content-Length", doc.Length.ToString());
+
+            Proxy.Sock(CS.Client).AsciiSend("HTTP/1.0 200 OK");//リプライ送信
+            Proxy.Sock(CS.Client).SendUseEncode(header.GetBytes());//ヘッダ送信
+            Proxy.Sock(CS.Client).SendNoEncode(doc);//ボディ送信
+            end:
             if (dataThread != null)
                 dataThread.Dispose();
 

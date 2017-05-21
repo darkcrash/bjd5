@@ -46,7 +46,9 @@ namespace Bjd.Test.Sockets
                 var expected = "本日は晴天なり\r\n";
 
                 //exercise
-                var actual = sut.StringRecv("UTF-8", timeout, this);
+                var result = sut.StringRecvAsync("UTF-8", timeout, this);
+                result.AsTask().Wait();
+                var actual = result.Result;
 
                 //verify
                 Assert.Equal(expected, actual);

@@ -85,6 +85,11 @@ namespace Bjd.Memory
             destnation.DataSize = offsetDestnation + size;
         }
 
+        public string GetString(Encoding enc)
+        {
+            if (this == Empty) return string.Empty;
+            return enc.GetString(DataPoint, DataSize);
+        }
 
         void IPoolBuffer.Initialize()
         {
