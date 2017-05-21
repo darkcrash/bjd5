@@ -89,16 +89,20 @@ namespace Bjd.Memory
         }
         private T GetInternal()
         {
-            var idx = Interlocked.Increment(ref _cursorDequeue);
-            var idxMod = idx % _poolMaxSize;
-            var b = Interlocked.Exchange(ref _buffers[idxMod], null);
-            if (b == null)
+            while (true)
             {
-                //Debug.WriteLine($"NotFound: {idxMod}, {this.ToConsoleString()}");
-                b = GetInternal();
+                var idx = Interlocked.Increment(ref _cursorDequeue);
+                var idxMod = idx % _poolMaxSize;
+                var b = Interlocked.Exchange(ref _buffers[idxMod], null);
+                if (b == null)
+                {
+                    //Debug.WriteLine($"NotFound: {idxMod}, {this.ToConsoleString()}");
+                    //b = GetInternal();
+                    continue;
+                }
+                ExchangeZero(ref _cursorDequeue, idx, idxMod);
+                return b;
             }
-            ExchangeZero(ref _cursorDequeue, idx, idxMod);
-            return b;
         }
 
 

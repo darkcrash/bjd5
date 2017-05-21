@@ -13,18 +13,26 @@ namespace Bjd.Threading
         static LazyCancelTimer timer = LazyCancelTimer.Instance;
         static Action<object> Registar => _ => { ((SimpleAwait)_).Cancel(); };
         private static WaitCallback queueWorker = (o) => { ((Action)o)(); };
-        private static ParameterizedThreadStart queueThread = (o) => { ((Action)o)(); };
-        private static Action<object> queueTask = (o) => { ((Action)o)(); };
+        private static ContextCallback contextWorker = (o) =>
+        {
+            System.Threading.ThreadPool.QueueUserWorkItem(queueWorker, o);
+        };
+
+        private static void Queue(Action continuation, ExecutionContext context)
+        {
+            if (continuation == null) return;
+            if (context == null)
+            {
+                Queue(continuation);
+                return;
+            }
+            System.Threading.ExecutionContext.Run(context, contextWorker, continuation);
+        }
 
         private static void Queue(Action continuation)
         {
             if (continuation == null) return;
             System.Threading.ThreadPool.QueueUserWorkItem(queueWorker, continuation);
-            //SimpleWoekerQueue.QueueUserWorkItem(queueWorker, continuation);
-
-            //var t = new System.Threading.Thread(queueThread);
-            //t.Start(continuation);
-            //System.Threading.Tasks.Task.Factory.StartNew(queueTask, continuation);
         }
 
         private Action _continuation;
@@ -33,6 +41,7 @@ namespace Bjd.Threading
         private int _IsCompleted = 0;
         private bool Result = false;
         private SimpleAwait _child;
+        private ExecutionContext _context;
 
         public SimpleAwait()
         {
@@ -99,9 +108,9 @@ namespace Bjd.Threading
         private void CompAndQueue()
         {
             var c = Interlocked.Exchange(ref _continuation, null);
-            Queue(c);
+            Queue(c, _context);
             var cu = Interlocked.Exchange(ref _continuationUnsafe, null);
-            Queue(cu);
+            Queue(cu, _context);
         }
 
         private void InvokeContinuation()
@@ -157,6 +166,7 @@ namespace Bjd.Threading
                 }
 
                 Interlocked.Exchange(ref _parent._continuation, continuation);
+                Interlocked.Exchange(ref _parent._context, ExecutionContext.Capture());
 
                 if (_parent.IsCompleted)
                 {
@@ -176,6 +186,7 @@ namespace Bjd.Threading
                 }
 
                 Interlocked.Exchange(ref _parent._continuationUnsafe, continuation);
+                Interlocked.Exchange(ref _parent._context, ExecutionContext.Capture());
 
                 if (_parent.IsCompleted)
                 {
