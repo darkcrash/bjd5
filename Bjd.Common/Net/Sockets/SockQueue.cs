@@ -496,6 +496,14 @@ namespace Bjd.Net.Sockets
             alloc.Clear();
             //System.Threading.Interlocked.Add(ref _length, -len);
             AddLength(-len);
+            if (useLfCount)
+            {
+                using (var buf = retBuf.ToBufferData())
+                {
+                    var lfCnt = buf.CountLf();
+                    AddLfCount(-lfCnt);
+                }
+            }
 
             return retBuf;
 
@@ -577,6 +585,11 @@ namespace Bjd.Net.Sockets
             alloc.Clear();
             //System.Threading.Interlocked.Add(ref _length, -len);
             AddLength(-len);
+            if (useLfCount)
+            {
+                var lfCnt = retBuf.CountLf();
+                AddLfCount(-lfCnt);
+            }
 
             return retBuf;
 

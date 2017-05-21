@@ -196,77 +196,77 @@ namespace Bjd.ProxyHttpServer
 
         public bool SendServer(ILife iLife)
         {
-            //処置なし
-            if (_sideState[CS.Server] != HttpSideState.Non && _sideState[CS.Server] != HttpSideState.ServerSideSendHeader)
-                return true;
+            ////処置なし
+            //if (_sideState[CS.Server] != HttpSideState.Non && _sideState[CS.Server] != HttpSideState.ServerSideSendHeader)
+            //    return true;
 
-            //サーバ側との接続処理
-            if (!_proxy.Connect(iLife, _oneObj.Request.HostName, _oneObj.Request.Port, _oneObj.Request.RequestStr, _oneObj.Request.Protocol))
-            {
-                _proxy.Logger.Set(LogKind.Debug, null, 999, "□Break http.Connect()==false");
-                return false;
-            }
+            ////サーバ側との接続処理
+            //if (!_proxy.Connect(iLife, _oneObj.Request.HostName, _oneObj.Request.Port, _oneObj.Request.RequestStr, _oneObj.Request.Protocol))
+            //{
+            //    _proxy.Logger.Set(LogKind.Debug, null, 999, "□Break http.Connect()==false");
+            //    return false;
+            //}
 
-            //ヘッダ送信
-            var sendBuf = new byte[0];
-            if (_sideState[CS.Server] == HttpSideState.Non)
-            {
-                if (_proxy.UpperProxy.Use)
-                {
-                    if (_proxy.UpperProxy.UseAuth)
-                    {
-                        var s = string.Format("{0}:{1}", _proxy.UpperProxy.AuthUser, _proxy.UpperProxy.AuthPass);
-                        s = string.Format("Basic {0}\r\n", Base64.Encode(s));
-                        _oneObj.Header[CS.Client].Append("Proxy-Authorization", Encoding.ASCII.GetBytes(s));
-                    }
-                }
+            ////ヘッダ送信
+            //var sendBuf = new byte[0];
+            //if (_sideState[CS.Server] == HttpSideState.Non)
+            //{
+            //    if (_proxy.UpperProxy.Use)
+            //    {
+            //        if (_proxy.UpperProxy.UseAuth)
+            //        {
+            //            var s = string.Format("{0}:{1}", _proxy.UpperProxy.AuthUser, _proxy.UpperProxy.AuthPass);
+            //            s = string.Format("Basic {0}\r\n", Base64.Encode(s));
+            //            _oneObj.Header[CS.Client].Append("Proxy-Authorization", Encoding.ASCII.GetBytes(s));
+            //        }
+            //    }
 
 
-                if (_oneObj.Request.Protocol == ProxyProtocol.Ssl)
-                {
-                    if (!_proxy.UpperProxy.Use)
-                    {
-                        //取得したリクエストをバッファに格納する
-                        //sendBuf = new byte[0];
-                        //sendBuf[CS.CLIENT] = Bytes.Create("HTTP/1.0 200 Connection established\r\n\r\n");//CONNECTが成功したことをクライアントに返す
-                    }
-                    else
-                    {
-                        //上位プロキシを使用する場合(リクエストラインはそのまま使用される)
-                        sendBuf = Bytes.Create(_oneObj.Request.SendLine(_proxy.UpperProxy.Use), _oneObj.Header[CS.Client].GetBytes());
-                    }
-                }
-                else if (_oneObj.Request.Protocol == ProxyProtocol.Http)
-                { //HTTPの場合
-                    //Ver5.4.4
-                    //"Proxy-Connection"ヘッダは,"Connection"ヘッダに変換する
-                    var s = _oneObj.Header[CS.Client].GetVal("Proxy-Connection");
-                    if (s != null)
-                    { //ヘッダが存在する場合
-                        _oneObj.Header[CS.Client].Replace("Proxy-Connection", "Connection", s);
-                    }
+            //    if (_oneObj.Request.Protocol == ProxyProtocol.Ssl)
+            //    {
+            //        if (!_proxy.UpperProxy.Use)
+            //        {
+            //            //取得したリクエストをバッファに格納する
+            //            //sendBuf = new byte[0];
+            //            //sendBuf[CS.CLIENT] = Bytes.Create("HTTP/1.0 200 Connection established\r\n\r\n");//CONNECTが成功したことをクライアントに返す
+            //        }
+            //        else
+            //        {
+            //            //上位プロキシを使用する場合(リクエストラインはそのまま使用される)
+            //            sendBuf = Bytes.Create(_oneObj.Request.SendLine(_proxy.UpperProxy.Use), _oneObj.Header[CS.Client].GetBytes());
+            //        }
+            //    }
+            //    else if (_oneObj.Request.Protocol == ProxyProtocol.Http)
+            //    { //HTTPの場合
+            //        //Ver5.4.4
+            //        //"Proxy-Connection"ヘッダは,"Connection"ヘッダに変換する
+            //        var s = _oneObj.Header[CS.Client].GetVal("Proxy-Connection");
+            //        if (s != null)
+            //        { //ヘッダが存在する場合
+            //            _oneObj.Header[CS.Client].Replace("Proxy-Connection", "Connection", s);
+            //        }
 
-                    //header.Remove("Proxy-Connection");//＜＝■これ入れていいのか？
+            //        //header.Remove("Proxy-Connection");//＜＝■これ入れていいのか？
 
-                    //取得したリクエストをバッファに格納する
-                    //上位プロキシを使用する場合(リクエストラインはそのまま使用される)
-                    sendBuf = Bytes.Create(_oneObj.Request.SendLine(_proxy.UpperProxy.Use), _oneObj.Header[CS.Client].GetBytes());
+            //        //取得したリクエストをバッファに格納する
+            //        //上位プロキシを使用する場合(リクエストラインはそのまま使用される)
+            //        sendBuf = Bytes.Create(_oneObj.Request.SendLine(_proxy.UpperProxy.Use), _oneObj.Header[CS.Client].GetBytes());
 
-                }
+            //    }
 
-                //送信
-                if (!Send(_proxy.Sock(CS.Server), sendBuf)) return false;
-                _sideState[CS.Server] = HttpSideState.ServerSideSendHeader;
-            }
+            //    //送信
+            //    if (!Send(_proxy.Sock(CS.Server), sendBuf)) return false;
+            //    _sideState[CS.Server] = HttpSideState.ServerSideSendHeader;
+            //}
 
-            if (_sideState[CS.Server] == HttpSideState.ServerSideSendHeader)
-            {
-                //バッファに残っているデータの送信
-                if (!SendBuf(CS.Client)) return false;
-            }
+            //if (_sideState[CS.Server] == HttpSideState.ServerSideSendHeader)
+            //{
+            //    //バッファに残っているデータの送信
+            //    if (!SendBuf(CS.Client)) return false;
+            //}
 
-            //サーバへの送信完了を確認する（ステータス変更）
-            _sideState[CS.Server] = HttpSideState.ServerSideSendBody;
+            ////サーバへの送信完了を確認する（ステータス変更）
+            //_sideState[CS.Server] = HttpSideState.ServerSideSendBody;
 
             return true;
         }
@@ -342,157 +342,157 @@ namespace Bjd.ProxyHttpServer
 
         public bool RecvServer(ILife iLife)
         {
-            //処置なし
-            if (_sideState[CS.Server] == HttpSideState.ServerSideRecvBody)
-                return true;
+            ////処置なし
+            //if (_sideState[CS.Server] == HttpSideState.ServerSideRecvBody)
+            //    return true;
 
-            //int timeout=3;
-            //レスポンス・ヘッダの受信
-            if (_sideState[CS.Server] == HttpSideState.ServerSideSendBody)
-            {
-                //Ver5.0.5
-                //int c = proxy.OptionTimeout; //本当は、OptionTimeout*10　だけど、最初のレスポンスがあまりに遅いとプログラムがロックするので10分の１に設定する
-                var c = _proxy.OptionTimeout * 10;
-                while (iLife.IsLife() && _proxy.Sock(CS.Server).SockState == SockState.Connect && _proxy.Sock(CS.Client).SockState == SockState.Connect && _proxy.Sock(CS.Server).Length() == 0)
-                {
-                    Thread.Sleep(100);
-                    c--;
-                    if (c < 0)
-                        return false;//レスポンスが遅い場合、あまり待ちすぎると処理が止まってしまうので、エラーとする
-                }
-                //レスポンスの取得
-                //int len = proxy.Sock(CS.SERVER).Length();
-                if (!_response.Recv(_proxy.Logger, _proxy.Sock(CS.Server), _proxy.OptionTimeout, iLife))
-                {
-                    _proxy.Logger.Set(LogKind.Error, _proxy.Sock(CS.Server), 6, "");
-                    return false;
-                }
-                //ヘッダの受信
-                if (!_oneObj.Header[CS.Server].Recv(_proxy.Sock(CS.Server), _proxy.OptionTimeout, iLife))
-                {
-                    _proxy.Logger.Set(LogKind.Error, _proxy.Sock(CS.Server), 7, "");
-                    return false;
-                }
+            ////int timeout=3;
+            ////レスポンス・ヘッダの受信
+            //if (_sideState[CS.Server] == HttpSideState.ServerSideSendBody)
+            //{
+            //    //Ver5.0.5
+            //    //int c = proxy.OptionTimeout; //本当は、OptionTimeout*10　だけど、最初のレスポンスがあまりに遅いとプログラムがロックするので10分の１に設定する
+            //    var c = _proxy.OptionTimeout * 10;
+            //    while (iLife.IsLife() && _proxy.Sock(CS.Server).SockState == SockState.Connect && _proxy.Sock(CS.Client).SockState == SockState.Connect && _proxy.Sock(CS.Server).Length() == 0)
+            //    {
+            //        Thread.Sleep(100);
+            //        c--;
+            //        if (c < 0)
+            //            return false;//レスポンスが遅い場合、あまり待ちすぎると処理が止まってしまうので、エラーとする
+            //    }
+            //    //レスポンスの取得
+            //    //int len = proxy.Sock(CS.SERVER).Length();
+            //    if (!_response.Recv(_proxy.Logger, _proxy.Sock(CS.Server), _proxy.OptionTimeout, iLife))
+            //    {
+            //        _proxy.Logger.Set(LogKind.Error, _proxy.Sock(CS.Server), 6, "");
+            //        return false;
+            //    }
+            //    //ヘッダの受信
+            //    if (!_oneObj.Header[CS.Server].Recv(_proxy.Sock(CS.Server), _proxy.OptionTimeout, iLife))
+            //    {
+            //        _proxy.Logger.Set(LogKind.Error, _proxy.Sock(CS.Server), 7, "");
+            //        return false;
+            //    }
 
-                //データ転送形式の判別
-                if (_oneObj.Request.HttpMethod == HttpMethod.Head)
-                {
-                    _oneHttpKind = OneHttpKind.ContentLength;
-                    _contentLength = 0;
-                }
-                if (_oneHttpKind == OneHttpKind.Unknown)
-                {
-                    string strTransferEncoding = _oneObj.Header[CS.Server].GetVal("Transfer-Encoding");
-                    if (strTransferEncoding != null)
-                    {
-                        if (strTransferEncoding == "chunked")
-                            _oneHttpKind = OneHttpKind.Chunk;
-                    }
-                }
-                if (_oneHttpKind == OneHttpKind.Unknown)
-                {
-                    string strContentLength = _oneObj.Header[CS.Server].GetVal("Content-Length");
-                    if (strContentLength != null)
-                    {
-                        //Ver5.3.3
-                        //contentLength = Convert.ToInt32(strContentLength);
-                        //oneHttpKind = ONE_HTTP_KIND.CONTENT_LENGTH;
-                        //Ver5.6.1
-                        //int i;
-                        //if (Int32.TryParse(strContentLength, out i)) {
-                        long i;
-                        if (Int64.TryParse(strContentLength, out i))
-                        {
-                            _contentLength = i;
-                            _oneHttpKind = OneHttpKind.ContentLength;
-                        }
-                    }
-                    else
-                    {
-                        if (_response.Code != 200)
-                        {
-                            _oneHttpKind = OneHttpKind.ContentLength;
-                            _contentLength = 0;
-                        }
-                    }
-                }
+            //    //データ転送形式の判別
+            //    if (_oneObj.Request.HttpMethod == HttpMethod.Head)
+            //    {
+            //        _oneHttpKind = OneHttpKind.ContentLength;
+            //        _contentLength = 0;
+            //    }
+            //    if (_oneHttpKind == OneHttpKind.Unknown)
+            //    {
+            //        string strTransferEncoding = _oneObj.Header[CS.Server].GetVal("Transfer-Encoding");
+            //        if (strTransferEncoding != null)
+            //        {
+            //            if (strTransferEncoding == "chunked")
+            //                _oneHttpKind = OneHttpKind.Chunk;
+            //        }
+            //    }
+            //    if (_oneHttpKind == OneHttpKind.Unknown)
+            //    {
+            //        string strContentLength = _oneObj.Header[CS.Server].GetVal("Content-Length");
+            //        if (strContentLength != null)
+            //        {
+            //            //Ver5.3.3
+            //            //contentLength = Convert.ToInt32(strContentLength);
+            //            //oneHttpKind = ONE_HTTP_KIND.CONTENT_LENGTH;
+            //            //Ver5.6.1
+            //            //int i;
+            //            //if (Int32.TryParse(strContentLength, out i)) {
+            //            long i;
+            //            if (Int64.TryParse(strContentLength, out i))
+            //            {
+            //                _contentLength = i;
+            //                _oneHttpKind = OneHttpKind.ContentLength;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (_response.Code != 200)
+            //            {
+            //                _oneHttpKind = OneHttpKind.ContentLength;
+            //                _contentLength = 0;
+            //            }
+            //        }
+            //    }
 
-                //コンテンツ制限の対象かどうかのフラグを設定する
-                if (ProxyHttp.LimitString != null)
-                { //コンテンツ制限に文字列が設定されている場合
-                    string contentType = _oneObj.Header[CS.Server].GetVal("Content-Type");
-                    if (contentType != null)
-                    {
-                        if (contentType.ToLower().IndexOf("text/h") == 0)
-                        {
-                            _isText = true;
-                        }
-                        if (contentType.ToLower().IndexOf("text/t") == 0)
-                        {
-                            _isText = true;
-                        }
-                    }
-                    //Content-Encoding:gzipが指定された場合は、テキスト扱いしない
-                    if (_isText)
-                    {
-                        string contentEncoding = _oneObj.Header[CS.Server].GetVal("Content-Encoding");
-                        if (contentEncoding != null)
-                        {
-                            if (contentEncoding.ToLower().IndexOf("gzip") != -1)
-                            {
-                                //Ver6.0.8
-                                _isGzip = true;
-                                //_isText = false; 
-                            }
-                        }
-                    }
-                }
+            //    //コンテンツ制限の対象かどうかのフラグを設定する
+            //    if (ProxyHttp.LimitString != null)
+            //    { //コンテンツ制限に文字列が設定されている場合
+            //        string contentType = _oneObj.Header[CS.Server].GetVal("Content-Type");
+            //        if (contentType != null)
+            //        {
+            //            if (contentType.ToLower().IndexOf("text/h") == 0)
+            //            {
+            //                _isText = true;
+            //            }
+            //            if (contentType.ToLower().IndexOf("text/t") == 0)
+            //            {
+            //                _isText = true;
+            //            }
+            //        }
+            //        //Content-Encoding:gzipが指定された場合は、テキスト扱いしない
+            //        if (_isText)
+            //        {
+            //            string contentEncoding = _oneObj.Header[CS.Server].GetVal("Content-Encoding");
+            //            if (contentEncoding != null)
+            //            {
+            //                if (contentEncoding.ToLower().IndexOf("gzip") != -1)
+            //                {
+            //                    //Ver6.0.8
+            //                    _isGzip = true;
+            //                    //_isText = false; 
+            //                }
+            //            }
+            //        }
+            //    }
 
-                _sideState[CS.Server] = HttpSideState.ServerSideRecvHeader;//ヘッダ受信完了
+            //    _sideState[CS.Server] = HttpSideState.ServerSideRecvHeader;//ヘッダ受信完了
 
-                CheckCharset(_oneObj.Header[CS.Server].GetBytes());//キャラクタセットのチェック
+            //    CheckCharset(_oneObj.Header[CS.Server].GetBytes());//キャラクタセットのチェック
 
-                _lastRecvServer = DateTime.Now.Ticks;
-            }
+            //    _lastRecvServer = DateTime.Now.Ticks;
+            //}
 
-            //データ本体の受信
-            if (_oneHttpKind == OneHttpKind.Chunk)
-            { //チャンク形式の場合
-                //チャンク形式の受信
-                if (!RecvServerChunk(iLife))
-                    return false;
-            }
-            else
-            { //Content-Length形式の受信
-                if (!RecvServerContentLength(iLife))
-                    return false;
-            }
+            ////データ本体の受信
+            //if (_oneHttpKind == OneHttpKind.Chunk)
+            //{ //チャンク形式の場合
+            //    //チャンク形式の受信
+            //    if (!RecvServerChunk(iLife))
+            //        return false;
+            //}
+            //else
+            //{ //Content-Length形式の受信
+            //    if (!RecvServerContentLength(iLife))
+            //        return false;
+            //}
 
-            //受信完了の確認
-            if (_oneHttpKind == OneHttpKind.ContentLength)
-            {
-                if (_contentLength <= _oneObj.Body[CS.Server].Length)
-                {
-                    //_sideState[CS.Server] = HttpSideState.ServerSideRecvBody;//受信完了
-                    SetServerSideBody();//Ver5.7.2
-                }
-                else
-                {
-                    //データが未到着の場合は、しばらく他のスレッドを優先する
-                    //while(life && proxy.Sock(CS.SERVER).Length() == 0)
-                    //    Thread.Sleep(100);
+            ////受信完了の確認
+            //if (_oneHttpKind == OneHttpKind.ContentLength)
+            //{
+            //    if (_contentLength <= _oneObj.Body[CS.Server].Length)
+            //    {
+            //        //_sideState[CS.Server] = HttpSideState.ServerSideRecvBody;//受信完了
+            //        SetServerSideBody();//Ver5.7.2
+            //    }
+            //    else
+            //    {
+            //        //データが未到着の場合は、しばらく他のスレッドを優先する
+            //        //while(life && proxy.Sock(CS.SERVER).Length() == 0)
+            //        //    Thread.Sleep(100);
 
-                    //Ver5.6.1 2012.05.05 速度向上
-                    //for (int i = 0; i < 100 && life; i++)
-                    //    Thread.Sleep(10);
-                    Thread.Sleep(1);
-                }
-            }
-            if (_proxy.Sock(CS.Server).SockState == SockState.Error && _proxy.Sock(CS.Server).Length() == 0)
-            {
-                //サーバ側が切断されており、取得できるデータが残っていないときは、常に受信完了とする
-                _sideState[CS.Server] = HttpSideState.ServerSideRecvBody;//受信完了
-            }
+            //        //Ver5.6.1 2012.05.05 速度向上
+            //        //for (int i = 0; i < 100 && life; i++)
+            //        //    Thread.Sleep(10);
+            //        Thread.Sleep(1);
+            //    }
+            //}
+            //if (_proxy.Sock(CS.Server).SockState == SockState.Error && _proxy.Sock(CS.Server).Length() == 0)
+            //{
+            //    //サーバ側が切断されており、取得できるデータが残っていないときは、常に受信完了とする
+            //    _sideState[CS.Server] = HttpSideState.ServerSideRecvBody;//受信完了
+            //}
             return true;
         }
         public async ValueTask<bool> RecvServerAsync(ILife iLife)
@@ -506,14 +506,16 @@ namespace Bjd.ProxyHttpServer
             {
                 //Ver5.0.5
                 //int c = proxy.OptionTimeout; //本当は、OptionTimeout*10　だけど、最初のレスポンスがあまりに遅いとプログラムがロックするので10分の１に設定する
-                var c = _proxy.OptionTimeout * 10;
-                while (iLife.IsLife() && _proxy.Sock(CS.Server).SockState == SockState.Connect && _proxy.Sock(CS.Client).SockState == SockState.Connect && _proxy.Sock(CS.Server).Length() == 0)
-                {
-                    Thread.Sleep(100);
-                    c--;
-                    //レスポンスが遅い場合、あまり待ちすぎると処理が止まってしまうので、エラーとする
-                    if (c < 0) return false;
-                }
+
+                //var c = _proxy.OptionTimeout * 100;
+                //while (iLife.IsLife() && _proxy.SockState(CS.Server) == SockState.Connect && _proxy.SockState(CS.Client) == SockState.Connect && _proxy.Sock(CS.Server).Length() == 0)
+                //{
+                //    Thread.Sleep(10);
+                //    c--;
+                //    //レスポンスが遅い場合、あまり待ちすぎると処理が止まってしまうので、エラーとする
+                //    if (c < 0) return false;
+                //}
+
                 //レスポンスの取得
                 //int len = proxy.Sock(CS.SERVER).Length();
                 if (!await _response.RecvAsync(_proxy.Logger, _proxy.Sock(CS.Server), _proxy.OptionTimeout, iLife))
@@ -963,32 +965,32 @@ namespace Bjd.ProxyHttpServer
         //パラメータ cs CS.SERVER を設定した場合、buf[CS.SERVER]を処理対象とし、クライアント側に送信する
         bool SendBuf(CS cs)
         {
-            var sock = _proxy.Sock(CS.Client);
-            if (cs == CS.Client)
-                sock = _proxy.Sock(CS.Server);
+            //var sock = _proxy.Sock(CS.Client);
+            //if (cs == CS.Client)
+            //    sock = _proxy.Sock(CS.Server);
 
-            var len = _oneObj.Body[cs].Length - _oneObj.Pos[cs];
-            if (len > 0)
-            {
-                //Ver5.6.1
-                byte[] sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
-                if (!Send(sock, sendBuf))//送信
-                    return false;
-                _oneObj.Pos[cs] += len;
-                //byte[] sendBuf = new byte[len];
-                //Buffer.BlockCopy(oneObj.Body[cs], oneObj.Pos[cs], sendBuf, 0, len);
-                //if (!Send(sock, sendBuf))//送信
-                //    return false;
-                //if (oneObj.Pos[cs] == 0) {
-                //    oneObj.Body[cs] = new byte[0];
-                //    if (len > 65535) {
-                //        System.GC.Collect();
-                //    }
-                //} else {
-                //    oneObj.Pos[cs] += len;
-                //}
+            //var len = _oneObj.Body[cs].Length - _oneObj.Pos[cs];
+            //if (len > 0)
+            //{
+            //    //Ver5.6.1
+            //    byte[] sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
+            //    if (!Send(sock, sendBuf))//送信
+            //        return false;
+            //    _oneObj.Pos[cs] += len;
+            //    //byte[] sendBuf = new byte[len];
+            //    //Buffer.BlockCopy(oneObj.Body[cs], oneObj.Pos[cs], sendBuf, 0, len);
+            //    //if (!Send(sock, sendBuf))//送信
+            //    //    return false;
+            //    //if (oneObj.Pos[cs] == 0) {
+            //    //    oneObj.Body[cs] = new byte[0];
+            //    //    if (len > 65535) {
+            //    //        System.GC.Collect();
+            //    //    }
+            //    //} else {
+            //    //    oneObj.Pos[cs] += len;
+            //    //}
 
-            }
+            //}
             return true;
         }
         async ValueTask<bool> SendBufAsync(CS cs)
@@ -1085,6 +1087,66 @@ namespace Bjd.ProxyHttpServer
             return false;
         }
 
+        bool IsHitLimitString(BufferData b)
+        {
+            if (_isText)
+            {
+                CheckCharset(b);//キャラクタセットのチェック
+
+                //Ver6.0.8
+                BufferData temp = null;
+                var str = "";
+                if (_isGzip)
+                {
+                    b = UnGZip(b);
+                    temp = b;
+                }
+
+                try
+                {
+
+                    switch (_charset)
+                    {
+                        case Charset.Ascii:
+                            str = b.GetString(Encoding.ASCII);
+                            break;
+                        case Charset.Sjis:
+                            str = b.GetString(Encoding.GetEncoding("shift-jis"));
+                            break;
+                        case Charset.Euc:
+                            str = b.GetString(Encoding.GetEncoding("euc-jp"));
+                            break;
+                        case Charset.Jis:
+                            str = b.GetString(Encoding.GetEncoding(50222));
+                            break;
+                        case Charset.Utf8:
+                            str = b.GetString(Encoding.UTF8);
+                            break;
+                        case Charset.Utf7:
+                            str = b.GetString(Encoding.UTF7);
+                            break;
+                        case Charset.Unknown:
+                            str = b.GetString(Encoding.ASCII);
+                            break;
+                    }
+                }
+                finally
+                {
+                    temp?.Dispose();
+                }
+
+                //コンテンツ制限
+                string hitStr = ProxyHttp.LimitString.IsHit(str);
+                if (hitStr != null)
+                {
+                    //制限にヒットした場合
+                    _proxy.Logger.Set(LogKind.Normal, _proxy.Sock(CS.Server), 21, hitStr);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         byte[] UnGZip(byte[] b)
         {
             var inStream = new MemoryStream(b);
@@ -1108,6 +1170,32 @@ namespace Bjd.ProxyHttpServer
             b = new byte[len];
             Buffer.BlockCopy(outBuf, 0, b, 0, len);
             return b;
+        }
+        BufferData UnGZip(BufferData b)
+        {
+            var inStream = new MemoryStream(b.Data, 0, b.DataSize);
+            // 解凍ストリーム
+            var decompStream = new GZipStream(inStream, CompressionMode.Decompress);
+            var outBuf = new byte[b.Length * 10];
+            var outStream = new MemoryStream(outBuf);
+            int len = 0;
+            int num;
+            byte[] buf = new byte[1024]; // 1Kbytesずつ処理する
+            using (inStream)
+            using (outStream)
+            using (decompStream)
+            {
+                while ((num = decompStream.Read(buf, 0, buf.Length)) > 0)
+                {
+                    outStream.Write(buf, 0, num);
+                    len += num;
+                }
+            }
+            //var r = new byte[len];
+            var r = BufferPool.GetMaximum(len);
+            Buffer.BlockCopy(outBuf, 0, r.Data, 0, len);
+            r.DataSize = len;
+            return r;
         }
 
         //キャラクタセットのチェック
@@ -1151,6 +1239,48 @@ namespace Bjd.ProxyHttpServer
                 }
             }
         }
+        void CheckCharset(BufferData b)
+        {
+            if (_charset == Charset.Unknown)
+            {
+                //var s = Encoding.ASCII.GetString(b);
+                var s = b.ToAsciiString();
+                int index = s.ToLower().IndexOf("charset");
+                if (0 <= index)
+                {
+                    s = s.Substring(index + 8);
+                    if (s.ToLower().IndexOf("x-sjis") >= 0)
+                    {
+                        _charset = Charset.Sjis;
+                    }
+                    else if (s.ToLower().IndexOf("shift_jis") >= 0)
+                    {
+                        _charset = Charset.Sjis;
+                    }
+                    else if (s.ToLower().IndexOf("x-euc-jp") >= 0)
+                    {
+                        _charset = Charset.Euc;
+                    }
+                    else if (s.ToLower().IndexOf("euc-jp") >= 0)
+                    {
+                        _charset = Charset.Euc;
+                    }
+                    else if (s.ToLower().IndexOf("utf-8") >= 0)
+                    {
+                        _charset = Charset.Utf8;
+                    }
+                    else if (s.ToLower().IndexOf("utf-7") >= 0)
+                    {
+                        _charset = Charset.Utf7;
+                    }
+                    else if (s.ToLower().IndexOf("iso-2022-jp") >= 0)
+                    {
+                        _charset = Charset.Jis;
+                    }
+                }
+            }
+        }
+
         void SetServerSideBody()
         {
             //_proxy.Logger.Set(LogKind.Debug, null, 999, String.Format("◆Code={0} {1}", _response.Code, _sideState[CS.Client]));

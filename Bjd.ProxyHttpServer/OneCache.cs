@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Bjd;
 using Bjd.Utils;
+using Bjd.Memory;
 
 namespace Bjd.ProxyHttpServer {
     public class OneCache {
@@ -56,6 +57,30 @@ namespace Bjd.ProxyHttpServer {
             Body = new byte[body.Length];
             Buffer.BlockCopy(body, 0, Body, 0, body.Length);
         }
+
+        public void Add(Header header, BufferData body)
+        {
+            //ドキュメントのLast-Modifiedを記録する
+            string str = header.GetVal("Last-Modified");
+            if (str != null)
+            {
+                LastModified = Util.Str2Time(str);
+            }
+            //ドキュメントのExpiresを記録する
+            str = header.GetVal("Expires");
+            if (str != null)
+            {
+                Expires = Util.Str2Time(str);
+            }
+
+            //Headerへのコピー
+            Header = new Header(header);
+
+            //Bodyへのコピー
+            Body = new byte[body.DataSize];
+            Buffer.BlockCopy(body.Data, 0, Body, 0, body.DataSize);
+        }
+
 
         public bool Save(string fileName) {
             if (Body.Length == 0)

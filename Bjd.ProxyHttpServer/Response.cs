@@ -13,13 +13,14 @@ namespace Bjd.ProxyHttpServer {
         Logger _logger;
         //データ取得（内部データは、初期化される）
         public bool Recv(Logger logger, SockTcp sockTcp, int timeout, ILife iLife) {
-            _logger = logger;
-            //int limit = 3600;//文字数制限
-            var str = sockTcp.AsciiRecv(timeout, iLife);
-            if (str == null){
-                return false;
-            }
-            return Interpretation(Inet.TrimCrlf(str));
+            //_logger = logger;
+            ////int limit = 3600;//文字数制限
+            //var str = sockTcp.AsciiRecv(timeout, iLife);
+            //if (str == null){
+            //    return false;
+            //}
+            //return Interpretation(Inet.TrimCrlf(str));
+            return true;
         }
         public async ValueTask<bool> RecvAsync(Logger logger, SockTcp sockTcp, int timeout, ILife iLife)
         {

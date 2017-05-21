@@ -28,8 +28,8 @@ namespace Bjd.ProxyHttpServer
             //Body[CS.Server] = new byte[0];
 
             Body = new Dictionary<CS, BodyBuf>(2);
-            Body[CS.Client] = new BodyBuf(640000);
-            Body[CS.Server] = new BodyBuf(640000);
+            Body[CS.Client] = new BodyBuf(6400000);
+            Body[CS.Server] = new BodyBuf(6400000);
 
             //送信完了サイズ
             Pos = new Dictionary<CS, long>(2);

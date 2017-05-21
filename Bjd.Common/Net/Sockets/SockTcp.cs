@@ -61,11 +61,6 @@ namespace Bjd.Net.Sockets
             _socket.SendTimeout = timeout * 1000;
             _socket.ReceiveTimeout = timeout * 1000;
 
-            if (ip.AddrV4 == 0 && ip.AddrV6H == 0 && ip.AddrV6L == 0)
-            {
-                Set(SockState.Connect, new IPEndPoint(0, 0), new IPEndPoint(0, 0));
-                return;
-            }
             try
             {
                 _socket.Connect(ip.IPAddress, port);

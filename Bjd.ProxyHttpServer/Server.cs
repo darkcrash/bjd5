@@ -395,8 +395,6 @@ namespace Bjd.ProxyHttpServer
                             break;
                         }
 
-                        continue;
-                        //Thread.Sleep(1);//Ver5.6.1これを0にするとCPU使用率が100%になってしまう
                     }
                     else if (oneObj.Request.Protocol == ProxyProtocol.Ssl)
                     {
@@ -412,18 +410,18 @@ namespace Bjd.ProxyHttpServer
                             //*******************************************************
                             //プロキシ処理
                             //*******************************************************
-                            if (!await proxySslObj.PipeAsync(this))
-                                goto end;
+                            if (!await proxySslObj.PipeAsync(this)) return;
 
                             if (proxySslObj.IsTimeout())
                             {
                                 Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
-                                goto end;
+                                return;
                             }
                             //Ver5.0.0-b13
                             //Thread.Sleep(500);
-                            //Thread.Sleep(1);
+                            Thread.Sleep(1);
                         }
+
                     }
                     else if (oneObj.Request.Protocol == ProxyProtocol.Ftp)
                     {
@@ -440,10 +438,8 @@ namespace Bjd.ProxyHttpServer
                         _dataPort = ((ProxyFtp)proxyObj).DataPort;
                         if (_dataPort > DataPortMax) _dataPort = DataPortMin;
 
+                        break;
                     }
-
-                    end:
-                    break;
 
                 }
 

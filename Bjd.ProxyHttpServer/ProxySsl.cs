@@ -176,15 +176,15 @@ namespace Bjd.ProxyHttpServer
 
         bool SendServer(ILife iLife)
         {
-            //サーバ側との接続処理
-            if (!Proxy.Connect(iLife, _oneObj.Request.HostName, _oneObj.Request.Port, _oneObj.Request.RequestStr, _oneObj.Request.Protocol))
-            {
-                Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break http.Connect()==false");
-                return false;
-            }
-            //バッファに残っているデータの送信
-            if (!SendBuf(CS.Client))
-                return false;
+            ////サーバ側との接続処理
+            //if (!Proxy.Connect(iLife, _oneObj.Request.HostName, _oneObj.Request.Port, _oneObj.Request.RequestStr, _oneObj.Request.Protocol))
+            //{
+            //    Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break http.Connect()==false");
+            //    return false;
+            //}
+            ////バッファに残っているデータの送信
+            //if (!SendBuf(CS.Client))
+            //    return false;
             return true;
         }
         async ValueTask<bool> SendServerAsync(ILife iLife)
@@ -203,9 +203,9 @@ namespace Bjd.ProxyHttpServer
 
         bool SendClient()
         {
-            //バッファに残っているデータの送信
-            if (!SendBuf(CS.Server))
-                return false;
+            ////バッファに残っているデータの送信
+            //if (!SendBuf(CS.Server))
+            //    return false;
             return true;
         }
         async ValueTask<bool> SendClientAsync()
@@ -256,19 +256,19 @@ namespace Bjd.ProxyHttpServer
         //パラメータ cs CS.SERVER を設定した場合、buf[CS.SERVER]を処理対象とし、クライアント側に送信する
         bool SendBuf(CS cs)
         {
-            var sock = Proxy.Sock(CS.Client);
-            if (cs == CS.Client)
-                sock = Proxy.Sock(CS.Server);
+            //var sock = Proxy.Sock(CS.Client);
+            //if (cs == CS.Client)
+            //    sock = Proxy.Sock(CS.Server);
 
-            var len = _oneObj.Body[cs].Length - _oneObj.Pos[cs];
-            if (len > 0)
-            {
-                var sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
-                if (!Send(sock, sendBuf))//送信
-                    return false;
-                _oneObj.Pos[cs] += len;
-                _lastRecvServer = DateTime.Now.Ticks;
-            }
+            //var len = _oneObj.Body[cs].Length - _oneObj.Pos[cs];
+            //if (len > 0)
+            //{
+            //    var sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
+            //    if (!Send(sock, sendBuf))//送信
+            //        return false;
+            //    _oneObj.Pos[cs] += len;
+            //    _lastRecvServer = DateTime.Now.Ticks;
+            //}
             return true;
         }
         async ValueTask<bool> SendBufAsync(CS cs)
@@ -280,9 +280,11 @@ namespace Bjd.ProxyHttpServer
             var len = _oneObj.Body[cs].Length - _oneObj.Pos[cs];
             if (len > 0)
             {
-                var sendBuf = _oneObj.Body[cs].SendBuf((int)_oneObj.Pos[cs]);
-                if (!await SendAsync(sock, sendBuf))//送信
-                    return false;
+                using (var sendBuf = _oneObj.Body[cs].GetSendBuffer((int)_oneObj.Pos[cs]))
+                {
+                    if (!await SendAsync(sock, sendBuf))//送信
+                        return false;
+                }
                 _oneObj.Pos[cs] += len;
                 _lastRecvServer = DateTime.Now.Ticks;
             }
@@ -292,15 +294,15 @@ namespace Bjd.ProxyHttpServer
         //送信
         bool Send(SockTcp sock, byte[] sendBuf)
         {
-            var c = sock.SendUseEncode(sendBuf);
-            if (c == sendBuf.Length)
-            {
-                sendBuf = new byte[0];
-            }
-            else
-            {
-                return false;
-            }
+            //var c = sock.SendUseEncode(sendBuf);
+            //if (c == sendBuf.Length)
+            //{
+            //    sendBuf = new byte[0];
+            //}
+            //else
+            //{
+            //    return false;
+            //}
             return true;
         }
         async ValueTask<bool> SendAsync(SockTcp sock, byte[] sendBuf)
@@ -309,6 +311,10 @@ namespace Bjd.ProxyHttpServer
             {
                 return await sock.SendAsync(buf);
             }
+        }
+        async ValueTask<bool> SendAsync(SockTcp sock, BufferData sendBuf)
+        {
+            return await sock.SendAsync(sendBuf);
         }
 
 

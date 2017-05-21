@@ -153,7 +153,7 @@
     "useResolve": false,
     "useDetailsLog": true,
     "multiple": 3000,
-    "timeOut": 5,
+    "timeOut": 60,
     "useRequestLog": true,
     "anonymousAddress": "BlackJumboDog@",
     "serverHeader": "BlackJumboDog .NET Core Version $v",

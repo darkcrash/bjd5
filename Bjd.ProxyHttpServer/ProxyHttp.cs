@@ -139,27 +139,26 @@ namespace Bjd.ProxyHttpServer
         //プロキシ処理
         override public bool Pipe(ILife iLife)
         {
+            //if (!SendServer(iLife))//サーバへの送信
+            //    return false;
+            //if (!RecvServer(iLife))//サーバからの受信
+            //    return false;
+            //if (!SendClient(iLife))//クライアントへの送信
+            //    return false;
 
-            if (!SendServer(iLife))//サーバへの送信
-                return false;
-            if (!RecvServer(iLife))//サーバからの受信
-                return false;
-            if (!SendClient(iLife))//クライアントへの送信
-                return false;
-
-            if (Proxy.SockState(CS.Server) != SockState.Connect)
-            {
-                if (_indexClient == _ar.Count)
-                {
-                    return false;
-                }
-            }
-            //クライアントから切断された場合は、常に処理終了
-            if (Proxy.Sock(CS.Client).SockState != SockState.Connect)
-            {
-                Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break ClientSocket!=CONNECT");
-                return false;
-            }
+            //if (Proxy.SockState(CS.Server) != SockState.Connect)
+            //{
+            //    if (_indexClient == _ar.Count)
+            //    {
+            //        return false;
+            //    }
+            //}
+            ////クライアントから切断された場合は、常に処理終了
+            //if (Proxy.Sock(CS.Client).SockState != SockState.Connect)
+            //{
+            //    Proxy.Logger.Set(LogKind.Debug, null, 999, "□Break ClientSocket!=CONNECT");
+            //    return false;
+            //}
 
             return true;
         }
@@ -194,21 +193,21 @@ namespace Bjd.ProxyHttpServer
         //サーバ側への送信
         bool SendServer(ILife iLife)
         {
-            for (int i = _indexServer; iLife.IsLife() && i < _ar.Count; i++)
-            {
-                //次のオブジェクトの接続先が現在接続中のサーバと違う場合
-                if (Proxy.Sock(CS.Server) != null && _ar[i].HostName != Proxy.HostName)
-                {
-                    //既存のプロキシ処理が完了するまで、次のサーバ送信（リクエスト送信）は待機となる
-                    if (i < _indexClient)
-                        return true;
-                }
-                if (!_ar[i].SendServer(iLife))
-                {
-                    return false;
-                }
-                _indexServer++;
-            }
+            //for (int i = _indexServer; iLife.IsLife() && i < _ar.Count; i++)
+            //{
+            //    //次のオブジェクトの接続先が現在接続中のサーバと違う場合
+            //    if (Proxy.Sock(CS.Server) != null && _ar[i].HostName != Proxy.HostName)
+            //    {
+            //        //既存のプロキシ処理が完了するまで、次のサーバ送信（リクエスト送信）は待機となる
+            //        if (i < _indexClient)
+            //            return true;
+            //    }
+            //    if (!_ar[i].SendServer(iLife))
+            //    {
+            //        return false;
+            //    }
+            //    _indexServer++;
+            //}
             return true;
         }
         async ValueTask<bool> SendServerAsync(ILife iLife)
@@ -233,28 +232,28 @@ namespace Bjd.ProxyHttpServer
         //クライアント側への送信
         bool SendClient(ILife iLife)
         {
-            for (int i = _indexClient; iLife.IsLife() && i < _ar.Count; i++)
-            {
-                if (!_ar[i].SendClient(iLife))
-                {
-                    return false;
-                }
-                //クライアントへの送信が完了しているかどうかの確認
-                if (_ar[i].SideState(CS.Client) != HttpSideState.ClientSideSendBody)
-                {
-                    break;
-                }
-                //送信が完了している場合は、次のデータオブジェクトの処理に移行する
-                //proxy.Logger.Set(LogKind.Debug,null,999,string.Format("■indexClient {0}->{1}",indexClient,indexClient + 1));
+            //for (int i = _indexClient; iLife.IsLife() && i < _ar.Count; i++)
+            //{
+            //    if (!_ar[i].SendClient(iLife))
+            //    {
+            //        return false;
+            //    }
+            //    //クライアントへの送信が完了しているかどうかの確認
+            //    if (_ar[i].SideState(CS.Client) != HttpSideState.ClientSideSendBody)
+            //    {
+            //        break;
+            //    }
+            //    //送信が完了している場合は、次のデータオブジェクトの処理に移行する
+            //    //proxy.Logger.Set(LogKind.Debug,null,999,string.Format("■indexClient {0}->{1}",indexClient,indexClient + 1));
 
-                //キャッシュが可能な場合は、ここでキャッシュされる
-                _ar[_indexClient].CacheWrite(_cache);
-                //ここでオブジェクトは破棄される
-                _ar[_indexClient].Dispose();
+            //    //キャッシュが可能な場合は、ここでキャッシュされる
+            //    _ar[_indexClient].CacheWrite(_cache);
+            //    //ここでオブジェクトは破棄される
+            //    _ar[_indexClient].Dispose();
 
-                _indexClient++;
+            //    _indexClient++;
 
-            }
+            //}
             return true;
         }
         async ValueTask<bool> SendClientAsync(ILife iLife)
@@ -288,19 +287,19 @@ namespace Bjd.ProxyHttpServer
         //サーバ側からの受信
         bool RecvServer(ILife iLife)
         {
-            for (int i = _indexRecv; iLife.IsLife() && i < _ar.Count; i++)
-            {
-                if (!_ar[i].RecvServer(iLife))
-                {
-                    Proxy.Logger.Set(LogKind.Debug, null, 999, "[HTTP] Break RecvServer()");
-                    return false;
-                }
-                //サーバ側からの受信が完了しているかどうかの確認
-                if (_ar[i].SideState(CS.Server) != HttpSideState.ServerSideRecvBody)
-                    break;
-                //送信が完了しているばあは、次のデータオブジェクトの処理に移る
-                _indexRecv++;
-            }
+            //for (int i = _indexRecv; iLife.IsLife() && i < _ar.Count; i++)
+            //{
+            //    if (!_ar[i].RecvServer(iLife))
+            //    {
+            //        Proxy.Logger.Set(LogKind.Debug, null, 999, "[HTTP] Break RecvServer()");
+            //        return false;
+            //    }
+            //    //サーバ側からの受信が完了しているかどうかの確認
+            //    if (_ar[i].SideState(CS.Server) != HttpSideState.ServerSideRecvBody)
+            //        break;
+            //    //送信が完了しているばあは、次のデータオブジェクトの処理に移る
+            //    _indexRecv++;
+            //}
             return true;
         }
         async ValueTask<bool> RecvServerAsync(ILife iLife)
