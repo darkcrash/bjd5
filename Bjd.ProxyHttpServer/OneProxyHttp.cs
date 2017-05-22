@@ -852,10 +852,11 @@ namespace Bjd.ProxyHttpServer
             var left = len;
             while (true)
             {
-                var lenint = (len > 65536 ? 65536 : (int)len);
+                var lenint = (left > 65536 ? 65536 : (int)left);
                 using (var b = await _proxy.Sock(CS.Server).BufferRecvAsync(lenint, _proxy.OptionTimeout))
                 {
                     if (b == null) return false;
+                    if (b == BufferData.Empty) return false;
                     _oneObj.Body[CS.Server].Add(b);
                     left -= b.DataSize;
                     if (left == 0) break;
