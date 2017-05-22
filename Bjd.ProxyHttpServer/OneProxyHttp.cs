@@ -845,16 +845,23 @@ namespace Bjd.ProxyHttpServer
         }
         async ValueTask<bool> RecvServerContentLengthAsync(ILife iLife)
         {
-            var len = _proxy.Sock(CS.Server).Length();
+            var len = (_contentLength > 0 ? _contentLength : _proxy.Sock(CS.Server).Length());
             if (len <= 0)
                 return true;
 
-            using (var b = await _proxy.Sock(CS.Server).BufferRecvAsync(len, _proxy.OptionTimeout))
+            var left = len;
+            while (true)
             {
-                if (b == null)
-                    return false;
-                _oneObj.Body[CS.Server].Add(b);
+                var lenint = (len > 65536 ? 65536 : (int)len);
+                using (var b = await _proxy.Sock(CS.Server).BufferRecvAsync(lenint, _proxy.OptionTimeout))
+                {
+                    if (b == null) return false;
+                    _oneObj.Body[CS.Server].Add(b);
+                    left -= b.DataSize;
+                    if (left == 0) break;
+                }
             }
+
 
             if (_isText)
             {

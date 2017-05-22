@@ -16,7 +16,10 @@ namespace Bjd.Threading
         static LazyCancelTimer timer = LazyCancelTimer.Instance;
         private static Action<Task> _ActionEmpty = _ => { };
         private static Func<Task, bool> _FuncCancelFalse = _ => (_.IsCanceled ? false : true);
-        private static Action<object> CancelRegister = _ => ((CancellationTokenSource)_).Cancel();
+        private static Action<object> CancelRegister = _ =>
+        {
+            try { ((CancellationTokenSource)_).Cancel(); } catch { }
+        };
         private static Action<Task, object> CancelDispose = (t, o) => ((CancellationTokenSource)o).Dispose();
 
         private int lockState = 0;

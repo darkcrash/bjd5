@@ -7,12 +7,15 @@ using Bjd.Utils;
 using Bjd.Threading;
 using System.Threading.Tasks;
 
-namespace Bjd.ProxyHttpServer {
-    internal class Response {
+namespace Bjd.ProxyHttpServer
+{
+    internal class Response
+    {
         string _responseStr = "";
         Logger _logger;
         //データ取得（内部データは、初期化される）
-        public bool Recv(Logger logger, SockTcp sockTcp, int timeout, ILife iLife) {
+        public bool Recv(Logger logger, SockTcp sockTcp, int timeout, ILife iLife)
+        {
             //_logger = logger;
             ////int limit = 3600;//文字数制限
             //var str = sockTcp.AsciiRecv(timeout, iLife);
@@ -26,7 +29,13 @@ namespace Bjd.ProxyHttpServer {
         {
             _logger = logger;
             //int limit = 3600;//文字数制限
-            var str = await sockTcp.AsciiRecvAsync(timeout);
+            string str;
+            while (true)
+            {
+                str = await sockTcp.AsciiRecvAsync(timeout);
+                if (str == string.Empty) continue;
+                break;
+            }
             if (str == null)
             {
                 return false;
@@ -35,23 +44,30 @@ namespace Bjd.ProxyHttpServer {
         }
 
         //キャッシュ用
-        public bool Recv(string str) {
+        public bool Recv(string str)
+        {
             return Interpretation(str);
         }
 
-        bool Interpretation(string str) {
+        bool Interpretation(string str)
+        {
             Code = 0;
-            if (str == null) {
+            if (str == null)
+            {
                 _logger.Set(LogKind.Debug, null, 702, "Interpretation() str==null");
                 return false;
             }
             _responseStr = str;
             var tmp = _responseStr.Split(' ');
-            if (tmp.Length >= 2) {
-                try {
+            if (tmp.Length >= 2)
+            {
+                try
+                {
                     Code = Convert.ToInt32(tmp[1]);
                     return true;
-                } catch {
+                }
+                catch
+                {
                     _logger.Set(LogKind.Debug, null, 703, string.Format("Interpretation() catch() tmp[1]={0}", tmp[1]));
                     return false;
                 }
@@ -62,7 +78,8 @@ namespace Bjd.ProxyHttpServer {
 
 
         public int Code { get; private set; }
-        public override string ToString() {
+        public override string ToString()
+        {
             return _responseStr;
         }
     }
