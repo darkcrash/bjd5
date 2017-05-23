@@ -382,18 +382,20 @@ namespace Bjd.ProxyHttpServer
 
                         if (!proxyHttpObj.KeepAlive)
                         {
-                            if (proxyHttpObj.IsFinish())
-                            {
-                                Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
-                                break;
-                            }
-                        }
-
-                        if (proxyHttpObj.IsTimeout())
-                        {
-                            Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
+                            //if (proxyHttpObj.IsFinish())
+                            //{
+                            //    Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
+                            //    break;
+                            //}
+                            Logger.Set(LogKind.Debug, null, 999, "break keepAlive=false");
                             break;
                         }
+
+                        //if (proxyHttpObj.IsTimeout())
+                        //{
+                        //    Logger.Set(LogKind.Debug, null, 999, string.Format("break waitTime>{0}sec [Option Timeout]", proxy.OptionTimeout));
+                        //    break;
+                        //}
 
                     }
                     else if (oneObj.Request.Protocol == ProxyProtocol.Ssl)

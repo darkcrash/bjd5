@@ -139,7 +139,7 @@ namespace Bjd.Logs
         {
             CheckInitialise();
 
-            var sb = CharsPool.GetMaximum(256);
+            var sb = CharsPool.GetMaximum(256 + _detailInfomation.Length);
             DateTimeTextGenerator.AppendFormatStringYMD(sb, ref _dt);
             sb.Append('\t');
             sb.Append(_logKind.ToString());
@@ -163,7 +163,7 @@ namespace Bjd.Logs
         {
             CheckInitialise();
 
-            var sb = CharsPool.GetMaximum(256);
+            var sb = CharsPool.GetMaximum(256 + _detailInfomation.Length);
             sb.Append('[');
             DateTimeTextGenerator.AppendFormatString(sb, ref _dt);
             sb.Append("][");

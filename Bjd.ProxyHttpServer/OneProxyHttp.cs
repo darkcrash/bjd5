@@ -641,7 +641,7 @@ namespace Bjd.ProxyHttpServer
                     //Ver5.6.1 2012.05.05 速度向上
                     //for (int i = 0; i < 100 && life; i++)
                     //    Thread.Sleep(10);
-                    Thread.Sleep(1);
+                    //Thread.Sleep(1);
                 }
             }
             if (_proxy.Sock(CS.Server).SockState == SockState.Error && _proxy.Sock(CS.Server).Length() == 0)
@@ -744,7 +744,6 @@ namespace Bjd.ProxyHttpServer
                     //サイズ取得
                     using (var b1 = await _proxy.Sock(CS.Server).LineBufferRecvAsync(_proxy.OptionTimeout))
                     {
-
                         if (b1 == null || b1.DataSize < 2)
                         {
                             _proxy.Logger.Set(LogKind.Debug, null, 999, string.Format("chunk ERROR b==null or b1.Lenght<2"));
@@ -791,7 +790,7 @@ namespace Bjd.ProxyHttpServer
                 len = _proxy.Sock(CS.Server).Length();
                 if (_chunkLen > len)
                 { //データ受信が可能かどうかの判断
-                    Thread.Sleep(300);//待機
+                    //Thread.Sleep(300);//待機
                     break;//受信は、次回に回す
                 }
                 //データ受信（サイズ分）

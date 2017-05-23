@@ -9,8 +9,7 @@ namespace Bjd.Threading
     {
         public static readonly LazyCancelTimer Instance = new LazyCancelTimer();
 
-        private const int MaxQueue = 240;
-        private const int MaxCancelQueue = 1024;
+        private const int MaxQueue = 480;
         private const int TimerPeriod = 250;
         private TimerContext[] queue = new TimerContext[MaxQueue];
         private int queuePoint = 0;
