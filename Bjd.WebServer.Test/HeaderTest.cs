@@ -4,7 +4,7 @@ using Xunit;
 using Bjd;
 using Bjd.Memory;
 
-namespace Bjd.Test
+namespace Bjd.WebServer.Test
 {
     public class HeaderTest
     {
@@ -12,6 +12,11 @@ namespace Bjd.Test
         public void TotalTest()
         {
             const int max = 5;
+            int def = 0;
+            using (var h = new HttpHeaders())
+            {
+                def = h.Count;
+            }
             var sb = new StringBuilder();
             for (int i = 0; i < max; i++)
             {
@@ -29,7 +34,7 @@ namespace Bjd.Test
             }
 
             //Count
-            Assert.Equal(header.Count, max);
+            Assert.Equal(max + def, header.Count);
 
 
             for (var i = 0; i < header.Count; i++)
@@ -57,7 +62,7 @@ namespace Bjd.Test
                 //string s = header.GetVal(key);
                 Assert.Equal(header.GetVal(key), val);
             }
-            Assert.Equal(header.Count, max + appendMax);
+            Assert.Equal(max + def + appendMax, header.Count);
 
         }
 

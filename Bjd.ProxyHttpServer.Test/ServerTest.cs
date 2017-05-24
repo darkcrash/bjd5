@@ -124,11 +124,11 @@ namespace ProxyHttpServerTest
 
             //setUp
             //ダミーWebサーバ
-            const int webPort = 3778;
+            int webPort = 3778;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             //Webサーバ起動           
-            using (var tsWeb = new TsWeb(webPort, webRoot))
+            using (var tsWeb = new TsWeb(ref webPort, webRoot))
             {
                 var kernel = _fixture._service.Kernel;
 
@@ -168,11 +168,11 @@ namespace ProxyHttpServerTest
         {
             //setUp
             //ダミーWebサーバ
-            const int webPort = 3779;
+            int webPort = 3779;
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             //Webサーバ起動           
-            using (var tsWeb = new TsWeb(webPort, webRoot))
+            using (var tsWeb = new TsWeb(ref webPort, webRoot))
             {
                 var kernel = _fixture._service.Kernel;
 
@@ -259,7 +259,7 @@ namespace ProxyHttpServerTest
             File.WriteAllLines(path, buf);
 
             //Webサーバ起動           
-            using (var tsWeb = new TsWeb(port, webRoot))
+            using (var tsWeb = new TsWeb(ref port, webRoot))
             {
                 var kernel = _fixture._service.Kernel;
 

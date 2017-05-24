@@ -35,8 +35,9 @@ namespace Bjd
             //\r\nを排除した行単位に加工する
             var lines = from b in Inet.GetLines(buf) select Inet.TrimCrlf(b);
             var key = "";
-            foreach (BufferData val in lines.Select(line => GetKeyVal(line, ref key)))
+            foreach (var line in lines)
             {
+                BufferData val = GetKeyVal(line, ref key);
                 Append(key, val);
             }
         }
@@ -54,7 +55,7 @@ namespace Bjd
         {
             foreach (var h in _ar)
             {
-                 h.Dispose();
+                h.Dispose();
             }
             _ar.Clear();
         }
@@ -187,7 +188,7 @@ namespace Bjd
                     if (key != "")
                     {
                         var keyUpper = key.ToUpper();
-                     
+
                         // know header
                         if (AppendHeader(keyUpper, val)) continue;
 
@@ -226,20 +227,22 @@ namespace Bjd
             int p = 0;//書き込みポインタ
             _ar.ForEach(o =>
             {
+                if (!o.Enabled) return;
+
                 var k = Encoding.ASCII.GetBytes(o.Key);
                 Buffer.BlockCopy(k, 0, buf, p, k.Length);
                 p += k.Length;
-                buf[p] = (byte)':';
-                buf[p + 1] = (byte)' ';
+                buf[p] = Colon;
+                buf[p + 1] = Space;
                 p += 2;
                 Buffer.BlockCopy(o.Val.Data, 0, buf, p, o.Val.DataSize);
                 p += o.Val.DataSize;
-                buf[p] = (byte)'\r';
-                buf[p + 1] = (byte)'\n';
+                buf[p] = Cr;
+                buf[p + 1] = Lf;
                 p += 2;
             });
-            buf[p] = (byte)'\r';
-            buf[p + 1] = (byte)'\n';
+            buf[p] = Cr;
+            buf[p + 1] = Lf;
 
             return buf;
 
@@ -280,9 +283,7 @@ namespace Bjd
                 buf.DataSize += Encoding.ASCII.GetBytes(o.Key, 0, o.Key.Length, buf.Data, buf.DataSize);
                 buf[buf.DataSize++] = Colon;
                 buf[buf.DataSize++] = Space;
-                //Buffer.BlockCopy(o.Val, 0, buf.Data, buf.DataSize, o.Val.Length);
                 o.Val.CopyTo(buf, 0, buf.DataSize, o.Val.DataSize);
-                //buf.DataSize += o.Val.DataSize;
                 buf[buf.DataSize++] = Cr;
                 buf[buf.DataSize++] = Lf;
             }
@@ -330,6 +331,7 @@ namespace Bjd
                         var len = line.Length - i;
                         var val = BufferPool.GetMaximum(len);
                         Buffer.BlockCopy(line, i, val.Data, 0, len);
+                        val.DataSize = len;
                         return val;
                     }
                 }

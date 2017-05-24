@@ -13,19 +13,31 @@ namespace ProxyHttpServerTest
         readonly WebListener _listener;
 
 
-        public TsWeb(int port, string documentRoot)
+        public TsWeb(ref int port, string documentRoot)
         {
             _documentRoot = documentRoot;
 
             // プレフィックスの登録
-            var setting = new WebListenerSettings();
-            UrlPrefix pre = UrlPrefix.Create("http", "127.0.0.1", port, "/");
-            setting.UrlPrefixes.Add(pre);
-            setting.ThrowWriteExceptions = true;
-            setting.Authentication.AllowAnonymous = true;
+            while (true)
+            {
+                try
+                {
+                    var setting = new WebListenerSettings();
+                    UrlPrefix pre = UrlPrefix.Create("http", "127.0.0.1", port, "/");
+                    setting.UrlPrefixes.Add(pre);
+                    setting.ThrowWriteExceptions = true;
+                    setting.Authentication.AllowAnonymous = true;
 
-            _listener = new WebListener(setting);
-            _listener.Start();
+                    _listener = new WebListener(setting);
+                    _listener.Start();
+                    break;
+                }
+                catch (Microsoft.Net.Http.Server.WebListenerException)
+                {
+                    port++;
+                    continue;
+                }
+            }
 
             Listen();
 

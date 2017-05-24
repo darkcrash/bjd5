@@ -44,42 +44,51 @@ namespace Bjd.Net.Sockets
             }
         }
 
+        static object IsAvailableLock = new object();
+        static object IsAvailableUdpLock = new object();
+
         //bindが可能かどうかの確認
         public static bool IsAvailable(Kernel kernel, Ip ip, int port)
         {
             kernel.Logger.TraceInformation($"SockUtil.IsAvailable");
             const int listenMax = 1;
-            var sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, null);
-            try
+            lock (IsAvailableLock)
             {
-                if (sockServer.SockState == SockState.Error) return false;
+                var sockServer = new SockServerTcp(kernel, ProtocolKind.Tcp, null);
+                try
+                {
+                    if (sockServer.SockState == SockState.Error) return false;
 
-                if (sockServer.Bind(ip, port, listenMax)) return true;
+                    if (sockServer.Bind(ip, port, listenMax)) return true;
 
-                return false;
-            }
-            finally
-            {
-                sockServer.Close();
-                sockServer.Dispose();
+                    return false;
+                }
+                finally
+                {
+                    sockServer.Close();
+                    sockServer.Dispose();
+                }
             }
         }
         public static bool IsAvailableUdp(Kernel kernel, Ip ip, int port)
         {
             kernel.Logger.TraceInformation($"SockUtil.IsAvailable");
             var sockServer = new SockServerUdp(kernel, ProtocolKind.Udp, null);
-            try
+            lock (IsAvailableUdpLock)
             {
-                if (sockServer.SockState == SockState.Error) return false;
+                try
+                {
+                    if (sockServer.SockState == SockState.Error) return false;
 
-                if (sockServer.Bind(ip, port)) return true;
+                    if (sockServer.Bind(ip, port)) return true;
 
-                return false;
-            }
-            finally
-            {
-                sockServer.Close();
-                sockServer.Dispose();
+                    return false;
+                }
+                finally
+                {
+                    sockServer.Close();
+                    sockServer.Dispose();
+                }
             }
         }
 
