@@ -164,12 +164,12 @@ namespace Bjd.WebServer
         }
 
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj)
+        override protected void OnSubThread(ISocket sockObj)
         {
 
         }
 
-        protected override async Task OnSubThreadAsync(SockObj sockObj)
+        protected override async Task OnSubThreadAsync(ISocket sockObj)
         {
             _kernel.Logger.DebugInformation($"WebServer.OnSubThread ");
             //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");

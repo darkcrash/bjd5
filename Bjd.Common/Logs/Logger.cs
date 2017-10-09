@@ -60,12 +60,40 @@ namespace Bjd.Logs
             _pid = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
         }
 
-        public void Set(LogKind logKind, SockObj sockBase, int messageNo, CharsData detailInfomation)
+        public void Set(LogKind logKind, int messageNo, CharsData detailInfomation)
         {
-            Set(logKind, sockBase, messageNo, detailInfomation.ToString());
+            SetInternal(logKind, null, messageNo, detailInfomation.ToString());
+        }
+        public void Set(LogKind logKind, int messageNo, string detailInfomation)
+        {
+            SetInternal(logKind, null, messageNo, detailInfomation);
         }
 
-        public void Set(LogKind logKind, SockObj sockBase, int messageNo, string detailInfomation)
+        //public void Set(LogKind logKind, SockObj sockBase, int messageNo, CharsData detailInfomation)
+        //{
+        //    var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
+        //    SetInternal(logKind, remoteHostname, messageNo, detailInfomation.ToString());
+        //}
+
+        //public void Set(LogKind logKind, SockObj sockBase, int messageNo, string detailInfomation)
+        //{
+        //    var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
+        //    SetInternal(logKind, remoteHostname, messageNo, detailInfomation.ToString());
+        //}
+
+        public void Set(LogKind logKind, ISocketBase sockBase, int messageNo, CharsData detailInfomation)
+        {
+            var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
+            SetInternal(logKind, remoteHostname, messageNo, detailInfomation.ToString());
+        }
+        public void Set(LogKind logKind, ISocketBase sockBase, int messageNo, string detailInfomation)
+        {
+            var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
+            SetInternal(logKind, remoteHostname, messageNo, detailInfomation);
+        }
+
+
+        private void SetInternal(LogKind logKind, string remoteHostName, int messageNo, string detailInfomation)
         {
             //デバッグ等でkernelが初期化されていない場合、処理なし
             if (_logServices.Count == 0) return;
@@ -75,14 +103,12 @@ namespace Bjd.Logs
 
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-            var remoteHostname = (sockBase == null) ? "-" : sockBase.RemoteHostname;
-
             //var t = new Task(() =>
             //    SetInternal(logKind, remoteHostname, messageNo, detailInfomation, threadId), TaskCreationOptions.PreferFairness);
             var arg = new InternalArgs();
             arg.logger = this;
             arg.logKind = logKind;
-            arg.remoteHostname = remoteHostname;
+            arg.remoteHostname = remoteHostName;
             arg.messageNo = messageNo;
             arg.detailInfomation = detailInfomation;
             arg.threadId = threadId;
@@ -92,7 +118,7 @@ namespace Bjd.Logs
 
         }
 
-        static Action<object> InternalAction = _ => 
+        static Action<object> InternalAction = _ =>
         {
             var arg = (InternalArgs)_;
             arg.logger.SetInternal(arg.logKind, arg.remoteHostname, arg.messageNo, arg.detailInfomation, arg.threadId);
@@ -386,7 +412,7 @@ namespace Bjd.Logs
         }
 
         //Ver5.3.2
-        public void Exception(Exception ex, SockObj sockObj, int messageNo)
+        public void Exception(Exception ex, ISocket sockObj, int messageNo)
         {
             Set(LogKind.Error, sockObj, messageNo, ex.Message);
             string[] tmp = ex.StackTrace.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

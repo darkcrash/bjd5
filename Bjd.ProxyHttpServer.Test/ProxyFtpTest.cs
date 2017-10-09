@@ -12,6 +12,7 @@ using Xunit;
 using Bjd.ProxyHttpServer;
 using Bjd.Initialization;
 using Bjd.Threading;
+using Bjd.Net.Sockets;
 
 namespace ProxyHttpServerTest
 {

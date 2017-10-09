@@ -49,6 +49,11 @@ namespace Bjd.Net
             }
         }
 
+        public int Write(byte[] buf, int offset, int len)
+        {
+            _stream.Write(buf, offset, len);
+            return buf.Length;
+        }
         public int Write(byte[] buf, int len)
         {
             _stream.Write(buf, 0, len);

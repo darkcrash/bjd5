@@ -30,7 +30,7 @@ namespace Bjd.SipServer
         override protected void OnStopServer() { }
 
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj) {
+        override protected void OnSubThread(ISocket sockObj) {
             var sockUdp = (SockUdp)sockObj;
 
             //受信データの解析

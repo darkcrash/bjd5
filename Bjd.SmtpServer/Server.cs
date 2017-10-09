@@ -254,7 +254,7 @@ namespace Bjd.SmtpServer
             }
         }
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj)
+        override protected void OnSubThread(ISocket sockObj)
         {
             var sockTcp = (SockTcp)sockObj;
 

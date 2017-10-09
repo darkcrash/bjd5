@@ -15,6 +15,7 @@ using Bjd.Threading;
 using System.Collections.Generic;
 using Xunit.Abstractions;
 using Bjd.Test.Logs;
+using Bjd.Net.Sockets;
 
 namespace WebServerTest
 {

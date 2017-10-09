@@ -218,7 +218,7 @@ namespace Bjd.Servers
                     _sockServerTcp.SocketStateChanged += _sockServerTcp_SocketStateChanged;
                     if (ssl != null && !ssl.Status)
                     {
-                        Logger.Set(LogKind.Error, null, 9000024, bindStr);
+                        Logger.Set(LogKind.Error, 9000024, bindStr);
                     }
                     break;
                 case ProtocolKind.Udp:
@@ -242,7 +242,7 @@ namespace Bjd.Servers
             //DOSを受けた場合、multiple数まで連続アクセスまでは記憶してしまう
             //DOSが終わった後も、その分だけ復帰に時間を要する
 
-            Logger.Set(LogKind.Normal, null, 9000000, bindStr);
+            Logger.Set(LogKind.Normal, 9000000, bindStr);
 
             //Ver5.9,2 Java fix
             switch (_oneBind.Protocol)
@@ -262,7 +262,7 @@ namespace Bjd.Servers
             }
 
             //Java fix
-            Logger.Set(LogKind.Normal, null, 9000001, bindStr);
+            Logger.Set(LogKind.Normal, 9000001, bindStr);
 
         }
 
@@ -451,7 +451,7 @@ namespace Bjd.Servers
         }
 
 
-        private void RemoveTask(int? idx, SockObj child)
+        private void RemoveTask(int? idx, ISocket child)
         {
             if (idx.HasValue)
             {
@@ -466,7 +466,7 @@ namespace Bjd.Servers
 
         //ACL制限のチェック
         //sockObj 検査対象のソケット
-        private AclKind AclCheck(SockObj sockObj)
+        private AclKind AclCheck(ISocket sockObj)
         {
             var aclKind = AclKind.Allow;
             if (AclList != null)
@@ -477,18 +477,18 @@ namespace Bjd.Servers
             return aclKind;
         }
 
-        protected abstract void OnSubThread(SockObj sockObj);
+        protected abstract void OnSubThread(ISocket sockObj);
 
-        protected virtual Task OnSubThreadAsync(SockObj sockObj)
+        protected virtual Task OnSubThreadAsync(ISocket sockObj)
         {
             return Task.CompletedTask;
         }
 
 
         //１リクエストに対する子スレッドとして起動される
-        private void SubThread(SockObj o)
+        private void SubThread(ISocket o)
         {
-            var sockObj = (SockObj)o;
+            var sockObj = (ISocket)o;
 
             //クライアントのホスト名を逆引きする
             sockObj.Resolve(useResolve, Logger);
@@ -507,7 +507,7 @@ namespace Bjd.Servers
                 _kernel.Logger.Fail(ex.StackTrace);
                 if (Logger != null)
                 {
-                    Logger.Set(LogKind.Error, null, 9000061, ex.Message);
+                    Logger.Set(LogKind.Error, 9000061, ex.Message);
                     Logger.Exception(ex, null, 2);
                 }
             }
@@ -518,9 +518,9 @@ namespace Bjd.Servers
 
         }
 
-        private async Task SubThreadAsync(SockObj o)
+        private async Task SubThreadAsync(ISocket o)
         {
-            var sockObj = (SockObj)o;
+            var sockObj = (ISocket)o;
 
             //クライアントのホスト名を逆引きする
             sockObj.Resolve(useResolve, Logger);
@@ -539,7 +539,7 @@ namespace Bjd.Servers
                 _kernel.Logger.Fail(ex.StackTrace);
                 if (Logger != null)
                 {
-                    Logger.Set(LogKind.Error, null, 9000061, ex.Message);
+                    Logger.Set(LogKind.Error, 9000061, ex.Message);
                     Logger.Exception(ex, null, 2);
                 }
             }

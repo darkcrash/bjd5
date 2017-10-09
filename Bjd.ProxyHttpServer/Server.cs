@@ -161,7 +161,7 @@ namespace Bjd.ProxyHttpServer
             }
         }
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj)
+        override protected void OnSubThread(ISocket sockObj)
         {
 
             //    //Ver5.6.9
@@ -337,7 +337,7 @@ namespace Bjd.ProxyHttpServer
             //    //GC.Collect();
         }
 
-        protected override async Task OnSubThreadAsync(SockObj sockObj)
+        protected override async Task OnSubThreadAsync(ISocket sockObj)
         {
 
             //Ver5.6.9

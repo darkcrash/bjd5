@@ -25,7 +25,7 @@ namespace Bjd.ProxyFtpServer
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
         //�ڑ��P�ʂ̏���
-        override protected void OnSubThread(SockObj sockObj) {
+        override protected void OnSubThread(ISocket sockObj) {
 
             var timeout = (int)_conf.Get("timeOut");
 

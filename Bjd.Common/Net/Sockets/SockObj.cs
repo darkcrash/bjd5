@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Bjd.Net.Sockets
 {
     //SockTcp 及び SockUdp の基底クラス
-    public abstract class SockObj : IDisposable
+    public abstract class SockObj : IDisposable, ISocketBase
     {
 
         private IPEndPoint _RemoteAddress;

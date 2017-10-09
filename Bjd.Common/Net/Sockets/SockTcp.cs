@@ -15,7 +15,7 @@ using Bjd.Logs;
 
 namespace Bjd.Net.Sockets
 {
-    public class SockTcp : SockObj
+    public class SockTcp : SockObj, ISocket
     {
 
         private static readonly byte[] CrLf = new byte[] { 0x0D, 0x0A };
@@ -257,7 +257,7 @@ namespace Bjd.Net.Sockets
 
         }
 
-        public void EndReceive(Task<int> result)
+        private void EndReceive(Task<int> result)
         {
             if (result.IsCanceled)
             {
@@ -285,7 +285,7 @@ namespace Bjd.Net.Sockets
             EndReceive(result.Result);
         }
 
-        public void EndReceive(int result)
+        private void EndReceive(int result)
         {
 
 
@@ -518,9 +518,7 @@ namespace Bjd.Net.Sockets
         }
         public async ValueTask<CharsData> AsciiRecvCharsAsync(int timeoutSec)
         {
-            Kernel.Logger.DebugInformation(hashText, " SockTcp.AsciiRecvCharsAsync ");
-
-            var result = await _sockQueueRecv.DequeueLineBufferAsync(timeoutSec * 1000);
+            var result = await LineBufferRecvAsync(timeoutSec * 1000);
             try
             {
                 return result.ToAsciiCharsData();
@@ -596,8 +594,7 @@ namespace Bjd.Net.Sockets
         }
 
 
-
-        public int Send(byte[] buf, int length)
+        public int Send(byte[] buf, int offset, int length)
         {
             IfThrowOnDisposed();
             var lengthtxt = length.ToString();
@@ -607,11 +604,11 @@ namespace Bjd.Net.Sockets
                 //Ver5.9.2 Java fix
                 if (isSsl)
                 {
-                    return _oneSsl.Write(buf, buf.Length);
+                    return _oneSsl.Write(buf, offset, buf.Length);
                 }
                 else
                 {
-                    return _socket.Send(buf, length, SocketFlags.None);
+                    return _socket.Send(buf, offset, length, SocketFlags.None);
                 }
             }
             catch (Exception e)
@@ -620,6 +617,34 @@ namespace Bjd.Net.Sockets
                 return -1;
             }
         }
+        //public int Send(byte[] buf, int length)
+        //{
+        //    IfThrowOnDisposed();
+        //    var lengthtxt = length.ToString();
+        //    Kernel.Logger.DebugInformation(hashText, " SockTcp.Send ", lengthtxt);
+        //    try
+        //    {
+        //        //Ver5.9.2 Java fix
+        //        if (isSsl)
+        //        {
+        //            return _oneSsl.Write(buf, buf.Length);
+        //        }
+        //        else
+        //        {
+        //            return _socket.Send(buf, length, SocketFlags.None);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        SetException(e);
+        //        return -1;
+        //    }
+        //}
+
+        //public int Send(byte[] buf)
+        //{
+        //    return Send(buf, 0, buf.Length);
+        //}
 
 
         public int Send(IList<ArraySegment<byte>> buffers)
@@ -721,11 +746,6 @@ namespace Bjd.Net.Sockets
 
 
 
-        public int Send(byte[] buf)
-        {
-            return Send(buf, buf.Length);
-        }
-
         //1行送信
         //内部でCRLFの２バイトが付かされる
         public int LineSend(byte[] buf)
@@ -777,7 +797,7 @@ namespace Bjd.Net.Sockets
         public int SendUseEncode(byte[] buf)
         {
             //実際の送信処理にテキストとバイナリの区別はない
-            return Send(buf);
+            return Send(buf, 0, buf.Length);
         }
 
 

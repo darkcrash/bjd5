@@ -16,7 +16,7 @@ namespace Bjd.Logs
         }
 
 
-        public new void Set(LogKind logKind, SockObj sockObj, int messageNo, String detailInfomation)
+        public new void Set(LogKind logKind, ISocketBase sockObj, int messageNo, String detailInfomation)
         {
             _ar.Add(new LogTemporary(logKind, sockObj, messageNo, detailInfomation));
         }
@@ -24,11 +24,11 @@ namespace Bjd.Logs
         private class LogTemporary
         {
             public LogKind LogKind { get; private set; }
-            public SockObj SockObj { get; private set; }
+            public ISocketBase SockObj { get; private set; }
             public int MessageNo { get; private set; }
             public string DetailInfomation { get; private set; }
 
-            public LogTemporary(LogKind logKind, SockObj sockObj, int messageNo, String detailInfomation)
+            public LogTemporary(LogKind logKind, ISocketBase sockObj, int messageNo, String detailInfomation)
             {
                 LogKind = logKind;
                 SockObj = sockObj;

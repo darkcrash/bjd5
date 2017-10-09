@@ -56,6 +56,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Net\Sockets\ISocketInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Threading.Overlapped" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />

@@ -66,7 +66,7 @@ namespace Bjd.Pop3Server
         }
 
         //接続単位の処理
-        protected override void OnSubThread(SockObj sockObj)
+        protected override void OnSubThread(ISocket sockObj)
         {
             _kernel.Logger.TraceInformation($"Pop3Server.OnSubThread()");
 

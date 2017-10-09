@@ -39,7 +39,7 @@ namespace Bjd.ProxySmtpServer {
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj) {
+        override protected void OnSubThread(ISocket sockObj) {
 
             var client = (SockTcp)sockObj;
             SockTcp server = null;

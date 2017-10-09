@@ -30,7 +30,7 @@ namespace Bjd.WebApiServer
         override protected void OnStopServer() { }
 
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj) {
+        override protected void OnSubThread(ISocket sockObj) {
             //UDPサーバの場合は、UdpObjで受ける
             var sockTcp = (SockTcp)sockObj;
 

@@ -49,7 +49,7 @@ namespace Bjd.Test.Servers
                 return "";
             }
 
-            protected override void OnSubThread(SockObj sockObj)
+            protected override void OnSubThread(ISocket sockObj)
             {
                 for (var i = 3; i >= 0 && IsLife(); i--)
                 {

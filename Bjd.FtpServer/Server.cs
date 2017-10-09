@@ -45,7 +45,7 @@ namespace Bjd.FtpServer
         }
 
 
-        protected override void OnSubThread(SockObj sockObj)
+        protected override void OnSubThread(ISocket sockObj)
         {
             //セッションごとの情報
             var session = new Session((SockTcp)sockObj);

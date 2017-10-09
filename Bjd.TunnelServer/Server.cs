@@ -44,7 +44,7 @@ namespace Bjd.TunnelServer
         override protected void OnStopServer() { }
 
         //接続単位の処理
-        override protected void OnSubThread(SockObj sockObj)
+        override protected void OnSubThread(ISocket sockObj)
         {
 
             if (_protocolKind == ProtocolKind.Tcp)

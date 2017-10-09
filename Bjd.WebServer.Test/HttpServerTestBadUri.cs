@@ -9,6 +9,7 @@ using Xunit;
 using Bjd.WebServer;
 using Bjd.Initialization;
 using Bjd.Threading;
+using Bjd.Net.Sockets;
 
 namespace WebServerTest
 {

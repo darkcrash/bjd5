@@ -53,7 +53,7 @@ namespace Bjd.Test.Servers
                 return true;
             }
 
-            protected override void OnSubThread(SockObj sockObj)
+            protected override void OnSubThread(ISocket sockObj)
             {
                 //サーバ終了までキープする
                 while (IsLife())

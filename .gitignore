@@ -30,12 +30,14 @@ project.lock.json
 [Tt]est[Rr]esult*
 _ReSharper*/
 /packages/
+/.vs/
 /.vs/config
 /.vs/restore.dg
-/Bjd.DhcpServer.CoreCLR.Test/lease.db
 /.vs/slnx.sqlite
+/Bjd.DhcpServer.CoreCLR.Test/lease.db
 *.diagsession
 *.vspx
 *.psess
 *.vsp
 *.vsps
+/Bjd.Startup/ProxyHttpCache

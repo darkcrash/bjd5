@@ -119,7 +119,7 @@ namespace Bjd.DnsServer
         }
 
 
-        protected override void OnSubThread(SockObj sockObj) {
+        protected override void OnSubThread(ISocket sockObj) {
             var sockUdp = (SockUdp) sockObj;
             //セッションごとの情報
             //Session session = new Session((SockTcp) sockObj);
