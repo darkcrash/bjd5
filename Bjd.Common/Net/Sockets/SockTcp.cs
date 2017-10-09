@@ -17,9 +17,6 @@ namespace Bjd.Net.Sockets
 {
     public class SockTcp : SockObj, ISocket
     {
-
-        private static readonly byte[] CrLf = new byte[] { 0x0D, 0x0A };
-
         private Socket _socket;
         private Ssl _ssl;
         private OneSsl _oneSsl;
