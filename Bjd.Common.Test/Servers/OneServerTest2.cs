@@ -59,13 +59,17 @@ namespace Bjd.Test.Servers
 
             protected override void OnSubThread(ISocket sockObj)
             {
-                if (_protocolKind == ProtocolKind.Tcp)
+                switch (_protocolKind)
                 {
-                    Tcp((SockTcp)sockObj);
-                }
-                else
-                {
-                    Udp((SockUdp)sockObj);
+                    case ProtocolKind.Tcp:
+                        Tcp((SockTcp)sockObj);
+                        break;
+                    case ProtocolKind.Udp:
+                        Udp((SockUdp)sockObj);
+                        break;
+                    case ProtocolKind.Internal:
+                        Internal((SockInternal)sockObj);
+                        break;
                 }
             }
 
@@ -90,6 +94,21 @@ namespace Bjd.Test.Servers
                 var buf = sockUdp.RecvBuf;
                 sockUdp.Send(buf);
                 //echoしたらセッションを閉じる
+            }
+
+            private void Internal(SockInternal sockInternal)
+            {
+                while (IsLife() && sockInternal.SockState == SockState.Connect)
+                {
+                    var len = sockInternal.Length();
+                    if (0 < len)
+                    {
+                        const int timeout = 10;
+                        var buf = sockInternal.Recv(len, timeout, this);
+                        sockInternal.Send(buf);
+                        //break; //echoしたらセッションを閉じる
+                    }
+                }
             }
 
             //RemoteServerでのみ使用される
@@ -212,6 +231,68 @@ namespace Bjd.Test.Servers
             }
 
         }
+
+        [Fact]
+        public void OneServerを継承したEchoServer_Internal版_を使用して接続する()
+        {
+
+            const string addr = "127.0.0.1";
+            int port = 0;
+            const int timeout = 8;
+            Ip ip = null;
+            try
+            {
+                ip = new Ip(addr);
+            }
+            catch (ValidObjException ex)
+            {
+                Assert.False(true, ex.Message);
+            }
+            var oneBind = new OneBind(ip, ProtocolKind.Internal);
+            var conf = TestUtil.CreateConf(_kernel, "OptionSample");
+            conf.Set("port", port);
+            conf.Set("multiple", 10);
+            conf.Set("acl", new Dat(new CtrlType[0]));
+            conf.Set("enableAcl", 1);
+            conf.Set("timeOut", timeout);
+
+            using (var echoServer = new EchoServer(_service.Kernel, conf, oneBind))
+            {
+                echoServer.Start();
+
+                //TCPクライアント
+
+                const int max = 10000;
+                var buf = new byte[max];
+                buf[8] = 100; //CheckData
+                for (int i = 0; i < 3; i++)
+                {
+                    var sockInternal = echoServer.ConnectInternal();
+
+                    sockInternal.Send(buf);
+
+                    while (sockInternal.Length() == 0)
+                    {
+                        Thread.Sleep(2);
+                    }
+
+                    var len = sockInternal.Length();
+                    if (0 < len)
+                    {
+                        var b = sockInternal.Recv(max, timeout, this);
+                        Assert.Equal(b[8], buf[8]);//CheckData
+                    }
+                    Assert.Equal(max, len);
+
+                    sockInternal.Close();
+
+                }
+
+                echoServer.Stop();
+            }
+
+        }
+
 
         public bool IsLife()
         {

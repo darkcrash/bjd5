@@ -448,9 +448,10 @@ namespace Bjd.Servers
             var pair = SockInternal.Create(_kernel);
 
             // 子タスクで処理させる
-            Func<SockInternal, Task> taction = async (SockInternal child) =>
+            Func<object, Task> taction = async (object c) =>
             {
                 int? idx = null;
+                SockInternal child = (SockInternal)c;
                 try
                 {
                     idx = StartTask(child);
@@ -496,7 +497,8 @@ namespace Bjd.Servers
                     RemoveTask(idx, child);
                 }
             };
-            var task = taction(pair.Server);
+            
+            var task = Task.Factory.StartNew(taction, pair.Server);
             return pair.Client;
         }
 

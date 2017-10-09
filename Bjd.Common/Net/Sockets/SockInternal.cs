@@ -41,6 +41,8 @@ namespace Bjd.Net.Sockets
             };
             pair.Server._pair = pair.Client;
             pair.Client._pair = pair.Server;
+            pair.Server.SockState = SockState.Connect;
+            pair.Client.SockState = SockState.Connect;
             return pair;
         }
 
@@ -174,6 +176,10 @@ namespace Bjd.Net.Sockets
                 if (disposing)
                 {
                 }
+
+                try { this.Cancel(); }
+                catch (Exception ex)
+                { Kernel?.Logger.TraceError($"{hashText} Dispose Error Cancel {ex.Message} {ex.StackTrace} "); }
 
                 if (_sockQueueRecv != null)
                 {
