@@ -17,8 +17,6 @@ namespace Bjd.Threading
             catch { }
         }
 
-
-
         private Thread _t;
         private ThreadBaseKind _threadBaseKind = ThreadBaseKind.Before;
         private ManualResetEventSlim RunningWait = new ManualResetEventSlim(false, 0);

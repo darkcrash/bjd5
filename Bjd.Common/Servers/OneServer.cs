@@ -46,6 +46,7 @@ namespace Bjd.Servers
         private int _count = 0;
         //private ManualResetEventSlim _childNone = new ManualResetEventSlim(true, 0);
         private SimpleResetEvent _childNone = SimpleResetPool.GetResetEvent(true);
+        private SimpleResetEvent _internal;
 
         // 同時接続数
         private readonly int _port;
@@ -100,6 +101,8 @@ namespace Bjd.Servers
                     return _sockServerTcp.SockState;
                 if (_sockServerUdp != null)
                     return _sockServerUdp.SockState;
+                if (_oneBind.Protocol == ProtocolKind.Internal && _internal != null)
+                    return SockState.Bind;
                 return SockState.Error;
             }
         }
@@ -111,13 +114,9 @@ namespace Bjd.Servers
         protected OneServer(Kernel kernel, Conf conf, OneBind oneBind)
             : base(kernel, kernel.CreateLogger(conf.NameTag, true, null))
         {
-            if (kernel == null) throw new ArgumentNullException("kernel");
-            if (conf == null) throw new ArgumentNullException("conf");
-            if (oneBind == null) throw new ArgumentNullException("oneBind");
-
-            _kernel = kernel;
-            _conf = conf;
-            _oneBind = oneBind;
+            _kernel = kernel ?? throw new ArgumentNullException("kernel");
+            _oneBind = oneBind ?? throw new ArgumentNullException("oneBind");
+            _conf = conf ?? throw new ArgumentNullException("conf");
 
             IsJp = kernel.IsJp;
             NameTag = conf.NameTag;
@@ -164,7 +163,7 @@ namespace Bjd.Servers
             }
 
             // TCPソケットサーバーがなければ何もしない
-            if (_sockServerTcp == null && _sockServerUdp == null)
+            if (_sockServerTcp == null && _sockServerUdp == null && _internal == null)
             {
                 return; //すでに終了処理が終わっている
             }
@@ -172,9 +171,11 @@ namespace Bjd.Servers
             // キャンセルして、停止
             if (_sockServerTcp != null) _sockServerTcp.Cancel();
             if (_sockServerUdp != null) _sockServerUdp.Cancel();
+            if (_internal != null) _internal.Set();
 
             if (_sockServerTcp != null) _sockServerTcp.Close();
             if (_sockServerUdp != null) _sockServerUdp.Close();
+            if (_internal != null) _internal.Dispose();
 
             // 子スレッドの停止
             foreach (var o in _cArray)
@@ -184,13 +185,13 @@ namespace Bjd.Servers
                 catch { }
             }
 
-
             // クライアント接続終了まで待機する
             // 全部の子スレッドが終了するのを待つ
             _childNone.Wait();
 
             _sockServerTcp = null;
             _sockServerUdp = null;
+            _internal = null;
 
         }
 
@@ -225,6 +226,9 @@ namespace Bjd.Servers
                     _sockServerUdp = new SockServerUdp(_kernel, _oneBind.Protocol, ssl);
                     _sockServerUdp.SocketStateChanged += _sockServerUdp_SocketStateChanged;
                     break;
+                case ProtocolKind.Internal:
+                    _internal = SimpleResetPool.GetResetEvent(false);
+                    break;
             }
 
             return true;
@@ -257,6 +261,12 @@ namespace Bjd.Servers
                     if (this.SockState != SockState.Error)
                     {
                         RunUdpServer(port);
+                    }
+                    break;
+                case ProtocolKind.Internal:
+                    if (this.SockState != SockState.Error)
+                    {
+                        RunInternalServer(port);
                     }
                     break;
             }
@@ -422,6 +432,75 @@ namespace Bjd.Servers
             }
 
         }
+
+        private void RunInternalServer(int port)
+        {
+            _kernel.Logger.TraceInformation(this.GetType().FullName, ".RunInternalServer  ");
+
+            ThreadBaseKind = ThreadBaseKind.Running;
+
+            _internal.Wait();
+        }
+
+
+        internal ISocket ConnectInternal()
+        {
+            var pair = SockInternal.Create(_kernel);
+
+            // 子タスクで処理させる
+            Func<SockInternal, Task> taction = async (SockInternal child) =>
+            {
+                int? idx = null;
+                try
+                {
+                    idx = StartTask(child);
+
+                    // 同時接続数チェック
+                    if (Increment())
+                    {
+                        // 同時接続数を超えたのでリクエストをキャンセルします
+                        _kernel.Logger.DebugInformation("OneServer.RunTcpServer over count", Count.ToString(), "/multiple:", _multiple.ToString());
+                        Logger.Set(LogKind.Secure, _sockServerTcp, 9000004, string.Format("count:{0}/multiple:{1}", Count, _multiple));
+                        return;
+                    }
+
+                    try
+                    {
+                        // ACL制限のチェック
+                        if (AclCheck(child) == AclKind.Deny)
+                        {
+                            return;
+                        }
+
+                        // 送受信開始
+                        //child.BeginAsync();
+
+                        // 各実装へ
+                        if (AsyncMode)
+                        {
+                            await this.SubThreadAsync(child, child);
+                        }
+                        else
+                        {
+                            this.SubThread(child, child);
+                        }
+                    }
+                    finally
+                    {
+                        Decrement();
+                    }
+
+                }
+                finally
+                {
+                    RemoveTask(idx, child);
+                }
+            };
+            var task = taction(pair.Server);
+            return pair.Client;
+        }
+
+
         private int StartTask(SockObj o)
         {
             var idx = Interlocked.Increment(ref _cArrayIndex);

@@ -227,6 +227,12 @@ namespace Bjd.Initialization
             Directory.CreateDirectory(boxPath);
         }
 
+        public ISocket ConnectServer(string nameTag)
+        {
+            var sv = Kernel.ListServer.Get(nameTag);
+            return sv.ConnectInternal();
+        }
+
         public static string ProjectDirectory
         {
             get

@@ -207,6 +207,40 @@ namespace Bjd.Test.Servers
             }
         }
 
+        [Fact]
+        public void RepeatStartStop_Internal()
+        {
+            var kernel = _kernel;
+
+            var ip = new Ip(IpKind.V4Localhost);
+            var port = 0;
+            var oneBind = new OneBind(ip, ProtocolKind.Internal);
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
+            conf.Set("port", port);
+            conf.Set("multiple", 10);
+            conf.Set("acl", new Dat(new CtrlType[0]));
+            conf.Set("enableAcl", 1);
+            conf.Set("timeOut", 3);
+
+            using (var myServer = new MyServer(kernel, conf, oneBind))
+            {
+
+                for (var i = 0; i < 10; i++)
+                {
+                    // Start
+                    myServer.Start();
+                    Assert.Equal(ThreadBaseKind.Running, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Bind, myServer.SockState);
+
+                    // Stop
+                    myServer.Stop();
+                    Assert.Equal(ThreadBaseKind.After, myServer.ThreadBaseKind);
+                    Assert.Equal(SockState.Error, myServer.SockState);
+                }
+
+            }
+        }
+
 
         [Fact]
         public void RepeatNewStartStopDispose_TCP()
@@ -248,6 +282,37 @@ namespace Bjd.Test.Servers
             var ip = new Ip(IpKind.V4Localhost);
             var port = _service.GetAvailableUdpPort(ip, 10089);
             var oneBind = new OneBind(ip, ProtocolKind.Udp);
+            Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
+            conf.Set("port", port);
+            conf.Set("multiple", 10);
+            conf.Set("acl", new Dat(new CtrlType[0]));
+            conf.Set("enableAcl", 1);
+            conf.Set("timeOut", 3);
+
+            for (var i = 0; i < 10; i++)
+            {
+                using (var myServer = new MyServer(kernel, conf, oneBind))
+                {
+                    myServer.Start();
+                    Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.Running);
+                    Assert.Equal(myServer.SockState, SockState.Bind);
+
+                    myServer.Stop();
+                    Assert.Equal(myServer.ThreadBaseKind, ThreadBaseKind.After);
+                    Assert.Equal(myServer.SockState, SockState.Error);
+
+                }
+            }
+        }
+
+        [Fact]
+        public void RepeatNewStartStopDispose_Internal()
+        {
+            var kernel = _kernel;
+
+            var ip = new Ip(IpKind.V4Localhost);
+            var port = 0;
+            var oneBind = new OneBind(ip, ProtocolKind.Internal);
             Conf conf = TestUtil.CreateConf(_kernel, "OptionSample");
             conf.Set("port", port);
             conf.Set("multiple", 10);
