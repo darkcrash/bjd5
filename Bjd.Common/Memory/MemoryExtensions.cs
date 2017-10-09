@@ -39,6 +39,22 @@ namespace Bjd.Memory
             return buffer;
         }
 
+        public static BufferData ToBufferData(this byte[] data, int offset, int length)
+        {
+            var buffer = BufferPool.GetMaximum(data.Length);
+            Buffer.BlockCopy(data, offset, buffer.Data, 0, length);
+            buffer.DataSize = length;
+            return buffer;
+        }
+
+        public static BufferData ToBufferData(this ArraySegment<byte> data)
+        {
+            var buffer = BufferPool.GetMaximum(data.Count);
+            Buffer.BlockCopy(data.Array, data.Offset, buffer.Data, 0, data.Count);
+            buffer.DataSize = data.Count;
+            return buffer;
+        }
+
         public static BufferData ToAsciiBufferData(this CharsData data)
         {
             var ascii = System.Text.Encoding.ASCII;
@@ -114,6 +130,12 @@ namespace Bjd.Memory
         //    }
         //}
 
+        public static BufferData Copy(this BufferData data)
+        {
+            var copyData = BufferPool.Get(data.DataSize);
+            data.CopyTo(copyData);
+            return copyData;
+        }
 
         public static bool ExistsLf(this BufferData data)
         {

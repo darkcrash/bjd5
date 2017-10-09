@@ -22,7 +22,6 @@ namespace Bjd.Net.Sockets
         Task CancelWaitAsync();
         string GetLastEror();
         SockState SockState { get; }
-        void Resolve(bool useResolve, Logger logger);
         void Close();
 
         byte[] RecvBuf { get; }
@@ -48,7 +47,7 @@ namespace Bjd.Net.Sockets
 
         ValueTask<bool> SendAsync(BufferData buf);
         int Send(byte[] buf, int offset, int length);
-   
+
         //int Send(byte[] buf, int length);
         //int Send(byte[] buf);
 

@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <Compile Remove="Net\Sockets\ISocketInfo.cs" />
+    <Compile Remove="Net\Sockets\ISocketInternal.cs" />
   </ItemGroup>
 
   <ItemGroup>

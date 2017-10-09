@@ -327,11 +327,11 @@ namespace Bjd.Servers
                             // 各実装へ
                             if (AsyncMode)
                             {
-                                await this.SubThreadAsync(child);
+                                await this.SubThreadAsync(child, child);
                             }
                             else
                             {
-                                this.SubThread(child);
+                                this.SubThread(child, child);
                             }
                         }
                         finally
@@ -403,7 +403,7 @@ namespace Bjd.Servers
                                     return;
                                 }
                                 // 各実装へ
-                                this.SubThread(child);
+                                this.SubThread(child, child);
                             }
                             finally
                             {
@@ -486,12 +486,12 @@ namespace Bjd.Servers
 
 
         //１リクエストに対する子スレッドとして起動される
-        private void SubThread(ISocket o)
+        private void SubThread(ISocket o, ISocketInfrastructure i)
         {
-            var sockObj = (ISocket)o;
+            var sockObj = o;
 
             //クライアントのホスト名を逆引きする
-            sockObj.Resolve(useResolve, Logger);
+            i.Resolve(useResolve, Logger);
 
             //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));
@@ -518,12 +518,12 @@ namespace Bjd.Servers
 
         }
 
-        private async Task SubThreadAsync(ISocket o)
+        private async Task SubThreadAsync(ISocket o, ISocketInfrastructure i)
         {
-            var sockObj = (ISocket)o;
+            var sockObj = o;
 
             //クライアントのホスト名を逆引きする
-            sockObj.Resolve(useResolve, Logger);
+            i.Resolve(useResolve, Logger);
 
             //_subThreadの中でSockObjは破棄する（ただしUDPの場合は、クローンなのでClose()してもsocketは破棄されない）
             Logger.Set(LogKind.Detail, sockObj, 9000002, string.Format("count={0} Local={1} Remote={2}", Count, sockObj.LocalAddress, sockObj.RemoteAddress));

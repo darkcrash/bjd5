@@ -14,14 +14,18 @@ using System.Threading.Tasks;
 namespace Bjd.Net.Sockets
 {
     //SockTcp 及び SockUdp の基底クラス
-    public abstract class SockObj : IDisposable, ISocketBase
+    public abstract class SockObj : IDisposable, ISocketBase, ISocketInfrastructure
     {
+        protected static readonly byte[] CrLf = new byte[] { 0x0D, 0x0A };
 
         private IPEndPoint _RemoteAddress;
         private IPEndPoint _LocalAddress;
         private Ip _LocalIp;
         private Ip _RemoteIp;
         private SimpleAsyncAwaiter cancelWaiter = SimpleAsyncAwaiterPool.GetResetEvent(false);
+
+        internal int hash { get; private set; }
+        internal string hashText { get; private set; }
 
         //****************************************************************
         // アドレス関連
@@ -90,6 +94,9 @@ namespace Bjd.Net.Sockets
 
         protected SockObj(Kernel kernel)
         {
+            hash = this.GetHashCode();
+            hashText = hash.ToString();
+
             Kernel = kernel;
             SockState = SockState.Idle;
             LocalAddress = null;
@@ -110,6 +117,11 @@ namespace Bjd.Net.Sockets
             Kernel.Logger.DebugInformation("SockObj.Cancel");
             this.cancelTokenSource.Cancel();
             cancelWaiter.Set();
+        }
+
+        void ISocketInfrastructure.Cancel()
+        {
+            Cancel();
         }
 
         protected bool IsCancel
@@ -185,7 +197,7 @@ namespace Bjd.Net.Sockets
         }
 
         //TODO メソッドの配置はここでよいか？
-        public void Resolve(bool useResolve, Logger logger)
+        void ISocketInfrastructure.Resolve(bool useResolve, Logger logger)
         {
             if (useResolve)
             {
@@ -264,6 +276,8 @@ namespace Bjd.Net.Sockets
             // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
             GC.SuppressFinalize(this);
         }
+
+
         #endregion
     }
 }

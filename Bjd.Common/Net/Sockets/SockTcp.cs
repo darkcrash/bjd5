@@ -27,8 +27,6 @@ namespace Bjd.Net.Sockets
         private Task<int> receiveTask;
         private Task receiveCompleteTask;
         private bool isSsl = false;
-        private int hash;
-        private string hashText;
         private SocketAsyncEventArgs recvEventArgs;
         private SocketAsyncEventArgs sendEventArgs;
         private SimpleAsyncAwaiter recvComplete;
@@ -53,8 +51,6 @@ namespace Bjd.Net.Sockets
             //SSL通信を使用する場合は、このオブジェクトがセットされる 通常の場合は、null
             _ssl = ssl;
             isSsl = _ssl != null;
-            hash = this.GetHashCode();
-            hashText = hash.ToString();
 
             var addressFamily = (ip.InetKind == InetKind.V4) ? AddressFamily.InterNetwork : AddressFamily.InterNetworkV6;
             _socket = new Socket(addressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -104,8 +100,6 @@ namespace Bjd.Net.Sockets
             _socket = s;
             _ssl = ssl;
             isSsl = _ssl != null;
-            hash = this.GetHashCode();
-            hashText = hash.ToString();
 
             //既に接続を完了している
             if (isSsl)
