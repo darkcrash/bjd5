@@ -34,10 +34,10 @@ namespace Bjd.RemoteServer
         override protected bool OnStartServer() { return true; }
         override protected void OnStopServer() { }
         //接続単位の処理
-        SockTcp _sockTcp;//ここで宣言する場合、マルチスレッドでは使用できない
+        ISocket _sockTcp;//ここで宣言する場合、マルチスレッドでは使用できない
         override protected void OnSubThread(ISocket sockObj)
         {
-            _sockTcp = (SockTcp)sockObj;
+            _sockTcp = sockObj;
 
             //*************************************************************
             // パスワード認証

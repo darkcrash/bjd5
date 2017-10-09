@@ -58,7 +58,7 @@ namespace Bjd.ProxyHttpServer
 
 
         //データ取得（内部データは、初期化される）
-        public bool Recv(Logger logger, SockTcp tcpObj, int timeout, ILife iLife)
+        public bool Recv(Logger logger, ISocket tcpObj, int timeout, ILife iLife)
         {
 
             var buf = tcpObj.LineRecv(timeout, iLife);
@@ -244,7 +244,7 @@ namespace Bjd.ProxyHttpServer
             return true;
         }
 
-        public async ValueTask<bool> RecvAsync(Logger logger, SockTcp tcpObj, int timeout, ILife iLife)
+        public async ValueTask<bool> RecvAsync(Logger logger, ISocket tcpObj, int timeout, ILife iLife)
         {
             string str;
             using (var buf = await tcpObj.LineBufferRecvAsync(timeout))

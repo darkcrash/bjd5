@@ -65,8 +65,8 @@ namespace FtpServerTest
 
         }
 
-        private SockTcp _v6Cl; //クライアント
-        private SockTcp _v4Cl; //クライアント
+        private ISocket _v6Cl; //クライアント
+        private ISocket _v4Cl; //クライアント
 
         private ServerTest.InternalFixture _fixture;
 
@@ -117,7 +117,7 @@ namespace FtpServerTest
 
 
         //共通処理(ログイン成功)
-        private void Login(string userName, SockTcp cl)
+        private void Login(string userName, ISocket cl)
         {
             var banner = cl.StringRecv(1, this);
             CheckBanner(banner);//バナーチェック
@@ -264,7 +264,7 @@ namespace FtpServerTest
 
             int port = 256; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("PORT 127,0,0,1,0,256");
-            SockTcp dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
+            ISocket dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
             Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
 
             dl.Close();
@@ -302,7 +302,7 @@ namespace FtpServerTest
             int port = n * 256 + m;
 
             Thread.Sleep(10);
-            SockTcp dl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
+            ISocket dl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
             Assert.Equal(dl.SockState, SockState.Connect);
             dl.Close();
         }

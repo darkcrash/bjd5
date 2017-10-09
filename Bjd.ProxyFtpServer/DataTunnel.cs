@@ -14,7 +14,7 @@ namespace Bjd.ProxyFtpServer
 {
     class DataTunnel:ThreadBase {
 
-        private readonly Dictionary<CS, SockTcp> _sock = new Dictionary<CS, SockTcp>(2);
+        private readonly Dictionary<CS, ISocket> _sock = new Dictionary<CS, ISocket>(2);
         private readonly Dictionary<CS, byte[]> _buf = new Dictionary<CS, byte []>(2);
 
         private readonly Ip _listenIp;

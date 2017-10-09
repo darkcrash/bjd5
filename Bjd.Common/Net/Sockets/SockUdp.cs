@@ -65,42 +65,6 @@ namespace Bjd.Net.Sockets
             Send(buf, 0, buf.Length);
         }
 
-        public byte[] Recv(int sec)
-        {
-            _socket.ReceiveTimeout = sec * 1000;
-            try
-            {
-                EndPoint ep = RemoteAddress;
-                var tmp = new byte[1620];
-                var l = _socket.ReceiveFrom(tmp, ref ep);
-                //_recvBuf = new byte[l];
-                //Buffer.BlockCopy(tmp, 0, _recvBuf, 0, l);
-                var buf = new byte[l];
-                Buffer.BlockCopy(tmp, 0, buf, 0, l);
-                Set(SockState.Connect, LocalAddress, (IPEndPoint)ep);
-
-                return buf;
-            }
-            catch (Exception)
-            {
-                return new byte[0];
-            }
-        }
-
-        //ACCEPTの場合は、既に受信できているので、こちらでアクセスする
-        public int Length()
-        {
-            return _recvBuf.Length;
-        }
-        //ACCEPTの場合は、既に受信できているので、こちらでアクセスする
-        public byte[] RecvBuf
-        {
-            get { return _recvBuf; }
-            //set { throw new NotImplementedException(); }
-        }
-
-
-
         public byte[] Recv(int len, int sec, ILife iLife)
         {
             _socket.ReceiveTimeout = sec * 1000;
@@ -120,6 +84,43 @@ namespace Bjd.Net.Sockets
                 return new byte[0];
             }
         }
+
+        //public byte[] Recv(int sec)
+        //{
+        //    return Recv(1620, sec, null);
+        //    //_socket.ReceiveTimeout = sec * 1000;
+        //    //try
+        //    //{
+        //    //    EndPoint ep = RemoteAddress;
+        //    //    var tmp = new byte[1620];
+        //    //    var l = _socket.ReceiveFrom(tmp, ref ep);
+        //    //    var buf = new byte[l];
+        //    //    Buffer.BlockCopy(tmp, 0, buf, 0, l);
+        //    //    Set(SockState.Connect, LocalAddress, (IPEndPoint)ep);
+
+        //    //    return buf;
+        //    //}
+        //    //catch (Exception)
+        //    //{
+        //    //    return new byte[0];
+        //    //}
+        //}
+
+        //ACCEPTの場合は、既に受信できているので、こちらでアクセスする
+        public int Length()
+        {
+            return _recvBuf.Length;
+        }
+        //ACCEPTの場合は、既に受信できているので、こちらでアクセスする
+        public byte[] RecvBuf
+        {
+            get { return _recvBuf; }
+            //set { throw new NotImplementedException(); }
+        }
+
+
+
+
 
         public async ValueTask<BufferData> BufferRecvAsync(int len, int sec)
         {

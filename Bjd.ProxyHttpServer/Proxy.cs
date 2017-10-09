@@ -15,10 +15,10 @@ namespace Bjd.ProxyHttpServer
         readonly Kernel _kernel;
         public Logger Logger { get; private set; }
         public int OptionTimeout { get; private set; }
-      
+
         //ソケット
-        SockTcp _sockClient;
-        SockTcp _sockServer;
+        ISocket _sockClient;
+        ISocket _sockServer;
      
         //上位プロキシ情報
         public UpperProxy UpperProxy { get; private set; }
@@ -27,7 +27,7 @@ namespace Bjd.ProxyHttpServer
         public string HostName = "";
         public int Port = 0;//Ver5.0.1
 
-        public Proxy(Kernel kernel, Logger logger, SockTcp clientSocket, int optionTimeout, UpperProxy upperProxy)
+        public Proxy(Kernel kernel, Logger logger, ISocket clientSocket, int optionTimeout, UpperProxy upperProxy)
         {
             _kernel = kernel;
             Logger = logger;
@@ -59,7 +59,7 @@ namespace Bjd.ProxyHttpServer
 
         public ProxyProtocol ProxyProtocol { get; private set; }
 
-        public SockTcp Sock(CS cs)
+        public ISocket Sock(CS cs)
         {
             if (cs == CS.Client) return _sockClient;
             if (cs == CS.Server) return _sockServer;

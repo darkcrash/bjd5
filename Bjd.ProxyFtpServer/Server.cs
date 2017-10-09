@@ -29,8 +29,8 @@ namespace Bjd.ProxyFtpServer
 
             var timeout = (int)_conf.Get("timeOut");
 
-            var client = (SockTcp)sockObj;
-            SockTcp server = null;
+            var client = sockObj;
+            ISocket server = null;
 
             var user = "";//���[�U��
             string pass;//�p�X���[�h

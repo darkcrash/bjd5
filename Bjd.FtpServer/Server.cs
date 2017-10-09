@@ -48,7 +48,7 @@ namespace Bjd.FtpServer
         protected override void OnSubThread(ISocket sockObj)
         {
             //セッションごとの情報
-            var session = new Session((SockTcp)sockObj);
+            var session = new Session(sockObj);
 
             //このコネクションの間、１つづつインクメントしながら使用される
             //本来は、切断したポート番号は再利用可能なので、インクリメントの必要は無いが、
@@ -833,7 +833,7 @@ namespace Bjd.FtpServer
         }
 
         //ファイル受信（バイナリ）
-        private int RecvBinary(SockTcp sockTcp, String fileName)
+        private int RecvBinary(ISocket sockTcp, String fileName)
         {
             var sockHash = sockTcp.GetHashCode();
             _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary({fileName}) ");
@@ -884,7 +884,7 @@ namespace Bjd.FtpServer
             return size;
         }
 
-        private int SendBinary(SockTcp sockTcp, String fileName)
+        private int SendBinary(ISocket sockTcp, String fileName)
         {
             var sb = new StringBuilder();
             sb.Append(string.Format("SendBinary({0}) ", fileName));

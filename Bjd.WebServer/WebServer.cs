@@ -179,7 +179,7 @@ namespace Bjd.WebServer
             using (var connection = contextPool.Get())
             {
                 connection.Initialize();
-                connection.Connection = (SockTcp)sockObj;
+                connection.Connection = sockObj;
                 connection.RemoteIp = connection.Connection.RemoteIp;
 
                 //opBase 及び loggerはバーチャルホストで変更されるので、
@@ -533,7 +533,7 @@ namespace Bjd.WebServer
         //URIを点検して不正な場合はエラーコードを返す
         //return 200 エラーなし
         //********************************************************
-        int CheckUri(SockTcp sockTcp, HttpRequest request, HttpRequestHeaders recvHeader)
+        int CheckUri(ISocket sockTcp, HttpRequest request, HttpRequestHeaders recvHeader)
         {
             _kernel.Logger.DebugInformation($"WebServer.CheckUri ");
             var responseCode = 200;

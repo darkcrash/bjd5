@@ -31,7 +31,7 @@ namespace Bjd.SipServer
 
         //接続単位の処理
         override protected void OnSubThread(ISocket sockObj) {
-            var sockUdp = (SockUdp)sockObj;
+            var sockUdp = sockObj;
 
             //受信データの解析
             var reception = new Reception(sockUdp.RecvBuf);

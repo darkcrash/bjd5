@@ -49,18 +49,18 @@ namespace Bjd.TunnelServer
 
             if (_protocolKind == ProtocolKind.Tcp)
             {
-                TcpTunnel((SockTcp)sockObj);
+                TcpTunnel((ISocket)sockObj);
             }
             else {
-                UdpTunnel((SockUdp)sockObj);
+                UdpTunnel((ISocket)sockObj);
             }
 
         }
-        void TcpTunnel(SockTcp tcpObj)
+        void TcpTunnel(ISocket tcpObj)
         {
 
             var client = tcpObj;
-            SockTcp server = null;
+            ISocket server = null;
 
             //***************************************************************
             // サーバとの接続
@@ -107,10 +107,10 @@ namespace Bjd.TunnelServer
             if (server != null)
                 server.Close();
         }
-        void UdpTunnel(SockUdp udpObj)
+        void UdpTunnel(ISocket udpObj)
         {
             //int timeout = this.OpBase.ValInt("timeOut");
-            var sock = new Dictionary<CS, SockUdp>(2);
+            var sock = new Dictionary<CS, ISocket>(2);
             sock[CS.Client] = udpObj;
             sock[CS.Server] = null;
 

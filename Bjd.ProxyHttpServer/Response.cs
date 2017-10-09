@@ -14,7 +14,7 @@ namespace Bjd.ProxyHttpServer
         string _responseStr = "";
         Logger _logger;
         //データ取得（内部データは、初期化される）
-        public bool Recv(Logger logger, SockTcp sockTcp, int timeout, ILife iLife)
+        public bool Recv(Logger logger, ISocket sockTcp, int timeout, ILife iLife)
         {
             //_logger = logger;
             ////int limit = 3600;//文字数制限
@@ -25,7 +25,7 @@ namespace Bjd.ProxyHttpServer
             //return Interpretation(Inet.TrimCrlf(str));
             return true;
         }
-        public async ValueTask<bool> RecvAsync(Logger logger, SockTcp sockTcp, int timeout, ILife iLife)
+        public async ValueTask<bool> RecvAsync(Logger logger, ISocket sockTcp, int timeout, ILife iLife)
         {
             _logger = logger;
             //int limit = 3600;//文字数制限

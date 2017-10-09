@@ -79,7 +79,7 @@ namespace WebApiServerTest
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             var kernel = _fixture._service.Kernel;
             if (inetKind == InetKind.V4)

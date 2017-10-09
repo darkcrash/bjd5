@@ -20,7 +20,7 @@ namespace Bjd.ProxyFtpServer {
         readonly Ip _ip;
         readonly int _port;
 
-        readonly Dictionary<CS, SockTcp> _sock = new Dictionary<CS, SockTcp>(2);
+        readonly Dictionary<CS, ISocket> _sock = new Dictionary<CS, ISocket>(2);
 
         //サーバ側若しくはクライアント側どちらかのSockTcpは、Listen状態で生成が終わっている
         //そして、その接続の待ち受け開始は、このクラスの中で行われる

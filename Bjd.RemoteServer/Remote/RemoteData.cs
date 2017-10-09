@@ -11,14 +11,14 @@ namespace Bjd.RemoteServer.Remote
     public static class RemoteData
     {
         //送信
-        public static bool Send(SockTcp sockTcp, RemoteDataKind kind, string str)
+        public static bool Send(ISocket sockTcp, RemoteDataKind kind, string str)
         {
             var o = new OneRemoteData(kind, str);
             return o.Send(sockTcp);
         }
 
         //受信（無効な場合 return null)
-        public static OneRemoteData Recv(SockTcp sockTcp, ILife iLife)
+        public static OneRemoteData Recv(ISocket sockTcp, ILife iLife)
         {
             if (sockTcp != null)
             {

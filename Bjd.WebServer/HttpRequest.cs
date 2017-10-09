@@ -44,7 +44,7 @@ namespace Bjd.WebServer
             LogStr = "";
         }
 
-        public void Initialize(SockTcp sockObj)
+        public void Initialize(ISocket sockObj)
         {
             Clear();
             _sockObj = sockObj;
@@ -52,7 +52,7 @@ namespace Bjd.WebServer
 
         readonly Kernel _kernel;
         readonly Logger _logger;
-        public SockTcp _sockObj { get; private set; }
+        public ISocket _sockObj { get; private set; }
 
         void Log(LogKind logKind, int messageNo, string msg)
         {

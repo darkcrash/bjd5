@@ -43,7 +43,7 @@ namespace Bjd.SmtpServer.Test
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             int port = _testServer.port; //ウイルススキャンにかかるため25を避ける
             var kernel = _testServer._service.Kernel;
@@ -56,7 +56,7 @@ namespace Bjd.SmtpServer.Test
         }
 
 
-        private void Helo(SockTcp cl)
+        private void Helo(ISocket cl)
         {
             var localPort = cl.LocalAddress.Port; //なぜかローカルのポートアドレスは１つ小さい
 
@@ -76,7 +76,7 @@ namespace Bjd.SmtpServer.Test
 
         }
 
-        private void Ehlo(SockTcp cl)
+        private void Ehlo(ISocket cl)
         {
             var localPort = cl.LocalAddress.Port; //なぜかローカルのポートアドレスは１つ小さい
 

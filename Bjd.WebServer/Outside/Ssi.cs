@@ -24,11 +24,11 @@ namespace Bjd.WebServer.Outside
 
         //子プロセスでCGIを実行する場合に使用する
         HandlerSelectorResult _target;
-        readonly SockTcp _sockTcp;
+        readonly ISocket _sockTcp;
         readonly HttpRequest _request;
         readonly HttpHeaders _recvHeader;
 
-        public Ssi(Kernel kernel, Logger logger, Conf conf, SockTcp tcpObj, HttpRequest request, HttpHeaders recvHeader)
+        public Ssi(Kernel kernel, Logger logger, Conf conf, ISocket tcpObj, HttpRequest request, HttpHeaders recvHeader)
         {
             _kernel = kernel;
             _logger = logger;
@@ -217,7 +217,7 @@ namespace Bjd.WebServer.Outside
         }
 
         //プログラム実行
-        bool SsiExec(string tag, string val, ref string str, Encoding encoding, SockTcp tcpObj)
+        bool SsiExec(string tag, string val, ref string str, Encoding encoding, ISocket tcpObj)
         {
             HandlerSelectorResult newTarget;
             var param = "";

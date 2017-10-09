@@ -74,7 +74,7 @@ namespace Pop3ServerTest
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             var kernel = _service.Kernel;
             if (inetKind == InetKind.V4)
@@ -104,7 +104,7 @@ namespace Pop3ServerTest
 
         //共通処理(ログイン成功)
         //ユーザ名、メール蓄積数、蓄積サイズ
-        void Login(string userName, string password, int n, int size, SockTcp cl)
+        void Login(string userName, string password, int n, int size, ISocket cl)
         {
             CheckBanner(cl.StringRecv(3, this));//バナーチェック
 

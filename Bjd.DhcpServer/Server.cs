@@ -101,7 +101,7 @@ namespace Bjd.DhcpServer
         override protected void OnSubThread(ISocket sockObj)
         {
 
-            var sockUdp = (SockUdp)sockObj;
+            var sockUdp = sockObj;
             if (sockUdp.RemoteAddress.Port != 68)
             {// 接続元ポート番号が68以外は、DHCPパケットではないので破棄する
                 return;
@@ -204,7 +204,7 @@ namespace Bjd.DhcpServer
         }
 
         //レスポンスパケットの送信
-        void Send(SockUdp sockUdp, PacketDhcp sp)
+        void Send(ISocket sockUdp, PacketDhcp sp)
         {
             //送信
             sockUdp.Send(sp.GetBuffer());
@@ -212,7 +212,7 @@ namespace Bjd.DhcpServer
             Log(sockUdp, 4, sp.Mac, sp.RequestIp, sp.Type);
         }
 
-        void Log(SockUdp sockUdp, int messageNo, Mac mac, Ip ip, DhcpType type)
+        void Log(ISocket sockUdp, int messageNo, Mac mac, Ip ip, DhcpType type)
         {
             string macStr = mac.ToString();
             foreach (var m in _macAcl)

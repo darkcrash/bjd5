@@ -62,9 +62,9 @@ namespace Bjd.WebServer
             _body = new HttpResponseBody(_kernel);
         }
 
-        private SockTcp _sockTcp;
+        private ISocket _sockTcp;
 
-        public void Initialize(SockTcp tcpObj)
+        public void Initialize(ISocket tcpObj)
         {
             SetRangeTo = false;
             _sockTcp = tcpObj;

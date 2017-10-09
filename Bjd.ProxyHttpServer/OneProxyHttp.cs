@@ -1022,7 +1022,7 @@ namespace Bjd.ProxyHttpServer
         }
 
         //送信
-        bool Send(SockTcp sock, byte[] sendBuf)
+        bool Send(ISocket sock, byte[] sendBuf)
         {
             var c = sock.SendUseEncode(sendBuf);
             if (c != sendBuf.Length)
@@ -1031,14 +1031,14 @@ namespace Bjd.ProxyHttpServer
             }
             return true;
         }
-        async ValueTask<bool> SendAsync(SockTcp sock, byte[] sendBuf)
+        async ValueTask<bool> SendAsync(ISocket sock, byte[] sendBuf)
         {
             using (var buf = sendBuf.ToBufferData())
             {
                 return await sock.SendAsync(buf);
             }
         }
-        async ValueTask<bool> SendAsync(SockTcp sock, BufferData sendBuf)
+        async ValueTask<bool> SendAsync(ISocket sock, BufferData sendBuf)
         {
             return await sock.SendAsync(sendBuf);
         }

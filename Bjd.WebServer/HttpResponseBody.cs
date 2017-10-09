@@ -86,7 +86,7 @@ namespace Bjd.WebServer
             }
         }
 
-        public async Task<bool> SendAsync(SockTcp tcpObj, bool encode, ILife iLife)
+        public async Task<bool> SendAsync(ISocket tcpObj, bool encode, ILife iLife)
         {
             _kernel.Logger.DebugInformation($"HttpResponseBody.Send encode={encode}");
             if (_kindBuf == KindBuf.Memory)

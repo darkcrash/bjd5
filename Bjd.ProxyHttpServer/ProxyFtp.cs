@@ -610,7 +610,7 @@ namespace Bjd.ProxyHttpServer
         class DataThread : IDisposable, ILife
         {
 
-            SockTcp _sockTcp;
+            ISocket _sockTcp;
             Thread _t;
             //readonly Logger logger;
             bool _life = true;

@@ -25,7 +25,7 @@ namespace Bjd.Net.Sockets
         void Resolve(bool useResolve, Logger logger);
         void Close();
 
-
+        byte[] RecvBuf { get; }
         int Length();
         byte[] Recv(int len, int sec, ILife iLife);
         ValueTask<BufferData> BufferRecvAsync(int len, int sec);

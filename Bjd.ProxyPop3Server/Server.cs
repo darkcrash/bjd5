@@ -19,7 +19,7 @@ namespace Bjd.ProxyPop3Server
         {
 
         }
-        protected override string BeforeJob(SockTcp client, List<byte[]> clientBuf)
+        protected override string BeforeJob(ISocket client, List<byte[]> clientBuf)
         {
             Protocol = MailProxyProtocol.Pop3;
 

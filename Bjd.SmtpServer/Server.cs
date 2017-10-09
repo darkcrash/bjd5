@@ -256,7 +256,7 @@ namespace Bjd.SmtpServer
         //接続単位の処理
         override protected void OnSubThread(ISocket sockObj)
         {
-            var sockTcp = (SockTcp)sockObj;
+            var sockTcp = sockObj;
 
             //WebApi関連
             if (!_kernel.WebApi.ServiceSmtp)

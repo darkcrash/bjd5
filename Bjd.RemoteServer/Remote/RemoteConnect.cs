@@ -8,7 +8,7 @@ namespace Bjd.RemoteServer.Remote
     //リモートサーバ側で動作しているときにクライアントへのアクセスするためのオブジェクト
     public class RemoteConnect
     {
-        readonly SockTcp _sockTcp;
+        readonly ISocket _sockTcp;
         public bool OpenTraceDlg { private get; set; }
 
         static int GetCurrentThreadId()
@@ -16,7 +16,7 @@ namespace Bjd.RemoteServer.Remote
             return System.Threading.Thread.CurrentThread.ManagedThreadId;
         }
 
-        public RemoteConnect(SockTcp sockTcp)
+        public RemoteConnect(ISocket sockTcp)
         {
             _sockTcp = sockTcp;
         }

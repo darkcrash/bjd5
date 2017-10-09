@@ -20,7 +20,7 @@ namespace Bjd.SmtpServer
         private readonly int _sec; //タイムアウト
         private readonly Kernel _kernel;
 
-        private SockTcp _sockTcp;
+        private ISocket _sockTcp;
 
         
         //RecvStatusの内部で受け取ったメッセージ

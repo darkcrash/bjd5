@@ -23,7 +23,7 @@ namespace Bjd.Utils
         //**************************************************************************
         //バイナリ-文字列変換(バイナリデータをテキスト化して送受信するため使用する)
         //**************************************************************************
-        static public byte[] ToBytes(string str)
+        public static byte[] ToBytes(string str)
         {
             if (str == null)
             {
@@ -31,7 +31,7 @@ namespace Bjd.Utils
             }
             return Encoding.Unicode.GetBytes(str);
         }
-        static public string FromBytes(byte[] buf)
+        public static string FromBytes(byte[] buf)
         {
             if (buf == null)
             {
@@ -101,7 +101,7 @@ namespace Bjd.Utils
         }
 
         //行単位での切り出し(\r\nは削除しない)
-        static public List<byte[]> GetLines(ArraySegment<byte> buf)
+        public static List<byte[]> GetLines(ArraySegment<byte> buf)
         {
             var lines = new List<byte[]>();
 
@@ -155,7 +155,7 @@ namespace Bjd.Utils
         }
 
         //\r\nの削除
-        static public byte[] TrimCrlf(byte[] buf)
+        public static byte[] TrimCrlf(byte[] buf)
         {
             if (buf.Length >= 1 && buf[buf.Length - 1] == '\n')
             {
@@ -178,7 +178,7 @@ namespace Bjd.Utils
             return buf;
         }
         //\r\nの削除
-        static public string TrimCrlf(string str)
+        public static string TrimCrlf(string str)
         {
             if (str.Length >= 1 && str[str.Length - 1] == '\n')
             {
@@ -193,7 +193,7 @@ namespace Bjd.Utils
         }
 
         //\r\nの削除
-        static public void TrimCrlf(BufferData buf)
+        public static void TrimCrlf(BufferData buf)
         {
             var b = buf.Data;
             var l = buf.DataSize;
@@ -211,7 +211,7 @@ namespace Bjd.Utils
             }
         }
 
-        static public void TrimCrlf(CharsData buf)
+        public static void TrimCrlf(CharsData buf)
         {
             var b = buf.Data;
             var l = buf.DataSize;
@@ -243,13 +243,13 @@ namespace Bjd.Utils
         }
 
         //暫定
-        static public SockTcp Connect(Kernel kernel, Ip ip, int port, int timeout, Ssl ssl)
+        public static ISocket Connect(Kernel kernel, Ip ip, int port, int timeout, Ssl ssl)
         {
             return new SockTcp(kernel, ip, port, timeout, ssl);
         }
 
         //指定した長さのランダム文字列を取得する（チャレンジ文字列用）
-        static public string ChallengeStr(int len)
+        public static string ChallengeStr(int len)
         {
             const string val = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             var bytes = new byte[len];
@@ -270,7 +270,7 @@ namespace Bjd.Utils
         }
 
         //ハッシュ文字列の作成（MD5）
-        static public string Md5Str(string str)
+        public static string Md5Str(string str)
         {
             if (str == null)
             {
@@ -286,7 +286,7 @@ namespace Bjd.Utils
         }
 
         //リクエスト行がURLエンコードされている場合は、その文字コードを取得する
-        static public Encoding GetUrlEncoding(string str)
+        public static Encoding GetUrlEncoding(string str)
         {
             var tmp = str.Split(' ');
             if (tmp.Length >= 3)
@@ -317,7 +317,7 @@ namespace Bjd.Utils
             return MLang.GetEncoding(buf2);
         }
 
-        static public Encoding GetUrlEncoding(CharsData str)
+        public static Encoding GetUrlEncoding(CharsData str)
         {
             var tmp = str.Split(' ').ToArray();
             try
@@ -360,7 +360,7 @@ namespace Bjd.Utils
 
         }
 
-        static public List<String> RecvLines(SockTcp cl, int sec, ILife iLife)
+        public static List<String> RecvLines(ISocket cl, int sec, ILife iLife)
         {
             var lines = new List<string>();
             while (true)

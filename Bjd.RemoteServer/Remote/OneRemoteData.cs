@@ -15,7 +15,7 @@ namespace Bjd.RemoteServer.Remote
             Str = str;
         }
 
-        public bool Send(SockTcp sockTcp)
+        public bool Send(ISocket sockTcp)
         {
             if (sockTcp != null)
             {

@@ -13,7 +13,7 @@ namespace Bjd.Net.Sockets
     public class Tunnel
     {
         //ソケット
-        protected Dictionary<CS, SockTcp> Sock = new Dictionary<CS, SockTcp>(2);
+        protected Dictionary<CS, ISocket> Sock = new Dictionary<CS, ISocket>(2);
 
         //バッファ（デフォルトは byte[] ）
         readonly Dictionary<CS, byte[]> _byteBuf = new Dictionary<CS, byte[]>(2);
@@ -62,7 +62,7 @@ namespace Bjd.Net.Sockets
             Logger = logger;
             Timeout = timeout;
         }
-        public void Pipe(SockTcp server, SockTcp client, ILife iLife)
+        public void Pipe(ISocket server, ISocket client, ILife iLife)
         {
 
             Sock[CS.Client] = client;

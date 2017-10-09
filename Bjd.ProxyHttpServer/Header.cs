@@ -135,7 +135,7 @@ namespace Bjd.ProxyHttpServer
         {
             _ar.Add(new OneHeader(key, val));
         }
-        public bool Recv(SockTcp sockTcp, int timeout, ILife iLife)
+        public bool Recv(ISocket sockTcp, int timeout, ILife iLife)
         {
 
             //ヘッダ取得（データは初期化される）
@@ -168,7 +168,7 @@ namespace Bjd.ProxyHttpServer
             return false;
         }
 
-        public async ValueTask<bool> RecvAsync(SockTcp sockTcp, int timeout, ILife iLife)
+        public async ValueTask<bool> RecvAsync(ISocket sockTcp, int timeout, ILife iLife)
         {
 
             //ヘッダ取得（データは初期化される）

@@ -70,7 +70,7 @@ namespace Bjd.Pop3Server
         {
             _kernel.Logger.TraceInformation($"Pop3Server.OnSubThread()");
 
-            var sockTcp = (SockTcp)sockObj;
+            var sockTcp = sockObj;
 
             var pop3LoginState = Pop3LoginState.User;
 
@@ -434,7 +434,7 @@ namespace Bjd.Pop3Server
 
         }
 
-        bool Login(SockTcp sockTcp, ref Pop3LoginState mode, ref MessageList messageList, string user, Ip addr)
+        bool Login(ISocket sockTcp, ref Pop3LoginState mode, ref MessageList messageList, string user, Ip addr)
         {
             _kernel.Logger.TraceInformation($"Pop3Server.Login user:{user} ");
 
@@ -458,7 +458,7 @@ namespace Bjd.Pop3Server
             sockTcp.AsciiSend($"+OK {user} has {messageList.Count} message ({messageList.Size} octets).");
             return true;
         }
-        void AuthError(SockTcp sockTcp, string user, string pass)
+        void AuthError(ISocket sockTcp, string user, string pass)
         {
 
             Logger.Set(LogKind.Secure, sockTcp, 3, $"user={user} pass={pass}");
@@ -496,7 +496,7 @@ namespace Bjd.Pop3Server
         /********************************************************/
         //移植のための暫定処置(POP3でのみ使用されている)
         /********************************************************/
-        protected bool RecvCmd(SockTcp sockTcp, ref string str, ref string cmdStr, ref string paramStr)
+        protected bool RecvCmd(ISocket sockTcp, ref string str, ref string cmdStr, ref string paramStr)
         {
             _kernel.Logger.TraceInformation($"Pop3Server.RecvCmd cmd:{cmdStr} str:{str}");
             var cmd = recvCmd(sockTcp);

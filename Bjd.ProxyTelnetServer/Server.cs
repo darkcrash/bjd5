@@ -27,8 +27,8 @@ namespace Bjd.ProxyTelnetServer
 
             string hostName;
 
-            var client = (SockTcp)sockObj;
-            SockTcp server = null;
+            var client = sockObj;
+            ISocket server = null;
 
             //***************************************************************
             //�O�����i�ڑ���E���[�U���E�p�X���[�h�̎擾)

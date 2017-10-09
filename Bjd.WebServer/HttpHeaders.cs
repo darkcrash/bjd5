@@ -161,7 +161,7 @@ namespace Bjd
             return false;
         }
 
-        public async Task<bool> RecvAsync(SockTcp sockTcp, int timeout, ILife iLife)
+        public async Task<bool> RecvAsync(ISocket sockTcp, int timeout, ILife iLife)
         {
 
             ////ヘッダ取得（データは初期化される）

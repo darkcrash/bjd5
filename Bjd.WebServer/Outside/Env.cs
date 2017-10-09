@@ -9,23 +9,25 @@ using Bjd.Net.Sockets;
 
 namespace Bjd.WebServer.Outside
 {
-    class Env {
+    class Env
+    {
         //Ver5.6.2
         //StringDictionaryが大文字、小文字を区別できないので変更する
         //readonly StringDictionary ar = new StringDictionary();
         readonly List<EnvKeyValue> _ar = new List<EnvKeyValue>();
 
         //public Env(Kernel kernel, Request request, Header recvHeader, System.Net.IPAddress remoteAddress, string remoteHostName, string fileName) {
-        public Env(Kernel kernel,Conf conf, HttpRequest request, HttpHeaders recvHeader,SockTcp tcpObj,string fileName) {
+        public Env(Kernel kernel, Conf conf, HttpRequest request, HttpHeaders recvHeader, ISocket tcpObj, string fileName)
+        {
 
 
 
             //Ver5.6.2
             var documetnRoot = (string)conf.Get("documentRoot");
-            _ar.Add(new EnvKeyValue("DOCUMENT_ROOT",documetnRoot));
+            _ar.Add(new EnvKeyValue("DOCUMENT_ROOT", documetnRoot));
             var serverAdmin = (string)conf.Get("serverAdmin");
             _ar.Add(new EnvKeyValue("SERVER_ADMIN", serverAdmin));
-            
+
 
             _ar.Add(new EnvKeyValue("SystemRoot", Environment.GetEnvironmentVariable("SystemRoot")));
             _ar.Add(new EnvKeyValue("Path", Environment.GetEnvironmentVariable("Path")));
@@ -40,9 +42,12 @@ namespace Bjd.WebServer.Outside
 
             _ar.Add(new EnvKeyValue("REQUEST_METHOD", request.Method.ToString().ToUpper()));
             _ar.Add(new EnvKeyValue("REQUEST_URI", request.Uri));
-            if (request.Uri == "/") { // ルートディレクトリか？
+            if (request.Uri == "/")
+            { // ルートディレクトリか？
                 _ar.Add(new EnvKeyValue("SCRIPT_NAME", Path.GetFileName(fileName)));  // Welcomeファイルを設定する
-            } else { // URIで指定されたCGIを設定する
+            }
+            else
+            { // URIで指定されたCGIを設定する
                 _ar.Add(new EnvKeyValue("SCRIPT_NAME", request.Uri));
             }
             _ar.Add(new EnvKeyValue("SERVER_PROTOCOL", request.Ver));
@@ -55,7 +60,7 @@ namespace Bjd.WebServer.Outside
             _ar.Add(new EnvKeyValue("REMOTE_ADDR", addr));
 
             //Ver5.6.2
-            int port = (tcpObj.RemoteAddress!=null)?tcpObj.RemoteAddress.Port:0;
+            int port = (tcpObj.RemoteAddress != null) ? tcpObj.RemoteAddress.Port : 0;
             _ar.Add(new EnvKeyValue("REMOTE_PORT", port.ToString()));
             port = (tcpObj.LocalAddress != null) ? tcpObj.LocalAddress.Port : 0;
             _ar.Add(new EnvKeyValue("SERVER_PORT", port.ToString()));
@@ -67,7 +72,7 @@ namespace Bjd.WebServer.Outside
             SetEnvValue(recvHeader, _ar, "accept-charset", "HTTP_ACCEPT_CHARSET");
             SetEnvValue(recvHeader, _ar, "accept-encoding", "HTTP_ACCEPT_ENCODING");
             SetEnvValue(recvHeader, _ar, "accept-language", "HTTP_ACCEPT_LANGUAGE");
-            
+
             SetEnvValue(recvHeader, _ar, "User-Agent", "HTTP_USER_AGENT");
             SetEnvValue(recvHeader, _ar, "Content-Type", "CONTENT_TYPE");
             SetEnvValue(recvHeader, _ar, "host", "SERVER_NAME");
@@ -112,10 +117,12 @@ namespace Bjd.WebServer.Outside
 
             //DEBUG
             //recvHeader.Append("accept", Encoding.ASCII.GetBytes("ABC"));
-            foreach (var line in recvHeader) {
+            foreach (var line in recvHeader)
+            {
                 //取得したタグが除外リストにヒットしない場合
                 //HTTP_を付加して環境変数にセットする
-                if (exclusionList.IndexOf(line.Key.ToLower()) < 0) {
+                if (exclusionList.IndexOf(line.Key.ToLower()) < 0)
+                {
                     //5.5.4重複による例外を回避
                     //ar.Add("HTTP_" + line.Key.ToUpper(), recvHeader.GetVal(line.Key));
                     var tag = "HTTP_" + line.Key.ToUpper();
@@ -123,7 +130,8 @@ namespace Bjd.WebServer.Outside
                     //    ar.Add(tag, recvHeader.GetVal(line.Key));
                     //}
                     bool find = _ar.Any(a => a.Key == tag);
-                    if(!find){
+                    if (!find)
+                    {
                         _ar.Add(new EnvKeyValue(tag, recvHeader.GetVal(line.Key)));
                     }
 
@@ -135,8 +143,9 @@ namespace Bjd.WebServer.Outside
         //    foreach (DictionaryEntry p in ar)
         //        yield return p;
         //}
-        public IEnumerator<EnvKeyValue> GetEnumerator(){
-            return ((IEnumerable<EnvKeyValue>) _ar).GetEnumerator();
+        public IEnumerator<EnvKeyValue> GetEnumerator()
+        {
+            return ((IEnumerable<EnvKeyValue>)_ar).GetEnumerator();
         }
 
         //***************************************************
@@ -147,11 +156,12 @@ namespace Bjd.WebServer.Outside
         //    if (value != null)
         //        env.Add(envTag, value);
         //}
-        
+
         //***************************************************
         //環境変数の設定
         //***************************************************
-        void SetEnvValue(HttpHeaders recvHeader, List<EnvKeyValue> env, string headerTag, string envTag) {
+        void SetEnvValue(HttpHeaders recvHeader, List<EnvKeyValue> env, string headerTag, string envTag)
+        {
             string value = recvHeader.GetVal(headerTag);
             if (value != null)
                 env.Add(new EnvKeyValue(envTag, value));

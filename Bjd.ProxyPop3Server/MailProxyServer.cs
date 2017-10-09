@@ -29,7 +29,7 @@ namespace Bjd.ProxyPop3Server
 
 
         readonly SpecialUser _specialUser;//特別なユーザのリスト
-        abstract protected string BeforeJob(SockTcp client, List<byte[]> clientBuf);//前処理
+        abstract protected string BeforeJob(ISocket client, List<byte[]> clientBuf);//前処理
         protected enum MailProxyProtocol
         {
             Unknown = 0,
@@ -44,8 +44,8 @@ namespace Bjd.ProxyPop3Server
         override protected void OnSubThread(ISocket sockObj)
         {
 
-            var client = (SockTcp)sockObj;
-            SockTcp server = null;
+            var client = sockObj;
+            ISocket server = null;
 
             string _targetServer;
             int _targetPort;

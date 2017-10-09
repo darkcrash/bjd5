@@ -18,7 +18,7 @@ namespace Bjd.SmtpServer
         private readonly ILife _iLife;
 
         private readonly int _sec; //タイムアウト
-        private SockTcp _sockTcp;
+        private ISocket _sockTcp;
         private Kernel _kernel;
 
         public PopClientStatus Status { get; private set; }

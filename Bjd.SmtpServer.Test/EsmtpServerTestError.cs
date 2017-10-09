@@ -86,7 +86,7 @@ namespace Bjd.SmtpServer.Test
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             if (inetKind == InetKind.V4)
             {
@@ -96,7 +96,7 @@ namespace Bjd.SmtpServer.Test
 
         }
 
-        private void Ehlo(SockTcp cl)
+        private void Ehlo(ISocket cl)
         {
             var localPort = cl.LocalAddress.Port; //なぜかローカルのポートアドレスは１つ小さい
 

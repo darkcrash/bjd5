@@ -12,6 +12,15 @@ namespace Bjd.Net.Sockets
     {
         private static readonly byte[] CrLf = new byte[] { 0x0D, 0x0A };
 
+
+        //受信<br>
+        //切断・タイムアウトでnullが返される
+        public static byte[] Recv(this ISocket sock, int sec)
+        {
+            return sock.Recv(1620, sec, null);
+        }
+
+
         public static string StringRecv(this ISocket sock, int sec, ILife iLife)
         {
             return sock.StringRecv(Encoding.ASCII, sec, iLife);

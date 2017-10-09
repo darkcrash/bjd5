@@ -25,7 +25,7 @@ namespace Bjd.WebServer
         //1回目の通信でバーチャルホストの検索を実施する
         public bool CheckVirtual = true;
 
-        public SockTcp Connection;
+        public ISocket Connection;
         public Ip RemoteIp;
         private HttpContext requestContext;
 

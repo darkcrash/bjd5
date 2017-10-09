@@ -555,7 +555,7 @@ namespace Bjd.Servers
         public abstract void Append(LogMessage oneLog);
 
         //1行読込待機
-        public Cmd WaitLine(SockTcp sockTcp)
+        public Cmd WaitLine(ISocket sockTcp)
         {
             var tout = new Utils.Timeout(TimeoutSec);
 
@@ -582,7 +582,7 @@ namespace Bjd.Servers
         //TODO RecvCmdのパラメータ形式を変更するが、これは、後ほど、Web,Ftp,SmtpのServerで使用されているため影響がでる予定
         //コマンド取得
         //コネクション切断などエラーが発生した時はnullが返される
-        protected Cmd recvCmd(SockTcp sockTcp)
+        protected Cmd recvCmd(ISocket sockTcp)
         {
             if (sockTcp.SockState != SockState.Connect)
             {
@@ -652,7 +652,7 @@ namespace Bjd.Servers
             return "";
         }
 
-        public bool WaitLine(SockTcp sockTcp, ref string cmdStr, ref string paramStr)
+        public bool WaitLine(ISocket sockTcp, ref string cmdStr, ref string paramStr)
         {
             var cmd = WaitLine(sockTcp);
             if (cmd == null)

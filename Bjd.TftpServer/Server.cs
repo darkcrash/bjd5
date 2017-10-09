@@ -47,7 +47,7 @@ namespace Bjd.TftpServer
         //接続単位の処理
         override protected void OnSubThread(ISocket sockObj)
         {
-            var sockUdp = (SockUdp)sockObj;
+            var sockUdp = sockObj;
 
             //作業フォルダの確認
             if (_workDir == "")
@@ -115,7 +115,7 @@ namespace Bjd.TftpServer
         }
 
         //オペコードの取得
-        bool GetOpCode(SockUdp sockUdp, ref Opcode opCode, ref int offset)
+        bool GetOpCode(ISocket sockUdp, ref Opcode opCode, ref int offset)
         {
             //オペコードの取得
             byte n = 0;
@@ -137,7 +137,7 @@ namespace Bjd.TftpServer
             return true;
         }
         //ファイル名の取得
-        bool GetFileName(SockUdp sockUdp, ref string fileName, ref int offset)
+        bool GetFileName(ISocket sockUdp, ref string fileName, ref int offset)
         {
             fileName = GetString(sockUdp.RecvBuf, offset);
             if (fileName == null)
@@ -149,7 +149,7 @@ namespace Bjd.TftpServer
             return true;
         }
         //モードの取得
-        bool GetMode(SockUdp sockUdp, ref TftpMode tftpMode, ref int offset)
+        bool GetMode(ISocket sockUdp, ref TftpMode tftpMode, ref int offset)
         {
             string modeStr = GetString(sockUdp.RecvBuf, offset);
             if (modeStr == null)

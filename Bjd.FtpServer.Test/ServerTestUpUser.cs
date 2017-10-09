@@ -65,8 +65,8 @@ namespace FtpServerTest
 
         }
 
-        private SockTcp _v6Cl; //クライアント
-        private SockTcp _v4Cl; //クライアント
+        private ISocket _v6Cl; //クライアント
+        private ISocket _v4Cl; //クライアント
 
         private ServerTestUpUser.InternalFixture _fixture;
 
@@ -117,7 +117,7 @@ namespace FtpServerTest
 
 
         //共通処理(ログイン成功)
-        private void Login(string userName, SockTcp cl)
+        private void Login(string userName, ISocket cl)
         {
             var banner = cl.StringRecv(1, this);
             CheckBanner(banner);//バナーチェック

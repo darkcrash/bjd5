@@ -32,7 +32,7 @@ namespace Bjd.WebApiServer
         //接続単位の処理
         override protected void OnSubThread(ISocket sockObj) {
             //UDPサーバの場合は、UdpObjで受ける
-            var sockTcp = (SockTcp)sockObj;
+            var sockTcp = sockObj;
 
             // レスポンス用のJSON文字列
             var json = JsonConvert.SerializeObject(new Error(500,"Not Implemented",""));

@@ -75,7 +75,7 @@ namespace WebApiServerTest
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             var port = 5050;
             var kernel = _fixture._service.Kernel;

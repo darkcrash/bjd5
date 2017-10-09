@@ -125,7 +125,7 @@ namespace Bjd.SmtpServer
         }
 
         //通常はこれを使用する
-        public bool Recv(SockTcp sockTcp, int sec, Logger logger, ILife iLife)
+        public bool Recv(ISocket sockTcp, int sec, Logger logger, ILife iLife)
         {
             var dtLast = DateTime.Now; //受信が20秒無かった場合は、処理を中断する
             while (iLife.IsLife())

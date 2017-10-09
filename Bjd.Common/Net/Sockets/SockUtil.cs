@@ -13,7 +13,7 @@ namespace Bjd.Net.Sockets
         //失敗した時nullが返る
         //Ver5.9.2 Java fix
         //public static SockTcp CreateConnection(Kernel kernel,Ip ip, int port,ILife iLife){
-        public static SockTcp CreateConnection(Kernel kernel, Ip ip, int port, Ssl ssl, ILife iLife)
+        public static ISocket CreateConnection(Kernel kernel, Ip ip, int port, Ssl ssl, ILife iLife)
         {
             kernel.Logger.TraceInformation($"SockUtil.CreateConnection");
             const int listenMax = 1;

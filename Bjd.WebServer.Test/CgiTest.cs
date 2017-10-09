@@ -54,7 +54,7 @@ namespace WebServerTest
             {
                 sv.Start();
 
-                SockTcp cl = null;
+                ISocket cl = null;
                 for (var r = 0; r < 10; r++)
                 {
                     cl = Inet.Connect(_kernel, new Ip(IpKind.V4Localhost), port, 20, null);

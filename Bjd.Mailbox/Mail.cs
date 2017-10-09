@@ -358,7 +358,7 @@ namespace Bjd.Mailbox
         }
         //送信
         //count 本文の行数（-1のときは全部）
-        public bool Send(SockTcp sockTcp, int count)
+        public bool Send(ISocket sockTcp, int count)
         {
             try
             {

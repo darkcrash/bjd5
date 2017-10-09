@@ -346,7 +346,7 @@ namespace Bjd.ProxyHttpServer
                 upperProxyUseAuth,
                 upperProxyAuthName,
                 upperProxyAuthPass);
-            var proxy = new Proxy(_kernel, Logger, (SockTcp)sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
+            var proxy = new Proxy(_kernel, Logger, sockObj, TimeoutSec, upperProxy);//プロキシ接続情報
 
             ProxyObj proxyObj = null;
             ProxyHttp proxyHttpObj = null;

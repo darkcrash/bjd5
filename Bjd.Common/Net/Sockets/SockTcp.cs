@@ -129,6 +129,12 @@ namespace Bjd.Net.Sockets
             return _sockQueueRecv.Length;
         }
 
+        // UDP only
+        public byte[] RecvBuf
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         private void SetConnectionInfo()
         {
             //受信バッファは接続完了後に確保される

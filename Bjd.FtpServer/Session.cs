@@ -13,10 +13,10 @@ namespace Bjd.FtpServer
         public CurrentDir CurrentDir { get; set; }
         public OneUser OneUser { get; set; }
         public FtpType FtpType { get; set; }
-        public SockTcp SockData { get; set; }
-        public SockTcp SockCtrl { get; private set; }
+        public ISocket SockData { get; set; }
+        public ISocket SockCtrl { get; private set; }
 
-        public Session(SockTcp sockCtrl)
+        public Session(ISocket sockCtrl)
         {
             SockCtrl = sockCtrl;
 

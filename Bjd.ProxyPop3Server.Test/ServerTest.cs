@@ -102,7 +102,7 @@ namespace ProxyPop3ServerTest
         }
 
         //クライアントの生成
-        SockTcp CreateClient(InetKind inetKind)
+        ISocket CreateClient(InetKind inetKind)
         {
             int port = 8110;
             if (inetKind == InetKind.V4)
@@ -129,7 +129,7 @@ namespace ProxyPop3ServerTest
         //
         //共通処理(ログイン成功)
         //ユーザ名、メール蓄積数、蓄積サイズ
-        void Login(string userName, string password, int n, int size, SockTcp cl)
+        void Login(string userName, string password, int n, int size, ISocket cl)
         {
             Assert.Equal(cl.StringRecv(3, this), "+OK \r\n");
             cl.StringSend(string.Format("USER {0}", userName));
