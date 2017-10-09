@@ -410,128 +410,8 @@ namespace Bjd.Net.Sockets
         }
 
 
-        //１行のString受信
-        public string StringRecv(Encoding enc, int sec, ILife iLife)
-        {
-            try
-            {
-                using (var buffer = LineBufferRecv(sec, iLife))
-                {
-                    if (buffer == null) return null;
-                    return enc.GetString(buffer.Data, 0, buffer.DataSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return null;
-        }
-
-        //１行のString受信
-        public async ValueTask<string> StringRecvAsync(Encoding enc, int sec, ILife iLife)
-        {
-            try
-            {
-                using (var buffer = await LineBufferRecvAsync(sec))
-                {
-                    if (buffer == null) return null;
-                    return enc.GetString(buffer.Data, 0, buffer.DataSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return null;
-        }
 
 
-        //１行のString受信(ASCII)
-        public string StringRecv(int sec, ILife iLife)
-        {
-            return StringRecv(Encoding.ASCII, sec, iLife);
-        }
-        public async ValueTask<string> StringRecvAsync(int sec, ILife iLife)
-        {
-            return await StringRecvAsync(Encoding.ASCII, sec, iLife);
-        }
-
-        //１行のString受信
-        public string StringRecv(string charsetName, int sec, ILife iLife)
-        {
-            try
-            {
-                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                if (enc == null)
-                    enc = Encoding.GetEncoding(charsetName);
-                return StringRecv(enc, sec, iLife);
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return null;
-        }
-        public async ValueTask<string> StringRecvAsync(string charsetName, int sec, ILife iLife)
-        {
-            try
-            {
-                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                if (enc == null)
-                    enc = Encoding.GetEncoding(charsetName);
-                return await StringRecvAsync(enc, sec, iLife);
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return null;
-        }
-
-        // 【１行受信】
-        //切断されている場合、nullが返される
-        //public string AsciiRecv(int timeout, OperateCrlf operateCrlf, ILife iLife) {
-        public string AsciiRecv(int timeout, ILife iLife)
-        {
-            using (var buf = LineBufferRecv(timeout, iLife))
-            {
-                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
-            }
-        }
-        public async ValueTask<string> AsciiRecvAsync(int timeout)
-        {
-            using (var buf = await LineBufferRecvAsync(timeout))
-            {
-                return buf == null ? null : Encoding.ASCII.GetString(buf.Data, 0, buf.DataSize);
-            }
-        }
-
-        // 【１行受信】
-        //切断されている場合、nullが返される
-        public CharsData AsciiRecvChars(int timeout, ILife iLife)
-        {
-            using (var buf = LineBufferRecv(timeout, iLife))
-            {
-                return buf == null ? null : buf.ToAsciiCharsData();
-            }
-        }
-        public async ValueTask<CharsData> AsciiRecvCharsAsync(int timeoutSec)
-        {
-            var result = await LineBufferRecvAsync(timeoutSec * 1000);
-            try
-            {
-                return result.ToAsciiCharsData();
-            }
-            finally
-            {
-                if (result != BufferData.Empty)
-                {
-                    result.Dispose();
-                }
-            }
-
-        }
 
         private async ValueTask<bool> SendAsyncInternal(BufferData buf)
         {
@@ -593,7 +473,6 @@ namespace Bjd.Net.Sockets
 
         }
 
-
         public int Send(byte[] buf, int offset, int length)
         {
             IfThrowOnDisposed();
@@ -617,35 +496,6 @@ namespace Bjd.Net.Sockets
                 return -1;
             }
         }
-        //public int Send(byte[] buf, int length)
-        //{
-        //    IfThrowOnDisposed();
-        //    var lengthtxt = length.ToString();
-        //    Kernel.Logger.DebugInformation(hashText, " SockTcp.Send ", lengthtxt);
-        //    try
-        //    {
-        //        //Ver5.9.2 Java fix
-        //        if (isSsl)
-        //        {
-        //            return _oneSsl.Write(buf, buf.Length);
-        //        }
-        //        else
-        //        {
-        //            return _socket.Send(buf, length, SocketFlags.None);
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        SetException(e);
-        //        return -1;
-        //    }
-        //}
-
-        //public int Send(byte[] buf)
-        //{
-        //    return Send(buf, 0, buf.Length);
-        //}
-
 
         public int Send(IList<ArraySegment<byte>> buffers)
         {
@@ -745,62 +595,6 @@ namespace Bjd.Net.Sockets
         }
 
 
-
-        //1行送信
-        //内部でCRLFの２バイトが付かされる
-        public int LineSend(byte[] buf)
-        {
-            var d = new[] { new ArraySegment<byte>(buf), new ArraySegment<byte>(CrLf) };
-            return Send(d);
-        }
-
-        //１行のString送信 (\r\nが付加される)
-        public bool StringSend(string str, Encoding enc)
-        {
-            try
-            {
-                var buf = enc.GetBytes(str);
-                LineSend(buf);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return false;
-        }
-        //１行のString送信(ASCII)  (\r\nが付加される)
-        public bool StringSend(string str)
-        {
-            return StringSend(str, Encoding.ASCII);
-        }
-
-        //１行のString送信 (\r\nが付加される)
-        public bool StringSend(string str, string charsetName)
-        {
-            try
-            {
-                var enc = CodePagesEncodingProvider.Instance.GetEncoding(charsetName);
-                if (enc == null)
-                    enc = Encoding.GetEncoding(charsetName);
-                return StringSend(str, enc);
-            }
-            catch (Exception e)
-            {
-                Util.RuntimeException(e.Message);
-            }
-            return false;
-        }
-
-
-        //【送信】テキスト（バイナリかテキストかが不明な場合もこちら）
-        public int SendUseEncode(byte[] buf)
-        {
-            //実際の送信処理にテキストとバイナリの区別はない
-            return Send(buf, 0, buf.Length);
-        }
-
-
         /*******************************************************************/
         //以下、C#のコードを通すために設置（最終的に削除の予定）
         /*******************************************************************/
@@ -814,26 +608,6 @@ namespace Bjd.Net.Sockets
             }
         }
 
-
-        public async ValueTask<bool> AsciiSendAsync(CharsData data)
-        {
-            using (var buf = data.ToAsciiBufferData())
-            {
-                await SendAsync(buf);
-            }
-            return true;
-        }
-
-
-        public async ValueTask<bool> AsciiLineSendAsync(CharsData data)
-        {
-            using (var buf = data.ToAsciiLineBufferData())
-            {
-                await SendAsync(buf);
-            }
-            return true;
-        }
-
         //内部でASCIIコードとしてエンコードする１行送信  (\r\nが付加される)
         //LineSend()のオーバーライドバージョン
         //public int AsciiSend(string str, OperateCrlf operateCrlf) {
@@ -843,16 +617,9 @@ namespace Bjd.Net.Sockets
             var buf = Encoding.ASCII.GetBytes(str);
             //return LineSend(buf, operateCrlf);
             //とりあえずCrLfの設定を無視している
-            return LineSend(buf);
+            var d = new[] { new ArraySegment<byte>(buf), new ArraySegment<byte>(CrLf) };
+            return Send(d);
         }
-
-        //【送信】バイナリ
-        public int SendNoEncode(byte[] buf)
-        {
-            //実際の送信処理にテキストとバイナリの区別はない
-            return SendNoTrace(buf);
-        }
-
 
         public override void Close()
         {

@@ -35,6 +35,7 @@ namespace Bjd.Net.Sockets
             return null;
         }
 
+
         //１行のString受信
         public static async ValueTask<string> StringRecvAsync(this ISocket sock, Encoding enc, int sec, ILife iLife)
         {
@@ -85,6 +86,12 @@ namespace Bjd.Net.Sockets
             }
             return null;
         }
+
+        public static async ValueTask<string> StringRecvAsync(this ISocket sock, int sec, ILife iLife)
+        {
+            return await StringRecvAsync(sock, Encoding.ASCII, sec, iLife);
+        }
+
 
         // 【１行受信】
         //切断されている場合、nullが返される

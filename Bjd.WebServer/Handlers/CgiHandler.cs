@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bjd.Net.Sockets;
 
 namespace Bjd.WebServer.Handlers
 {

@@ -62,7 +62,7 @@ namespace Bjd.Net.Sockets
             //************************************************
             //送信処理
             //************************************************
-            Send(buf);
+            Send(buf, 0, buf.Length);
         }
 
         public byte[] Recv(int sec)
@@ -103,12 +103,41 @@ namespace Bjd.Net.Sockets
 
         public byte[] Recv(int len, int sec, ILife iLife)
         {
-            throw new NotImplementedException();
+            _socket.ReceiveTimeout = sec * 1000;
+            try
+            {
+                EndPoint ep = RemoteAddress;
+                var tmp = new byte[len];
+                var l = _socket.ReceiveFrom(tmp, 0, len, SocketFlags.None, ref ep);
+                var buf = new byte[l];
+                Buffer.BlockCopy(tmp, 0, buf, 0, l);
+                Set(SockState.Connect, LocalAddress, (IPEndPoint)ep);
+
+                return buf;
+            }
+            catch (Exception)
+            {
+                return new byte[0];
+            }
         }
 
-        public ValueTask<BufferData> BufferRecvAsync(int len, int sec)
+        public async ValueTask<BufferData> BufferRecvAsync(int len, int sec)
         {
-            throw new NotImplementedException();
+            _socket.ReceiveTimeout = sec * 1000;
+            try
+            {
+                EndPoint ep = RemoteAddress;
+                var tmp = BufferPool.Get(len);
+                var result  = await _socket.ReceiveFromAsync(new ArraySegment<byte>(tmp.Data, 0, tmp.Length), SocketFlags.None, ep);
+                tmp.DataSize = result.ReceivedBytes;
+                Set(SockState.Connect, LocalAddress, (IPEndPoint)ep);
+
+                return tmp;
+            }
+            catch (Exception)
+            {
+                return BufferData.Empty;
+            }
         }
 
         public byte[] LineRecv(int sec, ILife iLife)
@@ -160,45 +189,6 @@ namespace Bjd.Net.Sockets
             return _socket.SendTo(buf, offset, length, SocketFlags.None, RemoteAddress);
         }
 
-        //ACCEPTのみで使用する　CLIENTは、コンストラクタで送信する
-        public int Send(byte[] buf, int length)
-        {
-            return Send(buf, 0, length);
-        }
-
-        //ACCEPTのみで使用する　CLIENTは、コンストラクタで送信する
-        public int Send(byte[] buf)
-        {
-            return Send(buf, 0, buf.Length);
-            //if (buf.Length == 0)
-            //{
-            //    return 0;
-            //}
-            //if (RemoteAddress.AddressFamily == AddressFamily.InterNetwork)
-            //{
-            //    //警告 GetAddressBytes() を使用してください。
-            //    //if (RemoteEndPoint.Address.Address == 0xffffffff) {
-            //    var addrBytes = RemoteAddress.Address.GetAddressBytes();
-            //    if (addrBytes[0] == 0xff && addrBytes[1] == 0xff && addrBytes[2] == 0xff && addrBytes[3] == 0xff)
-            //    {
-            //        // ブロードキャストはこのオプション設定が必要
-            //        try
-            //        {
-            //            _socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-            //        }
-            //        catch
-            //        {
-            //            return -1;
-            //        }
-            //    }
-            //    //IPv4
-            //    //return _socket.SendTo(buf, SocketFlags.None, RemoteAddress);
-            //} //IPv6
-            //return _socket.SendTo(buf, SocketFlags.None, RemoteAddress);
-        }
-
-
-
 
         public async ValueTask<bool> SendAsync(BufferData buf)
         {
@@ -237,7 +227,7 @@ namespace Bjd.Net.Sockets
             var cnt = 0;
             foreach (var buf in buffers)
             {
-                cnt  += Send(buf.Array, buf.Offset, buf.Count);
+                cnt += Send(buf.Array, buf.Offset, buf.Count);
             }
             return cnt;
         }
@@ -272,7 +262,7 @@ namespace Bjd.Net.Sockets
 
         public int SendNoTrace(byte[] buffer)
         {
-            return Send(buffer);
+            return Send(buffer, 0, buffer.Length);
         }
 
         public int SendNoTrace(ArraySegment<byte> buffer)

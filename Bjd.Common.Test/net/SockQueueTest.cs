@@ -534,7 +534,7 @@ namespace Bjd.Test.Net
             using (var sockQueu = new SockQueue())
             using (var cancel = new System.Threading.CancellationTokenSource())
             {
-
+                sockQueu.UseLf();
 
 
                 //2行と改行なしの1行で初期化

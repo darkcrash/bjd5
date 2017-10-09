@@ -179,6 +179,7 @@ namespace Bjd.Threading
 
         public void Dispose()
         {
+            if (disposedValue) return;
             Set();
             _pool.PoolInternal(this);
         }
