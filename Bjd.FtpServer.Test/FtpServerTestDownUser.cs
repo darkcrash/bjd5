@@ -15,7 +15,7 @@ namespace FtpServerTest
 {
 
     //[TestFixture]
-    public class ServerTestDownUser : ILife, IDisposable, IClassFixture<ServerTestDownUser.InternalFixture>
+    public class FtpServerTestDownUser : ILife, IDisposable, IClassFixture<FtpServerTestDownUser.InternalFixture>
     {
         public class InternalFixture : IDisposable
         {
@@ -68,9 +68,9 @@ namespace FtpServerTest
         private ISocket _v6Cl; //クライアント
         private ISocket _v4Cl; //クライアント
 
-        private ServerTestDownUser.InternalFixture _fixture;
+        private FtpServerTestDownUser.InternalFixture _fixture;
 
-        public ServerTestDownUser(ServerTestDownUser.InternalFixture fixture)
+        public FtpServerTestDownUser(FtpServerTestDownUser.InternalFixture fixture)
         {
             _fixture = fixture;
             var kernel = _fixture._service.Kernel;
