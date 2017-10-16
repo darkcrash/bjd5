@@ -32,7 +32,7 @@ namespace Bjd.SmtpServer.Test
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
                 _service = TestService.CreateTestService();
-                _service.SetOption("EsmtpServerTest.ini");
+                _service.SetOption("EsmtpServerTestAuthPlain.ini");
 
                 var kernel = _service.Kernel;
                 kernel.ListInitialize();
@@ -72,9 +72,10 @@ namespace Bjd.SmtpServer.Test
         public TestService _service;
         public int port;
 
-        public EsmtpServerTestAuthPlain()
+        public EsmtpServerTestAuthPlain(Xunit.Abstractions.ITestOutputHelper output)
         {
             _server = new ServerFixture();
+            _server._service.AddOutput(output);
             _service = _server._service;
             port = _server.port;
         }

@@ -96,6 +96,7 @@ namespace FtpServerTest
             _v4Cl = null;
             _v6Cl = null;
 
+
         }
 
         //共通処理(バナーチェック)  Resharperのバージョンを吸収

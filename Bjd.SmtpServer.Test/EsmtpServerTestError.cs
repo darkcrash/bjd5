@@ -32,7 +32,7 @@ namespace Bjd.SmtpServer.Test
                 //また、上記のMaloBoxには、user1=0件　user2=2件　のメールが着信している
 
                 _service = TestService.CreateTestService();
-                _service.SetOption("EsmtpServerTest.ini");
+                _service.SetOption("EsmtpServerTestError.ini");
 
                 var kernel = _service.Kernel;
                 kernel.ListInitialize();

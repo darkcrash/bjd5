@@ -20,7 +20,11 @@ namespace Bjd.Threading
         {
             try { ((CancellationTokenSource)_).Cancel(); } catch { }
         };
-        private static Action<Task, object> CancelDispose = (t, o) => ((CancellationTokenSource)o).Dispose();
+        private static Action<Task, object> CancelDispose = (t, o) =>
+        {
+            try { ((CancellationTokenSource)o).Dispose(); }
+            catch { }
+        };
 
         private int lockState = 0;
         private SimpleAsyncAwaiterPool _pool;
@@ -129,13 +133,13 @@ namespace Bjd.Threading
                 return true;
             }
 
-            var token = timer.Get(millisecondsTimeout);
+            var timerToken = timer.Get(millisecondsTimeout);
             var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            token.Register(CancelRegister, cancel);
+            timerToken.Register(CancelRegister, cancel);
             var t2 = t1.ContinueWith(_ActionEmpty, cancel.Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            var t2_2 = t2.ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
-            var t3 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
-            return await t3;
+            var t3_1 = t2.ContinueWith(CancelDispose, cancel, TaskContinuationOptions.ExecuteSynchronously);
+            var t3_2 = t2.ContinueWith(_FuncCancelFalse, TaskContinuationOptions.ExecuteSynchronously);
+            return await t3_2;
         }
 
         public async ValueTask<bool> WaitAsyncValueTask(CancellationToken cancellationToken)

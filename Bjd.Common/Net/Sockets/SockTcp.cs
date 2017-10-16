@@ -133,6 +133,7 @@ namespace Bjd.Net.Sockets
             sendComplete = SimpleAsyncAwaiterPool.GetResetEvent(false);
             _sockQueueRecv = SockQueuePool.Instance.Get();
             _sockQueueRecv.UseLf();
+            _sockQueueRecv.SetCancelToken(CancelToken);
 
             try
             {
@@ -296,7 +297,8 @@ namespace Bjd.Net.Sockets
                 if (bytesRead <= 0)
                 {
                     //  切断されている場合は、0が返される?
-                    //SetErrorReceive("SockTcp.EndReceive(int result) receive zero");
+                    SetErrorReceive("SockTcp.EndReceive(int result) receive zero");
+                    _sockQueueRecv.StopEnqueue();
                     return;
                 }
                 if (recvBuffer != null)
@@ -349,10 +351,13 @@ namespace Bjd.Net.Sockets
         public byte[] Recv(int len, int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var t = _sockQueueRecv.DequeueAsync(len, toutms, this.CancelToken).AsTask();
+            var t = _sockQueueRecv.DequeueAsync(len, toutms, CancelToken).AsTask();
             t.Wait();
             var result = t.Result;
-            if (result.Length == 0 && SockState != SockState.Connect) return null;
+            if (result.Length == 0 && SockState != SockState.Connect)
+            {
+                return null;
+            }
             var length = (result != null ? result.Length.ToString() : "null");
             Kernel.Logger.DebugInformation(hashText, " SockTcp.Recv ", length);
             return result;
@@ -363,8 +368,11 @@ namespace Bjd.Net.Sockets
         public async ValueTask<BufferData> BufferRecvAsync(int len, int sec)
         {
             var toutms = sec * 1000;
-            var result = await _sockQueueRecv.DequeueBufferAsync(len, toutms, this.CancelToken);
-            if (result.DataSize == 0 && SockState != SockState.Connect) return null;
+            var result = await _sockQueueRecv.DequeueBufferAsync(len, toutms, CancelToken);
+            if (result.DataSize == 0 && SockState != SockState.Connect)
+            {
+                return null;
+            }
             var length = (result != null ? result.DataSize.ToString() : "null");
             Kernel.Logger.DebugInformation(hashText, " SockTcp.BufferRecvAsync ", length);
             return result;
@@ -376,7 +384,7 @@ namespace Bjd.Net.Sockets
         public byte[] LineRecv(int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var t = _sockQueueRecv.DequeueLineAsync(toutms, this.CancelToken).AsTask();
+            var t = _sockQueueRecv.DequeueLineAsync(toutms, CancelToken).AsTask();
             t.Wait();
             var result = t.Result;
             if (result.Length == 0) return null;
@@ -388,7 +396,7 @@ namespace Bjd.Net.Sockets
         public BufferData LineBufferRecv(int sec, ILife iLife)
         {
             var toutms = sec * 1000;
-            var resultTask = _sockQueueRecv.DequeueLineBufferAsync(toutms, this.CancelToken).AsTask();
+            var resultTask = _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken).AsTask();
             resultTask.Wait();
             var result = resultTask.Result;
             if (result.DataSize == 0) return null;
@@ -403,7 +411,7 @@ namespace Bjd.Net.Sockets
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
             //var result = _sockQueueRecv.DequeueLineBufferAsync(toutms);
             //return result;
-            return await _sockQueueRecv.DequeueLineBufferAsync(toutms);
+            return await _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
         }
 
 

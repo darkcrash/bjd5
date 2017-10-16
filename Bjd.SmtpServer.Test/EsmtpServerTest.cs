@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class EsmtpServerTest : ILife, IDisposable, IClassFixture<EsmtpServerTest.ServerFixture>
+    public class EsmtpServerTest : ILife, IDisposable
     {
         public class ServerFixture : IDisposable
         {
@@ -74,16 +74,18 @@ namespace Bjd.SmtpServer.Test
         public int port;
 
 
-        public EsmtpServerTest(ServerFixture fixture)
+        public EsmtpServerTest(Xunit.Abstractions.ITestOutputHelper output)
         {
-            _server = fixture;
-            _service = fixture._service;
-            port = fixture.port;
+            _server = new ServerFixture();
+            _server._service.AddOutput(output);
+            _service = _server._service;
+            port = _server.port;
         }
 
         // ログイン失敗などで、しばらくサーバが使用できないため、TESTごとサーバを立ち上げて試験する必要がある
         public void Dispose()
         {
+            _server.Dispose();
         }
 
 

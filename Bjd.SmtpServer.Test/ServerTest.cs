@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.SmtpTestServer>
+    public class ServerTest : ILife, IDisposable
     {
 
         public class SmtpTestServer : TestServer
@@ -29,9 +29,9 @@ namespace Bjd.SmtpServer.Test
 
         private SmtpTestServer _testServer;
 
-        public ServerTest(ITestOutputHelper output, SmtpTestServer server)
+        public ServerTest(ITestOutputHelper output)
         {
-            _testServer = server;
+            _testServer = new SmtpTestServer();
             _testServer._service.AddOutput(output);
             _testServer._service.CleanMailbox("user1");
 
@@ -39,7 +39,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
-
+            _testServer.Dispose();
         }
 
         //クライアントの生成

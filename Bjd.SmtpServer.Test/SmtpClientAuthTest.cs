@@ -15,7 +15,7 @@ using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class SmtpClientAuthTest : ILife, IDisposable, IClassFixture<SmtpClientAuthTest.ServerFixture>
+    public class SmtpClientAuthTest : ILife, IDisposable
     {
         public class ServerFixture : TestServer, IDisposable
         {
@@ -32,14 +32,16 @@ namespace Bjd.SmtpServer.Test
         private ServerFixture _testServer;
         private Kernel _kernel;
 
-        public SmtpClientAuthTest(ServerFixture fixture)
+        public SmtpClientAuthTest(Xunit.Abstractions.ITestOutputHelper output)
         {
-            _testServer = fixture;
+            _testServer = new ServerFixture();
+            _testServer._service.AddOutput(output);
             _kernel = _testServer._service.Kernel;
         }
 
         public void Dispose()
         {
+            _testServer.Dispose();
         }
 
         private SmtpClient CreateSmtpClient(InetKind inetKind)

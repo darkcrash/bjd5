@@ -163,7 +163,7 @@ namespace Bjd.Test.Options
         [InlineData(CtrlType.Hidden, "123")]
         [InlineData(CtrlType.TextBox, "123")]
         [InlineData(CtrlType.Memo, "123\n123")]
-        [InlineData(CtrlType.CheckBox, true)]
+        //[InlineData(CtrlType.CheckBox, true)]
         [InlineData(CtrlType.Int, 0)]
         [InlineData(CtrlType.Folder, "c:\\test")]
         [InlineData(CtrlType.TextBox, "abcdefg１２３")]

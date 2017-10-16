@@ -18,7 +18,7 @@ using Bjd.Threading;
 namespace ProxyHttpServerTest
 {
 
-    public class ServerTest : ILife, IDisposable, IClassFixture<ServerTest.ServerFixture>
+    public class ServerTest : ILife, IDisposable
     {
 
         public class ServerFixture : IDisposable
@@ -80,15 +80,15 @@ namespace ProxyHttpServerTest
 
         private ServerFixture _fixture;
 
-        public ServerTest(ServerFixture fixture)
+        public ServerTest()
         {
-            _fixture = fixture;
+            _fixture = new ServerFixture();
 
         }
 
         public void Dispose()
         {
-
+            _fixture.Dispose();
         }
 
         [Fact]
@@ -218,7 +218,8 @@ namespace ProxyHttpServerTest
             var kernel = _fixture._service.Kernel;
 
             //setUp
-            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+            //var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+            var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), _fixture.port, 10, null);
             cl.Send(Encoding.ASCII.GetBytes(string.Format("CONNECT {0}:443/ HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n", hostname)));
 
             //exercise
@@ -236,16 +237,19 @@ namespace ProxyHttpServerTest
 
         //パフォーマンス測定
         [Theory]
-        [InlineData(5000, 17777)]
-        [InlineData(1000, 17778)]
-        [InlineData(10000, 17779)]
-        [InlineData(15000, 17781)]
+        [InlineData(500, 17777)]
+        [InlineData(100, 17778)]
+        [InlineData(1000, 17779)]
+        //[InlineData(15000, 17781)]
         //[TestCase(1000000000)]
         public void PerformanceTest(int count, int port)
         {
             //ダミーWebサーバ
             //string webRoot = string.Format("{0}\\public_html", srcDir);
             string webRoot = Path.Combine(_fixture.srcDir, "public_html");
+
+            var ip = new Ip(IpKind.V4Localhost);
+            port = _fixture._service.GetAvailablePort(ip, port);
 
             //試験用ファイルの生成
             var fileName = Path.GetRandomFileName();
@@ -265,7 +269,8 @@ namespace ProxyHttpServerTest
 
                 //試験用クライアント
 
-                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+                //var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), _fixture.port, 10, null);
 
                 //計測
                 var sw = new Stopwatch();

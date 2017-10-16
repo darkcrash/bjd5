@@ -70,9 +70,10 @@ namespace FtpServerTest
 
         private FtpServerStorDeleteTest.InternalFixture _fixture;
 
-        public FtpServerStorDeleteTest(FtpServerStorDeleteTest.InternalFixture fixture)
+        public FtpServerStorDeleteTest(FtpServerStorDeleteTest.InternalFixture fixture, Xunit.Abstractions.ITestOutputHelper output)
         {
             _fixture = fixture;
+            _fixture._service.AddOutput(output);
             var kernel = _fixture._service.Kernel;
             var port = _fixture.port;
 
@@ -151,7 +152,7 @@ namespace FtpServerTest
             dl.Send(new byte[3]);
             dl.Close();
 
-            Assert.Equal("226 Transfer complete.\r\n", cl.StringRecv(1, this));
+            Assert.Equal("226 Transfer complete.\r\n", cl.StringRecv(5, this));
 
 
             //dele

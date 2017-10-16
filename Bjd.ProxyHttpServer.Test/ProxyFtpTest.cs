@@ -79,7 +79,6 @@ namespace ProxyHttpServerTest
 
         public void Dispose()
         {
-
         }
 
         [Fact]

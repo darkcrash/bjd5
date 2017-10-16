@@ -17,9 +17,9 @@ using Bjd.Threading;
 namespace WebApiServerTest
 {
 
-    public class MailTest : ILife, IDisposable, IClassFixture<MailTest.ServerFixture>
+    public class MailTest : ILife, IDisposable
     {
-        const int port = 5051;
+        int port = 5051;
 
         public class ServerFixture : IDisposable
         {
@@ -27,6 +27,7 @@ namespace WebApiServerTest
             internal TestService _service;
             private Server _v6Sv; //サーバ
             private Server _v4Sv; //サーバ
+            internal int port;
 
             public ServerFixture()
             {
@@ -42,6 +43,8 @@ namespace WebApiServerTest
 
                 var option = kernel.ListOption.Get("WebApi");
                 var conf = new Conf(option);
+                var ip = new Ip(IpKind.V4Localhost);
+                port = _service.GetAvailablePort(ip, conf);
 
                 //サーバ起動
                 _v4Sv = new Server(kernel, conf, new OneBind(new Ip(IpKind.V4Localhost), ProtocolKind.Tcp));
@@ -69,13 +72,16 @@ namespace WebApiServerTest
 
         private ServerFixture _fixture;
 
-        public MailTest(ServerFixture fixture)
+        public MailTest(Xunit.Abstractions.ITestOutputHelper output)
         {
-            _fixture = fixture;
+            _fixture = new ServerFixture();
+            _fixture._service.AddOutput(output);
+            port = _fixture.port;
         }
 
         public void Dispose()
         {
+            _fixture.Dispose();
         }
 
         //クライアントの生成

@@ -86,7 +86,7 @@ namespace Bjd.Net.Sockets
         {
             var toutms = timeoutSec * 1000;
             Kernel.Logger.DebugInformation(hashText, " SockTcp.LineBufferRecvAsync ");
-            return await _sockQueueRecv.DequeueLineBufferAsync(toutms);
+            return await _sockQueueRecv.DequeueLineBufferAsync(toutms, CancelToken);
         }
 
         public byte[] LineRecv(int sec, ILife iLife)

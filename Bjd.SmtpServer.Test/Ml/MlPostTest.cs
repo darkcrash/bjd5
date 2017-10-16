@@ -66,11 +66,11 @@ namespace Bjd.SmtpServer.Test
         [InlineData("xxx", "1ban", "1ban-admin", "xxx,admin,admin2")]
         //読者からの投稿は、管理者からのDenyメール 及び管理者へのエラーメールが届く
         [InlineData("user2", "1ban", "1ban-admin", "user2,admin,admin2")]
-        //投稿を許可されないもの投稿は、管理者からのDenyメール 及び管理者へのエラーメールが届く
-        [InlineData("user2", "1ban", "1ban-admin", "user2,admin,admin2")]
+        ////投稿を許可されないもの投稿は、管理者からのDenyメール 及び管理者へのエラーメールが届く
+        //[InlineData("user2", "1ban", "1ban-admin", "user2,admin,admin2")]
         //ML以外への投稿は、本MLオブジェクトには何も残らない
         [InlineData("user1", "2ban", "", "")]
-        public void Test(string sender, string to, string from, string recvers)
+        public void MlPost(string sender, string to, string from, string recvers)
         {
 
             //ドメインを追加

@@ -47,8 +47,10 @@ namespace Bjd.Threading
             //    //try { c.Dispose(); } catch { }
             //}
             var newValue = new TimerContext();
-            var q = Interlocked.Exchange(ref queue[idx], newValue);
-            q.Cancel.Cancel();
+            using (var q = Interlocked.Exchange(ref queue[idx], newValue))
+            {
+                q.Cancel.Cancel();
+            }
 
         }
 
@@ -75,10 +77,16 @@ namespace Bjd.Threading
         }
 
 
-        private class TimerContext
+        private class TimerContext :IDisposable
         {
             public CancellationTokenSource Cancel = new CancellationTokenSource();
+
             //public CancellationTokenSource[] Cancel = new CancellationTokenSource[MaxCancelQueue];
+            public void Dispose()
+            {
+                Cancel?.Dispose();
+                Cancel = null;
+            }
         }
     }
 }

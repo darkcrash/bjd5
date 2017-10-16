@@ -13,7 +13,7 @@ using Bjd.Threading;
 
 namespace Bjd.SmtpServer.Test
 {
-    public class SmtpClientTest : ILife, IDisposable, IClassFixture<SmtpClientTest.ServerFixture>
+    public class SmtpClientTest : ILife, IDisposable
     {
 
         public class ServerFixture : TestServer, IDisposable
@@ -36,11 +36,12 @@ namespace Bjd.SmtpServer.Test
         private Kernel _kernel;
 
 
-        public SmtpClientTest(ServerFixture fixture)
+        public SmtpClientTest(Xunit.Abstractions.ITestOutputHelper output)
         {
             //_testServer = new TestServer(TestServerType.Smtp, "SmtpServerTest\\Agent", "SmtpClientTest.ini");
 
-            _testServer = fixture;
+            _testServer = new ServerFixture();
+            _testServer._service.AddOutput(output);
 
             //usrr2のメールボックスへの２通のメールをセット
             _testServer._service.CleanMailbox("user1");
@@ -52,6 +53,7 @@ namespace Bjd.SmtpServer.Test
 
         public void Dispose()
         {
+            _testServer.Dispose();
         }
 
         private SmtpClient CreateSmtpClient(InetKind inetKind)

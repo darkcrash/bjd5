@@ -40,6 +40,9 @@ namespace Bjd.Net.Sockets
         bool recvMust = false;
         List<int> alloc = new List<int>(MaxBlockSize);
 
+        bool stopedEnqueue = false;
+        CancellationTokenSource stopedEnqueueToken;
+
         //private static int max = 1048560; //保持可能な最大数<=この辺りが適切な値かもしれない
         //private const int max = 2000000; //保持可能な最大数
         private const int max = 4000000;
@@ -70,11 +73,13 @@ namespace Bjd.Net.Sockets
 
         public bool IsEmpty { get { return _modifySizeEvent.IsLocked; } }
 
+        private bool IsQueueEnd { get => stopedEnqueue && _length == 0; }
 
         SockQueuePool _pool;
 
         internal SockQueue() : this(null)
         {
+            this.Initialize();
         }
 
         internal SockQueue(SockQueuePool pool)
@@ -135,6 +140,10 @@ namespace Bjd.Net.Sockets
             recvUseBlocks = 0;
             recvMust = false;
 
+            stopedEnqueue = false;
+            stopedEnqueueToken?.Dispose();
+            stopedEnqueueToken = new CancellationTokenSource();
+
             for (var i = 0; i < MaxBlockSize; i++)
             {
                 if (_blocks[i] == null) continue;
@@ -182,6 +191,35 @@ namespace Bjd.Net.Sockets
 
         }
 
+
+        public void StopEnqueue()
+        {
+            stopedEnqueue = true;
+            //if (enqueueCounter == int.MaxValue) enqueueCounter = 0;
+            //enqueueCounter++;
+            //_modifySizeEvent.Set();
+            //_modifyLfEvent.Set();
+            //SetModify(true);
+            try
+            {
+                stopedEnqueueToken.Cancel();
+            }
+            catch (ObjectDisposedException) { }
+        }
+
+        private static Action<object> Cancel = (object tokenSource) =>
+            {
+                try
+                {
+                    ((CancellationTokenSource)tokenSource)?.Cancel();
+                }
+                catch (ObjectDisposedException) { }
+            };
+
+        public void SetCancelToken(CancellationToken cancellationToken)
+        {
+            cancellationToken.Register(Cancel, stopedEnqueueToken);
+        }
 
         public void UseLf()
         {
@@ -431,6 +469,7 @@ namespace Bjd.Net.Sockets
         //キューからのデータ取得
         private byte[] Dequeue(int len, bool must)
         {
+            if (IsQueueEnd) return empty;
             if (len == 0) return empty;
             if (recvMust == must && recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
             {
@@ -518,6 +557,7 @@ namespace Bjd.Net.Sockets
         //キューからのデータ取得
         private BufferData DequeueBuffer(int len, bool must)
         {
+            if (IsQueueEnd) return BufferData.Empty;
             if (len == 0) return BufferData.Empty;
             if (recvMust == must && recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
             {
@@ -598,6 +638,7 @@ namespace Bjd.Net.Sockets
         //キューからの１行取り出し(\r\nを削除しない)
         public byte[] DequeueLine()
         {
+            if (IsQueueEnd) return empty;
             if (!useLfCount)
             {
                 if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
@@ -690,6 +731,7 @@ namespace Bjd.Net.Sockets
         //キューからの１行取り出し(\r\nを削除しない)
         public BufferData DequeueLineBuffer()
         {
+            if (IsQueueEnd) return BufferData.Empty;
             if (!useLfCount)
             {
                 if (recvLength == _length && dequeueCounter == enqueueCounter && recvUseBlocks == _useBlocks)
@@ -787,8 +829,8 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<byte[]> DequeueAsync(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
-            if (!result) return empty;
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return empty;
 
             return Dequeue(len);
         }
@@ -797,8 +839,8 @@ namespace Bjd.Net.Sockets
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
 
-            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
-            if (!result) return empty;
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return empty;
 
             return DequeueLine();
         }
@@ -806,32 +848,32 @@ namespace Bjd.Net.Sockets
 
         public async ValueTask<BufferData> DequeueBufferAsync(int len)
         {
-            var result = await _modifySizeEvent.WaitAsyncValueTask();
-            if (!result) return BufferData.Empty;
+            var result = await _modifySizeEvent.WaitAsyncValueTask(stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueBuffer(len);
         }
 
         public async ValueTask<BufferData> DequeueBufferAsync(int len, CancellationToken cancellationToken)
         {
-            var result = await _modifySizeEvent.WaitAsyncValueTask(cancellationToken);
-            if (!result) return BufferData.Empty;
+            var result = await _modifySizeEvent.WaitAsyncValueTask(stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueBuffer(len);
         }
 
         public async ValueTask<BufferData> DequeueBufferAsync(int len, int millisecondsTimeout)
         {
-            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout);
-            if (!result) return BufferData.Empty;
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueBuffer(len);
         }
 
         public async ValueTask<BufferData> DequeueBufferAsync(int len, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
-            if (!result) return BufferData.Empty;
+            var result = await _modifySizeEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueBuffer(len);
         }
@@ -841,8 +883,8 @@ namespace Bjd.Net.Sockets
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
 
-            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout);
-            if (!result) return BufferData.Empty;
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueLineBuffer();
 
@@ -852,8 +894,8 @@ namespace Bjd.Net.Sockets
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
 
-            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, cancellationToken);
-            if (!result) return BufferData.Empty;
+            var result = await _modifyLfEvent.WaitAsyncValueTask(millisecondsTimeout, stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueLineBuffer();
         }
@@ -862,8 +904,8 @@ namespace Bjd.Net.Sockets
         {
             if (!useLfCount) throw new InvalidOperationException("require invoke useLf() before call");
 
-            var result = await _modifyLfEvent.WaitAsyncValueTask(cancellationToken);
-            if (!result) return BufferData.Empty;
+            var result = await _modifyLfEvent.WaitAsyncValueTask(stopedEnqueueToken.Token);
+            if (!result && _length == 0) return BufferData.Empty;
 
             return DequeueLineBuffer();
 

@@ -9,6 +9,8 @@ using Bjd.Configurations;
 using Bjd.Servers;
 using Bjd.Net.Sockets;
 using Bjd.Utils;
+using System.Threading.Tasks;
+using Bjd.Memory;
 
 namespace Bjd.FtpServer
 {
@@ -763,7 +765,9 @@ namespace Bjd.FtpServer
 
                 try
                 {
-                    int size = RecvBinary(session.SockData, path);
+                    var sizeTask = RecvBinaryAsync(session.SockData, path);
+                    sizeTask.Wait();
+                    long size = sizeTask.Result;
                     session.StringSend("226 Transfer complete.");
                     //Up end
                     Logger.Set(LogKind.Normal, session.SockCtrl, 10, string.Format("{0} {1} {2}bytes", session.OneUser.UserName, param, size));
@@ -833,7 +837,7 @@ namespace Bjd.FtpServer
         }
 
         //ファイル受信（バイナリ）
-        private int RecvBinary(ISocket sockTcp, String fileName)
+        private async Task<long> RecvBinaryAsync(ISocket sockTcp, String fileName)
         {
             var sockHash = sockTcp.GetHashCode();
             _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary({fileName}) ");
@@ -842,34 +846,49 @@ namespace Bjd.FtpServer
             var bw = new BinaryWriter(fs);
             fs.Seek(0, SeekOrigin.Begin);
 
-            var size = 0;
-            const int timeout = 3000;
+            var size = 0L;
+            const int timeout = 3;
+            const int bufferSize = 4096;
             while (IsLife())
             {
-                int len = sockTcp.Length();
-                if (len < 0)
-                {
-                    break;
-                }
-                if (len == 0)
-                {
-                    if (sockTcp.SockState != SockState.Connect)
-                    {
-                        break;
-                    }
-                    Thread.Sleep(10);
-                    continue;
-                }
-                byte[] buf = sockTcp.Recv(len, timeout, this);
-                if (buf.Length != len)
-                {
-                    throw new IOException("buf.length!=len");
-                }
-                bw.Write(buf, 0, buf.Length);
+                //int len = sockTcp.Length();
+                //if (len < 0)
+                //{
+                //    break;
+                //}
+                //if (len == 0)
+                //{
+                //    if (sockTcp.SockState != SockState.Connect)
+                //    {
+                //        break;
+                //    }
+                //    Thread.Sleep(5);
+                //    continue;
+                //}
+                //byte[] buf = sockTcp.Recv(len, timeout, this);
+                //if (buf.Length != len)
+                //{
+                //    throw new IOException("buf.length!=len");
+                //}
+                //bw.Write(buf, 0, buf.Length);
+                //if (buf.DataSize != len)
+                //{
+                //    throw new IOException("buf.length!=len");
+                //}
+                //bw.Write(buf, 0, buf.Length);
 
-                //トレース表示
-                _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={len}byte ");
-                size += len;
+                using (var buf = await sockTcp.BufferRecvAsync(bufferSize, timeout))
+                {
+                    if (buf == null || buf == BufferData.Empty) break;
+                    bw.Write(buf.Data, 0, buf.DataSize);
+                    //トレース表示
+                    _kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={buf.DataSize}byte ");
+                    size += buf.DataSize;
+                }
+
+                ////トレース表示
+                //_kernel.Logger.TraceInformation($"{sockHash} FtpServer.RecvBinary Binary={len}byte ");
+                //size += len;
 
             }
             bw.Flush();
