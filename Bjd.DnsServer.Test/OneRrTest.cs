@@ -75,10 +75,10 @@ namespace DnsServerTest
             //exercise
             var o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100U); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
@@ -90,10 +90,10 @@ namespace DnsServerTest
             //exercise
             var o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100u); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
@@ -105,10 +105,10 @@ namespace DnsServerTest
             //exercise
             var o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100U); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
@@ -120,10 +120,10 @@ namespace DnsServerTest
             //exercise
             var o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100U); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
@@ -135,10 +135,10 @@ namespace DnsServerTest
             //exercise
             var o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100U); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
@@ -150,10 +150,10 @@ namespace DnsServerTest
             //exercise
             OneRr o = sut.Clone(100);
             //verify
-            Assert.Equal(o.Ttl, 100U); //TTLは100に変化している
-            Assert.Equal(o.Name, "name"); //その他は同じ
-            Assert.Equal(o.DnsType, expected); //その他は同じ
-            Assert.Equal(o.Data, Encoding.ASCII.GetBytes("123")); //その他は同じ
+            Assert.Equal(100U, o.Ttl); //TTLは100に変化している
+            Assert.Equal("name", o.Name); //その他は同じ
+            Assert.Equal(expected, o.DnsType); //その他は同じ
+            Assert.Equal(Encoding.ASCII.GetBytes("123"), o.Data); //その他は同じ
         }
 
         [Fact]
