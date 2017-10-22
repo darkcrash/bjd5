@@ -141,7 +141,7 @@ namespace ServerTestRetr
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 24250);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //retr
             cl.StringSend("RETR 3.txt");

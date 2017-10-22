@@ -24,8 +24,7 @@ namespace SipServerTest
         {
         }
 
-        [Theory]
-        [InlineData()]
+        [Fact]
         public void Test()
         {
 
