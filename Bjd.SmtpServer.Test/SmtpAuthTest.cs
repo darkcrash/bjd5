@@ -105,8 +105,8 @@ namespace Bjd.SmtpServer.Test
             const bool useLogin = false;
             const bool useCramMd5 = false;
             var sut = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
-            Assert.Equal(sut.Job("AUTH PLAIN"), "334 ");
-            Assert.Equal(sut.Job(Base64.Encode("user1\0user1\0user1")), "235 Authentication successful.");
+            Assert.Equal("334 ", sut.Job("AUTH PLAIN"));
+            Assert.Equal("235 Authentication successful.", sut.Job(Base64.Encode("user1\0user1\0user1")));
             var expected = true;
 
             //exercise
@@ -127,7 +127,7 @@ namespace Bjd.SmtpServer.Test
             const bool useLogin = false;
             const bool useCramMd5 = false;
             var sut = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
-            Assert.Equal(sut.Job("AUTH PLAIN"), "334 ");
+            Assert.Equal("334 ", sut.Job("AUTH PLAIN"));
             String expected = null;
 
             //exercise
@@ -146,9 +146,9 @@ namespace Bjd.SmtpServer.Test
             const bool useCramMd5 = false;
             var sut = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
 
-            Assert.Equal(sut.Job("AUTH LOGIN"), "334 VXNlcm5hbWU6");
-            Assert.Equal(sut.Job(Base64.Encode("user1")), "334 UGFzc3dvcmQ6");
-            Assert.Equal(sut.Job(Base64.Encode("user1")), "235 Authentication successful.");
+            Assert.Equal("334 VXNlcm5hbWU6", sut.Job("AUTH LOGIN"));
+            Assert.Equal("334 UGFzc3dvcmQ6", sut.Job(Base64.Encode("user1")));
+            Assert.Equal("235 Authentication successful.", sut.Job(Base64.Encode("user1")));
 
             var expected = true;
 
@@ -168,8 +168,8 @@ namespace Bjd.SmtpServer.Test
             const bool useCramMd5 = false;
             var sut = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
 
-            Assert.Equal(sut.Job("AUTH LOGIN"), "334 VXNlcm5hbWU6");
-            Assert.Equal(sut.Job(Base64.Encode("user1")), "334 UGFzc3dvcmQ6");
+            Assert.Equal("334 VXNlcm5hbWU6", sut.Job("AUTH LOGIN"));
+            Assert.Equal("334 UGFzc3dvcmQ6", sut.Job(Base64.Encode("user1")));
 
             String expected = null;
             //exercise
@@ -189,8 +189,8 @@ namespace Bjd.SmtpServer.Test
             var sut = new SmtpAuth(_smtpAuthUserList, usePlain, useLogin, useCramMd5);
 
             var str = String.Format("AUTH login {0}", Base64.Encode("user1"));
-            Assert.Equal(sut.Job(str), "334 UGFzc3dvcmQ6");
-            Assert.Equal(sut.Job(Base64.Encode("user1")), "235 Authentication successful.");
+            Assert.Equal("334 UGFzc3dvcmQ6", sut.Job(str));
+            Assert.Equal("235 Authentication successful.", sut.Job(Base64.Encode("user1")));
 
             var expected = true;
 
@@ -215,7 +215,7 @@ namespace Bjd.SmtpServer.Test
             var str = sut.Job("AUTH CRAM-MD5");
 
             var hash = Md5.Hash("user1", Base64.Decode(str.Substring(4)));
-            Assert.Equal(sut.Job(Base64.Encode(string.Format("user1 {0}", hash))), "235 Authentication successful.");
+            Assert.Equal("235 Authentication successful.", sut.Job(Base64.Encode(string.Format("user1 {0}", hash))));
             var expected = true;
 
             //exercise

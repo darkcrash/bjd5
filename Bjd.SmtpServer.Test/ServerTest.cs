@@ -105,9 +105,9 @@ namespace Bjd.SmtpServer.Test
             var line4 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
 
             Assert.Equal(line1, str);
-            Assert.Equal(line2, "250-8BITMIME");
-            Assert.Equal(line3, "250-SIZE=5000");
-            Assert.Equal(line4, "250 HELP");
+            Assert.Equal("250-8BITMIME", line2);
+            Assert.Equal("250-SIZE=5000", line3);
+            Assert.Equal("250 HELP", line4);
 
         }
 

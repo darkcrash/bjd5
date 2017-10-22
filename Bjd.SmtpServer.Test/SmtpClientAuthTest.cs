@@ -64,14 +64,14 @@ namespace Bjd.SmtpServer.Test
             var sut = CreateSmtpClient(inetKind);
 
             //exercise
-            Assert.Equal(sut.Connect(), true);
-            Assert.Equal(sut.Helo(), true);
-            Assert.Equal(sut.Auth(kind, "user1", "user1"), true);
-            Assert.Equal(sut.Mail("1@1"), true);
-            Assert.Equal(sut.Rcpt("user1@example.com"), true);
-            Assert.Equal(sut.Data(new Mail(_kernel)), true);
+            Assert.True(sut.Connect());
+            Assert.True(sut.Helo());
+            Assert.True(sut.Auth(kind, "user1", "user1"));
+            Assert.True(sut.Mail("1@1"));
+            Assert.True(sut.Rcpt("user1@example.com"));
+            Assert.True(sut.Data(new Mail(_kernel)));
 
-            Assert.Equal(sut.Quit(), true);
+            Assert.True(sut.Quit());
 
             //tearDown
             sut.Dispose();
@@ -85,9 +85,9 @@ namespace Bjd.SmtpServer.Test
             var sut = CreateSmtpClient(inetKind);
 
             //exercise
-            Assert.Equal(sut.Connect(), true);
-            Assert.Equal(sut.Helo(), true);
-            Assert.Equal(sut.Mail("1@1"), false);
+            Assert.True(sut.Connect());
+            Assert.True(sut.Helo());
+            Assert.False(sut.Mail("1@1"));
 
             var expected = "530 Authentication required.\r\n";
             var actual = sut.GetLastError();
@@ -97,6 +97,7 @@ namespace Bjd.SmtpServer.Test
             sut.Dispose();
         }
 
+        [Theory]
         [InlineData(InetKind.V4)]
         public void HELOの前にMAILコマンド(InetKind inetKind)
         {
@@ -104,9 +105,9 @@ namespace Bjd.SmtpServer.Test
             var sut = CreateSmtpClient(inetKind);
 
             //exercise
-            Assert.Equal(sut.Connect(), true);
+            Assert.True(sut.Connect());
             //Assert.Equal(sut.Helo(), true);
-            Assert.Equal(sut.Mail("1@1"), false);
+            Assert.False(sut.Mail("1@1"));
 
             var expected = "Mail() Status != Transaction";
             var actual = sut.GetLastError();

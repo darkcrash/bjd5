@@ -191,7 +191,7 @@ namespace DhcpServerTest
             bytes[0] = 1;//Opecode = 2->1
 
             var rp = Access(bytes);
-            Assert.Equal(rp.Type, DhcpType.Offer);
+            Assert.Equal(DhcpType.Offer, rp.Type);
         }
 
         [Fact]
@@ -211,7 +211,7 @@ namespace DhcpServerTest
             bytes[0] = 1;//Opecode = 2->1
 
             var rp = Access(bytes);
-            Assert.Equal(rp.Type, DhcpType.Nak);
+            Assert.Equal(DhcpType.Nak, rp.Type);
         }
 
         [Theory]

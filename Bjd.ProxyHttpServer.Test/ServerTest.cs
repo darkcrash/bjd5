@@ -146,16 +146,16 @@ namespace ProxyHttpServerTest
                 }
 
                 //verify
-                Assert.Equal(lines.Count, 9);
-                Assert.Equal(lines[0], "HTTP/1.1 200 OK");
-                Assert.Equal(lines[1], "Transfer-Encoding: chunked");
-                Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
+                Assert.Equal(9, lines.Count);
+                Assert.Equal("HTTP/1.1 200 OK", lines[0]);
+                Assert.Equal("Transfer-Encoding: chunked", lines[1]);
+                Assert.Equal("Server: Microsoft-HTTPAPI/2.0", lines[2]);
 
-                Assert.Equal(lines[4], "");
-                Assert.Equal(lines[5], "3");
-                Assert.Equal(lines[6], "123");
-                Assert.Equal(lines[7], "0");
-                Assert.Equal(lines[8], "");
+                Assert.Equal("", lines[4]);
+                Assert.Equal("3", lines[5]);
+                Assert.Equal("123", lines[6]);
+                Assert.Equal("0", lines[7]);
+                Assert.Equal("", lines[8]);
 
 
                 //tearDown
@@ -190,16 +190,16 @@ namespace ProxyHttpServerTest
                 }
 
                 //verify
-                Assert.Equal(lines.Count, 9);
-                Assert.Equal(lines[0], "HTTP/1.1 200 OK");
-                Assert.Equal(lines[1], "Transfer-Encoding: chunked");
-                Assert.Equal(lines[2], "Server: Microsoft-HTTPAPI/2.0");
+                Assert.Equal(9, lines.Count);
+                Assert.Equal("HTTP/1.1 200 OK", lines[0]);
+                Assert.Equal("Transfer-Encoding: chunked", lines[1]);
+                Assert.Equal("Server: Microsoft-HTTPAPI/2.0", lines[2]);
 
-                Assert.Equal(lines[4], "");
-                Assert.Equal(lines[5], "3");
-                Assert.Equal(lines[6], "123");
-                Assert.Equal(lines[7], "0");
-                Assert.Equal(lines[8], "");
+                Assert.Equal("", lines[4]);
+                Assert.Equal("3", lines[5]);
+                Assert.Equal("123", lines[6]);
+                Assert.Equal("0", lines[7]);
+                Assert.Equal("", lines[8]);
 
 
                 //tearDown
@@ -229,7 +229,7 @@ namespace ProxyHttpServerTest
 
 
             //verify
-            Assert.Equal(lines[0], "HTTP/1.0 200 Connection established\r\n");
+            Assert.Equal("HTTP/1.0 200 Connection established\r\n", lines[0]);
 
             //tearDown
             cl.Close();
@@ -294,7 +294,7 @@ namespace ProxyHttpServerTest
 
                 if (lines != null)
                 {
-                    Assert.Equal(lines[0], "HTTP/1.1 200 OK\r\n");
+                    Assert.Equal("HTTP/1.1 200 OK\r\n", lines[0]);
                 }
                 else
                 {

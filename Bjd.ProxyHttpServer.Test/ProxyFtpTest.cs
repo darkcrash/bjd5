@@ -105,8 +105,8 @@ namespace ProxyHttpServerTest
             }
 
             //verify
-            Assert.NotEqual(0, lines.Count);
-            Assert.Equal(lines[0], "HTTP/1.0 200 OK");
+            Assert.NotEmpty(lines);
+            Assert.Equal("HTTP/1.0 200 OK", lines[0]);
 
             cl.Close();
             cl.Dispose();
