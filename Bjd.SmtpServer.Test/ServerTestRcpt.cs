@@ -21,7 +21,7 @@ namespace Bjd.SmtpServer.Test
 
         public class SmtpTestServer : TestServer
         {
-            public SmtpTestServer() : base(TestServerType.Smtp, "ServerTest.ini")
+            public SmtpTestServer() : base(TestServerType.Smtp, "ServerTestRcpt.ini")
             {
                 _service.CreateMailbox("user1");
             }
