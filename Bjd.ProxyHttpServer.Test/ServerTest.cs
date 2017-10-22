@@ -125,6 +125,7 @@ namespace ProxyHttpServerTest
             //setUp
             //ダミーWebサーバ
             int webPort = 3778;
+            webPort  = _fixture._service.GetAvailablePort(IpKind.V4Localhost, webPort);
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             //Webサーバ起動           
@@ -132,8 +133,8 @@ namespace ProxyHttpServerTest
             {
                 var kernel = _fixture._service.Kernel;
 
-                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), 8888, 10, null);
-                cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3778/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), _fixture.port, 10, null);
+                cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{webPort}/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
                 //exercise
                 //var lines = Inet.RecvLines(cl, 3, this);
@@ -169,6 +170,7 @@ namespace ProxyHttpServerTest
             //setUp
             //ダミーWebサーバ
             int webPort = 3779;
+            webPort = _fixture._service.GetAvailablePort(IpKind.V4Localhost, webPort);
             //var webRoot = string.Format("{0}\\public_html", _fixture.srcDir);
             var webRoot = Path.Combine(_fixture.srcDir, "public_html");
             //Webサーバ起動           
@@ -176,8 +178,8 @@ namespace ProxyHttpServerTest
             {
                 var kernel = _fixture._service.Kernel;
 
-                var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), 8888, 10, null);
-                cl.Send(Encoding.ASCII.GetBytes("GET http://127.0.0.1:3779/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
+                var cl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), _fixture.port, 10, null);
+                cl.Send(Encoding.ASCII.GetBytes($"GET http://127.0.0.1:{webPort}/index.html HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"));
 
                 //exercise
                 //var lines = Inet.RecvLines(cl, 3, this);
