@@ -360,7 +360,7 @@ namespace Bjd.Logs
 
         private void Tail(String fileName, int saveDays, DateTime now)
         {
-
+            var nowTick = now.AddDays(-saveDays).Ticks;
             var lines = new List<string>();
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 65536))
             {
@@ -386,7 +386,8 @@ namespace Bjd.Logs
                                 try
                                 {
                                     var targetDt = Convert.ToDateTime(tmp[0]);
-                                    if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
+                                    //if (now.Ticks < targetDt.AddDays(saveDays).Ticks)
+                                    if (nowTick < targetDt.Ticks)
                                     {
                                         isNeed = true;
                                         lines.Add(str);

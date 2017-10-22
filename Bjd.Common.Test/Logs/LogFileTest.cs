@@ -236,7 +236,7 @@ namespace Bjd.Test.Logs
                 using (var chars = l7.GetChars())
                     logFile.Append(chars, l7);
 
-                Task.Delay(1200).Wait();
+                Task.Delay(1500).Wait();
 
                 //exercise
                 //リフレクションを使用してprivateメソッドにアクセスする
