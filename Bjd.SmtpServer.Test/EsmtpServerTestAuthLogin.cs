@@ -134,10 +134,10 @@ namespace Bjd.SmtpServer.Test
             var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
 
             Assert.Equal(line1, str);
-            Assert.Equal(line2, "250-8BITMIME");
-            Assert.Equal(line3, "250-SIZE=5000");
-            Assert.Equal(line4, "250-AUTH LOGIN PLAIN CRAM-MD5");
-            Assert.Equal(line5, "250 HELP");
+            Assert.Equal("250-8BITMIME", line2);
+            Assert.Equal("250-SIZE=5000", line3);
+            Assert.Equal("250-AUTH LOGIN PLAIN CRAM-MD5", line4);
+            Assert.Equal("250 HELP", line5);
 
         }
 
@@ -156,10 +156,10 @@ namespace Bjd.SmtpServer.Test
 
             //exercise
             cl.StringSend("AUTH LOGIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 VXNlcm5hbWU6\r\n");
+            Assert.Equal("334 VXNlcm5hbWU6\r\n", cl.StringRecv(3, this));
 
             cl.StringSend(Base64.Encode("user1")); //ユーザ名をBase64で送る
-            Assert.Equal(cl.StringRecv(3, this), "334 UGFzc3dvcmQ6\r\n");
+            Assert.Equal("334 UGFzc3dvcmQ6\r\n", cl.StringRecv(3, this));
 
             cl.StringSend(Base64.Encode("user1"));//パスワードをBase64で送る
             var actual = cl.StringRecv(3, this);
@@ -186,10 +186,10 @@ namespace Bjd.SmtpServer.Test
 
             //exercise
             cl.StringSend("AUTH LOGIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 VXNlcm5hbWU6\r\n");
+            Assert.Equal("334 VXNlcm5hbWU6\r\n", cl.StringRecv(3, this));
 
             cl.StringSend(Base64.Encode("user1")); //ユーザ名をBase64で送る
-            Assert.Equal(cl.StringRecv(3, this), "334 UGFzc3dvcmQ6\r\n");
+            Assert.Equal("334 UGFzc3dvcmQ6\r\n", cl.StringRecv(3, this));
 
             cl.StringSend(Base64.Encode("user1") + "XXX");//パスワードをBase64で送る <=ゴミデータ追加
             var actual = cl.StringRecv(3, this);

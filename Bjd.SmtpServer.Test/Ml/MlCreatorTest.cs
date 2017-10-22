@@ -79,7 +79,7 @@ namespace Bjd.SmtpServer.Test
 
             Assert.Equal(body, string.Format("{0}\r\n", kind));
             Assert.Equal(subject, string.Format("{0} (1ban ML)", kind.ToString().ToLower()));
-            Assert.Equal(contentType, "text/plain; charset=iso-2022-jp");
+            Assert.Equal("text/plain; charset=iso-2022-jp", contentType);
         }
 
 

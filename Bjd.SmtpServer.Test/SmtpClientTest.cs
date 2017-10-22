@@ -75,13 +75,13 @@ namespace Bjd.SmtpServer.Test
             var sut = CreateSmtpClient(inetKind);
 
             //exercise
-            Assert.Equal(sut.Connect(), true);
-            Assert.Equal(sut.Helo(), true);
-            Assert.Equal(sut.Mail("1@1"), true);
-            Assert.Equal(sut.Rcpt("user1@example.com"), true);
-            Assert.Equal(sut.Data(new Mail(_kernel)), true);
+            Assert.True(sut.Connect());
+            Assert.True(sut.Helo());
+            Assert.True(sut.Mail("1@1"));
+            Assert.True(sut.Rcpt("user1@example.com"));
+            Assert.True(sut.Data(new Mail(_kernel)));
 
-            Assert.Equal(sut.Quit(), true);
+            Assert.True(sut.Quit());
 
             //tearDown
             sut.Dispose();

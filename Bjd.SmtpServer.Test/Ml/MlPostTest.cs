@@ -124,12 +124,12 @@ namespace Bjd.SmtpServer.Test
                 Assert.Equal(mail.GetHeader("from"), from);
                 Assert.Equal(mail.GetHeader("to"), "1ban" + domain);
                 Assert.Equal(mail.GetHeader("subject"), string.Format("[1ban:{0:D5}] TEST_{1}", i / 3 + 1, i / 3));
-                Assert.Equal(mail.GetHeader("Reply-To"), "\"1ban\"<1ban@example.com>");
-                Assert.Equal(mail.GetHeader("List-Id"), "1ban.example.com");
-                Assert.Equal(mail.GetHeader("List-Post"), "<mailto:1ban@example.com>");
-                Assert.Equal(mail.GetHeader("List-Owner"), "<mailto:1ban-admin@example.com>");
-                Assert.Equal(mail.GetHeader("List-Help"), "<mailto:1ban-ctl@example.com?body=help>");
-                Assert.Equal(mail.GetHeader("List-Unsubscribe"), "<mailto:1ban-ctl@example.com?body=unsubscribe>");
+                Assert.Equal("\"1ban\"<1ban@example.com>", mail.GetHeader("Reply-To"));
+                Assert.Equal("1ban.example.com", mail.GetHeader("List-Id"));
+                Assert.Equal("<mailto:1ban@example.com>", mail.GetHeader("List-Post"));
+                Assert.Equal("<mailto:1ban-admin@example.com>", mail.GetHeader("List-Owner"));
+                Assert.Equal("<mailto:1ban-ctl@example.com?body=help>", mail.GetHeader("List-Help"));
+                Assert.Equal("<mailto:1ban-ctl@example.com?body=unsubscribe>", mail.GetHeader("List-Unsubscribe"));
 
             }
 

@@ -28,8 +28,8 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.ParamList;
             //verify
-            Assert.Equal(actual[0], "From:");
-            Assert.Equal(actual[1], "1@1");
+            Assert.Equal("From:", actual[0]);
+            Assert.Equal("1@1", actual[1]);
         }
 
         [Theory]

@@ -63,8 +63,8 @@ namespace Bjd.SmtpServer.Test
 
         //検索に失敗するテスト
         [Theory]
-        [InlineData("1@1", false)]
-        public void SearchErrorTest(string mailAddress, bool find)
+        [InlineData("1@1")]
+        public void SearchErrorTest(string mailAddress)
         {
             var o = _mlUserList.Search(new MailAddress(mailAddress));//検索
             Assert.Null(o);
@@ -81,10 +81,10 @@ namespace Bjd.SmtpServer.Test
             var o = _mlUserList.Search(new MailAddress(mailAddress));//追加したユーザを検索する
 
             //内容を確認する
-            Assert.NotEqual(o, null);
-            Assert.Equal(o.IsManager, false);
-            Assert.Equal(o.IsContributor, true);
-            Assert.Equal(o.IsReader, true);
+            Assert.NotNull(o);
+            Assert.False(o.IsManager);
+            Assert.True(o.IsContributor);
+            Assert.True(o.IsReader);
             Assert.Equal(o.MailAddress.ToString(), mailAddress);
         }
 

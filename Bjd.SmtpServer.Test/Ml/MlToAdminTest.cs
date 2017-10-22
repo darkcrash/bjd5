@@ -73,7 +73,7 @@ namespace Bjd.SmtpServer.Test
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
             //管理者全員にメールが配信される
-            Assert.Equal(_tsMailSave.Count(), 2);
+            Assert.Equal(2, _tsMailSave.Count());
             //送信者の確認
             Assert.Equal(_tsMailSave.GetMail(0).GetHeader("from"), from);
         }

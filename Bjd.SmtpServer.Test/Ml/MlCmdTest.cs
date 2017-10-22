@@ -49,7 +49,7 @@ namespace Bjd.SmtpServer.Test
             mail.AppendLine(Encoding.ASCII.GetBytes(cmdStr));//区切り行(ヘッダ終了)
             var mlCmd = new MlCmd(null, mail, _user1);
 
-            Assert.Equal(mlCmd.Cast<object>().Count(), 1); // コマンド数は１
+            Assert.Single(mlCmd.Cast<object>()); // コマンド数は１
 
             foreach (OneMlCmd oneMlCmd in mlCmd)
             {

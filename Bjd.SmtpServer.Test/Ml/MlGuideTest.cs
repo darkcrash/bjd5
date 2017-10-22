@@ -72,12 +72,12 @@ namespace Bjd.SmtpServer.Test
             var mail = new TsMail(_service, from, "1ban-ctl" + domain, "guide");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
-            Assert.Equal(_tsMailSave.Count(), 1);
+            Assert.Equal(1, _tsMailSave.Count());
             var m = _tsMailSave.GetMail(0);
             //送信者
             Assert.Equal(m.GetHeader("from"), "1ban-admin" + domain);
             //件名
-            Assert.Equal(m.GetHeader("subject"), "guide (1ban ML)");
+            Assert.Equal("guide (1ban ML)", m.GetHeader("subject"));
 
         }
 
@@ -94,7 +94,7 @@ namespace Bjd.SmtpServer.Test
             var mail = new TsMail(_service, from, "1ban-ctl" + domain, "help");
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
-            Assert.Equal(_tsMailSave.Count(), 1);
+            Assert.Equal(1, _tsMailSave.Count());
             var m = _tsMailSave.GetMail(0);
             //送信者
             Assert.Equal(m.GetHeader("from"), "1ban-admin" + domain);

@@ -123,7 +123,7 @@ namespace Bjd.SmtpServer.Test
             //verify
             Assert.Equal(expected, actual);
             //存在するかどうか検索してみる(存在する)
-            Assert.Equal(sut.IndexOf("0-1234567890"), 0);
+            Assert.Equal(0, sut.IndexOf("0-1234567890"));
 
             //tearDown
             File.Delete(sut.FileName);
@@ -190,8 +190,8 @@ namespace Bjd.SmtpServer.Test
             //verify
             //最終的に２件が検索できるはず
             Assert.Equal(sut.IndexOf("0-1234567890"), -1);
-            Assert.Equal(sut.IndexOf("1-1234567890"), 0);
-            Assert.Equal(sut.IndexOf("2-1234567890"), 1);
+            Assert.Equal(0, sut.IndexOf("1-1234567890"));
+            Assert.Equal(1, sut.IndexOf("2-1234567890"));
 
 
             //tearDown

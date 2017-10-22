@@ -66,9 +66,9 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
-            Assert.Equal(actual.Count, 2);
-            Assert.Equal(actual[0].ToString(), "user2@example.com");
-            Assert.Equal(actual[1].ToString(), "user3@example.com");
+            Assert.Equal(2, actual.Count);
+            Assert.Equal("user2@example.com", actual[0].ToString());
+            Assert.Equal("user3@example.com", actual[1].ToString());
 
         }
         [Fact]
@@ -84,8 +84,8 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
-            Assert.Equal(actual.Count, 1);
-            Assert.Equal(actual[0].ToString(), "user2@example.com");
+            Assert.Single(actual);
+            Assert.Equal("user2@example.com", actual[0].ToString());
 
         }
         [Fact]
@@ -101,10 +101,10 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
-            Assert.Equal(actual.Count, 3);
-            Assert.Equal(actual[0].ToString(), "user1@example.com");
-            Assert.Equal(actual[1].ToString(), "user2@example.com");
-            Assert.Equal(actual[2].ToString(), "user3@example.com");
+            Assert.Equal(3, actual.Count);
+            Assert.Equal("user1@example.com", actual[0].ToString());
+            Assert.Equal("user2@example.com", actual[1].ToString());
+            Assert.Equal("user3@example.com", actual[2].ToString());
 
         }
 
@@ -121,9 +121,9 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
-            Assert.Equal(actual.Count, 2);
-            Assert.Equal(actual[0].ToString(), "user1@example.com");
-            Assert.Equal(actual[1].ToString(), "user2@example.com");
+            Assert.Equal(2, actual.Count);
+            Assert.Equal("user1@example.com", actual[0].ToString());
+            Assert.Equal("user2@example.com", actual[1].ToString());
 
         }
 
@@ -139,9 +139,9 @@ namespace Bjd.SmtpServer.Test
             //exercise
             var actual = sut.Reflection(rcptList, new Logger(_kernel));
             //verify
-            Assert.Equal(actual.Count, 2);
-            Assert.Equal(actual[0].ToString(), "user1@example.com");
-            Assert.Equal(actual[1].ToString(), "user2@example.com");
+            Assert.Equal(2, actual.Count);
+            Assert.Equal("user1@example.com", actual[0].ToString());
+            Assert.Equal("user2@example.com", actual[1].ToString());
 
         }
 

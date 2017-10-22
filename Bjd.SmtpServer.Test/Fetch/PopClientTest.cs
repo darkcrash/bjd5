@@ -66,9 +66,9 @@ namespace Bjd.SmtpServer.Test
 
 
         [Theory]
-        [InlineData(InetKind.V4, "127.0.0.1", 1)]
-        [InlineData(InetKind.V6, "::1", 1)]
-        public void 接続失敗_ポート間違い(InetKind inetKind, String addr, int port)
+        [InlineData("127.0.0.1", 1)]
+        [InlineData("::1", 1)]
+        public void 接続失敗_ポート間違い(string addr, int port)
         {
             var kernel = _testServer._service.Kernel;
             //setUp
@@ -89,9 +89,9 @@ namespace Bjd.SmtpServer.Test
         }
 
         [Theory]
-        [InlineData(InetKind.V4, "127.0.0.2")]
-        [InlineData(InetKind.V6, "::2")]
-        public void 接続失敗_アドレス間違い(InetKind inetKind, String addr)
+        [InlineData("127.0.0.2")]
+        [InlineData("::2")]
+        public void 接続失敗_アドレス間違い(string addr)
         {
             var kernel = _testServer._service.Kernel;
             var port = _testServer.port;

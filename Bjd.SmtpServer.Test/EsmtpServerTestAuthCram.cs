@@ -134,10 +134,10 @@ namespace Bjd.SmtpServer.Test
             var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
 
             Assert.Equal(line1, str);
-            Assert.Equal(line2, "250-8BITMIME");
-            Assert.Equal(line3, "250-SIZE=5000");
-            Assert.Equal(line4, "250-AUTH LOGIN PLAIN CRAM-MD5");
-            Assert.Equal(line5, "250 HELP");
+            Assert.Equal("250-8BITMIME", line2);
+            Assert.Equal("250-SIZE=5000", line3);
+            Assert.Equal("250-AUTH LOGIN PLAIN CRAM-MD5", line4);
+            Assert.Equal("250 HELP", line5);
 
         }
 
@@ -157,7 +157,7 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend("AUTH CRAM-MD5");
             var recvStr = cl.StringRecv(3, this);
             recvStr = Inet.TrimCrlf(recvStr);
-            Assert.Equal(recvStr.Substring(0, 3), "334");
+            Assert.Equal("334", recvStr.Substring(0, 3));
             var hash = Md5.Hash("user1", Base64.Decode(recvStr.Substring(4)));
             cl.StringSend(Base64.Encode(string.Format("user1 {0}", hash)));
             var actual = cl.StringRecv(3, this);
@@ -181,7 +181,7 @@ namespace Bjd.SmtpServer.Test
             cl.StringSend("AUTH CRAM-MD5");
             var recvStr = cl.StringRecv(3, this);
             recvStr = Inet.TrimCrlf(recvStr);
-            Assert.Equal(recvStr.Substring(0, 3), "334");
+            Assert.Equal("334", recvStr.Substring(0, 3));
             var hash = Md5.Hash("user1", Base64.Decode(recvStr.Substring(4)));
             cl.StringSend(Base64.Encode(string.Format("user1 {0}", hash)) + "XXX"); //<=ゴミデータ追加
             var actual = cl.StringRecv(3, this);

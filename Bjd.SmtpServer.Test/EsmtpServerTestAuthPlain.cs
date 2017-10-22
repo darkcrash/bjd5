@@ -122,10 +122,10 @@ namespace Bjd.SmtpServer.Test
             var line5 = Encoding.ASCII.GetString(Inet.TrimCrlf(cl.LineRecv(1, this)));
 
             Assert.Equal(line1, str);
-            Assert.Equal(line2, "250-8BITMIME");
-            Assert.Equal(line3, "250-SIZE=5000");
-            Assert.Equal(line4, "250-AUTH LOGIN PLAIN CRAM-MD5");
-            Assert.Equal(line5, "250 HELP");
+            Assert.Equal("250-8BITMIME", line2);
+            Assert.Equal("250-SIZE=5000", line3);
+            Assert.Equal("250-AUTH LOGIN PLAIN CRAM-MD5", line4);
+            Assert.Equal("250 HELP", line5);
 
         }
 
@@ -143,7 +143,7 @@ namespace Bjd.SmtpServer.Test
 
             //exercise
             cl.StringSend("AUTH PLAIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
+            Assert.Equal("334 \r\n", cl.StringRecv(3, this));
 
             //UserID\0UserID\0Password」をBase64でエンコード
             var str = string.Format("user1\0user1\0user1");
@@ -174,7 +174,7 @@ namespace Bjd.SmtpServer.Test
 
             //exercise
             cl.StringSend("AUTH PLAIN");
-            Assert.Equal(cl.StringRecv(3, this), "334 \r\n");
+            Assert.Equal("334 \r\n", cl.StringRecv(3, this));
 
             //UserID\0UserID\0Password」をBase64でエンコード
             var str = string.Format("user1\0user1\0user1");

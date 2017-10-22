@@ -82,7 +82,7 @@ namespace Bjd.SmtpServer.Test
             var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
-            Assert.Equal(_tsMailSave.Count(), 1); //返されるエラーメールは1通
+            Assert.Equal(1, _tsMailSave.Count()); //返されるエラーメールは1通
             Assert.Equal(_tsMailSave.GetMail(0).GetHeader("subject"), subject);
             Assert.Equal(_tsMailSave.GetFrom(0).ToString(), "1ban-admin" + domain);
 
@@ -119,7 +119,7 @@ namespace Bjd.SmtpServer.Test
             var mail = new TsMail(_service, from, "1ban-ctl" + domain, body);
             _ml.Job(mail.MlEnvelope, mail.Mail);
 
-            Assert.Equal(_tsMailSave.Count(), 1); //返されるメールは１通
+            Assert.Equal(1, _tsMailSave.Count()); //返されるメールは１通
             var subject = string.Format("result for get [{0}-{1} MIME/multipart] (1ban ML)", start, end);
             Assert.Equal(_tsMailSave.GetMail(0).GetHeader("subject"), subject);
             Assert.Equal(_tsMailSave.GetFrom(0).ToString(), "1ban-admin" + domain);
