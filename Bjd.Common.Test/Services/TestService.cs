@@ -121,8 +121,10 @@ namespace Bjd.Initialization
                 var env = instance._kernel.Enviroment;
 
                 // set executable directory
-                var rdval = rd.Next(0, int.MaxValue);
-                var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}_{instance.GetHashCode()}";
+                var pid = System.Diagnostics.Process.GetCurrentProcess().Id;
+                var tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                //var rdval = rd.Next(0, int.MaxValue);
+                var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{pid}_{tid}_{instance.GetHashCode()}";
 
                 var dir = env.ExecutableDirectory;
                 env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);

@@ -103,7 +103,7 @@ namespace Bjd.Threading
             if (!OnStartThread())
             {
                 //Ver5.9.8
-                this.Cancel();
+                //this.Cancel();
                 return;
             }
 
