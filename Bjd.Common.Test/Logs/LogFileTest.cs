@@ -21,7 +21,7 @@ namespace Bjd.Test.Logs
             service = TestService.CreateTestService();
             service.AddOutput(output);
 
-            service.Kernel.ListInitialize();
+            //service.Kernel.ListInitialize();
         }
 
         public void Dispose()
@@ -179,8 +179,9 @@ namespace Bjd.Test.Logs
                 using (var chars = l3.GetChars())
                     sut.Append(chars, l3);
                 //sut.Dispose();
-            }
 
+
+            }
 
 
             const int expected = 2;
