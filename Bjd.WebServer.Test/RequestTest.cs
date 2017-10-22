@@ -39,7 +39,7 @@ namespace WebServerTest
             if (verStr == null)
             {
                 bool b = _request.Init(requestStr.ToCharsData());
-                Assert.Equal(b, false);
+                Assert.False(b);
                 return;
             }
             if (_request.Init(requestStr.ToCharsData()))
@@ -47,7 +47,7 @@ namespace WebServerTest
                 Assert.Equal(_request.Ver, verStr);
                 return;
             }
-            Assert.Equal(_request.Ver, "ERROR");
+            Assert.Equal("ERROR", _request.Ver);
         }
 
         [Theory]
@@ -63,7 +63,7 @@ namespace WebServerTest
         {
             if (!_request.Init(requestStr.ToCharsData()))
             {
-                Assert.Equal(_request.Method.ToString(), "ERROR");
+                Assert.Equal("ERROR", _request.Method.ToString());
                 return;
             }
             Assert.Equal(_request.Method, method);

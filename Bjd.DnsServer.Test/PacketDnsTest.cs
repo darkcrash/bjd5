@@ -27,15 +27,15 @@ namespace DnsServerTest
             var sut = new PacketDns(TestUtil.HexStream2Bytes(Str0));
             //verify
             Assert.Equal(sut.GetId(), (ushort)0x0003);
-            Assert.Equal(sut.GetCount(RrKind.QD), 1);
-            Assert.Equal(sut.GetCount(RrKind.AN), 0);
-            Assert.Equal(sut.GetCount(RrKind.NS), 4);
-            Assert.Equal(sut.GetCount(RrKind.AR), 4);
+            Assert.Equal(1, sut.GetCount(RrKind.QD));
+            Assert.Equal(0, sut.GetCount(RrKind.AN));
+            Assert.Equal(4, sut.GetCount(RrKind.NS));
+            Assert.Equal(4, sut.GetCount(RrKind.AR));
             Assert.Equal(sut.GetRcode(), (short)0);
-            Assert.Equal(sut.GetAa(), false);
-            Assert.Equal(sut.GetRd(), true);
-            Assert.Equal(sut.GetDnsType(), DnsType.AAAA);
-            Assert.Equal(sut.GetRequestName(), "www.google.com.");
+            Assert.False(sut.GetAa());
+            Assert.True(sut.GetRd());
+            Assert.Equal(DnsType.AAAA, sut.GetDnsType());
+            Assert.Equal("www.google.com.", sut.GetRequestName());
             Assert.Equal(sut.GetRr(RrKind.QD, 0).ToString(), (new RrQuery("www.google.com.", DnsType.AAAA)).ToString());
             Assert.Equal(sut.GetRr(RrKind.NS, 0).ToString(), (new RrNs("google.com.", 83400, "ns4.google.com.")).ToString());
             Assert.Equal(sut.GetRr(RrKind.NS, 1).ToString(), (new RrNs("google.com.", 83400, "ns2.google.com.")).ToString());
@@ -54,15 +54,15 @@ namespace DnsServerTest
             var sut = new PacketDns(TestUtil.HexStream2Bytes(Str1));
             //verify
             Assert.Equal(sut.GetId(), (ushort)0x0002);
-            Assert.Equal(sut.GetCount(RrKind.QD), 1);
-            Assert.Equal(sut.GetCount(RrKind.AN), 5);
-            Assert.Equal(sut.GetCount(RrKind.NS), 4);
-            Assert.Equal(sut.GetCount(RrKind.AR), 7);
+            Assert.Equal(1, sut.GetCount(RrKind.QD));
+            Assert.Equal(5, sut.GetCount(RrKind.AN));
+            Assert.Equal(4, sut.GetCount(RrKind.NS));
+            Assert.Equal(7, sut.GetCount(RrKind.AR));
             Assert.Equal(sut.GetRcode(), (short)0);
-            Assert.Equal(sut.GetAa(), false);
-            Assert.Equal(sut.GetRd(), true);
-            Assert.Equal(sut.GetDnsType(), DnsType.Mx);
-            Assert.Equal(sut.GetRequestName(), "gmail.com.");
+            Assert.False(sut.GetAa());
+            Assert.True(sut.GetRd());
+            Assert.Equal(DnsType.Mx, sut.GetDnsType());
+            Assert.Equal("gmail.com.", sut.GetRequestName());
             Assert.Equal(sut.GetRr(RrKind.QD, 0).ToString(), (new RrQuery("gmail.com.", DnsType.Mx)).ToString());
             Assert.Equal(sut.GetRr(RrKind.AN, 0).ToString(), (new RrMx("gmail.com.", 3427, 10, "alt1.gmail-smtp-in.l.google.com.")).ToString());
             Assert.Equal(sut.GetRr(RrKind.AN, 1).ToString(), (new RrMx("gmail.com.", 3427, 20, "alt2.gmail-smtp-in.l.google.com.")).ToString());
@@ -89,15 +89,15 @@ namespace DnsServerTest
             var sut = new PacketDns(TestUtil.HexStream2Bytes(Str2));
             //verify
             Assert.Equal(sut.GetId(), (ushort)0x0004);
-            Assert.Equal(sut.GetCount(RrKind.QD), 1);
-            Assert.Equal(sut.GetCount(RrKind.AN), 1);
-            Assert.Equal(sut.GetCount(RrKind.NS), 2);
-            Assert.Equal(sut.GetCount(RrKind.AR), 2);
+            Assert.Equal(1, sut.GetCount(RrKind.QD));
+            Assert.Equal(1, sut.GetCount(RrKind.AN));
+            Assert.Equal(2, sut.GetCount(RrKind.NS));
+            Assert.Equal(2, sut.GetCount(RrKind.AR));
             Assert.Equal(sut.GetRcode(), (short)0);
-            Assert.Equal(sut.GetAa(), false);
-            Assert.Equal(sut.GetRd(), true);
-            Assert.Equal(sut.GetDnsType(), DnsType.Soa);
-            Assert.Equal(sut.GetRequestName(), "nifty.com.");
+            Assert.False(sut.GetAa());
+            Assert.True(sut.GetRd());
+            Assert.Equal(DnsType.Soa, sut.GetDnsType());
+            Assert.Equal("nifty.com.", sut.GetRequestName());
             Assert.Equal(sut.GetRr(RrKind.QD, 0).ToString(), (new RrQuery("nifty.com.", DnsType.Soa)).ToString());
             Assert.Equal(sut.GetRr(RrKind.AN, 0).ToString(), (new RrSoa("nifty.com.", 0x616, "ons0.nifty.ad.jp", "hostmaster.nifty.ad.jp", 0x0bfe4128, 0xe10, 0x384, 0x36ee80, 0x384)).ToString());
             Assert.Equal(sut.GetRr(RrKind.NS, 0).ToString(), (new RrNs("nifty.com.", 0x6d2, "ons0.nifty.ad.jp.")).ToString());
@@ -132,13 +132,13 @@ namespace DnsServerTest
             var p = new PacketDns(sut.GetBytes());
 
             //verify
-            Assert.Equal(p.GetAa(), false);
+            Assert.False(p.GetAa());
             Assert.Equal(p.GetId(), (ushort)0x0005);
-            Assert.Equal(p.GetDnsType(), DnsType.AAAA);
-            Assert.Equal(p.GetCount(RrKind.QD), 1);
-            Assert.Equal(p.GetCount(RrKind.AN), 0);
-            Assert.Equal(p.GetCount(RrKind.NS), 4);
-            Assert.Equal(p.GetCount(RrKind.AR), 4);
+            Assert.Equal(DnsType.AAAA, p.GetDnsType());
+            Assert.Equal(1, p.GetCount(RrKind.QD));
+            Assert.Equal(0, p.GetCount(RrKind.AN));
+            Assert.Equal(4, p.GetCount(RrKind.NS));
+            Assert.Equal(4, p.GetCount(RrKind.AR));
             Assert.Equal(p.GetRcode(), (short)0);
             Assert.Equal(p.GetRr(RrKind.NS, 0).ToString(), new RrNs("google.com.", 0xa7d, "ns3.google.com.").ToString());
             Assert.Equal(p.GetRr(RrKind.NS, 1).ToString(), new RrNs("google.com.", 0xa7d, "ns1.google.com.").ToString());
@@ -172,13 +172,13 @@ namespace DnsServerTest
             var p = new PacketDns(b);
 
             //verify
-            Assert.Equal(p.GetAa(), true);
+            Assert.True(p.GetAa());
             Assert.Equal(p.GetId(), (ushort)0xf00f);
-            Assert.Equal(p.GetDnsType(), DnsType.Mx);
-            Assert.Equal(p.GetCount(RrKind.QD), 1);
-            Assert.Equal(p.GetCount(RrKind.AN), 1);
-            Assert.Equal(p.GetCount(RrKind.NS), 1);
-            Assert.Equal(p.GetCount(RrKind.AR), 0);
+            Assert.Equal(DnsType.Mx, p.GetDnsType());
+            Assert.Equal(1, p.GetCount(RrKind.QD));
+            Assert.Equal(1, p.GetCount(RrKind.AN));
+            Assert.Equal(1, p.GetCount(RrKind.NS));
+            Assert.Equal(0, p.GetCount(RrKind.AR));
             Assert.Equal(p.GetRcode(), (short)0);
 
             //DEBUG

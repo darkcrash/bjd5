@@ -166,7 +166,7 @@ namespace FtpServerTest
 
             //pwd
             cl.StringSend("PWD");
-            Assert.Equal(cl.StringRecv(1, this), "257 \"/\" is current directory.\r\n");
+            Assert.Equal("257 \"/\" is current directory.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -180,7 +180,7 @@ namespace FtpServerTest
 
             //pwd
             cl.StringSend("PWD");
-            Assert.Equal(cl.StringRecv(1, this), "257 \"/\" is current directory.\r\n");
+            Assert.Equal("257 \"/\" is current directory.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -228,11 +228,11 @@ namespace FtpServerTest
 
             //type
             cl.StringSend("TYPE A");
-            Assert.Equal(cl.StringRecv(1, this), "200 Type set 'A'\r\n");
+            Assert.Equal("200 Type set 'A'\r\n", cl.StringRecv(1, this));
             cl.StringSend("TYPE I");
-            Assert.Equal(cl.StringRecv(1, this), "200 Type set 'I'\r\n");
+            Assert.Equal("200 Type set 'I'\r\n", cl.StringRecv(1, this));
             cl.StringSend("TYPE X");
-            Assert.Equal(cl.StringRecv(1, this), "500 command not understood.\r\n");
+            Assert.Equal("500 command not understood.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -246,11 +246,11 @@ namespace FtpServerTest
 
             //type
             cl.StringSend("TYPE A");
-            Assert.Equal(cl.StringRecv(1, this), "200 Type set 'A'\r\n");
+            Assert.Equal("200 Type set 'A'\r\n", cl.StringRecv(1, this));
             cl.StringSend("TYPE I");
-            Assert.Equal(cl.StringRecv(1, this), "200 Type set 'I'\r\n");
+            Assert.Equal("200 Type set 'I'\r\n", cl.StringRecv(1, this));
             cl.StringSend("TYPE X");
-            Assert.Equal(cl.StringRecv(1, this), "500 command not understood.\r\n");
+            Assert.Equal("500 command not understood.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -265,7 +265,7 @@ namespace FtpServerTest
             int port = 256; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("PORT 127,0,0,1,0,256");
             ISocket dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             dl.Close();
         }
@@ -279,7 +279,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("PORT 127,3,x,x,1,0,256");
-            Assert.Equal(cl.StringRecv(1, this), "501 Illegal PORT command.\r\n");
+            Assert.Equal("501 Illegal PORT command.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -303,7 +303,7 @@ namespace FtpServerTest
 
             Thread.Sleep(10);
             ISocket dl = Inet.Connect(kernel, new Ip(IpKind.V4Localhost), port, 10, null);
-            Assert.Equal(dl.SockState, SockState.Connect);
+            Assert.Equal(SockState.Connect, dl.SockState);
             dl.Close();
         }
 
@@ -322,7 +322,7 @@ namespace FtpServerTest
             var tmp = cl.StringRecv(1, this).Split('|');
             var port = Convert.ToInt32(tmp[3]);
             var dl = Inet.Connect(kernel, new Ip(IpKind.V6Localhost), port, 10, null);
-            Assert.Equal(dl.SockState, SockState.Connect);
+            Assert.Equal(SockState.Connect, dl.SockState);
             dl.Close();
         }
 
@@ -338,7 +338,7 @@ namespace FtpServerTest
             var port = 252; //テストの連続のためにPORTコマンドのテストとはポート番号をずらす必要がある
             cl.StringSend("EPRT |2|::1|252|");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V6Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 EPRT command successful.\r\n");
+            Assert.Equal("200 EPRT command successful.\r\n", cl.StringRecv(1, this));
 
             dl.Close();
         }
@@ -352,7 +352,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("EPRT |x|");
-            Assert.Equal(cl.StringRecv(1, this), "501 Illegal EPRT command.\r\n");
+            Assert.Equal("501 Illegal EPRT command.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -365,10 +365,10 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("MKD test");
-            Assert.Equal(cl.StringRecv(1, this), "257 Mkd command successful.\r\n");
+            Assert.Equal("257 Mkd command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RMD test");
-            Assert.Equal(cl.StringRecv(1, this), "250 Rmd command successful.\r\n");
+            Assert.Equal("250 Rmd command successful.\r\n", cl.StringRecv(1, this));
         }
         [Fact]
         public void MKD_RMDコマンド_V6()
@@ -379,10 +379,10 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("MKD test");
-            Assert.Equal(cl.StringRecv(1, this), "257 Mkd command successful.\r\n");
+            Assert.Equal("257 Mkd command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RMD test");
-            Assert.Equal(cl.StringRecv(1, this), "250 Rmd command successful.\r\n");
+            Assert.Equal("250 Rmd command successful.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -394,7 +394,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("MKD home0");
-            Assert.Equal(cl.StringRecv(1, this), "451 Mkd error.\r\n");
+            Assert.Equal("451 Mkd error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -407,7 +407,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("MKD home0");
-            Assert.Equal(cl.StringRecv(1, this), "451 Mkd error.\r\n");
+            Assert.Equal("451 Mkd error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -420,7 +420,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RMD test");
-            Assert.Equal(cl.StringRecv(1, this), "451 Rmd error.\r\n");
+            Assert.Equal("451 Rmd error.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -432,7 +432,7 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RMD test");
-            Assert.Equal(cl.StringRecv(1, this), "451 Rmd error.\r\n");
+            Assert.Equal("451 Rmd error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -446,7 +446,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 99.txt");
-            Assert.Equal(cl.StringRecv(1, this), "451 Dele error.\r\n");
+            Assert.Equal("451 Dele error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -460,7 +460,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 99.txt");
-            Assert.Equal(cl.StringRecv(1, this), "451 Dele error.\r\n");
+            Assert.Equal("451 Dele error.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -477,18 +477,18 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20751);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //list
             cl.StringSend("LIST -la");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for ls.\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for ls.\r\n", cl.StringRecv(1, this));
 
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home0\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home1\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home2\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 1.txt\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 2.txt\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 3.txt\r\n");
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home0\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home1\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home2\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 1.txt\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 2.txt\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 3.txt\r\n", listMask(dl.StringRecv(3, this)));
 
             dl.Close();
         }
@@ -506,18 +506,18 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20752);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //list
             cl.StringSend("LIST -la");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for ls.\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for ls.\r\n", cl.StringRecv(1, this));
 
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home0\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home1\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home2\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 1.txt\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 2.txt\r\n");
-            Assert.Equal(listMask(dl.StringRecv(3, this)), "-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 3.txt\r\n");
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home0\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home1\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("drwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm home2\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 1.txt\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 2.txt\r\n", listMask(dl.StringRecv(3, this)));
+            Assert.Equal("-rwxrwxrwx 1 nobody nogroup nnnn mon dd hh:mm 3.txt\r\n", listMask(dl.StringRecv(3, this)));
 
             dl.Close();
         }
@@ -609,9 +609,9 @@ namespace FtpServerTest
 
             //cwd
             cl.StringSend("CWD home0");
-            Assert.Equal(cl.StringRecv(1, this), "250 CWD command successful.\r\n");
+            Assert.Equal("250 CWD command successful.\r\n", cl.StringRecv(1, this));
             cl.StringSend("CWD ..\\..");
-            Assert.Equal(cl.StringRecv(1, this), "550 ..\\..: No such file or directory.\r\n");
+            Assert.Equal("550 ..\\..: No such file or directory.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -682,16 +682,16 @@ namespace FtpServerTest
             Login("user1", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNFR $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "350 File exists, ready for destination name.\r\n");
+            Assert.Equal("350 File exists, ready for destination name.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "250 RNTO command successful.\r\n");
+            Assert.Equal("250 RNTO command successful.\r\n", cl.StringRecv(1, this));
         }
 
 

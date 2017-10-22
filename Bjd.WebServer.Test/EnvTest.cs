@@ -67,7 +67,7 @@ namespace WebServerTest
                     return;
                 }
             }
-            Assert.Equal(key, "");
+            Assert.Equal("", key);
         }
 
         [Theory]
@@ -100,7 +100,7 @@ namespace WebServerTest
                     return;
                 }
             }
-            Assert.Equal(key, "");
+            Assert.Equal("", key);
         }
 
         [Theory]
@@ -126,7 +126,7 @@ namespace WebServerTest
                     return;
                 }
             }
-            Assert.Equal(key, "");
+            Assert.Equal("", key);
 
         }
 
@@ -155,7 +155,7 @@ namespace WebServerTest
                     return;
                 }
             }
-            Assert.Equal(key, "");
+            Assert.Equal("", key);
         }
 
         [Theory]
@@ -196,7 +196,7 @@ namespace WebServerTest
                     return;
                 }
             }
-            Assert.Equal(key, "");
+            Assert.Equal("", key);
         }
 
 

@@ -91,7 +91,7 @@ namespace WebServerTest
             //無効なドキュメントルートを設定する
             conf.Set("documentRoot", "q:\\");
             sut = new HandlerSelector(_fixture._service.Kernel, conf, null);
-            Assert.Equal(sut.DocumentRoot, null);
+            Assert.Null(sut.DocumentRoot);
 
 
         }

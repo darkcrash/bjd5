@@ -30,9 +30,9 @@ namespace DnsServerTest
             RrDbTest.InitLocalHost(sut);
             var o = (RrA)RrDbTest.Get(sut, 0);
             //verify
-            Assert.Equal(o.DnsType, DnsType.A);
-            Assert.Equal(o.Name, "localhost.");
-            Assert.Equal(o.Ip.ToString(), "127.0.0.1");
+            Assert.Equal(DnsType.A, o.DnsType);
+            Assert.Equal("localhost.", o.Name);
+            Assert.Equal("127.0.0.1", o.Ip.ToString());
         }
 
         [Fact]
@@ -44,9 +44,9 @@ namespace DnsServerTest
             RrDbTest.InitLocalHost(sut);
             var o = (RrPtr)RrDbTest.Get(sut, 1);
             //verify
-            Assert.Equal(o.DnsType, DnsType.Ptr);
-            Assert.Equal(o.Name, "1.0.0.127.in-addr.arpa.");
-            Assert.Equal(o.Ptr, "localhost.");
+            Assert.Equal(DnsType.Ptr, o.DnsType);
+            Assert.Equal("1.0.0.127.in-addr.arpa.", o.Name);
+            Assert.Equal("localhost.", o.Ptr);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace DnsServerTest
             //verify
             //Assert.That(o.getDnsType(), Is.EqualTo(DnsType.Aaaa));
             //Assert.That(o.getName(), Is.EqualTo("localhost."));
-            Assert.Equal(o.Ip.ToString(), "::1");
+            Assert.Equal("::1", o.Ip.ToString());
         }
 
         [Fact]
@@ -72,9 +72,9 @@ namespace DnsServerTest
             RrDbTest.InitLocalHost(sut);
             var o = (RrPtr)RrDbTest.Get(sut, 3);
             //verify
-            Assert.Equal(o.DnsType, DnsType.Ptr);
-            Assert.Equal(o.Name, "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.IP6.ARPA.");
-            Assert.Equal(o.Ptr, "localhost.");
+            Assert.Equal(DnsType.Ptr, o.DnsType);
+            Assert.Equal("1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.IP6.ARPA.", o.Name);
+            Assert.Equal("localhost.", o.Ptr);
         }
 
         [Fact]
@@ -86,9 +86,9 @@ namespace DnsServerTest
             RrDbTest.InitLocalHost(sut);
             var o = (RrNs)RrDbTest.Get(sut, 4);
             //verify
-            Assert.Equal(o.DnsType, DnsType.Ns);
-            Assert.Equal(o.Name, "localhost.");
-            Assert.Equal(o.NsName, "localhost.");
+            Assert.Equal(DnsType.Ns, o.DnsType);
+            Assert.Equal("localhost.", o.Name);
+            Assert.Equal("localhost.", o.NsName);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace DnsServerTest{
             //exercise
             var s = new UnCompress(Bytes.Create(buf, actual), buf.Length);
             //verify
-            Assert.Equal(s.HostName, "google.com.");
+            Assert.Equal("google.com.", s.HostName);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace DnsServerTest{
             //exercise
             var s = new UnCompress(Bytes.Create(buf, actual), buf.Length);
             //verify
-            Assert.Equal(s.HostName, "goo.com.");
+            Assert.Equal("goo.com.", s.HostName);
         }
     }
 }

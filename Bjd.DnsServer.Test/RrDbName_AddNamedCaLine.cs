@@ -72,9 +72,9 @@ namespace DnsServerTest
             //exercise
             var retName = RrDbTest.AddNamedCaLine(sut, "", "A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4");
             //verify
-            Assert.Equal(retName, "A.ROOT-SERVERS.NET.");
-            Assert.Equal(RrDbTest.Size(sut), 1); //A
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "A A.ROOT-SERVERS.NET. TTL=0 198.41.0.4"); //TTLは強制的に0になる
+            Assert.Equal("A.ROOT-SERVERS.NET.", retName);
+            Assert.Equal(1, RrDbTest.Size(sut)); //A
+            Assert.Equal("A A.ROOT-SERVERS.NET. TTL=0 198.41.0.4", print(RrDbTest.Get(sut, 0))); //TTLは強制的に0になる
         }
 
         [Fact]
@@ -85,9 +85,9 @@ namespace DnsServerTest
             //exercise
             var retName = RrDbTest.AddNamedCaLine(sut, "", "A.ROOT-SERVERS.NET.      3600000      AAAA  2001:503:BA3E::2:30");
             //verify
-            Assert.Equal(retName, "A.ROOT-SERVERS.NET.");
-            Assert.Equal(RrDbTest.Size(sut), 1); //Aaaa
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "AAAA A.ROOT-SERVERS.NET. TTL=0 2001:503:ba3e::2:30"); //TTLは強制的に0になる
+            Assert.Equal("A.ROOT-SERVERS.NET.", retName);
+            Assert.Equal(1, RrDbTest.Size(sut)); //Aaaa
+            Assert.Equal("AAAA A.ROOT-SERVERS.NET. TTL=0 2001:503:ba3e::2:30", print(RrDbTest.Get(sut, 0))); //TTLは強制的に0になる
         }
 
         [Fact]
@@ -98,9 +98,9 @@ namespace DnsServerTest
             //exercise
             string retName = RrDbTest.AddNamedCaLine(sut, "", ".                        3600000  IN  NS    A.ROOT-SERVERS.NET.");
             //verify
-            Assert.Equal(retName, ".");
-            Assert.Equal(RrDbTest.Size(sut), 1); //Ns
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Ns . TTL=0 A.ROOT-SERVERS.NET."); //TTLは強制的に0になる
+            Assert.Equal(".", retName);
+            Assert.Equal(1, RrDbTest.Size(sut)); //Ns
+            Assert.Equal("Ns . TTL=0 A.ROOT-SERVERS.NET.", print(RrDbTest.Get(sut, 0))); //TTLは強制的に0になる
         }
 
         [Fact]

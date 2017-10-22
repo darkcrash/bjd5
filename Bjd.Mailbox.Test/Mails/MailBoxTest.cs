@@ -241,11 +241,11 @@ namespace Bjd.Test.Mails
             var dt = sut.LastLogin(ip);//ログイン後の時間計測
             if (success)
             {
-                Assert.NotEqual(dt.Ticks, 0);//過去にログインした記録があれば0以外が返る
+                Assert.NotEqual(0, dt.Ticks);//過去にログインした記録があれば0以外が返る
             }
             else
             {
-                Assert.Equal(dt.Ticks, 0);//過去にログイン形跡なし
+                Assert.Equal(0, dt.Ticks);//過去にログイン形跡なし
             }
             sut.Logout(user);
         }
@@ -260,10 +260,10 @@ namespace Bjd.Test.Mails
             //exercise
             var actual = sut.UserList;
             //verify
-            Assert.Equal(actual.Count, 3);
-            Assert.Equal(actual[0], "user1");
-            Assert.Equal(actual[1], "user2");
-            Assert.Equal(actual[2], "user3");
+            Assert.Equal(3, actual.Count);
+            Assert.Equal("user1", actual[0]);
+            Assert.Equal("user2", actual[1]);
+            Assert.Equal("user3", actual[2]);
         }
 
 
@@ -319,7 +319,7 @@ namespace Bjd.Test.Mails
 
             if (status)
             {
-                Assert.Equal(b, true);//保存成功
+                Assert.True(b);//保存成功
 
                 var files = di.GetFiles("DF_*");
 
@@ -334,8 +334,8 @@ namespace Bjd.Test.Mails
             }
             else
             {
-                Assert.Equal(b, false);//保存失敗
-                Assert.Equal(Directory.Exists(di.FullName), false);
+                Assert.False(b);//保存失敗
+                Assert.False(Directory.Exists(di.FullName));
             }
         }
 

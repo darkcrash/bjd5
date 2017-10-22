@@ -142,7 +142,7 @@ namespace DnsServerTest
 
             //verify
             //Assert.Equal(Print(p), "QD=1 AN=2 NS=2 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query A www.sapporoworks.ne.jp.");
+            Assert.Equal("Query A www.sapporoworks.ne.jp.", Print(p, RrKind.QD, 0));
 
             var ar = new List<string>();
             for (int i = 0; i < 2; i++)
@@ -194,9 +194,9 @@ namespace DnsServerTest
 
             //verify
             //Assert.Equal(Print(p), "QD=1 AN=1 NS=0 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Mx sapporoworks.ne.jp.");
+            Assert.Equal("Query Mx sapporoworks.ne.jp.", Print(p, RrKind.QD, 0));
 
-            Assert.Equal(Print(p, RrKind.AN, 0), "Mx sapporoworks.ne.jp. TTL=3600 10 spw02.sakura.ne.jp.");
+            Assert.Equal("Mx sapporoworks.ne.jp. TTL=3600 10 spw02.sakura.ne.jp.", Print(p, RrKind.AN, 0));
             //Assert.That(Print(p, RrKind.AR, 0), "A sapporoworks.ne.jp. TTL=3600 59.106.27.208");
 
 

@@ -137,9 +137,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for user1.\r\n");
+            Assert.Equal("331 Password required for user1.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "230 User user1 logged in.\r\n");
+            Assert.Equal("230 User user1 logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -151,9 +151,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for user1.\r\n");
+            Assert.Equal("331 Password required for user1.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "230 User user1 logged in.\r\n");
+            Assert.Equal("230 User user1 logged in.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -164,9 +164,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER Anonymous");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for Anonymous.\r\n");
+            Assert.Equal("331 Password required for Anonymous.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS user@aaa.com");
-            Assert.Equal(cl.StringRecv(1, this), "230 User Anonymous logged in.\r\n");
+            Assert.Equal("230 User Anonymous logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -178,9 +178,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER Anonymous");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for Anonymous.\r\n");
+            Assert.Equal("331 Password required for Anonymous.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS user@aaa.com");
-            Assert.Equal(cl.StringRecv(1, this), "230 User Anonymous logged in.\r\n");
+            Assert.Equal("230 User Anonymous logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -191,9 +191,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER ANONYMOUS");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for ANONYMOUS.\r\n");
+            Assert.Equal("331 Password required for ANONYMOUS.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS xxx");
-            Assert.Equal(cl.StringRecv(1, this), "230 User ANONYMOUS logged in.\r\n");
+            Assert.Equal("230 User ANONYMOUS logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -204,9 +204,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER ANONYMOUS");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for ANONYMOUS.\r\n");
+            Assert.Equal("331 Password required for ANONYMOUS.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS xxx");
-            Assert.Equal(cl.StringRecv(1, this), "230 User ANONYMOUS logged in.\r\n");
+            Assert.Equal("230 User ANONYMOUS logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -217,9 +217,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER user1");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for user1.\r\n");
+            Assert.Equal("331 Password required for user1.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS xxxx");
-            Assert.Equal(cl.StringRecv(10, this), "530 Login incorrect.\r\n");
+            Assert.Equal("530 Login incorrect.\r\n", cl.StringRecv(10, this));
 
         }
 
@@ -230,9 +230,9 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER user1");
-            Assert.Equal(cl.StringRecv(1, this), "331 Password required for user1.\r\n");
+            Assert.Equal("331 Password required for user1.\r\n", cl.StringRecv(1, this));
             cl.StringSend("PASS xxxx");
-            Assert.Equal(cl.StringRecv(10, this), "530 Login incorrect.\r\n");
+            Assert.Equal("530 Login incorrect.\r\n", cl.StringRecv(10, this));
         }
 
         [Fact]
@@ -243,7 +243,7 @@ namespace FtpServerTest
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
 
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "503 Login with USER first.\r\n");
+            Assert.Equal("503 Login with USER first.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -255,7 +255,7 @@ namespace FtpServerTest
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
 
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "503 Login with USER first.\r\n");
+            Assert.Equal("503 Login with USER first.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -266,7 +266,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER");
-            Assert.Equal(cl.StringRecv(1, this), "500 USER: command requires a parameter.\r\n");
+            Assert.Equal("500 USER: command requires a parameter.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -276,7 +276,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("USER");
-            Assert.Equal(cl.StringRecv(1, this), "500 USER: command requires a parameter.\r\n");
+            Assert.Equal("500 USER: command requires a parameter.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -285,7 +285,7 @@ namespace FtpServerTest
             var cl = _v4Cl;
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("xxx");
-            Assert.Equal(cl.StringRecv(1, this), "500 Command not understood.\r\n");
+            Assert.Equal("500 Command not understood.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -294,7 +294,7 @@ namespace FtpServerTest
             var cl = _v6Cl;
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("xxx");
-            Assert.Equal(cl.StringRecv(1, this), "500 Command not understood.\r\n");
+            Assert.Equal("500 Command not understood.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -304,7 +304,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("");
-            Assert.Equal(cl.StringRecv(1, this), "500 Invalid command: try being more creative.\r\n");
+            Assert.Equal("500 Invalid command: try being more creative.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -314,7 +314,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("");
-            Assert.Equal(cl.StringRecv(1, this), "500 Invalid command: try being more creative.\r\n");
+            Assert.Equal("500 Invalid command: try being more creative.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -324,7 +324,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("LIST");
-            Assert.Equal(cl.StringRecv(1, this), "530 Please login with USER and PASS.\r\n");
+            Assert.Equal("530 Please login with USER and PASS.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -334,7 +334,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("LIST");
-            Assert.Equal(cl.StringRecv(1, this), "530 Please login with USER and PASS.\r\n");
+            Assert.Equal("530 Please login with USER and PASS.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -344,7 +344,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("DELE");
-            Assert.Equal(cl.StringRecv(1, this), "530 Please login with USER and PASS.\r\n");
+            Assert.Equal("530 Please login with USER and PASS.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -354,7 +354,7 @@ namespace FtpServerTest
 
             CheckBanner(cl.StringRecv(1, this));//バナーチェック
             cl.StringSend("DELE");
-            Assert.Equal(cl.StringRecv(1, this), "530 Please login with USER and PASS.\r\n");
+            Assert.Equal("530 Please login with USER and PASS.\r\n", cl.StringRecv(1, this));
         }
 
         [Fact]
@@ -367,7 +367,7 @@ namespace FtpServerTest
 
             //user
             cl.StringSend("USER user1");
-            Assert.Equal(cl.StringRecv(1, this), "530 Already logged in.\r\n");
+            Assert.Equal("530 Already logged in.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -380,7 +380,7 @@ namespace FtpServerTest
 
             //user
             cl.StringSend("USER user1");
-            Assert.Equal(cl.StringRecv(1, this), "530 Already logged in.\r\n");
+            Assert.Equal("530 Already logged in.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -394,7 +394,7 @@ namespace FtpServerTest
 
             //pass
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "530 Already logged in.\r\n");
+            Assert.Equal("530 Already logged in.\r\n", cl.StringRecv(1, this));
 
         }
         [Fact]
@@ -407,7 +407,7 @@ namespace FtpServerTest
 
             //pass
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(1, this), "530 Already logged in.\r\n");
+            Assert.Equal("530 Already logged in.\r\n", cl.StringRecv(1, this));
 
         }
 

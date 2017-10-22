@@ -131,7 +131,7 @@ namespace ProxyPop3ServerTest
         //ユーザ名、メール蓄積数、蓄積サイズ
         void Login(string userName, string password, int n, int size, ISocket cl)
         {
-            Assert.Equal(cl.StringRecv(3, this), "+OK \r\n");
+            Assert.Equal("+OK \r\n", cl.StringRecv(3, this));
             cl.StringSend(string.Format("USER {0}", userName));
             Assert.Equal(cl.StringRecv(3, this), string.Format("+OK Password required for {0}.\r\n", userName));
             cl.StringSend(string.Format("PASS {0}", password));
@@ -176,13 +176,13 @@ namespace ProxyPop3ServerTest
             var cl = CreateClient(inetKind);
 
             //exercise verify
-            Assert.Equal(cl.StringRecv(3, this), "+OK \r\n");
+            Assert.Equal("+OK \r\n", cl.StringRecv(3, this));
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for user1.\r\n");
+            Assert.Equal("+OK Password required for user1.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK user1 has 0 message (0 octets).\r\n");
+            Assert.Equal("+OK user1 has 0 message (0 octets).\r\n", cl.StringRecv(3, this));
             cl.StringSend("QUIT");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Pop Server at localhost signing off.\r\n");
+            Assert.Equal("+OK Pop Server at localhost signing off.\r\n", cl.StringRecv(3, this));
 
             //tearDown
             cl.Close();
@@ -197,11 +197,11 @@ namespace ProxyPop3ServerTest
             var cl = CreateClient(inetKind);
 
             //exercise verify
-            Assert.Equal(cl.StringRecv(3, this), "+OK \r\n");
+            Assert.Equal("+OK \r\n", cl.StringRecv(3, this));
             cl.StringSend("user xxxx");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for xxxx.\r\n");
+            Assert.Equal("+OK Password required for xxxx.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS xxxx");
-            Assert.Equal(cl.StringRecv(3, this), null);
+            Assert.Null(cl.StringRecv(3, this));
 
             //tearDown
             cl.Close();
@@ -216,11 +216,11 @@ namespace ProxyPop3ServerTest
             var cl = CreateClient(inetKind);
 
             //exercise verify
-            Assert.Equal(cl.StringRecv(3, this), "+OK \r\n");
+            Assert.Equal("+OK \r\n", cl.StringRecv(3, this));
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for user1.\r\n");
+            Assert.Equal("+OK Password required for user1.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS xxxx");
-            Assert.Equal(cl.StringRecv(3, this), null);
+            Assert.Null(cl.StringRecv(3, this));
 
             //tearDown
             cl.Close();

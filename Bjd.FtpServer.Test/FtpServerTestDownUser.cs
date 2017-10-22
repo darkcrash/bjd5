@@ -141,11 +141,11 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20549);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //stor
             cl.StringSend("STOR 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -162,11 +162,11 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20548);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //stor
             cl.StringSend("STOR 0.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -180,7 +180,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -194,7 +194,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -211,18 +211,18 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20650);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //retr
             cl.StringSend("RETR 3.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n", cl.StringRecv(1, this));
 
             for (var i = 0; i < 100; i++)
             {
                 Thread.Sleep(10);
                 if (dl.Length() >= 24) break;
             }
-            Assert.Equal(dl.Length(), 24);
+            Assert.Equal(24, dl.Length());
 
             dl.Close();
         }
@@ -240,18 +240,18 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20651);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //retr
             cl.StringSend("RETR 3.txt");
-            Assert.Equal(cl.StringRecv(1, this), "150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n");
+            Assert.Equal("150 Opening ASCII mode data connection for 3.txt (24 bytes).\r\n", cl.StringRecv(1, this));
 
             for (var i = 0; i < 100; i++)
             {
                 Thread.Sleep(10);
                 if (dl.Length() >= 24) break;
             }
-            Assert.Equal(dl.Length(), 24);
+            Assert.Equal(24, dl.Length());
 
             dl.Close();
         }
@@ -265,10 +265,10 @@ namespace FtpServerTest
             Login("user3", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -281,10 +281,10 @@ namespace FtpServerTest
             Login("user3", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 

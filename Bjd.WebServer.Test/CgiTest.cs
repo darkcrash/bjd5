@@ -80,10 +80,10 @@ namespace WebServerTest
                 const string pattern = "<b>SERVER_NAME</b>";
                 var find = lines.Any(l => l.IndexOf(pattern) != -1);
                 //Assert.Equal(find, true, string.Format("not found {0}", pattern));
-                Assert.NotEqual(0, lines.Count);
+                Assert.NotEmpty(lines);
                 Assert.NotEqual(1, lines.Count);
                 Assert.NotEqual(2, lines.Count);
-                Assert.Equal(true, find);
+                Assert.True(find);
 
                 cl.Close();
                 sv.Stop();
@@ -112,10 +112,10 @@ namespace WebServerTest
                 const string pattern = "<b>SERVER_NAME</b>";
                 var find = lines.Any(l => l.IndexOf(pattern) != -1);
                 //Assert.Equal(find, true, string.Format("not found {0}", pattern));
-                Assert.NotEqual(0, lines.Count);
+                Assert.NotEmpty(lines);
                 Assert.NotEqual(1, lines.Count);
                 Assert.NotEqual(2, lines.Count);
-                Assert.Equal(true, find);
+                Assert.True(find);
 
                 cl.Close();
                 sv.Stop();

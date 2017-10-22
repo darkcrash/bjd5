@@ -45,8 +45,8 @@ namespace DnsServerTest
             sut.Add(new RrA("domain", ttl, new Ip("1.2.3.4")));
             sut.Add(new RrA("domain", 20, new Ip("1.2.3.4")));
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 1); //件数は１件になる
-            Assert.Equal(RrDbTest.Get(sut, 0).Ttl, 20u); //TTLは後から追加した20になる
+            Assert.Equal(1, RrDbTest.Size(sut)); //件数は１件になる
+            Assert.Equal(20u, RrDbTest.Get(sut, 0).Ttl); //TTLは後から追加した20になる
         }
 
         [Fact]

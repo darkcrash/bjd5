@@ -142,10 +142,10 @@ namespace DnsServerTest
             //exercise
             var p = lookup(DnsType.A, "localhost");
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query A localhost.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "A localhost. TTL=2400 127.0.0.1");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns localhost. TTL=2400 localhost.");
+            Assert.Equal("QD=1 AN=1 NS=1 AR=0", Print(p));
+            Assert.Equal("Query A localhost.", Print(p, RrKind.QD, 0));
+            Assert.Equal("A localhost. TTL=2400 127.0.0.1", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ns localhost. TTL=2400 localhost.", Print(p, RrKind.NS, 0));
         }
 
         [Fact]
@@ -167,8 +167,8 @@ namespace DnsServerTest
             //exercise
             var p = lookup(DnsType.Ptr, "localhost");
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=0 NS=0 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Ptr localhost.");
+            Assert.Equal("QD=1 AN=0 NS=0 AR=0", Print(p));
+            Assert.Equal("Query Ptr localhost.", Print(p, RrKind.QD, 0));
         }
 
         [Fact]
@@ -177,9 +177,9 @@ namespace DnsServerTest
             //exercise
             var p = lookup(DnsType.Ptr, "1.0.0.127.in-addr.arpa");
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=0 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Ptr 1.0.0.127.in-addr.arpa.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Ptr 1.0.0.127.in-addr.arpa. TTL=2400 localhost.");
+            Assert.Equal("QD=1 AN=1 NS=0 AR=0", Print(p));
+            Assert.Equal("Query Ptr 1.0.0.127.in-addr.arpa.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ptr 1.0.0.127.in-addr.arpa. TTL=2400 localhost.", Print(p, RrKind.AN, 0));
 
         }
 
@@ -189,9 +189,9 @@ namespace DnsServerTest
             //exercise
             var p = lookup(DnsType.Ptr, "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa");
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=0 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Ptr 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Ptr 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa. TTL=2400 localhost.");
+            Assert.Equal("QD=1 AN=1 NS=0 AR=0", Print(p));
+            Assert.Equal("Query Ptr 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ptr 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa. TTL=2400 localhost.", Print(p, RrKind.AN, 0));
         }
 
 

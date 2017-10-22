@@ -208,7 +208,7 @@ namespace Pop3ServerTest
             //exercise
             CheckBanner(cl.StringRecv(3, this));//バナーチェック
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for user1.\r\n");
+            Assert.Equal("+OK Password required for user1.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS user1");
             var actual = cl.StringRecv(3, this);
 
@@ -254,7 +254,7 @@ namespace Pop3ServerTest
             //exercise verify
             Login("user1", "user1", 0, 0, cl);
             cl.StringSend("CHPS ABCabc#123"); //パスワード変更
-            Assert.Equal(cl.StringRecv(5, this), "+OK Password changed.\r\n");
+            Assert.Equal("+OK Password changed.\r\n", cl.StringRecv(5, this));
             cl.StringSend("QUIT"); //コネクション終了
 
             cl = CreateClient(inetKind); //再接続
@@ -277,7 +277,7 @@ namespace Pop3ServerTest
             //exercise
             CheckBanner(cl.StringRecv(3, this));//バナーチェック
             cl.StringSend("user user1");
-            Assert.Equal(cl.StringRecv(3, this), "+OK Password required for user1.\r\n");
+            Assert.Equal("+OK Password required for user1.\r\n", cl.StringRecv(3, this));
             cl.StringSend("PASS xxx");
             var actual = cl.StringRecv(3, this);
 
@@ -557,7 +557,7 @@ namespace Pop3ServerTest
             }
 
             //verify
-            Assert.Equal(actual.Count, 12);
+            Assert.Equal(12, actual.Count);
 
             //tearDown
             cl.StringSend("QUIT");

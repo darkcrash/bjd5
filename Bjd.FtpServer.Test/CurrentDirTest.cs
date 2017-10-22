@@ -56,37 +56,37 @@ namespace FtpServerTest
             //var currentDir = new CurrentDir(homeDir, listMount); //初期化
             var currentDir = new CurrentDir(homeDir, listMount); //初期化
 
-            Assert.Equal(currentDir.Cwd("home0-sub0"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home0-sub0");
+            Assert.True(currentDir.Cwd("home0-sub0"));
+            Assert.Equal("/home0-sub0", currentDir.GetPwd());
 
             currentDir = new CurrentDir(homeDir, listMount); //初期化
-            Assert.Equal(currentDir.Cwd("home0-sub0/sub0-sub0"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home0-sub0/sub0-sub0");
+            Assert.True(currentDir.Cwd("home0-sub0/sub0-sub0"));
+            Assert.Equal("/home0-sub0/sub0-sub0", currentDir.GetPwd());
 
             currentDir = new CurrentDir(homeDir, listMount); //初期化
-            Assert.Equal(currentDir.Cwd("home0-sub0/sub0-sub0"), true);
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/home0-sub0");
+            Assert.True(currentDir.Cwd("home0-sub0/sub0-sub0"));
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/home0-sub0", currentDir.GetPwd());
 
             //ホームディレクトリより階層上へは移動できない
             currentDir = new CurrentDir(homeDir, listMount); //初期化
-            Assert.Equal(currentDir.Cwd("home0-sub0/sub0-sub0"), true);
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/home0-sub0");
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/");
-            Assert.Equal(currentDir.Cwd(".."), false);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.True(currentDir.Cwd("home0-sub0/sub0-sub0"));
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/home0-sub0", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/", currentDir.GetPwd());
+            Assert.False(currentDir.Cwd(".."));
+            Assert.Equal("/", currentDir.GetPwd());
 
             //存在しないディレクトリへの変更
             currentDir = new CurrentDir(homeDir, listMount);
-            Assert.Equal(currentDir.Cwd("home0-sub0/sub0"), false);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.False(currentDir.Cwd("home0-sub0/sub0"));
+            Assert.Equal("/", currentDir.GetPwd());
 
             //初期化文字列の対応
             currentDir = new CurrentDir(homeDir + "\\", listMount);
-            Assert.Equal(currentDir.Cwd("home0-sub0"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home0-sub0");
+            Assert.True(currentDir.Cwd("home0-sub0"));
+            Assert.Equal("/home0-sub0", currentDir.GetPwd());
 
             //ファイル一覧の取得
             currentDir = new CurrentDir(homeDir, listMount);
@@ -98,16 +98,16 @@ namespace FtpServerTest
                 "- home0-2.txt",
                 "- home0-3.txt"
             };
-            Assert.Equal(confirm(currentDir, "*.*", ar), true);
+            Assert.True(confirm(currentDir, "*.*", ar));
 
             //ファイル一覧の取得
             currentDir = new CurrentDir(homeDir, listMount);
-            Assert.Equal(currentDir.Cwd("home0-sub0"), true);
+            Assert.True(currentDir.Cwd("home0-sub0"));
             ar.Clear();
             ar.Add("- home0-sub0-1.txt");
             ar.Add("- home0-sub0-2.txt");
             ar.Add("- home0-sub0-3.txt");
-            Assert.Equal(confirm(currentDir, "*.txt", ar), true);
+            Assert.True(confirm(currentDir, "*.txt", ar));
 
             //**************************************************
             //仮想フォルダを追加して試験する
@@ -128,22 +128,22 @@ namespace FtpServerTest
             ar.Add("- home0-1.txt");
             ar.Add("- home0-2.txt");
             ar.Add("- home0-3.txt");
-            Assert.Equal(confirm(currentDir, "*.*", ar), true);
-            Assert.Equal(currentDir.Cwd("home2"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home2");
-            Assert.Equal(currentDir.Cwd("home2-sub0"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home2/home2-sub0");
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/home2");
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.True(confirm(currentDir, "*.*", ar));
+            Assert.True(currentDir.Cwd("home2"));
+            Assert.Equal("/home2", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd("home2-sub0"));
+            Assert.Equal("/home2/home2-sub0", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/home2", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/", currentDir.GetPwd());
 
-            Assert.Equal(currentDir.Cwd("home2/home2-sub0"), true);
-            Assert.Equal(currentDir.GetPwd(), "/home2/home2-sub0");
-            Assert.Equal(currentDir.Cwd("../../.."), false);
-            Assert.Equal(currentDir.GetPwd(), "/home2/home2-sub0");
-            Assert.Equal(currentDir.Cwd("../.."), true);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.True(currentDir.Cwd("home2/home2-sub0"));
+            Assert.Equal("/home2/home2-sub0", currentDir.GetPwd());
+            Assert.False(currentDir.Cwd("../../.."));
+            Assert.Equal("/home2/home2-sub0", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd("../.."));
+            Assert.Equal("/", currentDir.GetPwd());
 
             //**************************************************
             ////仮想フォルダを追加して試験する
@@ -165,22 +165,22 @@ namespace FtpServerTest
             ar.Add("- home0-1.txt");
             ar.Add("- home0-2.txt");
             ar.Add("- home0-3.txt");
-            Assert.Equal(confirm(currentDir, "*.*", ar), true);
-            Assert.Equal(currentDir.Cwd("tmp"), true);
-            Assert.Equal(currentDir.GetPwd(), "/tmp");
-            Assert.Equal(currentDir.Cwd("sub"), true);
-            Assert.Equal(currentDir.GetPwd(), "/tmp/sub");
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/tmp");
-            Assert.Equal(currentDir.Cwd(".."), true);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.True(confirm(currentDir, "*.*", ar));
+            Assert.True(currentDir.Cwd("tmp"));
+            Assert.Equal("/tmp", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd("sub"));
+            Assert.Equal("/tmp/sub", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/tmp", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd(".."));
+            Assert.Equal("/", currentDir.GetPwd());
 
-            Assert.Equal(currentDir.Cwd("tmp/sub"), true);
-            Assert.Equal(currentDir.GetPwd(), "/tmp/sub");
-            Assert.Equal(currentDir.Cwd("../../.."), false);
-            Assert.Equal(currentDir.GetPwd(), "/tmp/sub");
-            Assert.Equal(currentDir.Cwd("../.."), true);
-            Assert.Equal(currentDir.GetPwd(), "/");
+            Assert.True(currentDir.Cwd("tmp/sub"));
+            Assert.Equal("/tmp/sub", currentDir.GetPwd());
+            Assert.False(currentDir.Cwd("../../.."));
+            Assert.Equal("/tmp/sub", currentDir.GetPwd());
+            Assert.True(currentDir.Cwd("../.."));
+            Assert.Equal("/", currentDir.GetPwd());
 
         }
 

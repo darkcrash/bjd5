@@ -51,9 +51,9 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 2); //A,PTR
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "A www.aaa.com. TTL=0 192.168.0.1");
-            Assert.Equal(print(RrDbTest.Get(sut, 1)), "Ptr 1.0.168.192.in-addr.arpa. TTL=0 www.aaa.com.");
+            Assert.Equal(2, RrDbTest.Size(sut)); //A,PTR
+            Assert.Equal("A www.aaa.com. TTL=0 192.168.0.1", print(RrDbTest.Get(sut, 0)));
+            Assert.Equal("Ptr 1.0.168.192.in-addr.arpa. TTL=0 www.aaa.com.", print(RrDbTest.Get(sut, 1)));
 
         }
 
@@ -67,9 +67,9 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 2); //AAAA,PTR
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "AAAA www.aaa.com. TTL=0 fe80::f509:c5be:437b:3bc5");
-            Assert.Equal(print(RrDbTest.Get(sut, 1)), "Ptr 5.c.b.3.b.7.3.4.e.b.5.c.9.0.5.f.0.0.0.0.0.0.0.0.0.0.0.0.0.8.e.f.ip6.arpa. TTL=0 www.aaa.com.");
+            Assert.Equal(2, RrDbTest.Size(sut)); //AAAA,PTR
+            Assert.Equal("AAAA www.aaa.com. TTL=0 fe80::f509:c5be:437b:3bc5", print(RrDbTest.Get(sut, 0)));
+            Assert.Equal("Ptr 5.c.b.3.b.7.3.4.e.b.5.c.9.0.5.f.0.0.0.0.0.0.0.0.0.0.0.0.0.8.e.f.ip6.arpa. TTL=0 www.aaa.com.", print(RrDbTest.Get(sut, 1)));
         }
 
         [Fact]
@@ -82,10 +82,10 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 3); //MX,A,PTR
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Mx aaa.com. TTL=0 15 smtp.aaa.com.");
-            Assert.Equal(print(RrDbTest.Get(sut, 1)), "A smtp.aaa.com. TTL=0 210.10.2.250");
-            Assert.Equal(print(RrDbTest.Get(sut, 2)), "Ptr 250.2.10.210.in-addr.arpa. TTL=0 smtp.aaa.com.");
+            Assert.Equal(3, RrDbTest.Size(sut)); //MX,A,PTR
+            Assert.Equal("Mx aaa.com. TTL=0 15 smtp.aaa.com.", print(RrDbTest.Get(sut, 0)));
+            Assert.Equal("A smtp.aaa.com. TTL=0 210.10.2.250", print(RrDbTest.Get(sut, 1)));
+            Assert.Equal("Ptr 250.2.10.210.in-addr.arpa. TTL=0 smtp.aaa.com.", print(RrDbTest.Get(sut, 2)));
         }
 
         [Fact]
@@ -98,10 +98,10 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify count
-            Assert.Equal(RrDbTest.Size(sut), 3); //NS,A,PTR
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Ns aaa.com. TTL=0 ns.aaa.com.");
-            Assert.Equal(print(RrDbTest.Get(sut, 1)), "A ns.aaa.com. TTL=0 111.3.255.0");
-            Assert.Equal(print(RrDbTest.Get(sut, 2)), "Ptr 0.255.3.111.in-addr.arpa. TTL=0 ns.aaa.com.");
+            Assert.Equal(3, RrDbTest.Size(sut)); //NS,A,PTR
+            Assert.Equal("Ns aaa.com. TTL=0 ns.aaa.com.", print(RrDbTest.Get(sut, 0)));
+            Assert.Equal("A ns.aaa.com. TTL=0 111.3.255.0", print(RrDbTest.Get(sut, 1)));
+            Assert.Equal("Ptr 0.255.3.111.in-addr.arpa. TTL=0 ns.aaa.com.", print(RrDbTest.Get(sut, 2)));
         }
 
         [Fact]
@@ -114,8 +114,8 @@ namespace DnsServerTest
             RrDbTest.AddOneDat(sut, DomainName, oneDat);
 
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 1); //Cname
-            Assert.Equal(print(RrDbTest.Get(sut, 0)), "Cname alias.aaa.com. TTL=0 cname.aaa.com.");
+            Assert.Equal(1, RrDbTest.Size(sut)); //Cname
+            Assert.Equal("Cname alias.aaa.com. TTL=0 cname.aaa.com.", print(RrDbTest.Get(sut, 0)));
         }
 
         [Fact]

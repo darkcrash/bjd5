@@ -73,15 +73,15 @@ namespace DnsServerTest
             //exercise
             RrDbTest.InitSoa(sut, "aaa.com.", "root@aaa.com", 1, 2, 3, 4, 5);
             //verify
-            Assert.Equal(RrDbTest.Size(sut), 2); //NS及びSOAの2件になっている
+            Assert.Equal(2, RrDbTest.Size(sut)); //NS及びSOAの2件になっている
             RrSoa o = (RrSoa)RrDbTest.Get(sut, 1);
-            Assert.Equal(o.NameServer, "ns.aaa.com.");
-            Assert.Equal(o.PostMaster, "root.aaa.com."); //変換が完了している(@=>. 最後に.追加）
-            Assert.Equal(o.Serial, 1U);
-            Assert.Equal(o.Refresh, 2U);
-            Assert.Equal(o.Retry, 3U);
-            Assert.Equal(o.Expire, 4U);
-            Assert.Equal(o.Minimum, 5U);
+            Assert.Equal("ns.aaa.com.", o.NameServer);
+            Assert.Equal("root.aaa.com.", o.PostMaster); //変換が完了している(@=>. 最後に.追加）
+            Assert.Equal(1U, o.Serial);
+            Assert.Equal(2U, o.Refresh);
+            Assert.Equal(3U, o.Retry);
+            Assert.Equal(4U, o.Expire);
+            Assert.Equal(5U, o.Minimum);
         }
     }
 }

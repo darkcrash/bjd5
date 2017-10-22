@@ -36,9 +36,9 @@ namespace WebServerTest
             {
                 var len = ws.Read(buf, 0, buf.Length);
                 Assert.Equal(len, block);
-                Assert.Equal(buf[0], 0);
-                Assert.Equal(buf[1], 1);
-                Assert.Equal(buf[2], 2);
+                Assert.Equal(0, buf[0]);
+                Assert.Equal(1, buf[1]);
+                Assert.Equal(2, buf[2]);
             }
             ws.Dispose();
         }
@@ -65,9 +65,9 @@ namespace WebServerTest
             {
                 var len = ws.Read(buf, 0, buf.Length);
                 Assert.Equal(len, block);
-                Assert.Equal(buf[0], 0);
-                Assert.Equal(buf[1], 1);
-                Assert.Equal(buf[2], 2);
+                Assert.Equal(0, buf[0]);
+                Assert.Equal(1, buf[1]);
+                Assert.Equal(2, buf[2]);
             }
             ws.Dispose();
         }

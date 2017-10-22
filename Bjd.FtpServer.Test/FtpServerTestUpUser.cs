@@ -143,11 +143,11 @@ namespace FtpServerTest
             var port = _fixture._service.GetAvailablePort(IpKind.V4Localhost, 20451);
             cl.StringSend($"PORT 127,0,0,1,0,{port}");
             var dl = SockUtil.CreateConnection(kernel, new Ip(IpKind.V4Localhost), port, null, this);
-            Assert.Equal(cl.StringRecv(1, this), "200 PORT command successful.\r\n");
+            Assert.Equal("200 PORT command successful.\r\n", cl.StringRecv(1, this));
 
             //retr
             cl.StringSend("RETR 3.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
             //		Thread.Sleep(10);
             //		Assert.Equal(dl.Length, 24);
 
@@ -164,7 +164,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -178,7 +178,7 @@ namespace FtpServerTest
 
             //dele
             cl.StringSend("DELE 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -191,10 +191,10 @@ namespace FtpServerTest
             Login("user2", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 
@@ -207,10 +207,10 @@ namespace FtpServerTest
             Login("user2", cl);
 
             cl.StringSend("RNFR 1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
             cl.StringSend("RNTO $$$.1.txt");
-            Assert.Equal(cl.StringRecv(1, this), "550 Permission denied.\r\n");
+            Assert.Equal("550 Permission denied.\r\n", cl.StringRecv(1, this));
 
         }
 

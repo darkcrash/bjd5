@@ -167,7 +167,7 @@ namespace WebServerTest
             }
             //var find = lines.Any(l => l.IndexOf(pattern) != -1);
             //Assert.Equal(find, true, string.Format("not found {0}", pattern));
-            Assert.Equal(true, isMatch);
+            Assert.True(isMatch);
 
             cl.Close();
 
@@ -203,7 +203,7 @@ namespace WebServerTest
                 _fixture._service.Kernel.Logger.TraceInformation(text);
                 lines.Add(text);
             }
-            Assert.Equal(true, isMatch);
+            Assert.True(isMatch);
 
             cl.Close();
 

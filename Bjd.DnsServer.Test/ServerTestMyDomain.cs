@@ -129,11 +129,11 @@ namespace DnsServerTest
             var p = lookup(DnsType.A, "www.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query A www.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "A www.aaa.com. TTL=2400 192.168.0.10");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=1 NS=1 AR=1", Print(p));
+            Assert.Equal("Query A www.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("A www.aaa.com. TTL=2400 192.168.0.10", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -143,10 +143,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.A, "xxx.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=0 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query A xxx.aaa.com.");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=0 NS=1 AR=1", Print(p));
+            Assert.Equal("Query A xxx.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -156,10 +156,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.Ns, "aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=0 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Ns aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=1 NS=0 AR=1", Print(p));
+            Assert.Equal("Query Ns aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.AN, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -169,10 +169,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.Mx, "aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=0 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Mx aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Mx aaa.com. TTL=2400 15 smtp.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A smtp.aaa.com. TTL=2400 192.168.0.2");
+            Assert.Equal("QD=1 AN=1 NS=0 AR=1", Print(p));
+            Assert.Equal("Query Mx aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Mx aaa.com. TTL=2400 15 smtp.aaa.com.", Print(p, RrKind.AN, 0));
+            Assert.Equal("A smtp.aaa.com. TTL=2400 192.168.0.2", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -182,11 +182,11 @@ namespace DnsServerTest
             var p = lookup(DnsType.AAAA, "www.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query AAAA www.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=1 NS=1 AR=1", Print(p));
+            Assert.Equal("Query AAAA www.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -196,10 +196,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.AAAA, "xxx.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=0 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query AAAA xxx.aaa.com.");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=0 NS=1 AR=1", Print(p));
+            Assert.Equal("Query AAAA xxx.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -209,13 +209,13 @@ namespace DnsServerTest
             var p = lookup(DnsType.Cname, "www2.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=1 NS=1 AR=3");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Cname www2.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Cname www2.aaa.com. TTL=2400 www.aaa.com.");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A www.aaa.com. TTL=2400 192.168.0.10");
-            Assert.Equal(Print(p, RrKind.AR, 1), "AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6");
-            Assert.Equal(Print(p, RrKind.AR, 2), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=1 NS=1 AR=3", Print(p));
+            Assert.Equal("Query Cname www2.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Cname www2.aaa.com. TTL=2400 www.aaa.com.", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A www.aaa.com. TTL=2400 192.168.0.10", Print(p, RrKind.AR, 0));
+            Assert.Equal("AAAA www.aaa.com. TTL=2400 fe80::3882:6dac:af18:cba6", Print(p, RrKind.AR, 1));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 2));
         }
 
         [Fact]
@@ -225,10 +225,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.Cname, "www.aaa.com");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=0 NS=1 AR=1");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Cname www.aaa.com.");
-            Assert.Equal(Print(p, RrKind.NS, 0), "Ns aaa.com. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AR, 0), "A ns.aaa.com. TTL=2400 192.168.0.1");
+            Assert.Equal("QD=1 AN=0 NS=1 AR=1", Print(p));
+            Assert.Equal("Query Cname www.aaa.com.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ns aaa.com. TTL=2400 ns.aaa.com.", Print(p, RrKind.NS, 0));
+            Assert.Equal("A ns.aaa.com. TTL=2400 192.168.0.1", Print(p, RrKind.AR, 0));
         }
 
         [Fact]
@@ -238,10 +238,10 @@ namespace DnsServerTest
             var p = lookup(DnsType.Ptr, "1.0.168.192.in-addr.arpa");
 
             //verify
-            Assert.Equal(Print(p), "QD=1 AN=2 NS=0 AR=0");
-            Assert.Equal(Print(p, RrKind.QD, 0), "Query Ptr 1.0.168.192.in-addr.arpa.");
-            Assert.Equal(Print(p, RrKind.AN, 0), "Ptr 1.0.168.192.in-addr.arpa. TTL=2400 ns.aaa.com.");
-            Assert.Equal(Print(p, RrKind.AN, 1), "Ptr 1.0.168.192.in-addr.arpa. TTL=2400 ws0.aaa.com.");
+            Assert.Equal("QD=1 AN=2 NS=0 AR=0", Print(p));
+            Assert.Equal("Query Ptr 1.0.168.192.in-addr.arpa.", Print(p, RrKind.QD, 0));
+            Assert.Equal("Ptr 1.0.168.192.in-addr.arpa. TTL=2400 ns.aaa.com.", Print(p, RrKind.AN, 0));
+            Assert.Equal("Ptr 1.0.168.192.in-addr.arpa. TTL=2400 ws0.aaa.com.", Print(p, RrKind.AN, 1));
         }
 
         [Fact]
