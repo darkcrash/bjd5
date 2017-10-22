@@ -107,33 +107,39 @@ namespace Bjd.Initialization
         public string MailboxPath { get; private set; }
         public string MailQueuePath { get; private set; }
 
+        private static object LockCreateTestServiceInternal = new object();
+
         private static TestService CreateTestServiceInternal()
         {
-            var instance = new TestService();
-            instance._kernel = new Kernel(true);
+            lock (LockCreateTestServiceInternal)
+            {
+                var instance = new TestService();
+                instance._kernel = new Kernel(true);
 
-            instance._kernel.Events.RequestLogService += instance.KernelEvents_RequestLogService;
+                instance._kernel.Events.RequestLogService += instance.KernelEvents_RequestLogService;
 
-            var env = instance._kernel.Enviroment;
+                var env = instance._kernel.Enviroment;
 
-            // set executable directory
-            var rdval = rd.Next(0, int.MaxValue);
-            var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}_{instance.GetHashCode()}";
+                // set executable directory
+                var rdval = rd.Next(0, int.MaxValue);
+                var dirName = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}_{System.Threading.Thread.CurrentThread.ManagedThreadId}_{rdval}_{instance.GetHashCode()}";
 
-            var dir = env.ExecutableDirectory;
-            env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
-            Directory.CreateDirectory(env.ExecutableDirectory);
+                var dir = env.ExecutableDirectory;
+                env.ExecutableDirectory = System.IO.Path.Combine(dir, dirName);
+                Directory.CreateDirectory(env.ExecutableDirectory);
 
-            //BJD.Lang.txtを作業ディレクトリにコピーする
-            Copy(env, "BJD.Lang.txt", "BJD.Lang.txt");
+                //BJD.Lang.txtを作業ディレクトリにコピーする
+                Copy(env, "BJD.Lang.txt", "BJD.Lang.txt");
 
-            // メールボックスの生成
-            instance.MailboxPath = System.IO.Path.Combine(env.ExecutableDirectory, "mailbox");
+                // メールボックスの生成
+                instance.MailboxPath = System.IO.Path.Combine(env.ExecutableDirectory, "mailbox");
 
-            // メールキューの生成
-            instance.MailQueuePath = System.IO.Path.Combine(env.ExecutableDirectory, "MailQueue");
+                // メールキューの生成
+                instance.MailQueuePath = System.IO.Path.Combine(env.ExecutableDirectory, "MailQueue");
 
-            return instance;
+                return instance;
+            }
+
         }
 
         private void KernelEvents_RequestLogService(object sender, EventArgs e)
@@ -144,7 +150,7 @@ namespace Bjd.Initialization
             }
 
             // ログ出力ディレクトリ
-      
+
             //OptionLog
             var confOption = new Conf(Kernel.ListOption.Get("Log"));
             confOption.Set("saveDirectory", Kernel.Enviroment.ExecutableDirectory);
