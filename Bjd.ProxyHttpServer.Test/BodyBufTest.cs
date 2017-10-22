@@ -59,7 +59,7 @@ namespace ProxyHttpServerTest
             {
                 bodyBuf.Add(_dmyData);
                 var b = bodyBuf.SendBuf(i * DmyMax);
-                Assert.Equal(b[10], 10);
+                Assert.Equal(10, b[10]);
             }
         }
 

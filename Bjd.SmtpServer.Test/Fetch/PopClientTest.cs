@@ -81,7 +81,7 @@ namespace Bjd.SmtpServer.Test
 
                 //verify
                 Assert.Equal(expected, actual);
-                Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
+                Assert.Equal("Faild in PopClient Connect()", sut.GetLastError());
 
                 //tearDown
                 //sut.Dispose();
@@ -105,7 +105,7 @@ namespace Bjd.SmtpServer.Test
 
                 //verify
                 Assert.Equal(expected, actual);
-                Assert.Equal(sut.GetLastError(), "Faild in PopClient Connect()");
+                Assert.Equal("Faild in PopClient Connect()", sut.GetLastError());
 
                 //tearDown
                 //sut.Dispose();
@@ -176,7 +176,7 @@ namespace Bjd.SmtpServer.Test
 
                 //verify
                 Assert.Equal(expected, actual);
-                Assert.Equal(lines.Count, 0);
+                Assert.Empty(lines);
 
                 //tearDown
                 //sut.Dispose();
@@ -317,7 +317,7 @@ namespace Bjd.SmtpServer.Test
                 //verify
                 var actual = sut.Dele(0);
                 Assert.Equal(expected, actual);
-                Assert.Equal(sut.GetLastError(), "Not Found +OK in PopClient RecvStatus()");
+                Assert.Equal("Not Found +OK in PopClient RecvStatus()", sut.GetLastError());
 
 
                 //tearDown
